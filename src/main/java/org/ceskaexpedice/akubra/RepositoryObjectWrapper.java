@@ -19,21 +19,14 @@ public class RepositoryObjectWrapper {
         this.supportedFormat = supportedFormat;
     }
 
-    public String asString() throws UnsupportedContentFormatException {
-        if (!supportedFormat.supportsString()) {
-            throw new UnsupportedContentFormatException("String format not supported.");
-        }
-        return new String(content, StandardCharsets.UTF_8);
-    }
-
-    public InputStream asStream() throws UnsupportedContentFormatException {
+    public InputStream asStream(FoxmlType archive) throws UnsupportedContentFormatException {
         if (!supportedFormat.supportsStream()) {
             throw new UnsupportedContentFormatException("InputStream format not supported.");
         }
         return new ByteArrayInputStream(content);
     }
 
-    public Document asXml() throws UnsupportedContentFormatException {
+    public Document asXml(FoxmlType archive) throws UnsupportedContentFormatException {
         if (!supportedFormat.supportsXml()) {
             throw new UnsupportedContentFormatException("XML format not supported.");
         }

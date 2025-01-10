@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * This is main point to access to fedora through REST-API
@@ -39,6 +40,58 @@ import java.util.Map;
  * 
  */
 public interface RepositoryAccess {
+    // object
+    boolean objectExists(String pid);
+    RepositoryObjectWrapper getFoxml(String pid);
+    String getProperty(String pid, String name);
+    ObjectAccessHelper getObjectAccessHelper();
+
+    //void ingestObject(org.dom4j.Document foxmlDoc, String pid);
+
+    //void deleteObject(String pid, boolean deleteDataOfManagedDatastreams);
+
+    // datastream
+    DatastreamMetadata getDatastreamMetadata(String pid, String dsId);
+    //- getMimeType , getCreatedData, (typ x,M,....control-group)
+    DatastreamContentWrapper getDatastreamContent(String pid, String dsId);
+    DatastreamContentWrapper getDatastreamContent(String pid, String dsId, String version);
+    boolean datastreamExists(String pid, String dsId);
+    RelsExtWrapper processRelsExt(String pid);
+    //- podavat List<RelstExtRelation>
+    // - List<RelsExtRelation> getRelation(String name, String namespace)
+    // RelsExtItem - RelsExt
+    List<String> getDatastreamNames(String pid);
+
+
+    // Processing index
+    void queryProcessingIndex(ProcessingIndexQueryParameters params, Consumer<AkubraDocument> mapper);
+
+//------------------------- to je celeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+    //------------- podpora zamku zvlast
+
+
+    // String getDatastreamMimetype(String pid, String dsId);
+
+    //DatastreamAccessHelper getDatastreamAccessHelper();
+
+    //String getTypeOfDatastream(String pid, String dsId);
+
+
+    //org.dom4j.Document getDatastreamXml(String pid, String dsId);
+
+
+
+
+    void updateInlineXmlDatastream(String pid, KnownDatastreams dsId, org.dom4j.Document streamDoc, String formatUri);
+
+    /**
+     * @param ds part of FOXML that contains definition of the datastream. I.e. root element datastream with subelement(s) datastreamVersion.
+     */
+    void setDatastreamXml(String pid, KnownDatastreams dsId, org.dom4j.Document ds);
+
+    public void updateBinaryDatastream(String pid, KnownDatastreams dsId, String mimeType, byte[] byteArray);
+
+    public void deleteDatastream(String pid, KnownDatastreams dsId);
 
     // object
 
@@ -52,32 +105,6 @@ public interface RepositoryAccess {
 
     void deleteObject(String pid, boolean deleteDataOfManagedDatastreams);
 
-    // datastream
-
-    DatastreamAccessHelper getDatastreamAccessHelper();
-
-    String getTypeOfDatastream(String pid, String dsId);
-
-    boolean datastreamExists(String pid, KnownDatastreams dsId);
-
-    org.dom4j.Document getDatastreamXml(String pid, String dsId);
-
-    String getDatastreamMimetype(String pid, KnownDatastreams dsId);
-
-    DatastreamContentWrapper getDatastreamContent(String pid, KnownDatastreams dsId);
-
-    List<String> getDatastreamNames(String pid);
-
-    void updateInlineXmlDatastream(String pid, KnownDatastreams dsId, org.dom4j.Document streamDoc, String formatUri);
-
-    /**
-     * @param ds part of FOXML that contains definition of the datastream. I.e. root element datastream with subelement(s) datastreamVersion.
-     */
-    void setDatastreamXml(String pid, KnownDatastreams dsId, org.dom4j.Document ds);
-
-    public void updateBinaryDatastream(String pid, KnownDatastreams dsId, String mimeType, byte[] byteArray);
-
-    public void deleteDatastream(String pid, KnownDatastreams dsId);
 
     // Processing index
     ProcessingIndexAccessHelper getProcessingIndexAccessHelper();

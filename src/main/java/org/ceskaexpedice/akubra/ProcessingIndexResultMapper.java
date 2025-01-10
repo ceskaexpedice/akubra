@@ -7,6 +7,6 @@ import java.util.List;
 @FunctionalInterface
 public interface ProcessingIndexResultMapper<T> {
 
-    T map(List<SolrDocument> documents, long totalRecords);
+    T map(List<AkubraProcessingIndexDocument> documents, long totalRecords);
 
 }
