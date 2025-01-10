@@ -1,0 +1,16 @@
+plugins {
+    id 'java' // Applies the Java plugin
+}
+
+repositories {
+    mavenCentral() // Use Maven Central repository
+}
+
+dependencies {
+   // implementation 'com.google.guava:guava:32.1.2-jre' // Replace with your main dependency
+   testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0' // Replace with your test dependency
+}
+
+test {
+    useJUnitPlatform() // Configures the test task to use JUnit 5
+}
