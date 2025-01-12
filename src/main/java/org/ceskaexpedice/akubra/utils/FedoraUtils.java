@@ -4,10 +4,9 @@
  */
 package org.ceskaexpedice.akubra.utils;
 
-import org.ceskaexpedice.akubra.utils.RESTHelper;
-import org.ceskaexpedice.akubra.utils.SafeSimpleDateFormat;
-import org.ceskaexpedice.akubra.utils.XMLUtils;
-import org.ceskaexpedice.akubra.utils.conf.KConfiguration;
+import cz.incad.kramerius.utils.SafeSimpleDateFormat;
+import cz.incad.kramerius.utils.XMLUtils;
+import cz.incad.kramerius.utils.conf.KConfiguration;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -24,7 +23,7 @@ import java.util.logging.Level;
 public class FedoraUtils {
 
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(FedoraUtils.class.getName());
-    static final String RELS_EXT_STREAM = "RELS-EXT";
+    public static final String RELS_EXT_STREAM = "RELS-EXT";
     static final String IMG_THUMB_STREAM = "IMG_THUMB";
     static final String IMG_FULL_STREAM = "IMG_FULL";
     static final String IMG_PREVIEW_STREAM = "IMG_PREVIEW";
@@ -89,7 +88,7 @@ public class FedoraUtils {
     static final String BIBLIO_MODS_FORMAT_URI = "http://www.loc.gov/mods/v3";
     static final String DC_FORMAT_URI = "http://www.openarchives.org/OAI/2.0/oai_dc/";
 
-    static String getFormatUriForDS(String dsID) {
+    public static String getFormatUriForDS(String dsID) {
         if (RELS_EXT_STREAM.equals(dsID)) {
             return RELS_EXT_FORMAT_URI;
         }
@@ -102,6 +101,7 @@ public class FedoraUtils {
         return null;
     }
 
+    /*
     static ArrayList<String> getRdfPids(String pid, String relation) {
         ArrayList<String> pids = new ArrayList<String>();
         try {
@@ -125,8 +125,9 @@ public class FedoraUtils {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
         return pids;
-    }
+    }*/
 
+    /*
     private static String findFirstPagePid(String pid) {
         ArrayList<String> pids = new ArrayList<String>();
         try {
@@ -159,7 +160,7 @@ public class FedoraUtils {
         }
         return null;
     }
-
+*/
     /**
      * Returns url stream
      *

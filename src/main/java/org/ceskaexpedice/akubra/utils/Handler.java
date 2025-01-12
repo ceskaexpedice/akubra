@@ -1,6 +1,5 @@
 package org.ceskaexpedice.akubra.utils;
 
-import com.google.inject.Inject;
 import org.ceskaexpedice.akubra.RepositoryAccess;
 
 import java.io.IOException;
@@ -13,11 +12,12 @@ public class Handler extends URLStreamHandler {
 
     private RepositoryAccess fedoraAccess;
 
+    /*
     @Inject
     public Handler(RepositoryAccess fedoraAccess) {
         super();
         this.fedoraAccess = fedoraAccess;
-    }
+    }*/
 
     @Override
     protected URLConnection openConnection(URL u) throws IOException {

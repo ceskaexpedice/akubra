@@ -1,6 +1,6 @@
 package org.ceskaexpedice.akubra;
 
-import org.ceskaexpedice.akubra.fedora.om.repository.RepositoryDatastream;
+import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.impl.SupportedFormats;
 import org.w3c.dom.Document;
 
@@ -20,20 +20,28 @@ public class DatastreamContentWrapper {
     }
 
     public String asString() throws UnsupportedContentFormatException {
+        /*
         if (!supportedFormat.supportsString()) {
             throw new UnsupportedContentFormatException("String format not supported.");
         }
         return new String(content, StandardCharsets.UTF_8);
+
+         */
+        return null;
     }
 
     public InputStream asStream() throws UnsupportedContentFormatException {
+        /*
         if (!supportedFormat.supportsStream()) {
             throw new UnsupportedContentFormatException("InputStream format not supported.");
         }
         return new ByteArrayInputStream(content);
+
+         */return null;
     }
 
     public Document asXml() throws UnsupportedContentFormatException {
+        /*
         if (!supportedFormat.supportsXml()) {
             throw new UnsupportedContentFormatException("XML format not supported.");
         }
@@ -42,6 +50,6 @@ public class DatastreamContentWrapper {
             return factory.newDocumentBuilder().parse(new ByteArrayInputStream(content));
         } catch (Exception e) {
             throw new IOException("Failed to parse XML", e);
-        }
+        }*/return null;
     }
 }

@@ -1,29 +1,21 @@
 package org.ceskaexpedice.akubra.impl;
 
-import com.qbizm.kramerius.imp.jaxb.DigitalObject;
-import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 import org.ceskaexpedice.akubra.ObjectAccessHelper;
 import org.apache.solr.client.solrj.SolrServerException;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.Date;
 
 public class ObjectAccessHelperImpl implements ObjectAccessHelper {
 
     //-------- get object property
     @Override
-    public String getProperty(String pid, String propertyName) throws IOException, RepositoryException {
-        org.dom4j.Document objectFoxml = getFoxml(pid);
-        return objectFoxml == null ? null : extractProperty(objectFoxml, propertyName);
+    public String getPropertyLabel(String pid) {
+        //return getProperty(pid, "info:fedora/fedora-system:def/model#label");
+        return null;
     }
     @Override
-    public String getPropertyLabel(String pid) throws IOException, RepositoryException {
-        return getProperty(pid, "info:fedora/fedora-system:def/model#label");
-    }
-    @Override
-    public LocalDateTime getPropertyCreated(String pid) throws IOException, RepositoryException {
+    public LocalDateTime getPropertyCreated(String pid) {
+        /*
         String propertyValue = getProperty(pid, "info:fedora/fedora-system:def/model#createdDate");
         if (propertyValue != null) {
             try {
@@ -31,11 +23,12 @@ public class ObjectAccessHelperImpl implements ObjectAccessHelper {
             } catch (DateTimeParseException e) {
                 System.out.println(String.format("cannot parse createdDate %s from object %s", propertyValue, pid));
             }
-        }
+        }*/
         return null;
     }
     @Override
-    public LocalDateTime getPropertyLastModified(String pid) throws IOException, RepositoryException {
+    public LocalDateTime getPropertyLastModified(String pid) {
+        /*
         String propertyValue = getProperty(pid, "info:fedora/fedora-system:def/view#lastModifiedDate");
         if (propertyValue != null) {
             try {
@@ -43,9 +36,11 @@ public class ObjectAccessHelperImpl implements ObjectAccessHelper {
             } catch (DateTimeParseException e) {
                 System.out.println(String.format("cannot parse lastModifiedDate %s from object %s", propertyValue, pid));
             }
-        }
+        }*/
         return null;
     }
+
+    /*
     @Override
     public Date getObjectLastmodifiedFlag(String pid) throws IOException {
         DigitalObject object = manager.readObjectFromStorage(pid);
@@ -53,7 +48,7 @@ public class ObjectAccessHelperImpl implements ObjectAccessHelper {
             return AkubraUtils.getLastModified(object);
         }
         throw new IOException("Object not found: " + pid);
-    }
+    }*/
 
     /*
         @Override

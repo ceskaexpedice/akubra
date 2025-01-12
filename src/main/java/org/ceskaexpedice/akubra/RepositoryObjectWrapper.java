@@ -20,13 +20,17 @@ public class RepositoryObjectWrapper {
     }
 
     public InputStream asStream(FoxmlType archive) throws UnsupportedContentFormatException {
+        /*
         if (!supportedFormat.supportsStream()) {
             throw new UnsupportedContentFormatException("InputStream format not supported.");
         }
         return new ByteArrayInputStream(content);
+
+         */return null;
     }
 
     public Document asXml(FoxmlType archive) throws UnsupportedContentFormatException {
+        /*
         if (!supportedFormat.supportsXml()) {
             throw new UnsupportedContentFormatException("XML format not supported.");
         }
@@ -35,6 +39,6 @@ public class RepositoryObjectWrapper {
             return factory.newDocumentBuilder().parse(new ByteArrayInputStream(content));
         } catch (Exception e) {
             throw new IOException("Failed to parse XML", e);
-        }
+        }*/return null;
     }
 }

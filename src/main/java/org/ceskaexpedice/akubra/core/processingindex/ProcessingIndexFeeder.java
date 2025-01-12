@@ -1,9 +1,6 @@
 package org.ceskaexpedice.akubra.core.processingindex;
 
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
-
-import org.ceskaexpedice.akubra.utils.XMLUtils;
+import cz.incad.kramerius.utils.XMLUtils;
 import org.ceskaexpedice.akubra.FedoraNamespaces;
 import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
@@ -56,8 +53,7 @@ public class ProcessingIndexFeeder {
 
     private SolrClient solrClient;
 
-    @Inject
-    public ProcessingIndexFeeder(@Named("processingUpdate") SolrClient solrClient) {
+    public ProcessingIndexFeeder(SolrClient solrClient) {
         super();
         this.solrClient = solrClient;
 

@@ -1,12 +1,7 @@
 package org.ceskaexpedice.akubra.impl;
 
-import com.qbizm.kramerius.imp.jaxb.DigitalObject;
-import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.core.repository.Repository;
-import org.apache.solr.common.SolrDocument;
-import org.dom4j.Attribute;
-import org.dom4j.QName;
 import org.w3c.dom.Document;
 
 import javax.xml.bind.JAXBException;
@@ -21,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -62,12 +58,38 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     }
 
     @Override
+    public DatastreamMetadata getDatastreamMetadata(String pid, String dsId) {
+        return null;
+    }
+
+    @Override
+    public DatastreamContentWrapper getDatastreamContent(String pid, String dsId) {
+        return null;
+    }
+
+    @Override
+    public DatastreamContentWrapper getDatastreamContent(String pid, String dsId, String version) {
+        return null;
+    }
+
+    @Override
+    public boolean datastreamExists(String pid, String dsId) {
+        return false;
+    }
+
+    @Override
+    public RelsExtWrapper processRelsExt(String pid) {
+        return null;
+    }
+
+    @Override
     public boolean objectExists(String pid) {
         return this.repository.objectExists(pid);
     }
 
     @Override
     public RepositoryObjectWrapper getFoxml(String pid) {
+        /*
         SupportedFormats supportedFormat = determineSupportedFormat(pid);
         // Retrieve content as bytes
         RepositoryObject rawContent = null;
@@ -76,15 +98,19 @@ public class RepositoryAccessImpl implements RepositoryAccess {
             return new RepositoryObjectWrapper(rawContent, supportedFormat);
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
-        }
+        }*/ return null;
     }
 
     @Override
     public String  getProperty(String pid, String propertyName) {
+        /*
         org.dom4j.Document objectFoxml = getFoxml(pid).asXml();
         return objectFoxml == null ? null : extractProperty(objectFoxml, propertyName);
+
+         */return null;
     }
 
+    /*
     @Override
     public void ingestObject(org.dom4j.Document foxmlDoc, String pid) {
         DigitalObject digitalObject = foxmlDocToDigitalObject(foxmlDoc);
@@ -95,8 +121,9 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         } finally {
             writeLock.unlock();
         }
-    }
+    }*/
 
+    /*
     @Override
     public void deleteObject(String pid, boolean deleteDataOfManagedDatastreams) {
         Lock writeLock = AkubraDOManager.getWriteLock(pid);
@@ -106,10 +133,11 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         } finally {
             writeLock.unlock();
         }
-    }
+    }*/
 
     // ----- Stream ---------------------------------------------------
 
+    /*
     @Override
     public DatastreamAccessHelper getDatastreamAccessHelper(){
         return null;
@@ -122,18 +150,20 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     public boolean datastreamExists(String pid, KnownDatastreams dsId) {
         boolean exists = this.repositoryApi.datastreamExists(pid, dsId);
         return exists;
-    }
+    }*/
 
     // TODO archive format.. kdo to pouziva a proc
     // TODO versions - nepouziva se, ale je treba zkontrolovat, ze se bere urcite posledni verze
+    /*
     @Override
     public <T> T getDatastreamFoxmlElement(String pid, KnownDatastreams dsId) {
         return null;
-    }
+    }*/
 
     /**
      * @return part of FOXML that contains definition of the datastream. I.e. root element datastream with subelement(s) datastreamVersion.
      */
+    /*
     @Override
     public org.dom4j.Document getDatastreamXml(String pid, KnownDatastreams dsId){return null;}
 
@@ -145,14 +175,16 @@ public class RepositoryAccessImpl implements RepositoryAccess {
 
     @Override
     public String getDatastreamMimetype(String pid, KnownDatastreams dsId){return null;}
-
+*/
     // TODO nazev, Triplet, Tuple, ????????
+    /*
     @Override
     public <T> T getRDFSimpleProperty(String pid, String propertyName, Class<T> returnType) {
         org.dom4j.Document objectFoxml = getFoxml(pid);
         return objectFoxml == null ? null : extractProperty(objectFoxml, propertyName);
-    }
+    }*/
 
+    /*
     @Override
     public DatastreamContentWrapper getDatastreamContent(String pid, KnownDatastreams dsId) {
         SupportedFormats supportedFormat = determineSupportedFormat(dsId);
@@ -164,7 +196,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }
-    }
+    }*/
     /**
      * TODO: Not Used
      * Returns xml containing datastream data
@@ -183,10 +215,13 @@ public class RepositoryAccessImpl implements RepositoryAccess {
      * @return datastream xml as stored in Fedora
      * @throws IOException IO error has been occurred
      */
+    /*
     public Document getDataStreamXmlAsDocument(String pid, String datastreamName){return null;};
     InputStream getLatestVersionOfDatastream(String pid, String dsId){return null;};
     org.dom4j.Document getLatestVersionOfInlineXmlDatastream(String pid, String dsId){return null;};
     String getLatestVersionOfManagedTextDatastream(String pid, String dsId){return null;};
+
+     */
     /**
      * Returns data from datastream
      *
@@ -199,6 +234,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
 
     @Override
     public List<String> getDatastreamNames(String pid) {
+        /*
         Lock readLock = AkubraDOManager.getReadLock(pid);
         try {
             RepositoryObject object = akubraRepositoryImpl.getObject(pid);
@@ -213,9 +249,15 @@ public class RepositoryAccessImpl implements RepositoryAccess {
             }).collect(Collectors.toList());
         } finally {
             readLock.unlock();
-        }
+        }*/return null;
     }
 
+    @Override
+    public void queryProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> mapper) {
+
+    }
+
+    /*
     @Override
     public void updateInlineXmlDatastream(String pid, KnownDatastreams dsId, org.dom4j.Document streamDoc, String formatUri) throws RepositoryException, IOException {
         Lock writeLock = AkubraDOManager.getWriteLock(pid);
@@ -228,8 +270,9 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         } finally {
             writeLock.unlock();
         }
-    }
+    }*/
 
+    /*
     @Override
     public void updateBinaryDatastream(String pid, KnownDatastreams dsId, String mimeType, byte[] byteArray) throws RepositoryException {
         Lock writeLock = AkubraDOManager.getWriteLock(pid);
@@ -245,8 +288,9 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         } finally {
             writeLock.unlock();
         }
-    }
+    }*/
 
+    /*
     @Override
     public void setDatastreamXml(String pid, KnownDatastreams dsId, org.dom4j.Document ds) {
         Lock writeLock = AkubraDOManager.getWriteLock(pid);
@@ -265,8 +309,9 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         } finally {
             writeLock.unlock();
         }
-    }
+    }*/
 
+    /*
     @Override
     public void deleteDatastream(String pid, KnownDatastreams dsId) {
         Lock writeLock = AkubraDOManager.getWriteLock(pid);
@@ -280,7 +325,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         } finally {
             writeLock.unlock();
         }
-    }
+    }*/
     // TODO here we always use AkubraUtils.getStreamContent but we have also AkubraObject.AkubraDatastream for fetching stream content
     /* TODO
     @Override
@@ -315,11 +360,13 @@ public class RepositoryAccessImpl implements RepositoryAccess {
      */
 
     //------Processing index----------------------------------------------------
+    /*
     @Override
     public ProcessingIndexAccessHelper getProcessingIndexAccessHelper(){
         return null;
-    }
+    }*/
 
+    /*
     @Override
     public <T> T queryProcessingIndex(ProcessingIndexQueryParameters params, ProcessingIndexResultMapper<T> mapper) {
         org.apache.commons.lang3.tuple.Pair<Long, List<SolrDocument>> cp =
@@ -333,7 +380,8 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         // Use the provided mapper to convert results
         return mapper.map(cp.getRight(), cp.getLeft());
     };
-
+*/
+    /*
     @Override
     public void shutdown() {
         manager.shutdown();
@@ -341,15 +389,17 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     @Override
     public String getFedoraVersion() throws IOException {
         return "Akubra";
-    }
+    }*/
 
+    /*
     private void reportAccess(String pid, String streamName) {
         try {
             this.accessLog.reportAccess(pid, streamName);
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Can't write statistic records for " + pid + ", stream name: " + streamName, e);
         }
-    }
+    }*/
+    /*
     private SupportedFormats determineSupportedFormat(KnownDatastreams id) {
         // Example logic to determine supported formats
         if (id == KnownDatastreams.BIBLIO_DC) {
@@ -357,7 +407,8 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         } else {
             return new SupportedFormats(true, true, true);
         }
-    }
+    }*/
+    /*
     private RepositoryDatastream fetchContentFromStorage(String pid, KnownDatastreams dsId) throws RepositoryException {
         RepositoryObject object = akubraRepositoryImpl.getObject(pid);
         if (object.streamExists(dsId)) {
@@ -368,7 +419,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         }
         // Mock: Fetch content as bytes from your storage
         //return ("<xml>Content for ID: " + id + "</xml>").getBytes(StandardCharsets.UTF_8);
-    }
+    }*/
     private Document parseXml(byte[] content) throws IOException {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -383,13 +434,15 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         map.put("label", label);
         return map;
     }
+    /*
     private DigitalObject foxmlDocToDigitalObject(org.dom4j.Document foxml) throws IOException {
         try {
             return (DigitalObject) digitalObjectUnmarshaller.unmarshal(new StringReader(foxml.asXML()));
         } catch (JAXBException e) {
             throw new IOException(e);
         }
-    }
+    }*/
+    /*
     private void updateLastModifiedTimestamp(org.dom4j.Document foxml) {
         Attribute valueAttr = (Attribute) Dom4jUtils.buildXpath("/foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='info:fedora/fedora-system:def/view#lastModifiedDate']/@VALUE").selectSingleNode(foxml);
         if (valueAttr != null) {
@@ -400,7 +453,8 @@ public class RepositoryAccessImpl implements RepositoryAccess {
             propertyLastModified.addAttribute("NAME", "info:fedora/fedora-system:def/view#lastModifiedDate");
             propertyLastModified.addAttribute("VALUE", LocalDateTime.now().format(RepositoryApi.TIMESTAMP_FORMATTER));
         }
-    }
+    }*/
+    /*
     private void appendNewInlineXmlDatastreamVersion(org.dom4j.Document foxml, String dsId, org.dom4j.Document streamDoc, String formatUri) {
         org.dom4j.Element datastreamEl = (org.dom4j.Element) Dom4jUtils.buildXpath(String.format("/foxml:digitalObject/foxml:datastream[@ID='%s']", dsId)).selectSingleNode(foxml);
         if (datastreamEl != null) {
@@ -416,7 +470,8 @@ public class RepositoryAccessImpl implements RepositoryAccess {
             org.dom4j.Element xmlContentEl = dsVersionEl.addElement("xmlContent", NAMESPACE_FOXML);
             xmlContentEl.add(streamDoc.getRootElement().detach());
         }
-    }
+    }*/
+    /*
     private int extractLatestDsIdVersion(org.dom4j.Element datastreamEl) {
         List<org.dom4j.Node> dsVersionEls = Dom4jUtils.buildXpath("foxml:datastreamVersion").selectNodes(datastreamEl);
         int maxVersion = -1;
@@ -429,10 +484,12 @@ public class RepositoryAccessImpl implements RepositoryAccess {
             }
         }
         return maxVersion;
-    }
-
+    }*/
+/*
     private String extractProperty(org.dom4j.Document foxmlDoc, String name) {
         org.dom4j.Node node = Dom4jUtils.buildXpath(String.format("/foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='%s']/@VALUE", name)).selectSingleNode(foxmlDoc);
         return node == null ? null : Dom4jUtils.toStringOrNull(node);
     }
+
+ */
 }

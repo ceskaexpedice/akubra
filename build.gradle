@@ -1,14 +1,106 @@
 plugins {
-    id 'java' // Applies the Java plugin
+    id 'java-library' // Applies the Java plugin
 }
 
 repositories {
-    mavenCentral() // Use Maven Central repository
+    /** libraries doesn't exist in public repo */
+    flatDir {
+        dirs "../buildSrc/lib"
+    }
+    flatDir {
+        dirs "../../buildSrc/lib"
+    }
+
+
+
+    mavenLocal()
+    mavenCentral()
+
+
+    /*
+    maven {
+        url "https://m2.duraspace.org/content/repositories/releases"
+    }*/
+
+    maven {
+        url "https://maven.java.net/content/repositories/snapshots/"
+    }
+
+    maven {
+        url "https://repository.springsource.com/maven/bundles/external"
+    }
+
+    maven {
+        url "https://repository.jboss.org/nexus/content/repositories/thirdparty-releases"
+    }
+
+    maven {
+        url "https://download.osgeo.org/webdav/geotools/"
+    }
+
+    maven {
+        url 'https://github.com/psiegman/mvn-repo/raw/master/releases'
+    }
+
+
+    /*
+    maven {
+        url "https://repo.jfrog.org/artifactory/libs-releases/"
+    }*/
+
+    /*
+    maven {
+        url "https://maven.atlassian.com/content/groups/public"
+    }*/
+
+    maven {
+        url "https://jbig2-imageio.googlecode.com/svn/maven-repository"
+    }
+
+    maven {
+        url "https://jbig2-imageio.googlecode.com/svn/maven-repository"
+    }
+
+    maven {
+        url "https://jitpack.io"
+    }
+    /*
+    maven {
+        url "http://download.java.net/maven/2/"
+    }*/
+
 }
 
 dependencies {
-   // implementation 'com.google.guava:guava:32.1.2-jre' // Replace with your main dependency
-   testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0' // Replace with your test dependency
+    //akubra storage
+    implementation 'org.akubraproject:akubra-core:0.4.0'
+    implementation('org.akubraproject:akubra-fs:0.4.0') {
+        exclude group: 'com.google.guava', module: 'guava-collections'
+        exclude group: 'com.google.guava', module: 'guava-annotations'
+        exclude group: 'com.google.guava', module: 'guava-primitives'
+        exclude group: 'com.google.guava', module: 'guava-base'
+    }
+    implementation('org.akubraproject:akubra-map:0.4.0') {
+        exclude group: 'com.google.guava', module: 'guava-collections'
+        exclude group: 'com.google.guava', module: 'guava-annotations'
+        exclude group: 'com.google.guava', module: 'guava-primitives'
+        exclude group: 'com.google.guava', module: 'guava-base'
+    }
+    implementation 'org.ehcache:ehcache:3.3.0'
+    implementation "javax.xml.bind:jaxb-api:2.3.1"
+    implementation 'com.hazelcast:hazelcast-all:3.11.2'
+    implementation "commons-configuration:commons-configuration:1.10"
+    implementation 'com.google.guava:guava:31.0.1-jre'
+    implementation 'javax.servlet:servlet-api:2.5'
+    implementation 'org.apache.solr:solr-solrj:8.8.1'
+    implementation "org.apache.commons:commons-lang3:3.5"
+    implementation "org.antlr:stringtemplate:3.2.1"
+    implementation'net.jcip:jcip-annotations:1.0'
+    implementation "commons-dbcp:commons-dbcp:1.4"
+    implementation 'fast-md5:fast-md5:2.5'
+
+    // implementation 'com.google.guava:guava:32.1.2-jre' // Replace with your main dependency
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0' // Replace with your test dependency
 }
 
 test {

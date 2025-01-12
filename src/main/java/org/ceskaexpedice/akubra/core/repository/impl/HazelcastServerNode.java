@@ -7,7 +7,7 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
-import org.ceskaexpedice.akubra.utils.conf.KConfiguration;
+import cz.incad.kramerius.utils.conf.KConfiguration;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;

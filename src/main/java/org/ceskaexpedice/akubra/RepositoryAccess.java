@@ -16,9 +16,7 @@
  */
 package org.ceskaexpedice.akubra;
 
-import org.ceskaexpedice.akubra.impl.SecuredFedoraAccessImpl;
 import org.ceskaexpedice.akubra.core.repository.Repository;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.w3c.dom.Document;
 
 import java.io.IOException;
@@ -35,7 +33,6 @@ import java.util.function.Consumer;
 /**
  * This is main point to access to fedora through REST-API
  *
- * @see SecuredFedoraAccessImpl
  * @author pavels
  * 
  */
@@ -64,52 +61,25 @@ public interface RepositoryAccess {
 
 
     // Processing index
-    void queryProcessingIndex(ProcessingIndexQueryParameters params, Consumer<AkubraDocument> mapper);
+    void queryProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> mapper);
 
-//------------------------- to je celeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
     //------------- podpora zamku zvlast
 
-
-    // String getDatastreamMimetype(String pid, String dsId);
-
-    //DatastreamAccessHelper getDatastreamAccessHelper();
-
-    //String getTypeOfDatastream(String pid, String dsId);
-
-
-    //org.dom4j.Document getDatastreamXml(String pid, String dsId);
-
-
-
-
+    /*
     void updateInlineXmlDatastream(String pid, KnownDatastreams dsId, org.dom4j.Document streamDoc, String formatUri);
 
-    /**
-     * @param ds part of FOXML that contains definition of the datastream. I.e. root element datastream with subelement(s) datastreamVersion.
-     */
     void setDatastreamXml(String pid, KnownDatastreams dsId, org.dom4j.Document ds);
 
     public void updateBinaryDatastream(String pid, KnownDatastreams dsId, String mimeType, byte[] byteArray);
 
     public void deleteDatastream(String pid, KnownDatastreams dsId);
 
-    // object
-
-    ObjectAccessHelper getObjectAccessHelper();
-
-    boolean objectExists(String pid);
-
-    RepositoryObjectWrapper getFoxml(String pid);
 
     void ingestObject(org.dom4j.Document foxmlDoc, String pid);
 
     void deleteObject(String pid, boolean deleteDataOfManagedDatastreams);
 
-
-    // Processing index
-    ProcessingIndexAccessHelper getProcessingIndexAccessHelper();
-
-    <T> T queryProcessingIndex(ProcessingIndexQueryParameters params, ProcessingIndexResultMapper<T> mapper);
+*/
 
     //------------------------------------------------------------
     //public org.dom4j.Document getFoxml(String pid) throws RepositoryException, IOException;
@@ -130,13 +100,14 @@ public interface RepositoryAccess {
      * @return true if object is accessible
      * @throws IOException IO error has been occurred
      */
+    /*
     public boolean isContentAccessible(String pid) throws IOException;
 
 
     public Repository getInternalAPI() throws RepositoryException;
 
     public Repository getTransactionAwareInternalAPI() throws RepositoryException;
-
+*/
 
     /**
      * Collects and returns subtree as one set
@@ -145,7 +116,7 @@ public interface RepositoryAccess {
      * @return all subtree as set
      * @throws IOException IO error has been occurred
      */
-    public List<String> getPids(String pid) throws IOException;
+//    public List<String> getPids(String pid) throws IOException;
 
     
 
@@ -156,7 +127,7 @@ public interface RepositoryAccess {
      * @return version
      * @throws IOException Cannot detect current version
      */
-    public String getFedoraVersion() throws IOException;
+   // public String getFedoraVersion() throws IOException;
 
 
     /**
@@ -167,6 +138,7 @@ public interface RepositoryAccess {
      * @return Parsed profile
      * @throws IOException IO error has been occurred
      */
+    /*
     Document getObjectProfile(String pid) throws IOException;
 
 
@@ -178,6 +150,8 @@ public interface RepositoryAccess {
     InputStream getFoxml(String pid, boolean archive) throws IOException;
 
     default void shutdown(){};
+
+     */
 
 
 //    private Date lastModified(String pid, String stream) throws IOException {
@@ -206,16 +180,19 @@ public interface RepositoryAccess {
 
     //----------------------------------------------------------------
 
-    public static final String NAMESPACE_FOXML = "info:fedora/fedora-system:def/foxml#";
+    //public static final String NAMESPACE_FOXML = "info:fedora/fedora-system:def/foxml#";
 
     /**
      * @se RepositoryApiTimestampFormatterTest
      */
+    /*
     public static final DateTimeFormatter TIMESTAMP_FORMATTER = new DateTimeFormatterBuilder()
             .appendPattern("yyyy-MM-dd'T'HH:mm:ss.")
             .appendFraction(ChronoField.MILLI_OF_SECOND, 1, 3, false)
             .appendPattern("'Z'")
             .toFormatter();
+
+     */
 
     //TODO: methods for fetching other types of datastreams (redirect, external referenced, probably not managed)
     //TODO: methods for updating datastreams (new versions)
@@ -224,7 +201,7 @@ public interface RepositoryAccess {
 
     //READ
 
-    public String getProperty(String pid, String propertyName) throws IOException, RepositoryException;
+   //public String getProperty(String pid, String propertyName) throws IOException, RepositoryException;
 
 
 
@@ -235,6 +212,7 @@ public interface RepositoryAccess {
 
     //DELETE
 
+    /*
     class Triplet {
         public final String source;
         public final String relation;
@@ -250,12 +228,12 @@ public interface RepositoryAccess {
         public String toString() {
             return String.format("%s -%s-> %s", source, relation, target);
         }
-    }
-
+    }*/
+/*
     class TitlePidPairs {
         public List<Pair<String, String>> titlePidPairs;
         public String nextCursorMark;
-    }
+    }*/
 
     //---------------KRRepAPI
 
@@ -331,6 +309,7 @@ public interface RepositoryAccess {
     }
 
 
+    /*
     public enum OwnRelationsMapping {
 
         page{
@@ -420,8 +399,9 @@ public interface RepositoryAccess {
         public abstract KrameriusRepositoryApi.KnownRelations relation();
 
     }
+*/
 
-
+    /*
     public enum FosterRelationsMapping {
         page{
             @Override
@@ -451,8 +431,9 @@ public interface RepositoryAccess {
         public abstract KrameriusRepositoryApi.KnownRelations relation(String parentModel);
 
     }
+*/
 
-
+    /*
     List<KrameriusRepositoryApi.KnownRelations> OWN_RELATIONS = Arrays.asList(new KrameriusRepositoryApi.KnownRelations[]{
             KrameriusRepositoryApi.KnownRelations.HAS_PAGE, KrameriusRepositoryApi.KnownRelations.HAS_UNIT, KrameriusRepositoryApi.KnownRelations.HAS_VOLUME, KrameriusRepositoryApi.KnownRelations.HAS_ITEM,
             KrameriusRepositoryApi.KnownRelations.HAS_SOUND_UNIT, KrameriusRepositoryApi.KnownRelations.HAS_TRACK, KrameriusRepositoryApi.KnownRelations.CONTAINS_TRACK, KrameriusRepositoryApi.KnownRelations.HAS_INT_COMP_PART
@@ -461,6 +442,9 @@ public interface RepositoryAccess {
             KrameriusRepositoryApi.KnownRelations.IS_ON_PAGE, KrameriusRepositoryApi.KnownRelations.CONTAINS
     });
 
+     */
+
+    /*
     static boolean isOwnRelation(String relation) {
         for (KrameriusRepositoryApi.KnownRelations knownRelation : OWN_RELATIONS) {
             if (relation.equals(knownRelation.toString())) {
@@ -474,6 +458,8 @@ public interface RepositoryAccess {
         }
         throw new IllegalArgumentException(String.format("unknown relation '%s'", relation));
     }
+
+     */
 
     //TODO: methods for updating datastream data (done for inline xml datastreams)
 

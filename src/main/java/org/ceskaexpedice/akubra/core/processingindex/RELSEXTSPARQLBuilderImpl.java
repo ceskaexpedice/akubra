@@ -1,8 +1,8 @@
 package org.ceskaexpedice.akubra.core.processingindex;
 
-import org.ceskaexpedice.akubra.utils.StringUtils;
-import org.ceskaexpedice.akubra.utils.XMLUtils;
-import org.ceskaexpedice.akubra.utils.conf.KConfiguration;
+import cz.incad.kramerius.utils.StringUtils;
+import cz.incad.kramerius.utils.XMLUtils;
+import cz.incad.kramerius.utils.conf.KConfiguration;
 import org.ceskaexpedice.akubra.FedoraNamespaceContext;
 import org.ceskaexpedice.akubra.FedoraNamespaces;
 import org.ceskaexpedice.akubra.RepositoryException;

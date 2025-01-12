@@ -7,7 +7,7 @@ import com.hazelcast.client.config.XmlClientConfigBuilder;
 import com.hazelcast.config.GroupConfig;
 import com.hazelcast.core.*;
 import com.qbizm.kramerius.imp.jaxb.*;
-import org.ceskaexpedice.akubra.utils.conf.KConfiguration;
+import cz.incad.kramerius.utils.conf.KConfiguration;
 import org.akubraproject.BlobStore;
 import org.akubraproject.fs.FSBlobStore;
 import org.akubraproject.map.IdMapper;

@@ -23,6 +23,7 @@ public class FedoraURLConnection extends URLConnection {
 
     @Override
     public InputStream getInputStream() throws IOException {
+        /*
         String path = getURL().getPath();
         String pid = null;
         String stream = null;
@@ -39,7 +40,8 @@ public class FedoraURLConnection extends URLConnection {
             return this.fedoraAccess.getSmallThumbnail(pid);
         } else {
             return this.fedoraAccess.getDataStream(pid, stream);
-        }
+        }*/
+        return null;
     }
 
     @Override

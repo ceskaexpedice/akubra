@@ -16,8 +16,7 @@
  */
 package org.ceskaexpedice.akubra.core;
 
-
-import org.ceskaexpedice.akubra.utils.conf.KConfiguration;
+import cz.incad.kramerius.utils.conf.KConfiguration;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
 import org.ceskaexpedice.akubra.core.repository.Repository;
 import org.ceskaexpedice.akubra.RepositoryException;
