@@ -1,6 +1,5 @@
 package org.ceskaexpedice.akubra.core.repository;
 
-import org.ceskaexpedice.akubra.RepositoryException;
 import org.w3c.dom.Document;
 
 import java.io.InputStream;
@@ -19,45 +18,38 @@ public interface RepositoryDatastream {
     /**
      * Return name
      * @return
-     * @throws RepositoryException
+     * @throws
      */
-    public String getName() throws RepositoryException;
+    String getName();
 
     /**
      * Return metadata document
      * @return
-     * @throws RepositoryException
+     * @throws
      */
-    public Document getMetadata() throws RepositoryException;
+    Document getMetadata();
 
     /**
      * Return content of the stream
      * @return
-     * @throws RepositoryException
+     * @throws
      */
-    public InputStream getContent() throws RepositoryException;
+    InputStream getContent();
 
     /**
      * Return mimetype
      * @return
-     * @throws RepositoryException
+     * @throws
      */
-    public String getMimeType() throws RepositoryException;
+    String getMimeType();
 
     /**
      * Return last modified flag
      * @return
-     * @throws RepositoryException
+     * @throws
      */
-    public Date getLastModified()throws RepositoryException;
+    Date getLastModified();
 
-    public Type getStreamType() throws RepositoryException;
+    Type getStreamType();
     
-    
-    /**
-     * Update sparql properties
-     * @param sparql
-     * @throws RepositoryException
-     */
-    public void updateSPARQL(String sparql) throws RepositoryException;
 }

@@ -19,7 +19,7 @@ package org.ceskaexpedice.akubra.core;
 import cz.incad.kramerius.utils.conf.KConfiguration;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
 import org.ceskaexpedice.akubra.core.repository.Repository;
-import org.ceskaexpedice.akubra.RepositoryException;
+import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.impl.AkubraDOManager;
 import org.ceskaexpedice.akubra.core.repository.impl.RepositoryImpl;
 import org.apache.solr.client.solrj.SolrClient;
@@ -63,6 +63,10 @@ public final class RepositoryFactory {
 
   private static SolrClient createProcessingUpdateClient() {
     String processingSolrHost = KConfiguration.getInstance().getSolrProcessingHost();
+
+    // TODO
+    processingSolrHost = "http://localhost:8983/solr/processing";
+
     return new ConcurrentUpdateSolrClient.Builder(processingSolrHost).withQueueSize(100).build();
   }
 

@@ -16,11 +16,10 @@
  */
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import com.qbizm.kramerius.imp.jaxb.*;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
 import org.ceskaexpedice.akubra.FedoraNamespaces;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
-import org.ceskaexpedice.akubra.RepositoryException;
+import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import cz.incad.kramerius.utils.StringUtils;
 import cz.incad.kramerius.utils.XMLUtils;
@@ -29,6 +28,7 @@ import org.ceskaexpedice.akubra.utils.pid.PIDParser;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
+import org.ceskaexpedice.jaxb.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -236,11 +236,6 @@ class RepositoryObjectImpl implements RepositoryObject {
             }
         }
         return null;
-    }
-
-    @Override
-    public void updateSPARQL(String sparql) throws RepositoryException {
-
     }
 
     @Override

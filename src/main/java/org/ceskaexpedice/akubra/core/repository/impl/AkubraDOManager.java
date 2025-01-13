@@ -6,13 +6,14 @@ import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.config.XmlClientConfigBuilder;
 import com.hazelcast.config.GroupConfig;
 import com.hazelcast.core.*;
-import com.qbizm.kramerius.imp.jaxb.*;
 import cz.incad.kramerius.utils.conf.KConfiguration;
 import org.akubraproject.BlobStore;
 import org.akubraproject.fs.FSBlobStore;
 import org.akubraproject.map.IdMapper;
 import org.akubraproject.map.IdMappingBlobStore;
 import org.apache.commons.io.IOUtils;
+import org.ceskaexpedice.akubra.core.repository.RepositoryException;
+import org.ceskaexpedice.jaxb.*;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
@@ -69,7 +70,7 @@ public class AkubraDOManager {
             marshaller = jaxbContext.createMarshaller();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Cannot init JAXB", e);
-            throw new RuntimeException(e);
+            throw new RepositoryException(e);
         }
         ClientConfig config = null;
         File configFile = KConfiguration.getInstance().findConfigFile("hazelcast.clientconfig");

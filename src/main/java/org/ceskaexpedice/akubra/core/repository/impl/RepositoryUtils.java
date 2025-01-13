@@ -1,9 +1,9 @@
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import com.qbizm.kramerius.imp.jaxb.DatastreamType;
-import com.qbizm.kramerius.imp.jaxb.DatastreamVersionType;
-import com.qbizm.kramerius.imp.jaxb.DigitalObject;
-import com.qbizm.kramerius.imp.jaxb.PropertyType;
+import org.ceskaexpedice.jaxb.DatastreamType;
+import org.ceskaexpedice.jaxb.DatastreamVersionType;
+import org.ceskaexpedice.jaxb.DigitalObject;
+import org.ceskaexpedice.jaxb.PropertyType;
 import cz.incad.kramerius.utils.SafeSimpleDateFormat;
 import cz.incad.kramerius.utils.XMLUtils;
 import cz.incad.kramerius.utils.conf.KConfiguration;

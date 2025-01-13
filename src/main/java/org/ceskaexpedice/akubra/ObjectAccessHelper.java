@@ -1,6 +1,6 @@
 package org.ceskaexpedice.akubra;
 
-import org.apache.solr.client.solrj.SolrServerException;
+import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;

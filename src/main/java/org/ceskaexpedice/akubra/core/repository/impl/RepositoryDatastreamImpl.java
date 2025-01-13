@@ -1,8 +1,8 @@
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import com.qbizm.kramerius.imp.jaxb.DatastreamType;
+import org.ceskaexpedice.jaxb.DatastreamType;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
-import org.ceskaexpedice.akubra.RepositoryException;
+import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.w3c.dom.Document;
 
 import java.io.*;
@@ -61,6 +61,7 @@ class RepositoryDatastreamImpl implements RepositoryDatastream {
         return RepositoryUtils.getLastStreamVersion(datastream).getMIMETYPE();
     }
 
+
     @Override
     public Type getStreamType() throws RepositoryException {
         return this.type;
@@ -71,8 +72,4 @@ class RepositoryDatastreamImpl implements RepositoryDatastream {
         return RepositoryUtils.getLastStreamVersion(datastream).getCREATED().toGregorianCalendar().getTime();
     }
 
-    @Override
-    public void updateSPARQL(String sparql) throws RepositoryException {
-
-    }
 }

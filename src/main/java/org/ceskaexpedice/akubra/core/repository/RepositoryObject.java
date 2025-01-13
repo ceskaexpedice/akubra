@@ -17,7 +17,6 @@
 
 package org.ceskaexpedice.akubra.core.repository;
 
-import org.ceskaexpedice.akubra.RepositoryException;
 import org.apache.commons.lang3.tuple.Triple;
 import org.w3c.dom.Document;
 
@@ -31,20 +30,62 @@ import java.util.List;
  */
 public interface RepositoryObject {
 
-
     /**
      * Get path within repository
      * @return
      */
-    public String getPath();
+    String getPath();
+
+    /**
+     * Returns fullpath
+     * @return
+     * @throws
+     */
+    String getFullPath();
 
     /**
      * Return list of streams
      * @return
+     * @throws
+     */
+    List<RepositoryDatastream> getStreams();
+
+    /**
+     * Return stream of the object
+     * @param streamId Stream id
+     * @return
+     * @throws
+     */
+    RepositoryDatastream getStream(String streamId);
+
+    /**
+     * Returns true if the stream exists
+     * @param streamId
+     * @return
+     * @throws
+     */
+    boolean streamExists(String streamId);
+
+    /**
+     * Returns last modified flag
+     * @return
+     * @throws
+     */
+    Date getLastModified();
+
+    /**
+     * REturns metadata document
+     * @return
+     * @throws
+     */
+    Document getMetadata();
+
+    /**
+     * Returns foxml representation
+     * @return
      * @throws RepositoryException
      */
-    public List<RepositoryDatastream> getStreams() throws RepositoryException;
-
+    InputStream getFoxml();
 
     /**
      * Create new XML stream
@@ -52,9 +93,9 @@ public interface RepositoryObject {
      * @param mimeType Mimetype of the stream
      * @param input Binary content
      * @return
-     * @throws RepositoryException
+     * @throws
      */
-    public RepositoryDatastream createStream(String streamId, String mimeType, InputStream input) throws RepositoryException;
+    RepositoryDatastream createStream(String streamId, String mimeType, InputStream input);
 
     /**
      * Create new managed stream
@@ -62,124 +103,76 @@ public interface RepositoryObject {
      * @param mimeType Mimetype of the stream
      * @param input Binary content
      * @return
-     * @throws RepositoryException
+     * @throws
      */
-    public RepositoryDatastream createManagedStream(String streamId, String mimeType, InputStream input) throws RepositoryException;
-
+    RepositoryDatastream createManagedStream(String streamId, String mimeType, InputStream input);
 
     /**
      * Delete stream
      * @param streamId
-     * @throws RepositoryException
+     * @throws
      */
-    public void deleteStream(String streamId)  throws RepositoryException;
-
-    // update properties by sparql
-
-    /**
-     * Update sparql properties
-     * @param sparql
-     * @throws RepositoryException
-     */
-    public void updateSPARQL(String sparql) throws RepositoryException;
+    void deleteStream(String streamId);
 
     /**
      * Create redirect stream
      * @param streamId Stream id
      * @param url url
      * @return
-     * @throws RepositoryException
+     * @throws
      */
-    public RepositoryDatastream createRedirectedStream(String streamId, String url, String mimeType) throws RepositoryException;
-
-    /**
-     * Return stream of the object
-     * @param streamId Stream id
-     * @return
-     * @throws RepositoryException
-     */
-    public RepositoryDatastream getStream(String streamId) throws RepositoryException;
-
-    /**
-     * Returns true if the stream exists
-     * @param streamId
-     * @return
-     * @throws RepositoryException
-     */
-    public boolean streamExists(String streamId) throws RepositoryException;
-
-    /**
-     * Returns last modified flag
-     * @return
-     * @throws RepositoryException
-     */
-    public Date getLastModified() throws RepositoryException;
-
-    /**
-     * REturns metadata document
-     * @return
-     * @throws RepositoryException
-     */
-    public Document getMetadata() throws RepositoryException;
-
-    /**
-     * Returns foxml representation
-     * @return
-     * @throws RepositoryException
-     */
-    public InputStream getFoxml() throws RepositoryException;
-
+    RepositoryDatastream createRedirectedStream(String streamId, String url, String mimeType);
 
     /**
      * Add relation
      * @param relation Type of relation
      * @param namespace Namespace
      * @param targetRelation Target
-     * @throws RepositoryException
+     * @throws
      */
-    public void addRelation(String relation, String namespace, String targetRelation) throws RepositoryException;
+    void addRelation(String relation, String namespace, String targetRelation);
 
     /**
      * Add literal
      * @param relation Type of relation
      * @param namespace Namespace
      * @param value Literal value
-     * @throws RepositoryException
+     * @throws
      */
-    public void addLiteral(String relation, String namespace, String value) throws RepositoryException;
+    void addLiteral(String relation, String namespace, String value);
 
     /**
      * Remove relation
      * @param relation Type of relation
      * @param namespace Namespace
      * @param targetRelation Target
-     * @throws RepositoryException
+     * @throws
      */
-    public void removeRelation(String relation, String namespace, String targetRelation) throws RepositoryException;
+    void removeRelation(String relation, String namespace, String targetRelation);
 
     /**
      * Remove all relations by relation type and namespace
      * @param relation Type of relation
      * @param namespace Namespace
-     * @throws RepositoryException
+     * @throws
      */
-    public void removeRelationsByNameAndNamespace(String relation, String namespace) throws RepositoryException;
+    void removeRelationsByNameAndNamespace(String relation, String namespace);
 
     /**
      * Remove all relations by namespace
      * @param namespace Namespace
-     * @throws RepositoryException
+     * @throws
      */
-    public void removeRelationsByNamespace(String namespace) throws RepositoryException;
+    void removeRelationsByNamespace(String namespace);
 
     /**
      * Remove all literal
      * @param relation Relation type
      * @param namespace Namespace
      * @param value Literal value
-     * @throws RepositoryException
+     * @throws
      */
-    public void removeLiteral(String relation, String namespace, String value) throws RepositoryException;
+    void removeLiteral(String relation, String namespace, String value);
 
     /**
      * Returns true if relation identified by relation type, namespace and target exists
@@ -187,18 +180,18 @@ public interface RepositoryObject {
      * @param namespace Namespace
      * @param targetRelation Target relation
      * @return
-     * @throws RepositoryException
+     * @throws
      */
-    public boolean relationExists(String relation, String namespace, String targetRelation) throws RepositoryException;
+    boolean relationExists(String relation, String namespace, String targetRelation);
 
     /**
      * Returns true if relations identified by relationType and namespace exists
      * @param relation Relation type
      * @param namespace Namespace
      * @return
-     * @throws RepositoryException
+     * @throws
      */
-    public boolean relationsExists(String relation, String namespace) throws RepositoryException;
+    boolean relationsExists(String relation, String namespace);
 
     /**
      * Returns true if literal exists
@@ -206,45 +199,36 @@ public interface RepositoryObject {
      * @param namespace Namespace
      * @param value Value
      * @return
-     * @throws RepositoryException
+     * @throws
      */
-    public boolean  literalExists(String relation, String namespace, String value) throws RepositoryException;
+    boolean  literalExists(String relation, String namespace, String value);
 
     /**
      * Returns all relations identified by namespace
      * @param namespace Namespace
      * @return
-     * @throws RepositoryException
+     * @throws
      */
-    public List<Triple<String, String, String>> getRelations(String namespace) throws RepositoryException;
+    List<Triple<String, String, String>> getRelations(String namespace);
 
     /**
      * Returns all literals identified by namespace
      * @param namespace
      * @return
-     * @throws RepositoryException
+     * @throws
      */
-    public List<Triple<String, String, String>>  getLiterals(String namespace) throws RepositoryException;
-
+    List<Triple<String, String, String>>  getLiterals(String namespace);
 
     /**
      * Remove all relations; from RELS-EXT and properties
-     * @throws RepositoryException
+     * @throws
      */
-    public void removeRelationsAndRelsExt() throws RepositoryException;
-
-    /**
-     * Returns fullpath
-     * @return
-     * @throws RepositoryException
-     */
-    public String getFullPath() throws RepositoryException;
+    void removeRelationsAndRelsExt();
 
     /**
      * Method is able to rebuild processing index for current object
-     * @throws RepositoryException
+     * @throws
      */
-    public void rebuildProcessingIndex() throws RepositoryException;
-
+    void rebuildProcessingIndex();
    
 }

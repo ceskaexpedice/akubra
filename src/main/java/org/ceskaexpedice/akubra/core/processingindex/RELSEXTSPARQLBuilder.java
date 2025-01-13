@@ -1,6 +1,6 @@
 package org.ceskaexpedice.akubra.core.processingindex;
 
-import org.ceskaexpedice.akubra.RepositoryException;
+import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;

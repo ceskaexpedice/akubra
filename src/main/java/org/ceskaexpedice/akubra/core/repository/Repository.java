@@ -17,21 +17,21 @@
 
 package org.ceskaexpedice.akubra.core.repository;
 
-import com.qbizm.kramerius.imp.jaxb.DigitalObject;
-import org.ceskaexpedice.akubra.RepositoryException;
+import org.ceskaexpedice.jaxb.DigitalObject;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
 
 /**
- * The simple object model represents access to fedora 4 repository
- * It is basic tool for ingesting also it is basic point for FedoraAccess facade
+ * Represents access to Akubra repository
+ * It is basic tool for ingesting and it is basic point for RepositoryAccess facade
  * @author pavels
  */
 public interface Repository {
+
     /**
-     * Returns true if object objectExists and if it is raw kramerius object
+     * Returns true if object exists and if it is raw object
      * @param pid
      * @return
-     * @throws RepositoryException
+     * @throws
      */
     boolean  objectExists(String pid);
 
@@ -39,15 +39,15 @@ public interface Repository {
      * Returns object
      * @param pid
      * @return
-     * @throws RepositoryException
+     * @throws
      */
     RepositoryObject getObject(String pid);
 
     /**
-     * Creates an empty object or finds existing object
+     * Creates an empty object or finds an existing object
      * @param pid Identification of the object
      * @return
-     * @throws RepositoryException
+     * @throws
      */
     RepositoryObject createOrFindObject(String pid);
 
@@ -55,14 +55,14 @@ public interface Repository {
      * Ingest new digital object from the provided object representation
      * @param contents
      * @return
-     * @throws RepositoryException
+     * @throws
      */
     RepositoryObject ingestObject(DigitalObject contents);
 
     /**
      * Deletes object
      * @param pid
-     * @throws RepositoryException
+     * @throws
      */
     void deleteObject(String pid);
 
@@ -73,26 +73,26 @@ public interface Repository {
      * @param deleteRelationsWithThisAsTarget if true, also relations with this object as a target will be removed from Resource index.
      *                                         Which might not be desirable, for example if you want to replace the object with newer version, but keep relations pointing at it.
      *
-     * @throws RepositoryException
+     * @throws
      */
     void deleteObject(String pid, boolean deleteDataOfManagedDatastreams, boolean deleteRelationsWithThisAsTarget);
 
     /**
      * Commits current transaction
-     * @throws RepositoryException
+     * @throws
      */
     void commitTransaction();
 
     /**
      * Rolls back current transaction
-     * @throws RepositoryException
+     * @throws
      */
     void rollbackTransaction();
 
     /**
      * Returns processing index feeder
      * @return
-     * @throws RepositoryException
+     * @throws
      */
     ProcessingIndexFeeder getProcessingIndexFeeder();
 

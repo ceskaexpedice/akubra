@@ -17,11 +17,11 @@
 
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import com.qbizm.kramerius.imp.jaxb.DigitalObject;
-import com.qbizm.kramerius.imp.jaxb.ObjectPropertiesType;
-import com.qbizm.kramerius.imp.jaxb.PropertyType;
+import org.ceskaexpedice.jaxb.DigitalObject;
+import org.ceskaexpedice.jaxb.ObjectPropertiesType;
+import org.ceskaexpedice.jaxb.PropertyType;
 import org.ceskaexpedice.akubra.core.repository.Repository;
-import org.ceskaexpedice.akubra.RepositoryException;
+import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
 import org.apache.solr.client.solrj.SolrServerException;

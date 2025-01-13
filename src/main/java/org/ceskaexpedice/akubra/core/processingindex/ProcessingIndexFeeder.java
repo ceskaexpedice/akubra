@@ -2,7 +2,7 @@ package org.ceskaexpedice.akubra.core.processingindex;
 
 import cz.incad.kramerius.utils.XMLUtils;
 import org.ceskaexpedice.akubra.FedoraNamespaces;
-import org.ceskaexpedice.akubra.RepositoryException;
+import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import org.ceskaexpedice.akubra.utils.FedoraUtils;
 import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
