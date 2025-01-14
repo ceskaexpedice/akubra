@@ -1,4 +1,4 @@
-package cz.incad.kramerius.utils;
+package org.ceskaexpedice.akubra.utils;
 
 import java.text.FieldPosition;
 import java.text.ParseException;

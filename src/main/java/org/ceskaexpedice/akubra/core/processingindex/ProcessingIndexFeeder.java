@@ -1,11 +1,10 @@
 package org.ceskaexpedice.akubra.core.processingindex;
 
-import cz.incad.kramerius.utils.XMLUtils;
-import org.ceskaexpedice.akubra.FedoraNamespaces;
+import org.ceskaexpedice.akubra.utils.XMLUtils;
+import org.ceskaexpedice.akubra.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
-import org.ceskaexpedice.akubra.utils.FedoraUtils;
-import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
+import org.ceskaexpedice.akubra.utils.RepositoryUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -275,9 +274,9 @@ public class ProcessingIndexFeeder {
     private void processRELSEXTRelationAndFeedProcessingIndex(RepositoryObject repositoryObject, String object, String localName) {
         if (localName.equals("hasModel")) {
             try {
-                boolean dcStreamExists = repositoryObject.streamExists(FedoraUtils.DC_STREAM);
+                boolean dcStreamExists = repositoryObject.streamExists(RepositoryUtils.DC_STREAM);
                 // TODO: Biblio mods ukladat jinam ??
-                boolean modsStreamExists = repositoryObject.streamExists(FedoraUtils.BIBLIO_MODS_STREAM);
+                boolean modsStreamExists = repositoryObject.streamExists(RepositoryUtils.BIBLIO_MODS_STREAM);
                 if (dcStreamExists || modsStreamExists) {
                     try {
                         //LOGGER.info("DC or BIBLIOMODS exists");
@@ -321,27 +320,27 @@ public class ProcessingIndexFeeder {
     }
 
     private void indexDescription(String pid, String model, String title, ProcessingIndexFeeder.TitleType ttype) throws IOException, SolrServerException {
-        this.feedDescriptionDocument(pid, model, title.trim(), RepositoryUtils.getAkubraInternalId(pid), new Date(), ttype);
+        this.feedDescriptionDocument(pid, model, title.trim(), org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.getAkubraInternalId(pid), new Date(), ttype);
     }
 
     private void indexDescription(String pid, String model, String title) throws IOException, SolrServerException {
-        this.feedDescriptionDocument(pid, model, title.trim(), RepositoryUtils.getAkubraInternalId(pid), new Date());
+        this.feedDescriptionDocument(pid, model, title.trim(), org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.getAkubraInternalId(pid), new Date());
     }
 
     private List<String> dcTitle(RepositoryObject repositoryObject) throws RepositoryException, ParserConfigurationException, SAXException, IOException {
-        InputStream stream = repositoryObject.getStream(FedoraUtils.DC_STREAM).getContent();
-        Element title = XMLUtils.findElement(XMLUtils.parseDocument(stream, true).getDocumentElement(), "title", FedoraNamespaces.DC_NAMESPACE_URI);
+        InputStream stream = repositoryObject.getStream(RepositoryUtils.DC_STREAM).getContent();
+        Element title = XMLUtils.findElement(XMLUtils.parseDocument(stream, true).getDocumentElement(), "title", RepositoryNamespaces.DC_NAMESPACE_URI);
         return title != null ? Arrays.asList(title.getTextContent()) : new ArrayList<>();
     }
 
     private List<String> modsTitle(RepositoryObject repositoryObject, String lang) throws RepositoryException, ParserConfigurationException, SAXException, IOException {
-        InputStream stream = repositoryObject.getStream(FedoraUtils.BIBLIO_MODS_STREAM).getContent();
+        InputStream stream = repositoryObject.getStream(RepositoryUtils.BIBLIO_MODS_STREAM).getContent();
         Element docElement = XMLUtils.parseDocument(stream, true).getDocumentElement();
 
         List<Element> elements = XMLUtils.getElementsRecursive(docElement, new XMLUtils.ElementsFilter() {
             @Override
             public boolean acceptElement(Element element) {
-                if (element.getNamespaceURI().equals(FedoraNamespaces.BIBILO_MODS_URI)) {
+                if (element.getNamespaceURI().equals(RepositoryNamespaces.BIBILO_MODS_URI)) {
                     if (element.getLocalName().equals("title") && element.hasAttribute("lang") && element.getAttribute("lang").equals("cze")) {
                         return true;
                     }
@@ -355,7 +354,7 @@ public class ProcessingIndexFeeder {
             elements = XMLUtils.getElementsRecursive(docElement, new XMLUtils.ElementsFilter() {
                 @Override
                 public boolean acceptElement(Element element) {
-                    if (element.getNamespaceURI().equals(FedoraNamespaces.BIBILO_MODS_URI)) {
+                    if (element.getNamespaceURI().equals(RepositoryNamespaces.BIBILO_MODS_URI)) {
                         // TODO: Change it
                         if (element.getLocalName().equals("title")) {
                             return true;

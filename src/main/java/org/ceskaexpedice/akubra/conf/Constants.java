@@ -1,4 +1,4 @@
-package cz.incad.kramerius;
+package org.ceskaexpedice.akubra.conf;
 
 import java.io.File;
 

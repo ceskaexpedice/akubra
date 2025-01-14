@@ -4,7 +4,7 @@ package org.ceskaexpedice.akubra;
  * Namespaces in fedora
  * @author pavels
  */
-public interface FedoraNamespaces {
+public interface RepositoryNamespaces {
     /**
      * RDF namespace
      */

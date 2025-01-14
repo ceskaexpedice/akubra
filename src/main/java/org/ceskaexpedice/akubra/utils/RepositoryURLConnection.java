@@ -7,16 +7,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.StringTokenizer;
 
-public class FedoraURLConnection extends URLConnection {
+public class RepositoryURLConnection extends URLConnection {
 
     public static final String IMG_FULL = "IMG_FULL";
     public static final String IMG_THUMB = "IMG_THUMB";
 
     private RepositoryAccess fedoraAccess;
 
-    FedoraURLConnection(URL url, RepositoryAccess fedoraAccess) {
+    RepositoryURLConnection(URL url, RepositoryAccess fedoraAccess) {
         super(url);
         this.fedoraAccess = fedoraAccess;
     }

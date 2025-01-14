@@ -6,7 +6,7 @@ import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.config.XmlClientConfigBuilder;
 import com.hazelcast.config.GroupConfig;
 import com.hazelcast.core.*;
-import cz.incad.kramerius.utils.conf.KConfiguration;
+import org.ceskaexpedice.akubra.conf.Configuration;
 import org.akubraproject.BlobStore;
 import org.akubraproject.fs.FSBlobStore;
 import org.akubraproject.map.IdMapper;
@@ -49,7 +49,7 @@ import java.util.logging.Logger;
 
 public class AkubraDOManager {
     private static final Logger LOGGER = Logger.getLogger(AkubraDOManager.class.getName());
-    private KConfiguration configuration = KConfiguration.getInstance();
+    private Configuration configuration = Configuration.getInstance();
     private ILowlevelStorage storage;
 
     private static HazelcastInstance hzInstance;
@@ -73,7 +73,8 @@ public class AkubraDOManager {
             throw new RepositoryException(e);
         }
         ClientConfig config = null;
-        File configFile = KConfiguration.getInstance().findConfigFile("hazelcast.clientconfig");
+        /* TODO
+        File configFile = Configuration.getInstance().findConfigFile("hazelcast.clientconfig");
         if (configFile != null) {
             try (FileInputStream configStream = new FileInputStream(configFile)) {
                 config = new XmlClientConfigBuilder(configStream).build();
@@ -81,14 +82,25 @@ public class AkubraDOManager {
                 LOGGER.warning("Could not load Hazelcast config file " + configFile + ": " + ex);
             }
         }
+
+         */
+
         if (config == null) {
             config = new ClientConfig();
-            config.setInstanceName(KConfiguration.getInstance().getConfiguration().getString("hazelcast.instance"));
+
+            // TODO config.setInstanceName(Configuration.getInstance().getConfiguration().getString("hazelcast.instance"));
+            config.setInstanceName("akubrasync");
+
             GroupConfig groupConfig = config.getGroupConfig();
-            groupConfig.setName(KConfiguration.getInstance().getConfiguration().getString("hazelcast.user"));
+
+            // TODO groupConfig.setName(Configuration.getInstance().getConfiguration().getString("hazelcast.user"));
+            groupConfig.setName("dev");
         }
         hzInstance = HazelcastClient.newHazelcastClient(config);
         lockService = DistributedLockService.newHazelcastLockService(hzInstance);
+
+
+        /*
         cacheInvalidator = hzInstance.getTopic("cacheInvalidator");
         cacheInvalidator.addMessageListener(new MessageListener<String>() {
             @Override
@@ -98,6 +110,8 @@ public class AkubraDOManager {
                 }
             }
         });
+
+         */
     }
 
     public AkubraDOManager(CacheManager cacheManager) throws IOException {
@@ -119,11 +133,7 @@ public class AkubraDOManager {
     }
 
     private ILowlevelStorage initLowLevelStorage() throws Exception {
-        if (configuration.getConfiguration().getBoolean("legacyfs", false)) {
-            return createDefaultLowLevelStorage();
-        } else {
-            return createAkubraLowLevelStorage();
-        }
+        return createAkubraLowLevelStorage();
     }
 
     private AkubraLowlevelStorage createAkubraLowLevelStorage() throws Exception {
@@ -137,6 +147,7 @@ public class AkubraDOManager {
         return retval;
     }
 
+    /*
     private DefaultLowlevelStorage createDefaultLowLevelStorage() throws Exception {
         Map<String, Object> conf = new HashMap<>();
         conf.put("path_algorithm", configuration.getProperty("path_algorithm"));
@@ -149,6 +160,9 @@ public class AkubraDOManager {
         return new DefaultLowlevelStorage(conf);
     }
 
+     */
+
+    /*
     private ConnectionPool createConnectionPool() throws Exception {
         return new ConnectionPool(
                 configuration.getProperty("legacyfs.jdbcDriverClass"),
@@ -169,6 +183,8 @@ public class AkubraDOManager {
                 configuration.getConfiguration().getBoolean("legacyfs.testWhileIdle"),
                 configuration.getConfiguration().getByte("legacyfs.whenExhaustedAction"));
     }
+
+     */
 
 
     /**

@@ -4,39 +4,27 @@
  */
 package org.ceskaexpedice.akubra.utils;
 
-import cz.incad.kramerius.utils.SafeSimpleDateFormat;
-import cz.incad.kramerius.utils.XMLUtils;
-import cz.incad.kramerius.utils.conf.KConfiguration;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
-
-import javax.xml.xpath.*;
-import java.io.InputStream;
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 
-public class FedoraUtils {
+public class RepositoryUtils {
 
-    private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(FedoraUtils.class.getName());
+    private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(RepositoryUtils.class.getName());
     public static final String RELS_EXT_STREAM = "RELS-EXT";
-    static final String IMG_THUMB_STREAM = "IMG_THUMB";
-    static final String IMG_FULL_STREAM = "IMG_FULL";
-    static final String IMG_PREVIEW_STREAM = "IMG_PREVIEW";
-    static final String ALTO_STREAM = "ALTO";
+    //static final String IMG_THUMB_STREAM = "IMG_THUMB";
+    //static final String IMG_FULL_STREAM = "IMG_FULL";
+    //static final String IMG_PREVIEW_STREAM = "IMG_PREVIEW";
+    //static final String ALTO_STREAM = "ALTO";
     public static final String DC_STREAM = "DC";
     public static final String BIBLIO_MODS_STREAM = "BIBLIO_MODS";
-    static final String TEXT_OCR_STREAM = "TEXT_OCR";
-    static final String MP3_STREAM = "MP3";
-    static final String OGG_STREAM = "OGG";
-    static final String WAV_STREAM = "WAV";
+    //static final String TEXT_OCR_STREAM = "TEXT_OCR";
+    //static final String MP3_STREAM = "MP3";
+    //static final String OGG_STREAM = "OGG";
+    //static final String WAV_STREAM = "WAV";
 
     static final String POLICY_STREAM = "POLICY";
 
+    /*
     static List<String> DEFAULT_SECURED_STREAM = new ArrayList<String>() {{
 
         add(IMG_FULL_STREAM);
@@ -53,13 +41,19 @@ public class FedoraUtils {
 
     }};
 
+     */
+
+    /* TODO
     static List<String> getSecuredStreams() {
-        String[] securedStreamsExtension = KConfiguration.getInstance().getSecuredAditionalStreams();
+        String[] securedStreamsExtension = Configuration.getInstance().getSecuredAditionalStreams();
         List<String> retvals = new ArrayList<>(DEFAULT_SECURED_STREAM);
         Arrays.stream(securedStreamsExtension).forEach(retvals::add);
         return retvals;
     }
 
+     */
+
+    /*
     static List<String> INTERNAL_STREAM = new ArrayList<String>() {{
         add(RELS_EXT_STREAM);
         add(IMG_THUMB_STREAM);
@@ -75,6 +69,8 @@ public class FedoraUtils {
         add(MP3_STREAM);
         add(WAV_STREAM);
     }};
+
+     */
 
     /**
      * Stream for fedora internal use
@@ -166,10 +162,13 @@ public class FedoraUtils {
      *
      * @return
      */
+    /*
     private static String getDjVuImage(String pid) {
-        String imagePath = KConfiguration.getInstance().getFedoraHost() + "/get/" + pid + "/" + IMG_FULL_STREAM;
+        String imagePath = Configuration.getInstance().getFedoraHost() + "/get/" + pid + "/" + IMG_FULL_STREAM;
         return imagePath;
     }
+
+     */
 
     /**
      * Returns path to fedora stream
@@ -178,20 +177,26 @@ public class FedoraUtils {
      * @param stream Stream ID
      * @return
      */
+    /*
     private static String getFedoraStreamPath(String pid, String stream) {
-        String imagePath = KConfiguration.getInstance().getFedoraHost() + "/get/" + pid + "/" + stream;
+        String imagePath = Configuration.getInstance().getFedoraHost() + "/get/" + pid + "/" + stream;
         return imagePath;
     }
+
+     */
 
     /**
      * Returns path to fedora description
      *
      * @return
      */
+    /*
     private static String getFedoraDescribe() {
-        String describePath = KConfiguration.getInstance().getFedoraHost() + "/describe?xml=true";
+        String describePath = Configuration.getInstance().getFedoraHost() + "/describe?xml=true";
         return describePath;
     }
+
+     */
 
 
     /**
@@ -199,6 +204,7 @@ public class FedoraUtils {
      *
      * @param profileDoc Profile document
      */
+    /*
     private static boolean isFedoraExternalStream(Document profileDoc) throws XPathExpressionException {
         XPathFactory factory = XPathFactory.newInstance();
         XPath xpath = factory.newXPath();
@@ -213,6 +219,9 @@ public class FedoraUtils {
         }
     }
 
+     */
+
+    /*
     private static String getLocation(Document profileDoc) throws XPathExpressionException {
         XPathFactory factory = XPathFactory.newInstance();
         XPath xpath = factory.newXPath();
@@ -227,23 +236,27 @@ public class FedoraUtils {
         }
     }
 
+     */
+
     /**
      * Returns thumb stream
      *
      * @return
      */
+    /*
     private static String getThumbnailFromFedora(String pid) {
-        String imagePath = KConfiguration.getInstance().getFedoraHost() + "/get/" + pid + "/" + IMG_THUMB_STREAM;
+        String imagePath = Configuration.getInstance().getFedoraHost() + "/get/" + pid + "/" + IMG_THUMB_STREAM;
         return imagePath;
-    }
+    }*/
 
     /**
      * Returns list of fedora streams
      *
      * @return
      */
+    /*
     private static String getFedoraDatastreamsList(String pid) {
-        String datastreamsListPath = KConfiguration.getInstance().getFedoraHost() + "/objects/" + pid + "/datastreams?format=xml";
+        String datastreamsListPath = Configuration.getInstance().getFedoraHost() + "/objects/" + pid + "/datastreams?format=xml";
         return datastreamsListPath;
     }
 
@@ -251,6 +264,8 @@ public class FedoraUtils {
         return fedoraVersion.substring(0, 3).replace('.', '_');
     }
 
+     */
+/*
     private static final DateFormat[] XSD_DATE_FORMATS = {
             new SafeSimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'S'Z'"),
             new SafeSimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),
@@ -258,5 +273,7 @@ public class FedoraUtils {
             new SafeSimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"),
             new SafeSimpleDateFormat("yyyy-MM-dd'Z'"),
             new SafeSimpleDateFormat("yyyy-MM-dd")};
+
+ */
 
 }

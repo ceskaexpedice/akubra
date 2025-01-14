@@ -19,13 +19,13 @@ package org.ceskaexpedice.akubra;
 import javax.xml.namespace.NamespaceContext;
 import java.util.*;
 
-import static org.ceskaexpedice.akubra.FedoraNamespaces.*;
+import static org.ceskaexpedice.akubra.RepositoryNamespaces.*;
 
 /**
  * Fedora XML namespaces
  * @author pavels
  */
-public class FedoraNamespaceContext implements NamespaceContext {
+public class RepositoryNamespaceContext implements NamespaceContext {
 
     private static final Map<String, String> MAP_PREFIX2URI = new IdentityHashMap<String, String>();
     private static final Map<String, String> MAP_URI2PREFIX = new IdentityHashMap<String, String>();

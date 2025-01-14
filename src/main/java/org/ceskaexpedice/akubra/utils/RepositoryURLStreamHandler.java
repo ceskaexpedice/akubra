@@ -8,7 +8,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
-public class Handler extends URLStreamHandler {
+public class RepositoryURLStreamHandler extends URLStreamHandler {
 
     private RepositoryAccess fedoraAccess;
 
@@ -21,7 +21,7 @@ public class Handler extends URLStreamHandler {
 
     @Override
     protected URLConnection openConnection(URL u) throws IOException {
-        return new FedoraURLConnection(u, fedoraAccess);
+        return new RepositoryURLConnection(u, fedoraAccess);
     }
 
     @Override

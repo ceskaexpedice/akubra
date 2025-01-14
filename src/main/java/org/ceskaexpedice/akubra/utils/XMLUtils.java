@@ -1,4 +1,4 @@
-package cz.incad.kramerius.utils;
+package org.ceskaexpedice.akubra.utils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

@@ -17,13 +17,13 @@
 package org.ceskaexpedice.akubra.core.repository.impl;
 
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
-import org.ceskaexpedice.akubra.FedoraNamespaces;
+import org.ceskaexpedice.akubra.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
-import cz.incad.kramerius.utils.StringUtils;
-import cz.incad.kramerius.utils.XMLUtils;
-import org.ceskaexpedice.akubra.utils.FedoraUtils;
+import org.ceskaexpedice.akubra.utils.StringUtils;
+import org.ceskaexpedice.akubra.utils.XMLUtils;
+import org.ceskaexpedice.akubra.utils.RepositoryUtils;
 import org.ceskaexpedice.akubra.utils.pid.PIDParser;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
@@ -100,9 +100,9 @@ class RepositoryObjectImpl implements RepositoryObject {
         List<DatastreamVersionType> datastreamVersion = datastreamType.getDatastreamVersion();
         DatastreamVersionType datastreamVersionType = new DatastreamVersionType();
         datastreamVersionType.setID(streamId + ".0");
-        datastreamVersionType.setCREATED(RepositoryUtils.getCurrentXMLGregorianCalendar());
+        datastreamVersionType.setCREATED(org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.getCurrentXMLGregorianCalendar());
         datastreamVersionType.setMIMETYPE(mimeType);
-        String formatUri = FedoraUtils.getFormatUriForDS(streamId);
+        String formatUri = RepositoryUtils.getFormatUriForDS(streamId);
         if (formatUri != null) {
             datastreamVersionType.setFORMATURI(formatUri);
         }
@@ -141,7 +141,7 @@ class RepositoryObjectImpl implements RepositoryObject {
     public void deleteStream(String streamId) throws RepositoryException {
         try {
             manager.deleteStream(getPid(), streamId);
-            if (streamId.equals(FedoraUtils.RELS_EXT_STREAM)) {
+            if (streamId.equals(RepositoryUtils.RELS_EXT_STREAM)) {
                 try {
                     this.feeder.deleteByRelationsForPid(this.getPid());
                 } catch (Throwable th) {
@@ -165,7 +165,7 @@ class RepositoryObjectImpl implements RepositoryObject {
 
         try {
             manager.commit(digitalObject, streamId);
-            if (streamId.equals(FedoraUtils.RELS_EXT_STREAM)) {
+            if (streamId.equals(RepositoryUtils.RELS_EXT_STREAM)) {
                 try {
                     // process rels-ext and create all children and relations
                     this.feeder.deleteByRelationsForPid(getPid());
@@ -224,7 +224,7 @@ class RepositoryObjectImpl implements RepositoryObject {
 
     @Override
     public boolean streamExists(String streamId) throws RepositoryException {
-        return RepositoryUtils.streamExists(digitalObject, streamId);
+        return org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.streamExists(digitalObject, streamId);
     }
 
     @Override
@@ -241,7 +241,7 @@ class RepositoryObjectImpl implements RepositoryObject {
     @Override
     public Date getLastModified() throws RepositoryException {
         try {
-            return RepositoryUtils.getLastModified(digitalObject);
+            return org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.getLastModified(digitalObject);
         } catch (IOException e) {
             throw new RepositoryException(e);
         }
@@ -266,11 +266,11 @@ class RepositoryObjectImpl implements RepositoryObject {
     @Override
     public void addRelation(String relation, String namespace, String targetRelation) throws RepositoryException {
         try {
-            RepositoryDatastream stream = this.getStream(FedoraUtils.RELS_EXT_STREAM);
+            RepositoryDatastream stream = this.getStream(RepositoryUtils.RELS_EXT_STREAM);
             Document document = XMLUtils.parseDocument(stream.getContent(), true);
-            Element rdfDesc = XMLUtils.findElement(document.getDocumentElement(), RDF_DESCRIPTION_ELEMENT, FedoraNamespaces.RDF_NAMESPACE_URI);
+            Element rdfDesc = XMLUtils.findElement(document.getDocumentElement(), RDF_DESCRIPTION_ELEMENT, RepositoryNamespaces.RDF_NAMESPACE_URI);
             Element subElm = document.createElementNS(namespace, relation);
-            subElm.setAttributeNS(FedoraNamespaces.RDF_NAMESPACE_URI, "rdf:resource", targetRelation);
+            subElm.setAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "rdf:resource", targetRelation);
             rdfDesc.appendChild(subElm);
             changeRelations(document);
         } catch (ParserConfigurationException e) {
@@ -288,17 +288,17 @@ class RepositoryObjectImpl implements RepositoryObject {
         StringWriter stringWriter = new StringWriter();
         XMLUtils.print(document, stringWriter);
 
-        this.deleteStream(FedoraUtils.RELS_EXT_STREAM);
-        this.createStream(FedoraUtils.RELS_EXT_STREAM, "text/xml", new ByteArrayInputStream(stringWriter.toString().getBytes(Charset.forName("UTF-8"))));
+        this.deleteStream(RepositoryUtils.RELS_EXT_STREAM);
+        this.createStream(RepositoryUtils.RELS_EXT_STREAM, "text/xml", new ByteArrayInputStream(stringWriter.toString().getBytes(Charset.forName("UTF-8"))));
     }
 
     @Override
     public void addLiteral(String relation, String namespace, String value) throws RepositoryException {
         // only  RELS_EXT
         try {
-            RepositoryDatastream stream = this.getStream(FedoraUtils.RELS_EXT_STREAM);
+            RepositoryDatastream stream = this.getStream(RepositoryUtils.RELS_EXT_STREAM);
             Document document = XMLUtils.parseDocument(stream.getContent(), true);
-            Element rdfDesc = XMLUtils.findElement(document.getDocumentElement(), RDF_DESCRIPTION_ELEMENT, FedoraNamespaces.RDF_NAMESPACE_URI);
+            Element rdfDesc = XMLUtils.findElement(document.getDocumentElement(), RDF_DESCRIPTION_ELEMENT, RepositoryNamespaces.RDF_NAMESPACE_URI);
             Element subElm = document.createElementNS(namespace, relation);
             subElm.setTextContent(value);
             rdfDesc.appendChild(subElm);
@@ -318,12 +318,12 @@ class RepositoryObjectImpl implements RepositoryObject {
     public void removeRelation(String relation, String namespace, String targetRelation) throws RepositoryException {
         try {
             final String targetPID = targetRelation.startsWith(PIDParser.INFO_FEDORA_PREFIX) ? targetRelation : PIDParser.INFO_FEDORA_PREFIX + targetRelation;
-            RepositoryDatastream stream = this.getStream(FedoraUtils.RELS_EXT_STREAM);
+            RepositoryDatastream stream = this.getStream(RepositoryUtils.RELS_EXT_STREAM);
             Document document = XMLUtils.parseDocument(stream.getContent(), true);
             Element relationElement = XMLUtils.findElement(document.getDocumentElement(), (element) -> {
                 String elmNamespace = element.getNamespaceURI();
                 String elmLocalname = element.getLocalName();
-                String elmResourceAttribute = element.getAttributeNS(FedoraNamespaces.RDF_NAMESPACE_URI, "resource");
+                String elmResourceAttribute = element.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
                 return (elmNamespace.equals(namespace)) && (elmLocalname.equals(relation)) && elmResourceAttribute.equals(targetPID);
             });
 
@@ -350,16 +350,16 @@ class RepositoryObjectImpl implements RepositoryObject {
 
     public List<Triple<String, String, String>> getRelations(String namespace) throws RepositoryException {
         try {
-            Document metadata = XMLUtils.parseDocument(getStream(FedoraUtils.RELS_EXT_STREAM).getContent(), true);
+            Document metadata = XMLUtils.parseDocument(getStream(RepositoryUtils.RELS_EXT_STREAM).getContent(), true);
             List<Triple<String, String, String>> retvals = XMLUtils.getElementsRecursive(metadata.getDocumentElement(), (element) -> {
                 String elmNamespace = element.getNamespaceURI();
                 if (namespace != null) {
-                    return namespace.equals(elmNamespace) && element.hasAttributeNS(FedoraNamespaces.RDF_NAMESPACE_URI, "resource");
+                    return namespace.equals(elmNamespace) && element.hasAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
                 } else {
-                    return element.hasAttributeNS(FedoraNamespaces.RDF_NAMESPACE_URI, "resource");
+                    return element.hasAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
                 }
             }).stream().map((elm) -> {
-                String resource = elm.getAttributeNS(FedoraNamespaces.RDF_NAMESPACE_URI, "resource");
+                String resource = elm.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
                 if (resource.startsWith(PIDParser.INFO_FEDORA_PREFIX)) {
                     resource = resource.substring(PIDParser.INFO_FEDORA_PREFIX.length());
                 }
@@ -381,14 +381,14 @@ class RepositoryObjectImpl implements RepositoryObject {
 
     public List<Triple<String, String, String>> getLiterals(String namespace) throws RepositoryException {
         try {
-            Document metadata = XMLUtils.parseDocument(getStream(FedoraUtils.RELS_EXT_STREAM).getContent(), true);
+            Document metadata = XMLUtils.parseDocument(getStream(RepositoryUtils.RELS_EXT_STREAM).getContent(), true);
 
             List<Triple<String, String, String>> retvals = XMLUtils.getElementsRecursive(metadata.getDocumentElement(), (element) -> {
                 String elmNamespace = element.getNamespaceURI();
                 if (namespace != null) {
-                    return namespace.equals(elmNamespace) && !element.hasAttributeNS(FedoraNamespaces.RDF_NAMESPACE_URI, "resource") && StringUtils.isAnyString(element.getTextContent());
+                    return namespace.equals(elmNamespace) && !element.hasAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource") && StringUtils.isAnyString(element.getTextContent());
                 } else {
-                    return !element.hasAttributeNS(FedoraNamespaces.RDF_NAMESPACE_URI, "resource") && StringUtils.isAnyString(element.getTextContent());
+                    return !element.hasAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource") && StringUtils.isAnyString(element.getTextContent());
                 }
             }).stream().filter((elm) -> {
                 return !elm.getLocalName().equals(RDF_ELEMENT) && !elm.getLocalName().equals(RDF_DESCRIPTION_ELEMENT);
@@ -411,7 +411,7 @@ class RepositoryObjectImpl implements RepositoryObject {
 
     private Element findRelationElement(String relation, String namespace, String targetRelation) throws RepositoryException {
         final String targetPID = targetRelation.startsWith(PIDParser.INFO_FEDORA_PREFIX) ? targetRelation : PIDParser.INFO_FEDORA_PREFIX + targetRelation;
-        RepositoryDatastream stream = this.getStream(FedoraUtils.RELS_EXT_STREAM);
+        RepositoryDatastream stream = this.getStream(RepositoryUtils.RELS_EXT_STREAM);
         if (stream == null) {
             throw new RepositoryException("FOXML object " + this.getPid() + "does not have RELS-EXT stream ");
         }
@@ -428,7 +428,7 @@ class RepositoryObjectImpl implements RepositoryObject {
         Element relationElement = XMLUtils.findElement(document.getDocumentElement(), (element) -> {
             String elmNamespace = element.getNamespaceURI();
             String elmLocalname = element.getLocalName();
-            String elmResourceAttribute = element.getAttributeNS(FedoraNamespaces.RDF_NAMESPACE_URI, "resource");
+            String elmResourceAttribute = element.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
             return (elmNamespace.equals(namespace)) && (elmLocalname.equals(relation)) && elmResourceAttribute.equals(targetPID);
         });
         return relationElement;
@@ -444,7 +444,7 @@ class RepositoryObjectImpl implements RepositoryObject {
     @Override
     public boolean literalExists(String relation, String namespace, String value) throws RepositoryException {
         try {
-            Document metadata = XMLUtils.parseDocument(getStream(FedoraUtils.RELS_EXT_STREAM).getContent(), true);
+            Document metadata = XMLUtils.parseDocument(getStream(RepositoryUtils.RELS_EXT_STREAM).getContent(), true);
             Element foundElement = XMLUtils.findElement(metadata.getDocumentElement(), (element) -> {
                 String elmNamespace = element.getNamespaceURI();
                 String elmName = element.getLocalName();
@@ -471,10 +471,10 @@ class RepositoryObjectImpl implements RepositoryObject {
 
         // Element subElm = document.createElementNS(namespace, relation);
         try {
-            RepositoryDatastream stream = this.getStream(FedoraUtils.RELS_EXT_STREAM);
+            RepositoryDatastream stream = this.getStream(RepositoryUtils.RELS_EXT_STREAM);
             Document document = XMLUtils.parseDocument(stream.getContent(), true);
 
-            Element rdfDesc = XMLUtils.findElement(document.getDocumentElement(), RDF_DESCRIPTION_ELEMENT, FedoraNamespaces.RDF_NAMESPACE_URI);
+            Element rdfDesc = XMLUtils.findElement(document.getDocumentElement(), RDF_DESCRIPTION_ELEMENT, RepositoryNamespaces.RDF_NAMESPACE_URI);
 
             List<Element> descs = XMLUtils.getElementsRecursive(rdfDesc, (element) -> {
                 String elmNamespace = element.getNamespaceURI();
@@ -508,7 +508,7 @@ class RepositoryObjectImpl implements RepositoryObject {
     @Override
     public void removeRelationsByNamespace(String namespace) throws RepositoryException {
         try {
-            RepositoryDatastream stream = this.getStream(FedoraUtils.RELS_EXT_STREAM);
+            RepositoryDatastream stream = this.getStream(RepositoryUtils.RELS_EXT_STREAM);
             Document document = XMLUtils.parseDocument(stream.getContent(), true);
             List<Element> relationElements = XMLUtils.getElementsRecursive(document.getDocumentElement(), (element) -> {
                 String elmNamespace = element.getNamespaceURI();
@@ -540,7 +540,7 @@ class RepositoryObjectImpl implements RepositoryObject {
     @Override
     public void removeRelationsByNameAndNamespace(String relation, String namespace) throws RepositoryException {
         try {
-            RepositoryDatastream stream = this.getStream(FedoraUtils.RELS_EXT_STREAM);
+            RepositoryDatastream stream = this.getStream(RepositoryUtils.RELS_EXT_STREAM);
             Document document = XMLUtils.parseDocument(stream.getContent(), true);
             List<Element> relationElements = XMLUtils.getElementsRecursive(document.getDocumentElement(), (element) -> {
                 String elmNamespace = element.getNamespaceURI();
@@ -572,7 +572,7 @@ class RepositoryObjectImpl implements RepositoryObject {
     @Override
     public boolean relationsExists(String relation, String namespace) throws RepositoryException {
         try {
-            Document metadata = XMLUtils.parseDocument(this.getStream(FedoraUtils.RELS_EXT_STREAM).getContent(), true);
+            Document metadata = XMLUtils.parseDocument(this.getStream(RepositoryUtils.RELS_EXT_STREAM).getContent(), true);
             Element foundElement = XMLUtils.findElement(metadata.getDocumentElement(), (element) -> {
                 String elmNamespace = element.getNamespaceURI();
                 String elmName = element.getLocalName();
@@ -590,10 +590,10 @@ class RepositoryObjectImpl implements RepositoryObject {
 
     @Override
     public void removeRelationsAndRelsExt() throws RepositoryException {
-        if (this.streamExists(FedoraUtils.RELS_EXT_STREAM)) {
-            this.removeRelationsByNamespace(FedoraNamespaces.KRAMERIUS_URI);
-            this.removeRelationsByNameAndNamespace("isMemberOfCollection", FedoraNamespaces.RDF_NAMESPACE_URI);
-            this.deleteStream(FedoraUtils.RELS_EXT_STREAM);
+        if (this.streamExists(RepositoryUtils.RELS_EXT_STREAM)) {
+            this.removeRelationsByNamespace(RepositoryNamespaces.KRAMERIUS_URI);
+            this.removeRelationsByNameAndNamespace("isMemberOfCollection", RepositoryNamespaces.RDF_NAMESPACE_URI);
+            this.deleteStream(RepositoryUtils.RELS_EXT_STREAM);
         }
     }
 
@@ -604,7 +604,7 @@ class RepositoryObjectImpl implements RepositoryObject {
 
     @Override
     public void rebuildProcessingIndex() throws RepositoryException {
-        RepositoryDatastream stream = this.getStream(FedoraUtils.RELS_EXT_STREAM);
+        RepositoryDatastream stream = this.getStream(RepositoryUtils.RELS_EXT_STREAM);
         InputStream content = stream.getContent();
         feeder.rebuildProcessingIndex(this, content);
     }

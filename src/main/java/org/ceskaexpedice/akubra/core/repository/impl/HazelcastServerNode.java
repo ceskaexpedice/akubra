@@ -7,7 +7,7 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
-import cz.incad.kramerius.utils.conf.KConfiguration;
+import org.ceskaexpedice.akubra.conf.Configuration;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -20,10 +20,11 @@ public class HazelcastServerNode implements ServletContextListener {
     private static final ILogger LOGGER = Logger.getLogger(HazelcastServerNode.class);
     private static HazelcastInstance hzInstance;
 
-    static synchronized void ensureHazelcastNode() {
+    private static synchronized void ensureHazelcastNode() {
         if (hzInstance == null) {
             Config config = null;
-            File configFile = KConfiguration.getInstance().findConfigFile("hazelcast.config");
+            // TODO File configFile = Configuration.getInstance().findConfigFile("hazelcast.config");
+            File configFile = null;
             if (configFile != null) {
                 try (FileInputStream configStream = new FileInputStream(configFile)) {
                     config = new XmlConfigBuilder(configStream).build();
@@ -32,9 +33,12 @@ public class HazelcastServerNode implements ServletContextListener {
                 }
             }
             if (config == null) {
-                config = new Config(KConfiguration.getInstance().getConfiguration().getString("hazelcast.instance"));
+                config = new Config("akubrasync");
+                //config = new Config(Configuration.getInstance().getConfiguration().getString("hazelcast.instance"));
                 GroupConfig groupConfig = config.getGroupConfig();
-                groupConfig.setName(KConfiguration.getInstance().getConfiguration().getString("hazelcast.user"));
+// TODO                groupConfig.setName(Configuration.getInstance().getConfiguration().getString("hazelcast.user"));
+                groupConfig.setName("dev");
+
             }
             hzInstance = Hazelcast.getOrCreateHazelcastInstance(config);
         }
@@ -47,12 +51,9 @@ public class HazelcastServerNode implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        /* TODO
         AkubraDOManager.shutdown();
         if (hzInstance != null) {
             hzInstance.shutdown();
         }
-
-         */
     }
 }

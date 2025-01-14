@@ -4,9 +4,9 @@ import org.ceskaexpedice.jaxb.DatastreamType;
 import org.ceskaexpedice.jaxb.DatastreamVersionType;
 import org.ceskaexpedice.jaxb.DigitalObject;
 import org.ceskaexpedice.jaxb.PropertyType;
-import cz.incad.kramerius.utils.SafeSimpleDateFormat;
-import cz.incad.kramerius.utils.XMLUtils;
-import cz.incad.kramerius.utils.conf.KConfiguration;
+import org.ceskaexpedice.akubra.utils.SafeSimpleDateFormat;
+import org.ceskaexpedice.akubra.utils.XMLUtils;
+import org.ceskaexpedice.akubra.conf.Configuration;
 import org.akubraproject.map.IdMapper;
 import org.apache.commons.io.IOUtils;
 import org.fcrepo.common.PID;
@@ -145,7 +145,7 @@ public class RepositoryUtils {
         if (pid == null) {
             return "";
         }
-        String objectPattern = KConfiguration.getInstance().getProperty("objectStore.pattern");
+        String objectPattern = Configuration.getInstance().getProperty("objectStore.pattern");
         return getAkubraInternalIdWitPattern(pid, objectPattern);
     }
 

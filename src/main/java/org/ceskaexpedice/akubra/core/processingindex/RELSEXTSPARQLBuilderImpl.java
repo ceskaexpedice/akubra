@@ -1,10 +1,10 @@
 package org.ceskaexpedice.akubra.core.processingindex;
 
-import cz.incad.kramerius.utils.StringUtils;
-import cz.incad.kramerius.utils.XMLUtils;
-import cz.incad.kramerius.utils.conf.KConfiguration;
-import org.ceskaexpedice.akubra.FedoraNamespaceContext;
-import org.ceskaexpedice.akubra.FedoraNamespaces;
+import org.ceskaexpedice.akubra.utils.StringUtils;
+import org.ceskaexpedice.akubra.utils.XMLUtils;
+import org.ceskaexpedice.akubra.conf.Configuration;
+import org.ceskaexpedice.akubra.RepositoryNamespaceContext;
+import org.ceskaexpedice.akubra.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.utils.pid.PIDParser;
 import org.antlr.stringtemplate.StringTemplate;
@@ -27,10 +27,10 @@ import java.util.*;
  */
 class RELSEXTSPARQLBuilderImpl implements RELSEXTSPARQLBuilder {
 
-    private FedoraNamespaceContext namespaceContext = new FedoraNamespaceContext();
+    private RepositoryNamespaceContext namespaceContext = new RepositoryNamespaceContext();
 
     void prefix(StringBuilder builder) {
-        namespaceContext.getPrefixes().stream().filter(s-> !namespaceContext.getNamespaceURI(s).equals(FedoraNamespaces.FEDORA_ACCESS_NAMESPACE_URI)).forEach(s-> {builder.append("PREFIX ").append(s).append(':').append(" <").append(namespaceContext.getNamespaceURI(s)).append(">").append('\n');});
+        namespaceContext.getPrefixes().stream().filter(s-> !namespaceContext.getNamespaceURI(s).equals(RepositoryNamespaces.FEDORA_ACCESS_NAMESPACE_URI)).forEach(s-> {builder.append("PREFIX ").append(s).append(':').append(" <").append(namespaceContext.getNamespaceURI(s)).append(">").append('\n');});
     }
 
     @Override
@@ -38,7 +38,7 @@ class RELSEXTSPARQLBuilderImpl implements RELSEXTSPARQLBuilder {
         StringTemplateGroup strGroup = SPARQL_TEMPLATES();
 
         Document document = XMLUtils.parseDocument(new StringReader(relsExt), true);
-        Element description = XMLUtils.findElement(document.getDocumentElement(), "Description", FedoraNamespaces.RDF_NAMESPACE_URI);
+        Element description = XMLUtils.findElement(document.getDocumentElement(), "Description", RepositoryNamespaces.RDF_NAMESPACE_URI);
         NodeList childNodes = description.getChildNodes();
 
         List<Triple<String,String,String>> triples = new ArrayList<>();
@@ -56,7 +56,7 @@ class RELSEXTSPARQLBuilderImpl implements RELSEXTSPARQLBuilder {
                 //String relation
                 List<Triple<String,String, String>> aList = new ArrayList<>();
 
-                Attr resource = elm.getAttributeNodeNS(FedoraNamespaces.RDF_NAMESPACE_URI, "resource");
+                Attr resource = elm.getAttributeNodeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
                 if (resource != null) {
                     String value = resource.getValue();
                     if (value.startsWith(PIDParser.INFO_FEDORA_PREFIX)) {
@@ -75,9 +75,9 @@ class RELSEXTSPARQLBuilderImpl implements RELSEXTSPARQLBuilder {
 
                     // indirect reference - in order to preserve index
                     // https://wiki.duraspace.org/display/FEDORA4x/Ordering
-                    List<String> treePredicates = Arrays.asList(KConfiguration.getInstance().getPropertyList("fedora.treePredicates"));
+                    List<String> treePredicates = Arrays.asList(Configuration.getInstance().getPropertyList("fedora.treePredicates"));
 
-                    if (namespaceURI.equals(FedoraNamespaces.KRAMERIUS_URI) && treePredicates.contains(localName)) {
+                    if (namespaceURI.equals(RepositoryNamespaces.KRAMERIUS_URI) && treePredicates.contains(localName)) {
                         String bRelationName = localName.startsWith("has") ? StringUtils.minus(localName, "has").toLowerCase():
                                 localName.startsWith("is") ? StringUtils.minus(localName, "is").toLowerCase() : localName.toLowerCase();
 
