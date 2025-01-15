@@ -2,7 +2,7 @@ package org.ceskaexpedice.akubra.core.processingindex;
 
 import org.ceskaexpedice.akubra.utils.StringUtils;
 import org.ceskaexpedice.akubra.utils.XMLUtils;
-import org.ceskaexpedice.akubra.conf.Configuration;
+import org.ceskaexpedice.akubra.core.Configuration;
 import org.ceskaexpedice.model.RepositoryNamespaceContext;
 import org.ceskaexpedice.model.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
@@ -75,7 +75,8 @@ class RELSEXTSPARQLBuilderImpl implements RELSEXTSPARQLBuilder {
 
                     // indirect reference - in order to preserve index
                     // https://wiki.duraspace.org/display/FEDORA4x/Ordering
-                    List<String> treePredicates = Arrays.asList(Configuration.getInstance().getPropertyList("fedora.treePredicates"));
+                    // TODO List<String> treePredicates = Arrays.asList(Configuration.getInstance().getPropertyList("fedora.treePredicates"));
+                    List<String> treePredicates = new ArrayList<>();
 
                     if (namespaceURI.equals(RepositoryNamespaces.KRAMERIUS_URI) && treePredicates.contains(localName)) {
                         String bRelationName = localName.startsWith("has") ? StringUtils.minus(localName, "has").toLowerCase():

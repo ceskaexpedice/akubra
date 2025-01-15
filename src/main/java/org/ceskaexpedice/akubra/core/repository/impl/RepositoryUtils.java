@@ -6,7 +6,7 @@ import org.ceskaexpedice.model.DigitalObject;
 import org.ceskaexpedice.model.PropertyType;
 import org.ceskaexpedice.akubra.utils.SafeSimpleDateFormat;
 import org.ceskaexpedice.akubra.utils.XMLUtils;
-import org.ceskaexpedice.akubra.conf.Configuration;
+import org.ceskaexpedice.akubra.core.Configuration;
 import org.akubraproject.map.IdMapper;
 import org.apache.commons.io.IOUtils;
 import org.fcrepo.common.PID;
@@ -145,7 +145,8 @@ public class RepositoryUtils {
         if (pid == null) {
             return "";
         }
-        String objectPattern = Configuration.getInstance().getProperty("objectStore.pattern");
+        // TODO String objectPattern = Configuration.getInstance().getProperty("objectStore.pattern");
+        String objectPattern = null;
         return getAkubraInternalIdWitPattern(pid, objectPattern);
     }
 

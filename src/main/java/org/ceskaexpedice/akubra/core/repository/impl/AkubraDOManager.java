@@ -5,7 +5,7 @@ import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.config.GroupConfig;
 import com.hazelcast.core.*;
-import org.ceskaexpedice.akubra.conf.Configuration;
+import org.ceskaexpedice.akubra.core.Configuration;
 import org.akubraproject.BlobStore;
 import org.akubraproject.fs.FSBlobStore;
 import org.akubraproject.map.IdMapper;
@@ -43,7 +43,7 @@ import java.util.logging.Logger;
 
 public class AkubraDOManager {
     private static final Logger LOGGER = Logger.getLogger(AkubraDOManager.class.getName());
-    private Configuration configuration = Configuration.getInstance();
+    private Configuration configuration;
     private ILowlevelStorage storage;
 
     private static HazelcastInstance hzInstance;
@@ -56,7 +56,7 @@ public class AkubraDOManager {
     private static Unmarshaller unmarshaller;
     private static Marshaller marshaller;
 
-    static {
+    private void initializeStatics(Configuration configuration) {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(DigitalObject.class);
             unmarshaller = jaxbContext.createUnmarshaller();
@@ -83,12 +83,12 @@ public class AkubraDOManager {
             config = new ClientConfig();
 
             // TODO config.setInstanceName(Configuration.getInstance().getConfiguration().getString("hazelcast.instance"));
-            config.setInstanceName("akubrasync");
+            config.setInstanceName(configuration.getHazelcastInstance());
 
             GroupConfig groupConfig = config.getGroupConfig();
 
             // TODO groupConfig.setName(Configuration.getInstance().getConfiguration().getString("hazelcast.user"));
-            groupConfig.setName("dev");
+            groupConfig.setName(configuration.getHazelcastUser());
         }
         hzInstance = HazelcastClient.newHazelcastClient(config);
         lockService = DistributedLockService.newHazelcastLockService(hzInstance);
@@ -108,8 +108,10 @@ public class AkubraDOManager {
          */
     }
 
-    public AkubraDOManager(CacheManager cacheManager) throws IOException {
+    public AkubraDOManager(CacheManager cacheManager, Configuration configuration) throws IOException {
         try {
+            this.initializeStatics(configuration);
+            this.configuration = configuration;
             this.storage = initLowLevelStorage();
             if (cacheManager != null) {
                 objectCache = cacheManager.getCache(DIGITALOBJECT_CACHE_ALIAS, String.class, DigitalObject.class);
@@ -131,11 +133,11 @@ public class AkubraDOManager {
     }
 
     private AkubraLowlevelStorage createAkubraLowLevelStorage() throws Exception {
-        BlobStore fsObjectStore = new FSBlobStore(new URI("urn:example.org:fsObjectStore"), new File(configuration.getProperty("objectStore.path")));
-        IdMapper fsObjectStoreMapper = new HashPathIdMapper(configuration.getProperty("objectStore.pattern"));
+        BlobStore fsObjectStore = new FSBlobStore(new URI("urn:example.org:fsObjectStore"), new File(configuration.getObjectStorePath()));
+        IdMapper fsObjectStoreMapper = new HashPathIdMapper(configuration.getObjectStorePattern());
         BlobStore objectStore = new IdMappingBlobStore(new URI("urn:example.org:objectStore"), fsObjectStore, fsObjectStoreMapper);
-        BlobStore fsDatastreamStore = new FSBlobStore(new URI("urn:example.org:fsDatastreamStore"), new File(configuration.getProperty("datastreamStore.path")));
-        IdMapper fsDatastreamStoreMapper = new HashPathIdMapper(configuration.getProperty("datastreamStore.pattern"));
+        BlobStore fsDatastreamStore = new FSBlobStore(new URI("urn:example.org:fsDatastreamStore"), new File(configuration.getDatastreamStorePath()));
+        IdMapper fsDatastreamStoreMapper = new HashPathIdMapper(configuration.getDatastreamStorePattern());
         BlobStore datastreamStore = new IdMappingBlobStore(new URI("urn:example.org:datastreamStore"), fsDatastreamStore, fsDatastreamStoreMapper);
         AkubraLowlevelStorage retval = new AkubraLowlevelStorage(objectStore, datastreamStore, true, true);
         return retval;

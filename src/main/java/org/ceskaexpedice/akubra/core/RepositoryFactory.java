@@ -16,7 +16,6 @@
  */
 package org.ceskaexpedice.akubra.core;
 
-import org.ceskaexpedice.akubra.conf.Configuration;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
 import org.ceskaexpedice.akubra.core.repository.Repository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
@@ -40,8 +39,8 @@ public final class RepositoryFactory {
 
   public static Repository createAkubraRepository(Configuration configuration) throws RepositoryException {
     try {
-      ProcessingIndexFeeder processingIndexFeeder = new ProcessingIndexFeeder(createProcessingUpdateClient());
-      AkubraDOManager akubraDOManager = new AkubraDOManager(createCacheManager());
+      ProcessingIndexFeeder processingIndexFeeder = new ProcessingIndexFeeder(createProcessingUpdateClient(configuration));
+      AkubraDOManager akubraDOManager = new AkubraDOManager(createCacheManager(), configuration);
       return new RepositoryImpl(processingIndexFeeder, akubraDOManager);
     } catch (IOException e) {
       throw new RepositoryException(e);
@@ -61,8 +60,8 @@ public final class RepositoryFactory {
     return new HttpSolrClient.Builder(processingSolrHost).build();
   }*/
 
-  private static SolrClient createProcessingUpdateClient() {
-    String processingSolrHost = Configuration.getInstance().getSolrProcessingHost();
+  private static SolrClient createProcessingUpdateClient(Configuration configuration) throws RepositoryException {
+    String processingSolrHost = configuration.getProcessingIndexHost();
     return new ConcurrentUpdateSolrClient.Builder(processingSolrHost).withQueueSize(100).build();
   }
 

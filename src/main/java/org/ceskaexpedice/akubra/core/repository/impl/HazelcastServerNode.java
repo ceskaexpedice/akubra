@@ -7,7 +7,7 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
-import org.ceskaexpedice.akubra.conf.Configuration;
+import org.ceskaexpedice.akubra.core.Configuration;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -20,7 +20,7 @@ public class HazelcastServerNode implements ServletContextListener {
     private static final ILogger LOGGER = Logger.getLogger(HazelcastServerNode.class);
     private static HazelcastInstance hzInstance;
 
-    private static synchronized void ensureHazelcastNode() {
+    public static synchronized void ensureHazelcastNode(Configuration configuration) {
         if (hzInstance == null) {
             Config config = null;
             // TODO File configFile = Configuration.getInstance().findConfigFile("hazelcast.config");
@@ -33,12 +33,9 @@ public class HazelcastServerNode implements ServletContextListener {
                 }
             }
             if (config == null) {
-                config = new Config("akubrasync");
-                //config = new Config(Configuration.getInstance().getConfiguration().getString("hazelcast.instance"));
+                config = new Config(configuration.getHazelcastInstance());
                 GroupConfig groupConfig = config.getGroupConfig();
-// TODO                groupConfig.setName(Configuration.getInstance().getConfiguration().getString("hazelcast.user"));
-                groupConfig.setName("dev");
-
+                groupConfig.setName(configuration.getHazelcastUser());
             }
             hzInstance = Hazelcast.getOrCreateHazelcastInstance(config);
         }
@@ -46,7 +43,7 @@ public class HazelcastServerNode implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        ensureHazelcastNode();
+        // TODO ensureHazelcastNode();
     }
 
     @Override
