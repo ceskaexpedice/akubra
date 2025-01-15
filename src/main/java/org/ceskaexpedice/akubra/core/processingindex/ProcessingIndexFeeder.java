@@ -1,7 +1,7 @@
 package org.ceskaexpedice.akubra.core.processingindex;
 
 import org.ceskaexpedice.akubra.utils.XMLUtils;
-import org.ceskaexpedice.akubra.RepositoryNamespaces;
+import org.ceskaexpedice.model.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import org.ceskaexpedice.akubra.utils.RepositoryUtils;

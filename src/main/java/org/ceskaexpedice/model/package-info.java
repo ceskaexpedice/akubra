@@ -6,4 +6,4 @@
 //
 
 @javax.xml.bind.annotation.XmlSchema(namespace = "info:fedora/fedora-system:def/foxml#", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
-package org.ceskaexpedice.jaxb;
+package org.ceskaexpedice.model;

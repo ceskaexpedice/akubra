@@ -1,9 +1,9 @@
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import org.ceskaexpedice.jaxb.DatastreamType;
-import org.ceskaexpedice.jaxb.DatastreamVersionType;
-import org.ceskaexpedice.jaxb.DigitalObject;
-import org.ceskaexpedice.jaxb.PropertyType;
+import org.ceskaexpedice.model.DatastreamType;
+import org.ceskaexpedice.model.DatastreamVersionType;
+import org.ceskaexpedice.model.DigitalObject;
+import org.ceskaexpedice.model.PropertyType;
 import org.ceskaexpedice.akubra.utils.SafeSimpleDateFormat;
 import org.ceskaexpedice.akubra.utils.XMLUtils;
 import org.ceskaexpedice.akubra.conf.Configuration;

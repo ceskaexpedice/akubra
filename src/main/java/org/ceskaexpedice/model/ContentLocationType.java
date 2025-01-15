@@ -6,7 +6,7 @@
 //
 
 
-package org.ceskaexpedice.jaxb;
+package org.ceskaexpedice.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -15,26 +15,29 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for propertyType complex type.
+ * <p>Java class for contentLocationType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="propertyType"&gt;
+ * &lt;complexType name="contentLocationType"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="NAME" use="required"&gt;
+ *       &lt;attribute name="TYPE" use="required"&gt;
  *         &lt;simpleType&gt;
  *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
- *             &lt;enumeration value="info:fedora/fedora-system:def/model#state"/&gt;
- *             &lt;enumeration value="info:fedora/fedora-system:def/model#label"/&gt;
- *             &lt;enumeration value="info:fedora/fedora-system:def/model#createdDate"/&gt;
- *             &lt;enumeration value="info:fedora/fedora-system:def/view#lastModifiedDate"/&gt;
- *             &lt;enumeration value="info:fedora/fedora-system:def/model#ownerId"/&gt;
+ *             &lt;enumeration value="INTERNAL_ID"/&gt;
+ *             &lt;enumeration value="URL"/&gt;
  *           &lt;/restriction&gt;
  *         &lt;/simpleType&gt;
  *       &lt;/attribute&gt;
- *       &lt;attribute name="VALUE" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="REF" use="required"&gt;
+ *         &lt;simpleType&gt;
+ *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyURI"&gt;
+ *             &lt;minLength value="1"/&gt;
+ *           &lt;/restriction&gt;
+ *         &lt;/simpleType&gt;
+ *       &lt;/attribute&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -43,60 +46,60 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "propertyType")
-public class PropertyType {
+@XmlType(name = "contentLocationType")
+public class ContentLocationType {
 
-    @XmlAttribute(name = "NAME", required = true)
-    protected String name;
-    @XmlAttribute(name = "VALUE", required = true)
-    protected String value;
+    @XmlAttribute(name = "TYPE", required = true)
+    protected String type;
+    @XmlAttribute(name = "REF", required = true)
+    protected String ref;
 
     /**
-     * Gets the value of the name property.
+     * Gets the value of the type property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getNAME() {
-        return name;
+    public String getTYPE() {
+        return type;
     }
 
     /**
-     * Sets the value of the name property.
+     * Sets the value of the type property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setNAME(String value) {
-        this.name = value;
+    public void setTYPE(String value) {
+        this.type = value;
     }
 
     /**
-     * Gets the value of the value property.
+     * Gets the value of the ref property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getVALUE() {
-        return value;
+    public String getREF() {
+        return ref;
     }
 
     /**
-     * Sets the value of the value property.
+     * Sets the value of the ref property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setVALUE(String value) {
-        this.value = value;
+    public void setREF(String value) {
+        this.ref = value;
     }
 
 }

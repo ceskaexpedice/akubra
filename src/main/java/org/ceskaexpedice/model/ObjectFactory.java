@@ -6,7 +6,7 @@
 //
 
 
-package org.ceskaexpedice.jaxb;
+package org.ceskaexpedice.model;
 
 import javax.xml.bind.annotation.XmlRegistry;
 

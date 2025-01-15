@@ -17,7 +17,7 @@
 package org.ceskaexpedice.akubra.core.repository.impl;
 
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
-import org.ceskaexpedice.akubra.RepositoryNamespaces;
+import org.ceskaexpedice.model.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
@@ -28,7 +28,7 @@ import org.ceskaexpedice.akubra.utils.pid.PIDParser;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
-import org.ceskaexpedice.jaxb.*;
+import org.ceskaexpedice.model.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;

@@ -1,6 +1,6 @@
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import org.ceskaexpedice.jaxb.DatastreamType;
+import org.ceskaexpedice.model.DatastreamType;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.w3c.dom.Document;

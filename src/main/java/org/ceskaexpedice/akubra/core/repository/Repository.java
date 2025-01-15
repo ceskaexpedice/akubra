@@ -17,7 +17,7 @@
 
 package org.ceskaexpedice.akubra.core.repository;
 
-import org.ceskaexpedice.jaxb.DigitalObject;
+import org.ceskaexpedice.model.DigitalObject;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
 
 /**

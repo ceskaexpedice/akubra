@@ -17,9 +17,9 @@
 
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import org.ceskaexpedice.jaxb.DigitalObject;
-import org.ceskaexpedice.jaxb.ObjectPropertiesType;
-import org.ceskaexpedice.jaxb.PropertyType;
+import org.ceskaexpedice.model.DigitalObject;
+import org.ceskaexpedice.model.ObjectPropertiesType;
+import org.ceskaexpedice.model.PropertyType;
 import org.ceskaexpedice.akubra.core.repository.Repository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
