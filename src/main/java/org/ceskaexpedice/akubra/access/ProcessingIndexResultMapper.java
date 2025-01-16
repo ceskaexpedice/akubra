@@ -1,6 +1,4 @@
-package org.ceskaexpedice.akubra;
-
-import org.apache.solr.common.SolrDocument;
+package org.ceskaexpedice.akubra.access;
 
 import java.util.List;
 

@@ -33,7 +33,7 @@ public class RepositoryTest {
         hazelcastServerNode = new HazelcastServerNode();
         // TODO hazelcastServerNode.contextInitialized(null);
         HazelcastServerNode.ensureHazelcastNode(config);
-        akubraRepository = RepositoryFactory.createAkubraRepository(config);
+        akubraRepository = RepositoryFactory.createCoreRepository(config);
     }
 
     @AfterAll

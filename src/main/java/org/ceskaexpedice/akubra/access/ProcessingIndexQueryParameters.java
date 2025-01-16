@@ -1,4 +1,4 @@
-package org.ceskaexpedice.akubra;
+package org.ceskaexpedice.akubra.access;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -17,6 +17,7 @@
 
 package org.ceskaexpedice.akubra.core.repository.impl;
 
+import org.ceskaexpedice.akubra.access.RepositoryObjectWrapper;
 import org.ceskaexpedice.model.DigitalObject;
 import org.ceskaexpedice.model.ObjectPropertiesType;
 import org.ceskaexpedice.model.PropertyType;
@@ -27,7 +28,9 @@ import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
 import org.apache.solr.client.solrj.SolrServerException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,7 +44,7 @@ public class RepositoryImpl implements Repository {
     private AkubraDOManager manager;
     private ProcessingIndexFeeder feeder;
 
-    public RepositoryImpl(ProcessingIndexFeeder feeder, AkubraDOManager manager) throws RepositoryException {
+    public RepositoryImpl(ProcessingIndexFeeder feeder, AkubraDOManager manager) {
         super();
         this.feeder = feeder;
         this.manager = manager;
@@ -51,7 +54,7 @@ public class RepositoryImpl implements Repository {
      * @see cz.incad.fcrepo.Repository#createOrFindObject(java.lang.String)
      */
     @Override
-    public RepositoryObject createOrFindObject(String ident) throws RepositoryException {
+    public RepositoryObject createOrFindObject(String ident) {
         if (objectExists(ident)) {
             try {
                 RepositoryObjectImpl obj = new RepositoryObjectImpl(this.manager.readObjectFromStorage(ident), this.manager, this.feeder);
@@ -77,7 +80,7 @@ public class RepositoryImpl implements Repository {
     }
 
     @Override
-    public RepositoryObject ingestObject(DigitalObject contents) throws RepositoryException {
+    public RepositoryObject ingestObject(DigitalObject contents) {
         if (objectExists(contents.getPID())) {
             throw new RepositoryException("Ingested object exists:" + contents.getPID());
         } else {
@@ -94,7 +97,7 @@ public class RepositoryImpl implements Repository {
     }
 
     @Override
-    public boolean objectExists(String ident) throws RepositoryException {
+    public boolean objectExists(String ident) {
         try {
             return manager.readObjectFromStorage(ident) != null;
         } catch (Exception e) {
@@ -103,7 +106,7 @@ public class RepositoryImpl implements Repository {
     }
 
     @Override
-    public RepositoryObject getObject(String ident) throws RepositoryException {
+    public RepositoryObject getObject(String ident) {
         try {
             DigitalObject digitalObject = this.manager.readObjectFromStorage(ident);
             if (digitalObject == null) {
@@ -118,7 +121,22 @@ public class RepositoryImpl implements Repository {
     }
 
     @Override
-    public void deleteObject(String pid, boolean deleteDataOfManagedDatastreams, boolean deleteRelationsWithThisAsTarget) throws RepositoryException {
+    public DigitalObject readObjectCloneFromStorage(String pid) {
+        return manager.readObjectCloneFromStorage(pid);
+    }
+
+    @Override
+    public InputStream retrieveObject(String pid) {
+        try {
+            return manager.retrieveObject(pid);
+        } catch (IOException e) {
+            throw new RepositoryException(e);
+        }
+    }
+
+
+    @Override
+    public void deleteObject(String pid, boolean deleteDataOfManagedDatastreams, boolean deleteRelationsWithThisAsTarget) {
         try {
             this.manager.deleteObject(pid, deleteDataOfManagedDatastreams);
             try {
@@ -148,7 +166,7 @@ public class RepositoryImpl implements Repository {
     }
 
     @Override
-    public void deleteObject(String pid) throws RepositoryException {
+    public void deleteObject(String pid) {
         deleteObject(pid, true, true);
     }
 
@@ -156,7 +174,7 @@ public class RepositoryImpl implements Repository {
      * @see cz.incad.fcrepo.Repository#commitTransaction()
      */
     @Override
-    public void commitTransaction() throws RepositoryException {
+    public void commitTransaction() {
         try {
             //to avoid temporary inconsistency between Akubra and Processing index
             this.feeder.commit();
@@ -169,7 +187,7 @@ public class RepositoryImpl implements Repository {
      * @see cz.incad.fcrepo.Repository#rollbackTransaction()
      */
     @Override
-    public void rollbackTransaction() throws RepositoryException {
+    public void rollbackTransaction() {
         throw new RepositoryException("Transactions not supported in Akubra");
     }
 
@@ -189,8 +207,24 @@ public class RepositoryImpl implements Repository {
     }
 
     @Override
-    public ProcessingIndexFeeder getProcessingIndexFeeder() throws RepositoryException {
+    public ProcessingIndexFeeder getProcessingIndexFeeder() {
         return this.feeder;
+    }
+
+    @Override
+    public void resolveArchivedDatastreams(DigitalObject obj) {
+        manager.resolveArchivedDatastreams(obj);
+    }
+
+    @Override
+    public InputStream marshallObject(DigitalObject obj) {
+        return manager.marshallObject(obj);
+    }
+
+    @Override
+    public Lock getReadLock(String pid) {
+        Lock readLock = AkubraDOManager.getReadLock(pid);
+        return readLock;
     }
 
     /* TODO

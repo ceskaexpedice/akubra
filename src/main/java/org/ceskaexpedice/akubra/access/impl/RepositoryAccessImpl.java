@@ -1,24 +1,18 @@
-package org.ceskaexpedice.akubra.impl;
+package org.ceskaexpedice.akubra.access.impl;
 
-import org.ceskaexpedice.akubra.*;
+import org.ceskaexpedice.akubra.access.*;
 import org.ceskaexpedice.akubra.core.repository.Repository;
+import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 import org.w3c.dom.Document;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
-import java.nio.charset.Charset;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public class RepositoryAccessImpl implements RepositoryAccess {
 
@@ -53,8 +47,8 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     //-------- Object ------------------------------------------
 
     @Override
-    public ObjectAccessHelper getObjectAccessHelper(){
-        return null;
+    public ObjectAccessHelper getObjectAccessHelper() {
+        return new ObjectAccessHelperImpl(this);
     }
 
     @Override
@@ -89,25 +83,13 @@ public class RepositoryAccessImpl implements RepositoryAccess {
 
     @Override
     public RepositoryObjectWrapper getFoxml(String pid) {
-        /*
-        SupportedFormats supportedFormat = determineSupportedFormat(pid);
-        // Retrieve content as bytes
-        RepositoryObject rawContent = null;
-        try {
-            rawContent = fetchContentFromStorage(pid);
-            return new RepositoryObjectWrapper(rawContent, supportedFormat);
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }*/ return null;
+        return new RepositoryObjectWrapperImpl(pid, repository);
     }
 
     @Override
-    public String  getProperty(String pid, String propertyName) {
-        /*
-        org.dom4j.Document objectFoxml = getFoxml(pid).asXml();
+    public String getProperty(String pid, String propertyName) {
+        org.dom4j.Document objectFoxml = getFoxml(pid).asXml(FoxmlType.regular);
         return objectFoxml == null ? null : extractProperty(objectFoxml, propertyName);
-
-         */return null;
     }
 
     /*
@@ -197,16 +179,21 @@ public class RepositoryAccessImpl implements RepositoryAccess {
             throw new RuntimeException(e);
         }
     }*/
+
     /**
      * TODO: Not Used
      * Returns xml containing datastream data
      *
-     * @param pid pid of reqested object
+     * @param pid            pid of reqested object
      * @param datastreamName datastream name
      * @return datastream xml as stored in Fedora
      * @throws IOException IO error has been occurred
      */
-    public InputStream getDataStreamXml(String pid, String datastreamName) {return null;};
+    public InputStream getDataStreamXml(String pid, String datastreamName) {
+        return null;
+    }
+
+    ;
     /**
      * Returns xml containing datastream data
      *
@@ -222,15 +209,20 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     String getLatestVersionOfManagedTextDatastream(String pid, String dsId){return null;};
 
      */
+
     /**
      * Returns data from datastream
      *
-     * @param pid pid of reqested object
+     * @param pid            pid of reqested object
      * @param datastreamName datastream name
      * @return data
      * @throws IOException IO error has been occurred
      */
-    public InputStream getDataStream(String pid, String datastreamName) throws IOException{return null;};
+    public InputStream getDataStream(String pid, String datastreamName) throws IOException {
+        return null;
+    }
+
+    ;
 
     @Override
     public List<String> getDatastreamNames(String pid) {
@@ -249,7 +241,8 @@ public class RepositoryAccessImpl implements RepositoryAccess {
             }).collect(Collectors.toList());
         } finally {
             readLock.unlock();
-        }*/return null;
+        }*/
+        return null;
     }
 
     @Override
@@ -428,6 +421,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
             throw new IOException("Failed to parse XML", e);
         }
     }
+
     private Map<String, String> createMap(String label) {
         Map<String, String> map = new HashMap<String, String>();
         map.put("dsid", label);
@@ -485,11 +479,11 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         }
         return maxVersion;
     }*/
-/*
+
     private String extractProperty(org.dom4j.Document foxmlDoc, String name) {
         org.dom4j.Node node = Dom4jUtils.buildXpath(String.format("/foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='%s']/@VALUE", name)).selectSingleNode(foxmlDoc);
         return node == null ? null : Dom4jUtils.toStringOrNull(node);
     }
 
- */
+
 }

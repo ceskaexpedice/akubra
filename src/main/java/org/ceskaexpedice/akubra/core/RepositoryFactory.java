@@ -37,7 +37,7 @@ public final class RepositoryFactory {
   private RepositoryFactory() {
   }
 
-  public static Repository createAkubraRepository(Configuration configuration) throws RepositoryException {
+  public static Repository createCoreRepository(Configuration configuration) {
     try {
       ProcessingIndexFeeder processingIndexFeeder = new ProcessingIndexFeeder(createProcessingUpdateClient(configuration));
       AkubraDOManager akubraDOManager = new AkubraDOManager(createCacheManager(), configuration);
@@ -60,7 +60,7 @@ public final class RepositoryFactory {
     return new HttpSolrClient.Builder(processingSolrHost).build();
   }*/
 
-  private static SolrClient createProcessingUpdateClient(Configuration configuration) throws RepositoryException {
+  private static SolrClient createProcessingUpdateClient(Configuration configuration) {
     String processingSolrHost = configuration.getProcessingIndexHost();
     return new ConcurrentUpdateSolrClient.Builder(processingSolrHost).withQueueSize(100).build();
   }

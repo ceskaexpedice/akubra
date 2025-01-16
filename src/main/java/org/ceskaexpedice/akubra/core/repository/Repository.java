@@ -20,6 +20,9 @@ package org.ceskaexpedice.akubra.core.repository;
 import org.ceskaexpedice.model.DigitalObject;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
 
+import java.io.InputStream;
+import java.util.concurrent.locks.Lock;
+
 /**
  * Represents access to Akubra repository
  * It is basic tool for ingesting and it is basic point for RepositoryAccess facade
@@ -42,6 +45,8 @@ public interface Repository {
      * @throws
      */
     RepositoryObject getObject(String pid);
+    DigitalObject readObjectCloneFromStorage(String pid);
+    InputStream retrieveObject(String pid);
 
     /**
      * Creates an empty object or finds an existing object
@@ -96,4 +101,9 @@ public interface Repository {
      */
     ProcessingIndexFeeder getProcessingIndexFeeder();
 
+    void resolveArchivedDatastreams(DigitalObject obj);
+
+    InputStream marshallObject(DigitalObject obj);
+
+    Lock getReadLock(String pid);
 }

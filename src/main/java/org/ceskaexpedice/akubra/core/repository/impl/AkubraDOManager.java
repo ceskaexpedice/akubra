@@ -202,11 +202,11 @@ public class AkubraDOManager {
      * @return
      * @throws IOException
      */
-    DigitalObject readObjectCloneFromStorage(String pid) throws IOException {
+    DigitalObject readObjectCloneFromStorage(String pid) {
         return readObjectFromStorageOrCache(pid, false);
     }
 
-    private DigitalObject readObjectFromStorageOrCache(String pid, boolean useCache) throws IOException {
+    DigitalObject readObjectFromStorageOrCache(String pid, boolean useCache) {
         DigitalObject retval = useCache ? objectCache.get(pid) : null;
         if (retval == null) {
             Object obj = null;
@@ -218,7 +218,7 @@ public class AkubraDOManager {
             } catch (ObjectNotInLowlevelStorageException ex) {
                 return null;
             } catch (Exception e) {
-                throw new IOException(e);
+                throw new RepositoryException(e);
             } finally {
                 lock.unlock();
             }
@@ -348,7 +348,7 @@ public class AkubraDOManager {
         }
     }
 
-    private InputStream marshallObject(DigitalObject object) {
+    InputStream marshallObject(DigitalObject object) {
         try {
             StringWriter stringWriter = new StringWriter();
             synchronized (marshaller) {
@@ -436,7 +436,7 @@ public class AkubraDOManager {
         }
     }
 
-    private void resolveArchivedDatastreams(DigitalObject object) {
+    void resolveArchivedDatastreams(DigitalObject object) {
         for (DatastreamType datastreamType : object.getDatastream()) {
             resolveArchiveManagedStream(datastreamType);
         }

@@ -14,20 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra;
-
-import org.ceskaexpedice.akubra.core.repository.Repository;
-import org.w3c.dom.Document;
+package org.ceskaexpedice.akubra.access;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -37,10 +27,14 @@ import java.util.function.Consumer;
  * 
  */
 public interface RepositoryAccess {
+
     // object
     boolean objectExists(String pid);
+
     RepositoryObjectWrapper getFoxml(String pid);
+
     String getProperty(String pid, String name);
+
     ObjectAccessHelper getObjectAccessHelper();
 
     //void ingestObject(org.dom4j.Document foxmlDoc, String pid);
