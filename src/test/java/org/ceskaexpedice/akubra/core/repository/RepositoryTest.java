@@ -3,7 +3,7 @@ package org.ceskaexpedice.akubra.core.repository;
 import org.ceskaexpedice.akubra.core.Configuration;
 import org.ceskaexpedice.akubra.core.RepositoryFactory;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
-import org.ceskaexpedice.akubra.core.repository.impl.HazelcastServerNode;
+import org.ceskaexpedice.akubra.locks.HazelcastServerNode;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

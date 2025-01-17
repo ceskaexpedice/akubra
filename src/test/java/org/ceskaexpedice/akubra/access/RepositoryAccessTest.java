@@ -1,12 +1,7 @@
 package org.ceskaexpedice.akubra.access;
 
 import org.ceskaexpedice.akubra.core.Configuration;
-import org.ceskaexpedice.akubra.core.RepositoryFactory;
-import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
-import org.ceskaexpedice.akubra.core.repository.Repository;
-import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
-import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
-import org.ceskaexpedice.akubra.core.repository.impl.HazelcastServerNode;
+import org.ceskaexpedice.akubra.locks.HazelcastServerNode;
 import org.dom4j.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -83,6 +78,13 @@ public class RepositoryAccessTest {
         System.out.println(repositoryAccess.getObjectAccessHelper().getPropertyCreated("uuid:12993b4a-71b4-4f19-8953-0701243cc25d"));
         System.out.println(repositoryAccess.getObjectAccessHelper().getPropertyLabel("uuid:12993b4a-71b4-4f19-8953-0701243cc25d"));
         System.out.println(repositoryAccess.getObjectAccessHelper().getPropertyLastModified("uuid:12993b4a-71b4-4f19-8953-0701243cc25d"));
+    }
+
+    @Test
+    void testGetDatastreamMetadata() {
+        DatastreamMetadata datastreamMetadata = repositoryAccess.getDatastreamMetadata("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", "DC");
+        assertNotNull(datastreamMetadata);
+        System.out.println(datastreamMetadata.getMimetype());
     }
 
     private static String convertUsingBytes(InputStream inputStream) {

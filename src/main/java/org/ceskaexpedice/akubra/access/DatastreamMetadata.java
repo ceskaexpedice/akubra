@@ -1,4 +1,5 @@
 package org.ceskaexpedice.akubra.access;
 
-public class DatastreamMetadata {
+public interface DatastreamMetadata {
+    String getMimetype();
 }

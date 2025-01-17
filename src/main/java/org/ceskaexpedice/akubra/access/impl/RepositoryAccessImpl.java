@@ -2,6 +2,8 @@ package org.ceskaexpedice.akubra.access.impl;
 
 import org.ceskaexpedice.akubra.access.*;
 import org.ceskaexpedice.akubra.core.repository.Repository;
+import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
+import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 import org.w3c.dom.Document;
 
@@ -12,6 +14,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
 
 public class RepositoryAccessImpl implements RepositoryAccess {
@@ -45,15 +48,43 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     }*/
 
     //-------- Object ------------------------------------------
+    @Override
+    public boolean objectExists(String pid) {
+        return this.repository.objectExists(pid);
+    }
+
+    @Override
+    public RepositoryObjectWrapper getFoxml(String pid) {
+        return new RepositoryObjectWrapperImpl(pid, repository);
+    }
+
+    @Override
+    public String getProperty(String pid, String propertyName) {
+        org.dom4j.Document objectFoxml = getFoxml(pid).asXml(FoxmlType.regular);
+        return objectFoxml == null ? null : extractProperty(objectFoxml, propertyName);
+    }
 
     @Override
     public ObjectAccessHelper getObjectAccessHelper() {
         return new ObjectAccessHelperImpl(this);
     }
 
+    // ------------- stream
     @Override
     public DatastreamMetadata getDatastreamMetadata(String pid, String dsId) {
-        return null;
+        Lock readLock = repository.getReadLock(pid);
+        try {
+            RepositoryObject object = repository.getObject(pid);
+            if (object != null) {
+                RepositoryDatastream stream = object.getStream(dsId);
+                if (stream != null) {
+                    return new DatastreamMetadataImpl(stream);
+                }
+            }
+            return null;
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
@@ -76,21 +107,6 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         return null;
     }
 
-    @Override
-    public boolean objectExists(String pid) {
-        return this.repository.objectExists(pid);
-    }
-
-    @Override
-    public RepositoryObjectWrapper getFoxml(String pid) {
-        return new RepositoryObjectWrapperImpl(pid, repository);
-    }
-
-    @Override
-    public String getProperty(String pid, String propertyName) {
-        org.dom4j.Document objectFoxml = getFoxml(pid).asXml(FoxmlType.regular);
-        return objectFoxml == null ? null : extractProperty(objectFoxml, propertyName);
-    }
 
     /*
     @Override

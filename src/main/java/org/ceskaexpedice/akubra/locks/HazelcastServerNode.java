@@ -1,4 +1,4 @@
-package org.ceskaexpedice.akubra.core.repository.impl;
+package org.ceskaexpedice.akubra.locks;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.config.GroupConfig;
@@ -48,7 +48,7 @@ public class HazelcastServerNode implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        AkubraDOManager.shutdown();
+        // TODO AkubraDOManager.shutdown();
         if (hzInstance != null) {
             hzInstance.shutdown();
         }
