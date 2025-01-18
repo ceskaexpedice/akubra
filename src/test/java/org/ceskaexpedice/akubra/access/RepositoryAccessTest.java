@@ -1,5 +1,6 @@
 package org.ceskaexpedice.akubra.access;
 
+import org.ceskaexpedice.akubra.access.impl.ProcessingIndexItemImpl;
 import org.ceskaexpedice.akubra.core.Configuration;
 import org.ceskaexpedice.akubra.locks.HazelcastServerNode;
 import org.dom4j.Document;
@@ -9,6 +10,11 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -87,11 +93,43 @@ public class RepositoryAccessTest {
         System.out.println(datastreamMetadata.getMimetype());
     }
 
+    @Test
+    void testGetDatastreamContent() throws IOException {
+        InputStream imgThumb = repositoryAccess.getDatastreamContent("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", "IMG_THUMB").asStream();
+        assertNotNull(imgThumb);
+
+        // TODO
+        Path targetFile = Path.of("c:\\tmp\\output.jpg");
+        Files.copy(imgThumb, targetFile, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    @Test
+    void testProcessingIndex() {
+        String model = "page";
+        String query = String.format("type:description AND model:%s", "model\\:" + model); //prvni "model:" je filtr na solr pole, druhy "model:" je hodnota pole, coze  uprime zbytecne
+        ProcessingIndexQueryParameters params = new ProcessingIndexQueryParameters.Builder()
+                .queryString(query)
+                .sortField("title")
+                .ascending(true)
+                .rows(10)
+                .pageIndex(0)
+                .fieldsToFetch(List.of("source"))
+                .build();
+        repositoryAccess.queryProcessingIndex(params, new Consumer<ProcessingIndexItem>() {
+            @Override
+            public void accept(ProcessingIndexItem processingIndexItem) {
+                // TODO
+                System.out.println(((ProcessingIndexItemImpl)processingIndexItem).getDocument());
+            }
+        });
+
+    }
+
     private static String convertUsingBytes(InputStream inputStream) {
         byte[] bytes = null;
         try {
             bytes = inputStream.readAllBytes();
-            return new String(bytes, "UTF-8"); // Specify encoding, e.g., UTF-8
+            return new String(bytes, "UTF-8");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

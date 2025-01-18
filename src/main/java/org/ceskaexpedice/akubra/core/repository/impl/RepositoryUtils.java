@@ -1,5 +1,6 @@
 package org.ceskaexpedice.akubra.core.repository.impl;
 
+import org.ceskaexpedice.akubra.core.repository.Repository;
 import org.ceskaexpedice.model.DatastreamType;
 import org.ceskaexpedice.model.DatastreamVersionType;
 import org.ceskaexpedice.model.DigitalObject;
@@ -40,7 +41,7 @@ public class RepositoryUtils {
     private RepositoryUtils() {
     }
 
-    static DatastreamVersionType getLastStreamVersion(DigitalObject object, String streamID) {
+    public static DatastreamVersionType getLastStreamVersion(DigitalObject object, String streamID) {
         for (DatastreamType datastreamType : object.getDatastream()) {
             if (streamID.equals(datastreamType.getID())) {
                 return getLastStreamVersion(datastreamType);
@@ -75,7 +76,7 @@ public class RepositoryUtils {
     private static final String LOCAL_REF_PREFIX = "http://local.fedora.server/fedora/get/";
 
 
-    static InputStream getStreamContent(DatastreamVersionType stream, AkubraDOManager manager) throws TransformerException, IOException {
+    public static InputStream getStreamContent(DatastreamVersionType stream, Repository repository) throws TransformerException, IOException {
         if (stream.getXmlContent() != null) {
             StringWriter wrt = new StringWriter();
             for (Element element : stream.getXmlContent().getAny()) {
@@ -84,12 +85,12 @@ public class RepositoryUtils {
             return IOUtils.toInputStream(wrt.toString(), Charset.forName("UTF-8"));
         } else if (stream.getContentLocation() != null) {
             if (stream.getContentLocation().getTYPE().equals("INTERNAL_ID")) {
-                return manager.retrieveDatastream(stream.getContentLocation().getREF());
+                return repository.retrieveDatastream(stream.getContentLocation().getREF());
             } else if (stream.getContentLocation().getTYPE().equals("URL")) {
                 if (stream.getContentLocation().getREF().startsWith(LOCAL_REF_PREFIX)) {
                     String[] refArray = stream.getContentLocation().getREF().replace(LOCAL_REF_PREFIX, "").split("/");
                     if (refArray.length == 2) {
-                        return manager.retrieveDatastream(refArray[0] + "+" + refArray[1] + "+" + refArray[1] + ".0");
+                        return repository.retrieveDatastream(refArray[0] + "+" + refArray[1] + "+" + refArray[1] + ".0");
                     } else {
                         throw new IOException("Invalid datastream local reference: " + stream.getContentLocation().getREF());
                     }

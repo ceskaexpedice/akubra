@@ -1,10 +1,17 @@
 package org.ceskaexpedice.akubra.access.impl;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.common.SolrDocument;
 import org.ceskaexpedice.akubra.access.*;
 import org.ceskaexpedice.akubra.core.repository.Repository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
+import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
+import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
 import org.ceskaexpedice.akubra.utils.Dom4jUtils;
+import org.ceskaexpedice.model.DatastreamVersionType;
+import org.ceskaexpedice.model.DigitalObject;
 import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -89,7 +96,26 @@ public class RepositoryAccessImpl implements RepositoryAccess {
 
     @Override
     public DatastreamContentWrapper getDatastreamContent(String pid, String dsId) {
-        return null;
+        try {
+            /*
+            pid = makeSureObjectPid(pid);
+            if (this.accessLog != null && this.accessLog.isReportingAccess(pid, datastreamName)) {
+                reportAccess(pid, datastreamName);
+            }*/
+            DigitalObject object = repository.readObjectFromStorage(pid);
+            if (object != null) {
+                DatastreamVersionType stream = RepositoryUtils.getLastStreamVersion(object, dsId);
+                if (stream != null) {
+                    return new DatastreamContentWrapperImpl(RepositoryUtils.getStreamContent(stream, repository));
+                } else {
+                    throw new IOException("cannot find stream '" + dsId + "' for pid '" + pid + "'");
+                }
+            } else {
+                throw new IOException("cannot find pid '" + pid + "'");
+            }
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
     }
 
     @Override
@@ -263,9 +289,67 @@ public class RepositoryAccessImpl implements RepositoryAccess {
 
     @Override
     public void queryProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> mapper) {
+        try {
+            Pair<Long, List<SolrDocument>> cp =
+                    repository.getProcessingIndexFeeder().getPageSortedByTitle(
+                            params.getQueryString(),
+                            params.getRows(),
+                            params.getPageIndex(),
+                            params.getFieldsToFetch()
+                    );
+            for(SolrDocument doc : cp.getRight()) {
+                // TODO
+                mapper.accept(new ProcessingIndexItemImpl(doc));
+            }
+        } catch (IOException e) {
+            throw new RepositoryException(e);
+        } catch (SolrServerException e) {
+            throw new RepositoryException(e);
+        }
 
     }
+    /*
+    @Override
+    public Pair<Long, List<String>> getPidsOfObjectsByModel(String model, int rows, int pageIndex) throws RepositoryException, IOException, SolrServerException {
+        String query = String.format("type:description AND model:%s", "model\\:" + model); //prvni "model:" je filtr na solr pole, druhy "model:" je hodnota pole, coze  uprime zbytecne
+        ProcessingIndexQueryParameters params = new ProcessingIndexQueryParameters.Builder()
+                .queryString(query)
+                .sortField("title")
+                .ascending(true)
+                .rows(rows)
+                .pageIndex(pageIndex)
+                .fieldsToFetch(List.of("source"))
+                .build();
+        org.apache.commons.lang3.tuple.Pair<Long, List<SolrDocument>> cp =
+                akubraRepositoryImpl.getProcessingIndexFeeder().getPageSortedByTitle(
+                        params.getQueryString(),
+                        params.getRows(),
+                        params.getPageIndex(),
+                        params.getFieldsToFetch()
+                );
+        return new ResultMapper<Pair<Long, List<String>>>() {
+            @Override
+            public Pair<Long, List<String>> map(List<SolrDocument> documents, long totalRecords) {
+                List<String> pids = documents.stream().map(sd -> {
+                    Object fieldValue = sd.getFieldValue("source");
+                    return fieldValue.toString();
+                }).collect(Collectors.toList());
+                return new Pair<>(totalRecords, pids);
+            }
+        }.map(cp.getRight(), cp.getLeft());
 
+        // ---------- original---------------------------
+        String query = String.format("type:description AND model:%s", "model\\:" + model); //prvni "model:" je filtr na solr pole, druhy "model:" je hodnota pole, coze  uprime zbytecne
+        org.apache.commons.lang3.tuple.Pair<Long, List<SolrDocument>> cp = akubraRepositoryImpl.getProcessingIndexFeeder().getPageSortedByTitle(query, rows, pageIndex, Arrays.asList("source"));
+        Long numberOfRecords = cp.getLeft();
+        List<String> pids = cp.getRight().stream().map(sd -> {
+            Object fieldValue = sd.getFieldValue("source");
+            return fieldValue.toString();
+        }).collect(Collectors.toList());
+        return new Pair<>(numberOfRecords, pids);
+    }
+
+     */
     /*
     @Override
     public void updateInlineXmlDatastream(String pid, KnownDatastreams dsId, org.dom4j.Document streamDoc, String formatUri) throws RepositoryException, IOException {

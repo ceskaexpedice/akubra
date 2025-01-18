@@ -46,6 +46,11 @@ public interface Repository {
      */
     RepositoryObject getObject(String pid);
     DigitalObject readObjectCloneFromStorage(String pid);
+
+    DigitalObject readObjectFromStorage(String pid);
+
+    InputStream retrieveDatastream(String dsKey);
+
     InputStream retrieveObject(String pid);
 
     /**

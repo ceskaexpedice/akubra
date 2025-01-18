@@ -190,7 +190,7 @@ public class AkubraDOManager {
      * @return
      * @throws IOException
      */
-    DigitalObject readObjectFromStorage(String pid) throws IOException {
+    DigitalObject readObjectFromStorage(String pid) {
         return readObjectFromStorageOrCache(pid, true);
     }
 

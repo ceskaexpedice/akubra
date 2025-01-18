@@ -44,11 +44,15 @@ class RepositoryDatastreamImpl implements RepositoryDatastream {
 
     @Override
     public InputStream getContent() throws RepositoryException {
+        /* TODO
         try {
             return RepositoryUtils.getStreamContent(RepositoryUtils.getLastStreamVersion(datastream), manager);
         } catch (Exception e) {
             throw new RepositoryException(e);
         }
+
+         */
+        return null;
     }
 
     @Override

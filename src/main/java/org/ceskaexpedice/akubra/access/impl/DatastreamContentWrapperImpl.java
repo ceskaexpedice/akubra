@@ -7,9 +7,11 @@ import org.dom4j.Document;
 import java.io.InputStream;
 
 public class DatastreamContentWrapperImpl implements DatastreamContentWrapper {
-    private final RepositoryDatastream content;
+//    private final RepositoryDatastream content;
+    private final InputStream content;
 
-    public DatastreamContentWrapperImpl(RepositoryDatastream content) {
+
+    public DatastreamContentWrapperImpl(InputStream content) {
         this.content = content;
     }
 
@@ -31,7 +33,8 @@ public class DatastreamContentWrapperImpl implements DatastreamContentWrapper {
         }
         return new ByteArrayInputStream(content);
 
-         */return null;
+         */
+        return content;
     }
 
     public Document asXml() {

@@ -17,7 +17,6 @@
 
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import org.ceskaexpedice.akubra.access.RepositoryObjectWrapper;
 import org.ceskaexpedice.model.DigitalObject;
 import org.ceskaexpedice.model.ObjectPropertiesType;
 import org.ceskaexpedice.model.PropertyType;
@@ -56,12 +55,12 @@ public class RepositoryImpl implements Repository {
     @Override
     public RepositoryObject createOrFindObject(String ident) {
         if (objectExists(ident)) {
-            try {
+            //try {
                 RepositoryObjectImpl obj = new RepositoryObjectImpl(this.manager.readObjectFromStorage(ident), this.manager, this.feeder);
                 return obj;
-            } catch (IOException e) {
-                throw new RepositoryException(e);
-            }
+            //} catch (IOException e) {
+              //  throw new RepositoryException(e);
+           // }
         } else {
             try {
                 DigitalObject emptyDigitalObject = createEmptyDigitalObject(ident);
@@ -107,7 +106,7 @@ public class RepositoryImpl implements Repository {
 
     @Override
     public RepositoryObject getObject(String ident) {
-        try {
+        //try {
             DigitalObject digitalObject = this.manager.readObjectFromStorage(ident);
             if (digitalObject == null) {
                 //otherwise later causes NPE at places like AkubraUtils.streamExists(DigitalObject object, String streamID)
@@ -115,14 +114,29 @@ public class RepositoryImpl implements Repository {
             }
             RepositoryObjectImpl obj = new RepositoryObjectImpl(digitalObject, this.manager, this.feeder);
             return obj;
-        } catch (IOException e) {
+    /*
+    } catch (IOException e) {
             throw new RepositoryException(e);
-        }
+        }*/
     }
 
     @Override
     public DigitalObject readObjectCloneFromStorage(String pid) {
         return manager.readObjectCloneFromStorage(pid);
+    }
+
+    @Override
+    public DigitalObject readObjectFromStorage(String pid) {
+        return manager.readObjectFromStorage(pid);
+    }
+
+    @Override
+    public InputStream retrieveDatastream(String dsKey) {
+        try {
+            return manager.retrieveDatastream(dsKey);
+        } catch (IOException e) {
+            throw new RepositoryException(e);
+        }
     }
 
     @Override
