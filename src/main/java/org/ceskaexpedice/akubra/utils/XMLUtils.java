@@ -1,9 +1,9 @@
 package org.ceskaexpedice.akubra.utils;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -25,18 +25,19 @@ import java.util.logging.Logger;
 
 /**
  * Handle XML; parsing, find, etc..
+ *
  * @author pavels
  *
  * <b>Implementation note: All DOM access methods are synchronized on Document object </b>
- *
  */
 public class XMLUtils {
 
     public static final Logger LOGGER = Logger.getLogger(XMLUtils.class.getName());
-    
-    
+
+
     /**
      * PArse document from reader
+     *
      * @param reader Reader
      * @return DOM
      * @throws ParserConfigurationException
@@ -45,14 +46,15 @@ public class XMLUtils {
      */
     public static Document parseDocument(Reader reader) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory newInstance = DocumentBuilderFactory.newInstance();
-        LOGGER.log(Level.FINE, "builder factory instance :"+newInstance.getClass().getResource(newInstance.getClass().getSimpleName()+".class"));
+        LOGGER.log(Level.FINE, "builder factory instance :" + newInstance.getClass().getResource(newInstance.getClass().getSimpleName() + ".class"));
         DocumentBuilder builder = newInstance.newDocumentBuilder();
         return builder.parse(new InputSource(reader));
     }
 
     /**
      * Parse document from reader with namespace aware flag
-     * @param reader Reader
+     *
+     * @param reader         Reader
      * @param namespaceaware namespace aware flag
      * @return DOM
      * @throws ParserConfigurationException
@@ -61,7 +63,7 @@ public class XMLUtils {
      */
     public static Document parseDocument(Reader reader, boolean namespaceaware) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        LOGGER.log(Level.FINE, "builder factory instance :"+factory.getClass().getResource(factory.getClass().getSimpleName()+".class"));
+        LOGGER.log(Level.FINE, "builder factory instance :" + factory.getClass().getResource(factory.getClass().getSimpleName() + ".class"));
         factory.setNamespaceAware(namespaceaware);
         DocumentBuilder builder = factory.newDocumentBuilder();
         return builder.parse(new InputSource(reader));
@@ -69,6 +71,7 @@ public class XMLUtils {
 
     /**
      * Parse document from input stream
+     *
      * @param is InputStream
      * @return DOM
      * @throws ParserConfigurationException
@@ -77,14 +80,15 @@ public class XMLUtils {
      */
     public static Document parseDocument(InputStream is) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory newInstance = DocumentBuilderFactory.newInstance();
-        LOGGER.log(Level.FINE, "builder factory instance :"+newInstance.getClass().getResource(newInstance.getClass().getSimpleName()+".class"));
+        LOGGER.log(Level.FINE, "builder factory instance :" + newInstance.getClass().getResource(newInstance.getClass().getSimpleName() + ".class"));
         DocumentBuilder builder = newInstance.newDocumentBuilder();
         return builder.parse(is);
     }
 
     /**
      * Parse document form inputstream with namespace aware flag
-     * @param is Inputstream
+     *
+     * @param is             Inputstream
      * @param namespaceaware namespace aware flag
      * @return
      * @throws ParserConfigurationException
@@ -93,7 +97,7 @@ public class XMLUtils {
      */
     public static Document parseDocument(InputStream is, boolean namespaceaware) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        LOGGER.log(Level.FINE, "builder factory instance :"+factory.getClass().getResource(factory.getClass().getSimpleName()+".class"));
+        LOGGER.log(Level.FINE, "builder factory instance :" + factory.getClass().getResource(factory.getClass().getSimpleName() + ".class"));
         factory.setNamespaceAware(namespaceaware);
         DocumentBuilder builder = factory.newDocumentBuilder();
         return builder.parse(is);
@@ -101,12 +105,13 @@ public class XMLUtils {
 
     /**
      * Returns child elements from given top element
+     *
      * @param topElm
      * @return
      */
     public static List<Element> getElements(Element topElm) {
         if (topElm == null) throw new IllegalArgumentException("topElm cannot be null");
-        synchronized(topElm.getOwnerDocument()) {
+        synchronized (topElm.getOwnerDocument()) {
             List<Element> retVals = new ArrayList<Element>();
             NodeList childNodes = topElm.getChildNodes();
             for (int i = 0, ll = childNodes.getLength(); i < ll; i++) {
@@ -121,13 +126,14 @@ public class XMLUtils {
 
     /**
      * Returns child elements from given top element and accepted by given filter
+     *
      * @param topElm Top element
      * @param filter Filter
      * @return
      */
-    public static List<Element> getElements(Element topElm, ElementsFilter filter ) {
+    public static List<Element> getElements(Element topElm, ElementsFilter filter) {
         if (topElm == null) throw new IllegalArgumentException("topElm cannot be null");
-        synchronized(topElm.getOwnerDocument()) {
+        synchronized (topElm.getOwnerDocument()) {
             List<Element> retVals = new ArrayList<Element>();
             NodeList childNodes = topElm.getChildNodes();
             for (int i = 0, ll = childNodes.getLength(); i < ll; i++) {
@@ -142,10 +148,10 @@ public class XMLUtils {
             return retVals;
         }
     }
-    
+
     public static List<Element> getElementsRecursive(Element topElm, ElementsFilter filter) {
         if (topElm == null) throw new IllegalArgumentException("topElm cannot be null");
-        synchronized(topElm.getOwnerDocument()) {
+        synchronized (topElm.getOwnerDocument()) {
             List<Element> elms = new ArrayList<Element>();
             Stack<Element> stack = new Stack<Element>();
             stack.push(topElm);
@@ -165,8 +171,8 @@ public class XMLUtils {
             return elms;
         }
     }
-    
-    
+
+
     private static boolean namespacesAreSame(String fNamespace, String sNamespace) {
         if ((fNamespace == null) && (sNamespace == null)) {
             return true;
@@ -178,13 +184,14 @@ public class XMLUtils {
 
     /**
      * Finds element in DOM tree
-     * @param topElm Top element
+     *
+     * @param topElm   Top element
      * @param nodeName Node name
      * @return returns found node
      */
     public static Element findElement(Element topElm, String nodeName) {
         if (topElm == null) throw new IllegalArgumentException("topElm cannot be null");
-        synchronized(topElm.getOwnerDocument()) {
+        synchronized (topElm.getOwnerDocument()) {
             Stack<Element> stack = new Stack<Element>();
             stack.push(topElm);
             while (!stack.isEmpty()) {
@@ -213,14 +220,15 @@ public class XMLUtils {
 
     /**
      * Finds element in DOM tree
-     * @param topElm Top element
+     *
+     * @param topElm   Top element
      * @param nodeName Node name
      * @return returns found node
      */
     public static List<Node> findNodesByType(Element topElm, int type) {
         List<Node> retvals = new ArrayList<Node>();
         if (topElm == null) throw new IllegalArgumentException("topElm cannot be null");
-        synchronized(topElm.getOwnerDocument()) {
+        synchronized (topElm.getOwnerDocument()) {
             Stack<Node> stack = new Stack<Node>();
             stack.push(topElm);
             while (!stack.isEmpty()) {
@@ -247,14 +255,15 @@ public class XMLUtils {
 
     /**
      * Finds element in DOM tree
-     * @param topElm Root node
+     *
+     * @param topElm    Root node
      * @param localName Local element name
      * @param namespace Element namespace
      * @return found element
      */
     public static Element findElement(Element topElm, String localName, String namespace) {
         if (topElm == null) throw new IllegalArgumentException("topElm cannot be null");
-        synchronized(topElm.getOwnerDocument()) {
+        synchronized (topElm.getOwnerDocument()) {
             Stack<Element> stack = new Stack<Element>();
             stack.push(topElm);
             while (!stack.isEmpty()) {
@@ -274,7 +283,7 @@ public class XMLUtils {
                 Collections.reverse(nodesToProcess);
                 for (Node node : nodesToProcess) {
                     stack.push((Element) node);
-                    
+
                 }
             }
             return null;
@@ -282,10 +291,9 @@ public class XMLUtils {
     }
 
 
-    
     public static Element findElement(Element topElm, ElementsFilter filter) {
         if (topElm == null) throw new IllegalArgumentException("topElm cannot be null");
-        synchronized(topElm.getOwnerDocument()) {
+        synchronized (topElm.getOwnerDocument()) {
             Stack<Element> stack = new Stack<Element>();
             stack.push(topElm);
             while (!stack.isEmpty()) {
@@ -305,18 +313,19 @@ public class XMLUtils {
                 }
                 Collections.reverse(nodesToProcess);
                 for (Node node : nodesToProcess) {
-                    stack.push((Element)node);
+                    stack.push((Element) node);
                 }
             }
             return null;
         }
     }
-    
-    
+
+
     /**
      * Serialize W3C document into given output stream
+     *
      * @param doc W3C document
-     * @param out OutputStream 
+     * @param out OutputStream
      * @throws TransformerException
      */
     public static void print(Document doc, OutputStream out) throws TransformerException {
@@ -330,6 +339,7 @@ public class XMLUtils {
 
     /**
      * Print document to given writer
+     *
      * @param doc Printing document
      * @param out Writer
      * @throws TransformerException
@@ -344,7 +354,8 @@ public class XMLUtils {
     }
 
     /**
-     * Print part of document 
+     * Print part of document
+     *
      * @param elm Root element which should be written
      * @param out OuputStream
      * @throws TransformerException
@@ -359,7 +370,8 @@ public class XMLUtils {
     }
 
     /**
-     * Print part of document 
+     * Print part of document
+     *
      * @param elm Root element which should be written
      * @param out Writer
      * @throws TransformerException
@@ -372,9 +384,10 @@ public class XMLUtils {
         StreamResult result = new StreamResult(out);
         transformer.transform(source, result);
     }
-    
+
     /**
-     * Create new empty document 
+     * Create new empty document
+     *
      * @param rootName Name of root element
      * @return
      * @throws ParserConfigurationException
@@ -387,15 +400,58 @@ public class XMLUtils {
         document.appendChild(rootElement);
         return document;
     }
-    
+
+    public static String toString(Element elem, boolean pretty) {
+        if (elem == null) return "";
+        initializeDOM();
+        LSSerializer lss = getLSSerializer();
+        DOMConfiguration dconf = lss.getDomConfig();
+
+        dconf.setParameter("xml-declaration", Boolean.FALSE);
+        if (pretty)
+            dconf.setParameter("format-pretty-print", Boolean.TRUE);
+        return lss.writeToString(elem);
+    }
+
+    static synchronized LSSerializer getLSSerializer() {
+        return domLsImpl.createLSSerializer();
+    }
+
+    static DOMImplementationRegistry domRegistry = null;
+    static DOMImplementation domImpl = null;
+    static DOMImplementationLS domLsImpl = null;
+
+    static synchronized void initializeDOM() {
+        if (domRegistry != null) return;
+        try {
+            domRegistry = DOMImplementationRegistry.newInstance();
+            domImpl = domRegistry.getDOMImplementation("XML 3.0");
+            if (domImpl == null) {
+                throw new RuntimeException("Unable to get DOM implementation with 'XML 3.0' features");
+            }
+
+            domLsImpl = (DOMImplementationLS) domRegistry.getDOMImplementation("LS");
+            if (domLsImpl == null) {
+                throw new RuntimeException("Unable to get DOM implementation with 'LS' features for Load and Store Parsing / Serializing");
+            }
+        } catch (Exception e) {
+            // The initialisation failed, so null everything so we don't end up in an unknown state
+            domRegistry = null;
+            domImpl = null;
+            domLsImpl = null;
+            throw new RuntimeException("aspire.framework.AXML.cant-initialize-dom-registry", e);
+        }
+    }
+
     /**
-     * Elements filter 
-     * @author pavels
+     * Elements filter
      *
+     * @author pavels
      */
     public static interface ElementsFilter {
         /**
          * Returns true if given element should be accepted
+         *
          * @param element
          * @return
          */

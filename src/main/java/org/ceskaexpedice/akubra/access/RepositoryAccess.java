@@ -42,15 +42,17 @@ public interface RepositoryAccess {
     //void deleteObject(String pid, boolean deleteDataOfManagedDatastreams);
 
     // datastream
-    DatastreamMetadata getDatastreamMetadata(String pid, String dsId);
     //- getMimeType , getCreatedData, (typ x,M,....control-group)
+    DatastreamMetadata getDatastreamMetadata(String pid, String dsId);
+
     DatastreamContentWrapper getDatastreamContent(String pid, String dsId);
+
     DatastreamContentWrapper getDatastreamContent(String pid, String dsId, String version);
+
     boolean datastreamExists(String pid, String dsId);
+
     RelsExtWrapper processRelsExt(String pid);
-    //- podavat List<RelstExtRelation>
-    // - List<RelsExtRelation> getRelation(String name, String namespace)
-    // RelsExtItem - RelsExt
+
     List<String> getDatastreamNames(String pid);
 
 

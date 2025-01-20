@@ -1,8 +1,11 @@
 package org.ceskaexpedice.akubra.access;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.ceskaexpedice.akubra.access.impl.DatastreamContentWrapperImpl;
 import org.ceskaexpedice.akubra.access.impl.ProcessingIndexItemImpl;
 import org.ceskaexpedice.akubra.core.Configuration;
 import org.ceskaexpedice.akubra.locks.HazelcastServerNode;
+import org.ceskaexpedice.akubra.utils.RelsExtHelper;
 import org.dom4j.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -101,6 +104,23 @@ public class RepositoryAccessTest {
         // TODO
         Path targetFile = Path.of("c:\\tmp\\output.jpg");
         Files.copy(imgThumb, targetFile, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    @Test
+    void testGetDatastreamContent_relsExt() throws IOException {
+        Document document = repositoryAccess.getDatastreamContent("uuid:5035a48a-5e2e-486c-8127-2fa650842e46", "RELS-EXT").asXml();
+        assertNotNull(document);
+        System.out.println(document.asXML());
+    }
+
+    @Test
+    void testGetDatastreamContent_relsExtDom() throws Exception {
+        // TODO
+        RelsExtWrapper relsExtWrapper = repositoryAccess.processRelsExt("uuid:5035a48a-5e2e-486c-8127-2fa650842e46");
+        assertNotNull(relsExtWrapper);
+        relsExtWrapper.getRelations().forEach(System.out::println);
+//        String model = RelsExtHelper.getModel(xmlDom.getDocumentElement());
+  //      System.out.println(model);
     }
 
     @Test

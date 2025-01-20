@@ -11,4 +11,6 @@ public interface DatastreamContentWrapper {
     InputStream asStream();
 
     Document asXml();
+
+    org.w3c.dom.Document asXmlDom();
 }

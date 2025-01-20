@@ -6,6 +6,7 @@ import org.ceskaexpedice.akubra.core.repository.Repository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import org.ceskaexpedice.akubra.utils.Utils;
+import org.ceskaexpedice.akubra.utils.XMLUtils;
 import org.ceskaexpedice.model.DigitalObject;
 import org.dom4j.Document;
 
@@ -23,6 +24,7 @@ public class RepositoryObjectWrapperImpl implements RepositoryObjectWrapper {
         this.repository = repository;
     }
 
+    @Override
     public InputStream asStream(FoxmlType foxmlType) {
         if (foxmlType == FoxmlType.archive) {
             DigitalObject obj = repository.readObjectCloneFromStorage(pid);
@@ -33,6 +35,7 @@ public class RepositoryObjectWrapperImpl implements RepositoryObjectWrapper {
         }
     }
 
+    @Override
     public Document asXml(FoxmlType foxmlType) {
         if (foxmlType == FoxmlType.archive) {
             // TODO
@@ -43,6 +46,24 @@ public class RepositoryObjectWrapperImpl implements RepositoryObjectWrapper {
             try {
                 return Utils.inputstreamToDocument(object.getFoxml(), true);
             } catch (IOException e) {
+                throw new RepositoryException(e);
+            }
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public org.w3c.dom.Document asXmlDom(FoxmlType foxmlType) {
+        if (foxmlType == FoxmlType.archive) {
+            // TODO
+        }
+        Lock readLock = repository.getReadLock(pid);
+        try {
+            RepositoryObject object = repository.getObject(pid);
+            try {
+                return XMLUtils.parseDocument(object.getFoxml());
+            } catch (Exception e) {
                 throw new RepositoryException(e);
             }
         } finally {

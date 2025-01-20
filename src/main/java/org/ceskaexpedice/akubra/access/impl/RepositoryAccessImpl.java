@@ -13,6 +13,7 @@ import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 import org.ceskaexpedice.model.DatastreamVersionType;
 import org.ceskaexpedice.model.DigitalObject;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
@@ -106,7 +107,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
             if (object != null) {
                 DatastreamVersionType stream = RepositoryUtils.getLastStreamVersion(object, dsId);
                 if (stream != null) {
-                    return new DatastreamContentWrapperImpl(RepositoryUtils.getStreamContent(stream, repository));
+                    return new DatastreamContentWrapperImpl(object, RepositoryUtils.getStreamContent(stream, repository));
                 } else {
                     throw new IOException("cannot find stream '" + dsId + "' for pid '" + pid + "'");
                 }
@@ -130,7 +131,8 @@ public class RepositoryAccessImpl implements RepositoryAccess {
 
     @Override
     public RelsExtWrapper processRelsExt(String pid) {
-        return null;
+        Document xmlDom = getDatastreamContent(pid, KnownDatastreams.RELS_EXT.toString()).asXmlDom();
+        return new RelsExtWrapperImpl(xmlDom);
     }
 
 

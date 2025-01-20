@@ -11,6 +11,8 @@ public interface RepositoryObjectWrapper {
 
     Document asXml(FoxmlType foxmlType);
 
+    org.w3c.dom.Document asXmlDom(FoxmlType foxmlType);
+
     String asString(FoxmlType foxmlType);
 
 }

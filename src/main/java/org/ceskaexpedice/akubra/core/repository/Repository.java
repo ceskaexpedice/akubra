@@ -45,6 +45,7 @@ public interface Repository {
      * @throws
      */
     RepositoryObject getObject(String pid);
+
     DigitalObject readObjectCloneFromStorage(String pid);
 
     DigitalObject readObjectFromStorage(String pid);

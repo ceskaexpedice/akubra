@@ -6,7 +6,7 @@ package org.ceskaexpedice.akubra.utils.pid;
  
  * Window - Preferences - Java - Code Style - Code Templates
  */
-class LexerException extends Exception {
+public class LexerException extends Exception {
 
 	/**
 	 * 
