@@ -13,7 +13,6 @@ import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 import org.ceskaexpedice.model.DatastreamVersionType;
 import org.ceskaexpedice.model.DigitalObject;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
@@ -103,11 +102,12 @@ public class RepositoryAccessImpl implements RepositoryAccess {
             if (this.accessLog != null && this.accessLog.isReportingAccess(pid, datastreamName)) {
                 reportAccess(pid, datastreamName);
             }*/
-            DigitalObject object = repository.readObjectFromStorage(pid);
+            DigitalObject object = repository.getObject(pid).getDigitalObject();
             if (object != null) {
                 DatastreamVersionType stream = RepositoryUtils.getLastStreamVersion(object, dsId);
                 if (stream != null) {
-                    return new DatastreamContentWrapperImpl(object, RepositoryUtils.getStreamContent(stream, repository));
+                    // TODO return new DatastreamContentWrapperImpl(object, RepositoryUtils.getStreamContent(stream, repository));
+                    return null;
                 } else {
                     throw new IOException("cannot find stream '" + dsId + "' for pid '" + pid + "'");
                 }

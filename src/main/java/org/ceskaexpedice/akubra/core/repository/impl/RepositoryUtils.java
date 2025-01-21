@@ -1,13 +1,10 @@
 package org.ceskaexpedice.akubra.core.repository.impl;
 
 import org.ceskaexpedice.akubra.core.repository.Repository;
-import org.ceskaexpedice.model.DatastreamType;
-import org.ceskaexpedice.model.DatastreamVersionType;
-import org.ceskaexpedice.model.DigitalObject;
-import org.ceskaexpedice.model.PropertyType;
+import org.ceskaexpedice.akubra.core.repository.RepositoryException;
+import org.ceskaexpedice.model.*;
 import org.ceskaexpedice.akubra.utils.SafeSimpleDateFormat;
 import org.ceskaexpedice.akubra.utils.XMLUtils;
-import org.ceskaexpedice.akubra.core.Configuration;
 import org.akubraproject.map.IdMapper;
 import org.apache.commons.io.IOUtils;
 import org.fcrepo.common.PID;
@@ -36,12 +33,19 @@ import java.util.zip.GZIPInputStream;
 
 public class RepositoryUtils {
     private static final Logger LOGGER = Logger.getLogger(RepositoryUtils.class.getName());
-    public static final SafeSimpleDateFormat DATE_FORMAT = new SafeSimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSS'Z'");
+    private static final SafeSimpleDateFormat DATE_FORMAT = new SafeSimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSS'Z'");
+    private static final String RELS_EXT_STREAM = "RELS-EXT";
+    private static final String RELS_EXT_FORMAT_URI = "info:fedora/fedora-system:FedoraRELSExt-1.0";
+    private static final String BIBLIO_MODS_FORMAT_URI = "http://www.loc.gov/mods/v3";
+    private static final String DC_FORMAT_URI = "http://www.openarchives.org/OAI/2.0/oai_dc/";
+    private static final String DC_STREAM = "DC";
+    private static final String BIBLIO_MODS_STREAM = "BIBLIO_MODS";
+    private static final String LOCAL_REF_PREFIX = "http://local.fedora.server/fedora/get/";
 
     private RepositoryUtils() {
     }
 
-    public static DatastreamVersionType getLastStreamVersion(DigitalObject object, String streamID) {
+    static DatastreamVersionType getLastStreamVersion(DigitalObject object, String streamID) {
         for (DatastreamType datastreamType : object.getDatastream()) {
             if (streamID.equals(datastreamType.getID())) {
                 return getLastStreamVersion(datastreamType);
@@ -72,39 +76,39 @@ public class RepositoryUtils {
         return false;
     }
 
-
-    private static final String LOCAL_REF_PREFIX = "http://local.fedora.server/fedora/get/";
-
-
-    public static InputStream getStreamContent(DatastreamVersionType stream, Repository repository) throws TransformerException, IOException {
-        if (stream.getXmlContent() != null) {
-            StringWriter wrt = new StringWriter();
-            for (Element element : stream.getXmlContent().getAny()) {
-                XMLUtils.print(element, wrt);
-            }
-            return IOUtils.toInputStream(wrt.toString(), Charset.forName("UTF-8"));
-        } else if (stream.getContentLocation() != null) {
-            if (stream.getContentLocation().getTYPE().equals("INTERNAL_ID")) {
-                return repository.retrieveDatastream(stream.getContentLocation().getREF());
-            } else if (stream.getContentLocation().getTYPE().equals("URL")) {
-                if (stream.getContentLocation().getREF().startsWith(LOCAL_REF_PREFIX)) {
-                    String[] refArray = stream.getContentLocation().getREF().replace(LOCAL_REF_PREFIX, "").split("/");
-                    if (refArray.length == 2) {
-                        return repository.retrieveDatastream(refArray[0] + "+" + refArray[1] + "+" + refArray[1] + ".0");
+    static InputStream getStreamContent(DatastreamVersionType stream, AkubraDOManager manager) {
+        try {
+            if (stream.getXmlContent() != null) {
+                StringWriter wrt = new StringWriter();
+                for (Element element : stream.getXmlContent().getAny()) {
+                    XMLUtils.print(element, wrt);
+                }
+                return IOUtils.toInputStream(wrt.toString(), Charset.forName("UTF-8"));
+            } else if (stream.getContentLocation() != null) {
+                if (stream.getContentLocation().getTYPE().equals("INTERNAL_ID")) {
+                    return manager.retrieveDatastream(stream.getContentLocation().getREF());
+                } else if (stream.getContentLocation().getTYPE().equals("URL")) {
+                    if (stream.getContentLocation().getREF().startsWith(LOCAL_REF_PREFIX)) {
+                        String[] refArray = stream.getContentLocation().getREF().replace(LOCAL_REF_PREFIX, "").split("/");
+                        if (refArray.length == 2) {
+                            return manager.retrieveDatastream(refArray[0] + "+" + refArray[1] + "+" + refArray[1] + ".0");
+                        } else {
+                            throw new IOException("Invalid datastream local reference: " + stream.getContentLocation().getREF());
+                        }
                     } else {
-                        throw new IOException("Invalid datastream local reference: " + stream.getContentLocation().getREF());
+                        return readFromURL(stream.getContentLocation().getREF());
                     }
                 } else {
-                    return readFromURL(stream.getContentLocation().getREF());
+                    throw new IOException("Unsupported datastream reference type: " + stream.getContentLocation().getTYPE() + "(" + stream.getContentLocation().getREF() + ")");
                 }
+            } else if (stream.getBinaryContent() != null) {
+                LOGGER.warning("Reading binaryContent from the managed stream.");
+                return new ByteArrayInputStream(stream.getBinaryContent());
             } else {
-                throw new IOException("Unsupported datastream reference type: " + stream.getContentLocation().getTYPE() + "(" + stream.getContentLocation().getREF() + ")");
+                throw new IOException("Unsupported datastream content type: " + stream.getID());
             }
-        } else if (stream.getBinaryContent() != null) {
-            LOGGER.warning("Reading binaryContent from the managed stream.");
-            return new ByteArrayInputStream(stream.getBinaryContent());
-        } else {
-            throw new IOException("Unsupported datastream content type: " + stream.getID());
+        } catch (Exception e) {
+            throw new RepositoryException(e);
         }
     }
 
@@ -126,14 +130,8 @@ public class RepositoryUtils {
             return DatatypeFactory.newInstance().newXMLGregorianCalendar(DATE_FORMAT.format(new Date()));
         } catch (DatatypeConfigurationException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            throw new RuntimeException(e);
+            throw new RepositoryException(e);
         }
-
-//            return DatatypeFactory.newInstance().newXMLGregorianCalendar(DATE_FORMAT.format(new Date()));
-//        } catch (DatatypeConfigurationException e) {
-//            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-//            throw new RuntimeException(e);
-//        }
     }
 
     /**
@@ -142,7 +140,7 @@ public class RepositoryUtils {
      * @param pid PID of the FOXML object (uuid:xxxxxx...)
      * @return internal file path relative to object store root, depends ob the property objectStore.pattern
      */
-    public static String getAkubraInternalId(String pid) {
+    static String getAkubraInternalId(String pid) {
         if (pid == null) {
             return "";
         }
@@ -164,13 +162,13 @@ public class RepositoryUtils {
         return internalId.toString();
     }
 
-    static Date getLastModified(DigitalObject object) throws IOException {
+    static Date getLastModified(DigitalObject object) {
         for (PropertyType propertyType : object.getObjectProperties().getProperty()) {
             if ("info:fedora/fedora-system:def/view#lastModifiedDate".equals(propertyType.getNAME())) {
                 try {
                     return DATE_FORMAT.parse(propertyType.getVALUE());
                 } catch (ParseException e) {
-                    throw new IOException("Cannot parse lastModifiedDate: " + object.getPID() + ": " + propertyType.getVALUE());
+                    throw new RepositoryException("Cannot parse lastModifiedDate: " + object.getPID() + ": " + propertyType.getVALUE());
                 }
             }
         }
@@ -186,5 +184,33 @@ public class RepositoryUtils {
         propertyType.setNAME(name);
         propertyType.setVALUE(value);
         return propertyType;
+    }
+
+    static DigitalObject createEmptyDigitalObject(String pid) {
+        DigitalObject retval = new DigitalObject();
+        retval.setPID(pid);
+        retval.setVERSION("1.1");
+        ObjectPropertiesType objectPropertiesType = new ObjectPropertiesType();
+        List<PropertyType> propertyTypeList = objectPropertiesType.getProperty();
+        propertyTypeList.add(RepositoryUtils.createProperty("info:fedora/fedora-system:def/model#state", "Active"));
+        propertyTypeList.add(RepositoryUtils.createProperty("info:fedora/fedora-system:def/model#ownerId", "fedoraAdmin"));
+        String currentTime = RepositoryUtils.currentTimeString();
+        propertyTypeList.add(RepositoryUtils.createProperty("info:fedora/fedora-system:def/model#createdDate", currentTime));
+        propertyTypeList.add(RepositoryUtils.createProperty("info:fedora/fedora-system:def/view#lastModifiedDate", currentTime));
+        retval.setObjectProperties(objectPropertiesType);
+        return retval;
+    }
+
+    static String getFormatUriForDS(String dsID) {
+        if (RELS_EXT_STREAM.equals(dsID)) {
+            return RELS_EXT_FORMAT_URI;
+        }
+        if (BIBLIO_MODS_STREAM.equals(dsID)) {
+            return BIBLIO_MODS_FORMAT_URI;
+        }
+        if (DC_STREAM.equals(dsID)) {
+            return DC_FORMAT_URI;
+        }
+        return null;
     }
 }

@@ -30,29 +30,25 @@ import java.io.IOException;
 
 /**
  * AkubraRepositoryFactory
+ *
  * @author ppodsednik
  */
 public final class RepositoryFactory {
 
-  private RepositoryFactory() {
-  }
-
-  public static Repository createCoreRepository(Configuration configuration) {
-    try {
-      ProcessingIndexFeeder processingIndexFeeder = new ProcessingIndexFeeder(createProcessingUpdateClient(configuration));
-      AkubraDOManager akubraDOManager = new AkubraDOManager(createCacheManager(), configuration);
-      return new RepositoryImpl(processingIndexFeeder, akubraDOManager);
-    } catch (IOException e) {
-      throw new RepositoryException(e);
+    private RepositoryFactory() {
     }
 
-  }
+    public static Repository createCoreRepository(Configuration configuration) {
+        ProcessingIndexFeeder processingIndexFeeder = new ProcessingIndexFeeder(createProcessingUpdateClient(configuration));
+        AkubraDOManager akubraDOManager = new AkubraDOManager(createCacheManager(), configuration);
+        return new RepositoryImpl(processingIndexFeeder, akubraDOManager);
+    }
 
-  private static CacheManager createCacheManager() {
-    CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder().build();
-    cacheManager.init();
-    return cacheManager;
-  }
+    private static CacheManager createCacheManager() {
+        CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder().build();
+        cacheManager.init();
+        return cacheManager;
+    }
 
   /* TODO
   private SolrClient processingQueryClient() {
@@ -60,10 +56,10 @@ public final class RepositoryFactory {
     return new HttpSolrClient.Builder(processingSolrHost).build();
   }*/
 
-  private static SolrClient createProcessingUpdateClient(Configuration configuration) {
-    String processingSolrHost = configuration.getProcessingIndexHost();
-    return new ConcurrentUpdateSolrClient.Builder(processingSolrHost).withQueueSize(100).build();
-  }
+    private static SolrClient createProcessingUpdateClient(Configuration configuration) {
+        String processingSolrHost = configuration.getProcessingIndexHost();
+        return new ConcurrentUpdateSolrClient.Builder(processingSolrHost).withQueueSize(100).build();
+    }
 
 
 }

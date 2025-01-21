@@ -1,10 +1,10 @@
 package org.ceskaexpedice.akubra.core.processingindex;
 
+import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
 import org.ceskaexpedice.akubra.utils.XMLUtils;
 import org.ceskaexpedice.model.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
-import org.ceskaexpedice.akubra.utils.RepositoryUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -283,38 +283,38 @@ public class ProcessingIndexFeeder {
                         if (dcStreamExists) {
                             List<String> dcTList = dcTitle(repositoryObject);
                             if (dcTList != null && !dcTList.isEmpty()) {
-                                this.indexDescription(repositoryObject.getPath(), object, dcTList.stream().collect(Collectors.joining(" ")));
+                                this.indexDescription(repositoryObject.getPid(), object, dcTList.stream().collect(Collectors.joining(" ")));
                             } else {
-                                this.indexDescription(repositoryObject.getPath(), object, "");
+                                this.indexDescription(repositoryObject.getPid(), object, "");
                             }
                         } else if (modsStreamExists) {
                             // czech title or default
                             List<String> modsTList = modsTitle(repositoryObject, "cze");
                             if (modsTList != null && !modsTList.isEmpty()) {
-                                this.indexDescription(repositoryObject.getPath(), object, modsTList.stream().collect(Collectors.joining(" ")), ProcessingIndexFeeder.TitleType.mods);
+                                this.indexDescription(repositoryObject.getPid(), object, modsTList.stream().collect(Collectors.joining(" ")), ProcessingIndexFeeder.TitleType.mods);
                             } else {
-                                this.indexDescription(repositoryObject.getPath(), object, "");
+                                this.indexDescription(repositoryObject.getPid(), object, "");
                             }
                         }
                     } catch (ParserConfigurationException e) {
                         LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                        this.indexDescription(repositoryObject.getPath(), object, "");
+                        this.indexDescription(repositoryObject.getPid(), object, "");
                     } catch (SAXException e) {
                         LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                        this.indexDescription(repositoryObject.getPath(), object, "");
+                        this.indexDescription(repositoryObject.getPid(), object, "");
                     }
                 } else {
                     LOGGER.info("Index description without dc or mods");
-                    this.indexDescription(repositoryObject.getPath(), object, "");
+                    this.indexDescription(repositoryObject.getPid(), object, "");
                 }
             } catch (Throwable th) {
-                LOGGER.log(Level.SEVERE, "Cannot update processing index for "+ repositoryObject.getPath() + " - reindex manually.", th);
+                LOGGER.log(Level.SEVERE, "Cannot update processing index for "+ repositoryObject.getPid() + " - reindex manually.", th);
             }
         } else {
             try {
-                this.feedRelationDocument(repositoryObject.getPath(), localName, object);
+                this.feedRelationDocument(repositoryObject.getPid(), localName, object);
             } catch (Throwable th) {
-                LOGGER.log(Level.SEVERE, "Cannot update processing index for "+ repositoryObject.getPath() + " - reindex manually.", th);
+                LOGGER.log(Level.SEVERE, "Cannot update processing index for "+ repositoryObject.getPid() + " - reindex manually.", th);
             }
         }
     }
@@ -328,13 +328,13 @@ public class ProcessingIndexFeeder {
     }
 
     private List<String> dcTitle(RepositoryObject repositoryObject) throws RepositoryException, ParserConfigurationException, SAXException, IOException {
-        InputStream stream = repositoryObject.getStream(RepositoryUtils.DC_STREAM).getContent();
+        InputStream stream = repositoryObject.getStream(RepositoryUtils.DC_STREAM).getLastVersionContent();
         Element title = XMLUtils.findElement(XMLUtils.parseDocument(stream, true).getDocumentElement(), "title", RepositoryNamespaces.DC_NAMESPACE_URI);
         return title != null ? Arrays.asList(title.getTextContent()) : new ArrayList<>();
     }
 
     private List<String> modsTitle(RepositoryObject repositoryObject, String lang) throws RepositoryException, ParserConfigurationException, SAXException, IOException {
-        InputStream stream = repositoryObject.getStream(RepositoryUtils.BIBLIO_MODS_STREAM).getContent();
+        InputStream stream = repositoryObject.getStream(RepositoryUtils.BIBLIO_MODS_STREAM).getLastVersionContent();
         Element docElement = XMLUtils.parseDocument(stream, true).getDocumentElement();
 
         List<Element> elements = XMLUtils.getElementsRecursive(docElement, new XMLUtils.ElementsFilter() {

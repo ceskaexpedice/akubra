@@ -93,8 +93,6 @@ public class AkubraDOManager {
         hzInstance = HazelcastClient.newHazelcastClient(config);
         lockService = DistributedLockService.newHazelcastLockService(hzInstance);
 
-
-        /*
         cacheInvalidator = hzInstance.getTopic("cacheInvalidator");
         cacheInvalidator.addMessageListener(new MessageListener<String>() {
             @Override
@@ -104,11 +102,9 @@ public class AkubraDOManager {
                 }
             }
         });
-
-         */
     }
 
-    public AkubraDOManager(CacheManager cacheManager, Configuration configuration) throws IOException {
+    public AkubraDOManager(CacheManager cacheManager, Configuration configuration) {
         try {
             this.initializeStatics(configuration);
             this.configuration = configuration;
@@ -124,7 +120,7 @@ public class AkubraDOManager {
                 }
             }
         } catch (Exception ex) {
-            throw new IOException(ex);
+            throw new RepositoryException(ex);
         }
     }
 
@@ -230,26 +226,26 @@ public class AkubraDOManager {
         return retval;
     }
 
-    InputStream retrieveDatastream(String dsKey) throws IOException {
+    InputStream retrieveDatastream(String dsKey) {
         try {
             return storage.retrieveDatastream(dsKey);
         } catch (LowlevelStorageException e) {
-            throw new IOException(e);
+            throw new RepositoryException(e);
         }
     }
 
-    InputStream retrieveObject(String objectKey) throws IOException {
+    InputStream retrieveObject(String objectKey) {
         Lock lock = getReadLock(objectKey);
         try {
             return storage.retrieveObject(objectKey);
         } catch (LowlevelStorageException e) {
-            throw new IOException(e);
+            throw new RepositoryException(e);
         } finally {
             lock.unlock();
         }
     }
 
-    void deleteObject(String pid, boolean includingManagedDatastreams) throws IOException {
+    void deleteObject(String pid, boolean includingManagedDatastreams) {
         Lock lock = getWriteLock(pid);
         try {
             DigitalObject object = readObjectFromStorage(pid);
@@ -269,7 +265,7 @@ public class AkubraDOManager {
         }
     }
 
-    void deleteStream(String pid, String streamId) throws IOException {
+    void deleteStream(String pid, String streamId) {
         Lock lock = getWriteLock(pid);
         try {
             DigitalObject object = readObjectFromStorage(pid);
@@ -314,7 +310,7 @@ public class AkubraDOManager {
         }
     }
 
-    void commit(DigitalObject object, String streamId) throws IOException {
+    void commit(DigitalObject object, String streamId) {
         Lock lock = getWriteLock(object.getPID());
         try {
             List<DatastreamType> datastreamList = object.getDatastream();
@@ -338,7 +334,6 @@ public class AkubraDOManager {
                     marshaller.marshal(object, stringWriter);
                 }
                 addOrReplaceObject(object.getPID(), new ByteArrayInputStream(stringWriter.toString().getBytes("UTF-8")));
-
             } catch (Exception e) {
                 LOGGER.severe("Could not replace object in Akubra: " + e);
             }
@@ -481,7 +476,6 @@ public class AkubraDOManager {
         }
     }
 
-
     static Lock getWriteLock(String pid) {
         if (pid == null) {
             throw new IllegalArgumentException("pid cannot be null");
@@ -503,7 +497,6 @@ public class AkubraDOManager {
     private static void invalidateCache(String pid) {
         cacheInvalidator.publish(pid);
     }
-
 
     static void shutdown() {
         if (lockService != null) {

@@ -27,11 +27,11 @@ public class RepositoryObjectWrapperImpl implements RepositoryObjectWrapper {
     @Override
     public InputStream asStream(FoxmlType foxmlType) {
         if (foxmlType == FoxmlType.archive) {
-            DigitalObject obj = repository.readObjectCloneFromStorage(pid);
+            DigitalObject obj = repository.getObject(pid, false).getDigitalObject();
             repository.resolveArchivedDatastreams(obj);
             return this.repository.marshallObject(obj);
         } else {
-            return this.repository.retrieveObject(pid);
+            return this.repository.getObject(pid).getFoxml();
         }
     }
 
@@ -60,7 +60,7 @@ public class RepositoryObjectWrapperImpl implements RepositoryObjectWrapper {
         }
         Lock readLock = repository.getReadLock(pid);
         try {
-            RepositoryObject object = repository.getObject(pid);
+            RepositoryObject object = repository.getObject(pid, true);
             try {
                 return XMLUtils.parseDocument(object.getFoxml());
             } catch (Exception e) {

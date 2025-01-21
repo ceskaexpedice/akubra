@@ -18,7 +18,7 @@
 package org.ceskaexpedice.akubra.core.repository;
 
 import org.apache.commons.lang3.tuple.Triple;
-import org.w3c.dom.Document;
+import org.ceskaexpedice.model.DigitalObject;
 
 import java.io.InputStream;
 import java.util.Date;
@@ -30,18 +30,26 @@ import java.util.List;
  */
 public interface RepositoryObject {
 
+    DigitalObject getDigitalObject();
+
     /**
      * Get path within repository
      * @return
      */
-    String getPath();
+    String getPid();
 
     /**
-     * Returns fullpath
+     * Returns last modified flag
      * @return
      * @throws
      */
-    String getFullPath();
+    Date getPropertyLastModified();
+
+    /**
+     * Returns foxml representation
+     * @return
+     */
+    InputStream getFoxml();
 
     /**
      * Return list of streams
@@ -67,27 +75,6 @@ public interface RepositoryObject {
     boolean streamExists(String streamId);
 
     /**
-     * Returns last modified flag
-     * @return
-     * @throws
-     */
-    Date getLastModified();
-
-    /**
-     * REturns metadata document
-     * @return
-     * @throws
-     */
-    Document getMetadata();
-
-    /**
-     * Returns foxml representation
-     * @return
-     * @throws RepositoryException
-     */
-    InputStream getFoxml();
-
-    /**
      * Create new XML stream
      * @param streamId Stream id
      * @param mimeType Mimetype of the stream
@@ -95,7 +82,7 @@ public interface RepositoryObject {
      * @return
      * @throws
      */
-    RepositoryDatastream createStream(String streamId, String mimeType, InputStream input);
+    RepositoryDatastream createXMLStream(String streamId, String mimeType, InputStream input);
 
     /**
      * Create new managed stream
@@ -108,13 +95,6 @@ public interface RepositoryObject {
     RepositoryDatastream createManagedStream(String streamId, String mimeType, InputStream input);
 
     /**
-     * Delete stream
-     * @param streamId
-     * @throws
-     */
-    void deleteStream(String streamId);
-
-    /**
      * Create redirect stream
      * @param streamId Stream id
      * @param url url
@@ -124,22 +104,36 @@ public interface RepositoryObject {
     RepositoryDatastream createRedirectedStream(String streamId, String url, String mimeType);
 
     /**
+     * Delete stream
+     * @param streamId
+     * @throws
+     */
+    void deleteStream(String streamId);
+
+    /**
+     * Returns all relations identified by namespace
+     * @param namespace Namespace
+     * @return
+     * @throws
+     */
+    List<Triple<String, String, String>> relsExtGetRelations(String namespace);
+
+    /**
      * Add relation
      * @param relation Type of relation
      * @param namespace Namespace
      * @param targetRelation Target
      * @throws
      */
-    void addRelation(String relation, String namespace, String targetRelation);
+    void relsExtAddRelation(String relation, String namespace, String targetRelation);
 
     /**
-     * Add literal
+     * Remove all relations by relation type and namespace
      * @param relation Type of relation
      * @param namespace Namespace
-     * @param value Literal value
      * @throws
      */
-    void addLiteral(String relation, String namespace, String value);
+    void relsExtRemoveRelationsByNameAndNamespace(String relation, String namespace);
 
     /**
      * Remove relation
@@ -148,31 +142,14 @@ public interface RepositoryObject {
      * @param targetRelation Target
      * @throws
      */
-    void removeRelation(String relation, String namespace, String targetRelation);
-
-    /**
-     * Remove all relations by relation type and namespace
-     * @param relation Type of relation
-     * @param namespace Namespace
-     * @throws
-     */
-    void removeRelationsByNameAndNamespace(String relation, String namespace);
+    void relsExtRemoveRelation(String relation, String namespace, String targetRelation);
 
     /**
      * Remove all relations by namespace
      * @param namespace Namespace
      * @throws
      */
-    void removeRelationsByNamespace(String namespace);
-
-    /**
-     * Remove all literal
-     * @param relation Relation type
-     * @param namespace Namespace
-     * @param value Literal value
-     * @throws
-     */
-    void removeLiteral(String relation, String namespace, String value);
+    void relsExtRemoveRelationsByNamespace(String namespace);
 
     /**
      * Returns true if relation identified by relation type, namespace and target exists
@@ -182,7 +159,7 @@ public interface RepositoryObject {
      * @return
      * @throws
      */
-    boolean relationExists(String relation, String namespace, String targetRelation);
+    boolean relsExtRelationExists(String relation, String namespace, String targetRelation);
 
     /**
      * Returns true if relations identified by relationType and namespace exists
@@ -191,7 +168,39 @@ public interface RepositoryObject {
      * @return
      * @throws
      */
-    boolean relationsExists(String relation, String namespace);
+    boolean relsExtRelationsExists(String relation, String namespace);
+
+    /**
+     * Remove all relations; from RELS-EXT and properties
+     * @throws
+     */
+    void relsExtRemoveRelations();
+
+    /**
+     * Returns all literals identified by namespace
+     * @param namespace
+     * @return
+     * @throws
+     */
+    List<Triple<String, String, String>> relsExtGetLiterals(String namespace);
+
+    /**
+     * Add literal
+     * @param relation Type of relation
+     * @param namespace Namespace
+     * @param value Literal value
+     * @throws
+     */
+    void relsExtAddLiteral(String relation, String namespace, String value);
+
+    /**
+     * Remove all literal
+     * @param relation Relation type
+     * @param namespace Namespace
+     * @param value Literal value
+     * @throws
+     */
+    void relsExtRemoveLiteral(String relation, String namespace, String value);
 
     /**
      * Returns true if literal exists
@@ -201,34 +210,14 @@ public interface RepositoryObject {
      * @return
      * @throws
      */
-    boolean  literalExists(String relation, String namespace, String value);
+    boolean relsExtLiteralExists(String relation, String namespace, String value);
 
-    /**
-     * Returns all relations identified by namespace
-     * @param namespace Namespace
-     * @return
-     * @throws
-     */
-    List<Triple<String, String, String>> getRelations(String namespace);
-
-    /**
-     * Returns all literals identified by namespace
-     * @param namespace
-     * @return
-     * @throws
-     */
-    List<Triple<String, String, String>>  getLiterals(String namespace);
-
-    /**
-     * Remove all relations; from RELS-EXT and properties
-     * @throws
-     */
-    void removeRelationsAndRelsExt();
 
     /**
      * Method is able to rebuild processing index for current object
      * @throws
      */
     void rebuildProcessingIndex();
-   
+
+
 }

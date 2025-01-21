@@ -49,10 +49,10 @@ public class RepositoryTest {
 
     @Test
     void testGetObject() {
-        RepositoryObject repositoryObject = akubraRepository.getObject("uuid:5035a48a-5e2e-486c-8127-2fa650842e46");
+        RepositoryObject repositoryObject = akubraRepository.getObject("uuid:5035a48a-5e2e-486c-8127-2fa650842e46", true);
         // TODO
         RepositoryDatastream dc = repositoryObject.getStream("DC");
-        System.out.println(convertUsingBytes(dc.getContent()));
+        System.out.println(convertUsingBytes(dc.getLastVersionContent()));
         assertTrue(1 == 1);
     }
 

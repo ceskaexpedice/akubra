@@ -33,6 +33,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.createEmptyDigitalObject;
+
 /**
  * @author pavels
  */
@@ -49,105 +51,60 @@ public class RepositoryImpl implements Repository {
         this.manager = manager;
     }
 
-    /* (non-Javadoc)
-     * @see cz.incad.fcrepo.Repository#createOrFindObject(java.lang.String)
-     */
-    @Override
-    public RepositoryObject createOrFindObject(String ident) {
-        if (objectExists(ident)) {
-            //try {
-                RepositoryObjectImpl obj = new RepositoryObjectImpl(this.manager.readObjectFromStorage(ident), this.manager, this.feeder);
-                return obj;
-            //} catch (IOException e) {
-              //  throw new RepositoryException(e);
-           // }
-        } else {
-            try {
-                DigitalObject emptyDigitalObject = createEmptyDigitalObject(ident);
-                manager.commit(emptyDigitalObject, null);
-                try {
-                    feeder.deleteByPid(emptyDigitalObject.getPID());
-                } catch (Throwable th) {
-                    LOGGER.log(Level.SEVERE, "Cannot update processing index for " + ident + " - reindex manually.", th);
-                }
-                RepositoryObjectImpl obj = new RepositoryObjectImpl(emptyDigitalObject, this.manager, this.feeder);
-                return obj;
-            } catch (IOException e) {
-                throw new RepositoryException(e);
-            }
-        }
-    }
-
-    @Override
-    public RepositoryObject ingestObject(DigitalObject contents) {
-        if (objectExists(contents.getPID())) {
-            throw new RepositoryException("Ingested object exists:" + contents.getPID());
-        } else {
-            try {
-                RepositoryObjectImpl obj = new RepositoryObjectImpl(contents, this.manager, this.feeder);
-                manager.commit(obj.getDigitalObject(), null);
-                obj.rebuildProcessingIndex();
-                return obj;
-            } catch (IOException e) {
-                throw new RepositoryException(e);
-            }
-        }
-
-    }
-
     @Override
     public boolean objectExists(String ident) {
-        try {
-            return manager.readObjectFromStorage(ident) != null;
-        } catch (Exception e) {
-            throw new RepositoryException(e);
-        }
+        return manager.readObjectFromStorage(ident) != null;
     }
 
     @Override
     public RepositoryObject getObject(String ident) {
-        //try {
-            DigitalObject digitalObject = this.manager.readObjectFromStorage(ident);
-            if (digitalObject == null) {
-                //otherwise later causes NPE at places like AkubraUtils.streamExists(DigitalObject object, String streamID)
-                throw new RepositoryException("object not consistently found in storage: " + ident);
-            }
-            RepositoryObjectImpl obj = new RepositoryObjectImpl(digitalObject, this.manager, this.feeder);
+        return getObject(ident, true);
+    }
+
+    @Override
+    public RepositoryObject getObject(String ident, boolean useCache) {
+        DigitalObject digitalObject = this.manager.readObjectFromStorageOrCache(ident, useCache);
+        if (digitalObject == null) {
+            //otherwise later causes NPE at places like AkubraUtils.streamExists(DigitalObject object, String streamID)
+            throw new RepositoryException("object not consistently found in storage: " + ident);
+        }
+        RepositoryObjectImpl obj = new RepositoryObjectImpl(digitalObject, this.manager, this.feeder);
+        return obj;
+    }
+
+    /* (non-Javadoc)
+     * @see cz.incad.fcrepo.Repository#createOrFindObject(java.lang.String)
+     */
+    @Override
+    public RepositoryObject createOrGetObject(String ident) {
+        if (objectExists(ident)) {
+            RepositoryObject obj = getObject(ident, true);
             return obj;
-    /*
-    } catch (IOException e) {
-            throw new RepositoryException(e);
-        }*/
-    }
-
-    @Override
-    public DigitalObject readObjectCloneFromStorage(String pid) {
-        return manager.readObjectCloneFromStorage(pid);
-    }
-
-    @Override
-    public DigitalObject readObjectFromStorage(String pid) {
-        return manager.readObjectFromStorage(pid);
-    }
-
-    @Override
-    public InputStream retrieveDatastream(String dsKey) {
-        try {
-            return manager.retrieveDatastream(dsKey);
-        } catch (IOException e) {
-            throw new RepositoryException(e);
+        } else {
+            DigitalObject emptyDigitalObject = createEmptyDigitalObject(ident);
+            manager.commit(emptyDigitalObject, null);
+            try {
+                feeder.deleteByPid(emptyDigitalObject.getPID());
+            } catch (Throwable th) {
+                LOGGER.log(Level.SEVERE, "Cannot update processing index for " + ident + " - reindex manually.", th);
+            }
+            RepositoryObjectImpl obj = new RepositoryObjectImpl(emptyDigitalObject, this.manager, this.feeder);
+            return obj;
         }
     }
 
     @Override
-    public InputStream retrieveObject(String pid) {
-        try {
-            return manager.retrieveObject(pid);
-        } catch (IOException e) {
-            throw new RepositoryException(e);
+    public RepositoryObject ingestObject(DigitalObject digitalObject) {
+        if (objectExists(digitalObject.getPID())) {
+            throw new RepositoryException("Ingested object exists:" + digitalObject.getPID());
+        } else {
+            RepositoryObjectImpl obj = new RepositoryObjectImpl(digitalObject, this.manager, this.feeder);
+            manager.commit(obj.getDigitalObject(), null);
+            obj.rebuildProcessingIndex();
+            return obj;
         }
-    }
 
+    }
 
     @Override
     public void deleteObject(String pid, boolean deleteDataOfManagedDatastreams, boolean deleteRelationsWithThisAsTarget) {
@@ -195,29 +152,6 @@ public class RepositoryImpl implements Repository {
         } catch (IOException | SolrServerException e) {
             throw new RepositoryException(e);
         }
-    }
-
-    /* (non-Javadoc)
-     * @see cz.incad.fcrepo.Repository#rollbackTransaction()
-     */
-    @Override
-    public void rollbackTransaction() {
-        throw new RepositoryException("Transactions not supported in Akubra");
-    }
-
-    private DigitalObject createEmptyDigitalObject(String pid) {
-        DigitalObject retval = new DigitalObject();
-        retval.setPID(pid);
-        retval.setVERSION("1.1");
-        ObjectPropertiesType objectPropertiesType = new ObjectPropertiesType();
-        List<PropertyType> propertyTypeList = objectPropertiesType.getProperty();
-        propertyTypeList.add(RepositoryUtils.createProperty("info:fedora/fedora-system:def/model#state", "Active"));
-        propertyTypeList.add(RepositoryUtils.createProperty("info:fedora/fedora-system:def/model#ownerId", "fedoraAdmin"));
-        String currentTime = RepositoryUtils.currentTimeString();
-        propertyTypeList.add(RepositoryUtils.createProperty("info:fedora/fedora-system:def/model#createdDate", currentTime));
-        propertyTypeList.add(RepositoryUtils.createProperty("info:fedora/fedora-system:def/view#lastModifiedDate", currentTime));
-        retval.setObjectProperties(objectPropertiesType);
-        return retval;
     }
 
     @Override

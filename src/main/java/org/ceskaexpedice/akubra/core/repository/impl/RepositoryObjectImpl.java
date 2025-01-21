@@ -23,7 +23,6 @@ import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import org.ceskaexpedice.akubra.utils.StringUtils;
 import org.ceskaexpedice.akubra.utils.XMLUtils;
-import org.ceskaexpedice.akubra.utils.RepositoryUtils;
 import org.ceskaexpedice.akubra.utils.pid.PIDParser;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
@@ -32,11 +31,9 @@ import org.ceskaexpedice.model.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.*;
 import java.nio.charset.Charset;
@@ -47,6 +44,8 @@ import java.util.stream.Collectors;
 
 
 /**
+ * RepositoryObjectImpl
+ *
  * @author pavels
  */
 class RepositoryObjectImpl implements RepositoryObject {
@@ -65,25 +64,119 @@ class RepositoryObjectImpl implements RepositoryObject {
     }
 
     @Override
-    public List<RepositoryDatastream> getStreams() throws RepositoryException {
+    public DigitalObject getDigitalObject() {
+        return digitalObject;
+    }
+
+    @Override
+    public InputStream getFoxml() {
+        return manager.retrieveObject(getPid());
+    }
+
+    @Override
+    public String getPid() {
+        return digitalObject.getPID();
+    }
+
+    @Override
+    public Date getPropertyLastModified() {
+        return RepositoryUtils.getLastModified(digitalObject);
+    }
+
+    @Override
+    public List<RepositoryDatastream> getStreams() {
         List<RepositoryDatastream> list = new ArrayList<>();
         List<DatastreamType> datastreamList = digitalObject.getDatastream();
         for (DatastreamType datastreamType : datastreamList) {
-            list.add(new RepositoryDatastreamImpl(manager, datastreamType, datastreamType.getID(), controlGroup2Type(datastreamType.getCONTROLGROUP())));
+            list.add(new RepositoryDatastreamImpl(datastreamType, datastreamType.getID(), controlGroup2Type(datastreamType.getCONTROLGROUP()),manager));
         }
         return list;
     }
 
     @Override
-    public String getPath() {
-        return digitalObject.getPID();
+    public RepositoryDatastream getStream(String streamId) {
+        List<DatastreamType> datastreamList = digitalObject.getDatastream();
+        for (DatastreamType datastreamType : datastreamList) {
+            if (streamId.equals(datastreamType.getID())) {
+                return new RepositoryDatastreamImpl(datastreamType, datastreamType.getID(), controlGroup2Type(datastreamType.getCONTROLGROUP()),manager);
+            }
+        }
+        return null;
     }
 
-    private String getPid() {
-        return digitalObject.getPID();
+    @Override
+    public boolean streamExists(String streamId) {
+        return RepositoryUtils.streamExists(digitalObject, streamId);
     }
 
-    private DatastreamType createDatastreamHeader(String streamId, String mimeType, String controlGroup) throws RepositoryException {
+    @Override
+    public RepositoryDatastream createXMLStream(String streamId, String mimeType, InputStream input) {
+        DatastreamType datastreamType = createDatastreamHeader(streamId, mimeType, "X");
+        XmlContentType xmlContentType = new XmlContentType();
+        xmlContentType.getAny().add(elementFromInputStream(input));
+        datastreamType.getDatastreamVersion().get(0).setXmlContent(xmlContentType);
+
+        RepositoryDatastream ds = new RepositoryDatastreamImpl(datastreamType, streamId, RepositoryDatastream.Type.DIRECT, manager);
+
+        try {
+            manager.commit(digitalObject, streamId);
+            if (streamId.equals(RepositoryUtils.RELS_EXT_STREAM)) {
+                try {
+                    // process rels-ext and create all children and relations
+                    this.feeder.deleteByRelationsForPid(getPid());
+                    input.reset();
+                    feeder.rebuildProcessingIndex(this, input);
+                } catch (Throwable th) {
+                    LOGGER.log(Level.SEVERE, "Cannot update processing index for " + getPid() + " - reindex manually.", th);
+                }
+            }
+            return ds;
+        } catch (Exception ex) {
+            throw new RepositoryException(ex);
+        }
+    }
+
+    @Override
+    public RepositoryDatastream createManagedStream(String streamId, String mimeType, InputStream input) {
+        DatastreamType datastreamType = createDatastreamHeader(streamId, mimeType, "M");
+
+        try {
+            datastreamType.getDatastreamVersion().get(0).setBinaryContent(IOUtils.toByteArray(input));
+            RepositoryDatastream ds = new RepositoryDatastreamImpl(datastreamType, streamId, RepositoryDatastream.Type.DIRECT, manager);
+            manager.commit(digitalObject, streamId);
+            return ds;
+        } catch (Exception ex) {
+            throw new RepositoryException(ex);
+        }
+    }
+
+    @Override
+    public RepositoryDatastream createRedirectedStream(String streamId, String url, String mimeType) {
+        DatastreamType datastreamType = createDatastreamHeader(streamId, mimeType, "E");
+        ContentLocationType contentLocationType = new ContentLocationType();
+        contentLocationType.setTYPE("URL");
+        contentLocationType.setREF(url);
+        datastreamType.getDatastreamVersion().get(0).setContentLocation(contentLocationType);
+
+        RepositoryDatastream ds = new RepositoryDatastreamImpl(datastreamType, streamId, RepositoryDatastream.Type.INDIRECT, manager);
+
+        manager.commit(digitalObject, streamId);
+        return ds;
+    }
+
+    @Override
+    public void deleteStream(String streamId) {
+        manager.deleteStream(getPid(), streamId);
+        if (streamId.equals(RepositoryUtils.RELS_EXT_STREAM)) {
+            try {
+                this.feeder.deleteByRelationsForPid(this.getPid());
+            } catch (Throwable th) {
+                LOGGER.log(Level.SEVERE, "Cannot update processing index for " + getPid() + " - reindex manually.", th);
+            }
+        }
+    }
+
+    private DatastreamType createDatastreamHeader(String streamId, String mimeType, String controlGroup) {
         List<DatastreamType> datastreamList = digitalObject.getDatastream();
         Iterator<DatastreamType> iterator = datastreamList.iterator();
         while (iterator.hasNext()) {
@@ -111,73 +204,11 @@ class RepositoryObjectImpl implements RepositoryObject {
         return datastreamType;
     }
 
-    @Override
-    public RepositoryDatastream createRedirectedStream(String streamId, String url, String mimeType) throws RepositoryException {
-        DatastreamType datastreamType = createDatastreamHeader(streamId, mimeType, "E");
-        ContentLocationType contentLocationType = new ContentLocationType();
-        contentLocationType.setTYPE("URL");
-        contentLocationType.setREF(url);
-        datastreamType.getDatastreamVersion().get(0).setContentLocation(contentLocationType);
-
-        RepositoryDatastream ds = new RepositoryDatastreamImpl(manager, datastreamType, streamId, RepositoryDatastream.Type.INDIRECT);
-
-        try {
-            manager.commit(digitalObject, streamId);
-            return ds;
-        } catch (IOException e) {
-            throw new RepositoryException(e);
-        }
-    }
-
     private RepositoryDatastreamImpl.Type controlGroup2Type(String controlGroup) {
         if ("E".equals(controlGroup) || "R".equals(controlGroup)) {
             return RepositoryDatastream.Type.INDIRECT;
         } else {
             return RepositoryDatastream.Type.DIRECT;
-        }
-    }
-
-    @Override
-    public void deleteStream(String streamId) throws RepositoryException {
-        try {
-            manager.deleteStream(getPid(), streamId);
-            if (streamId.equals(RepositoryUtils.RELS_EXT_STREAM)) {
-                try {
-                    this.feeder.deleteByRelationsForPid(this.getPid());
-                } catch (Throwable th) {
-                    LOGGER.log(Level.SEVERE, "Cannot update processing index for "+ getPid() + " - reindex manually.", th);
-                }
-            }
-        } catch (IOException e) {
-            throw new RepositoryException("Cannot delete  streamId " + streamId, e);
-        }
-    }
-
-    @Override
-    public RepositoryDatastream createStream(String streamId, String mimeType, InputStream input) throws RepositoryException {
-        DatastreamType datastreamType = createDatastreamHeader(streamId, mimeType, "X");
-
-        XmlContentType xmlContentType = new XmlContentType();
-        xmlContentType.getAny().add(elementFromInputStream(input));
-        datastreamType.getDatastreamVersion().get(0).setXmlContent(xmlContentType);
-
-        RepositoryDatastream ds = new RepositoryDatastreamImpl(manager, datastreamType, streamId, RepositoryDatastream.Type.DIRECT);
-
-        try {
-            manager.commit(digitalObject, streamId);
-            if (streamId.equals(RepositoryUtils.RELS_EXT_STREAM)) {
-                try {
-                    // process rels-ext and create all children and relations
-                    this.feeder.deleteByRelationsForPid(getPid());
-                    input.reset();
-                    feeder.rebuildProcessingIndex(this, input);
-                } catch (Throwable th) {
-                    LOGGER.log(Level.SEVERE, "Cannot update processing index for "+ getPid() + " - reindex manually.", th);
-                }
-            }
-            return ds;
-        } catch (Exception ex) {
-            throw new RepositoryException(ex);
         }
     }
 
@@ -190,289 +221,52 @@ class RepositoryObjectImpl implements RepositoryObject {
             factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
             builder = factory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        }
-
-        try {
             ret = builder.parse(new InputSource(in));
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (ret != null) {
-            return ret.getDocumentElement();
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public RepositoryDatastream createManagedStream(String streamId, String mimeType, InputStream input) throws RepositoryException {
-        DatastreamType datastreamType = createDatastreamHeader(streamId, mimeType, "M");
-
-        try {
-            datastreamType.getDatastreamVersion().get(0).setBinaryContent(IOUtils.toByteArray(input));
-            RepositoryDatastream ds = new RepositoryDatastreamImpl(manager, datastreamType, streamId, RepositoryDatastream.Type.DIRECT);
-            manager.commit(digitalObject, streamId);
-            return ds;
-        } catch (Exception ex) {
-            throw new RepositoryException(ex);
-        }
-    }
-
-    @Override
-    public boolean streamExists(String streamId) throws RepositoryException {
-        return org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.streamExists(digitalObject, streamId);
-    }
-
-    @Override
-    public RepositoryDatastream getStream(String streamId) throws RepositoryException {
-        List<DatastreamType> datastreamList = digitalObject.getDatastream();
-        for (DatastreamType datastreamType : datastreamList) {
-            if (streamId.equals(datastreamType.getID())) {
-                return new RepositoryDatastreamImpl(manager, datastreamType, datastreamType.getID(), controlGroup2Type(datastreamType.getCONTROLGROUP()));
+            if (ret != null) {
+                return ret.getDocumentElement();
+            } else {
+                return null;
             }
-        }
-        return null;
-    }
-
-    @Override
-    public Date getLastModified() throws RepositoryException {
-        try {
-            return org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.getLastModified(digitalObject);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RepositoryException(e);
         }
     }
 
     @Override
-    public Document getMetadata() throws RepositoryException {
-        return null;
-    }
-
-
-    @Override
-    public InputStream getFoxml() throws RepositoryException {
-        try {
-            return manager.retrieveObject(getPid());
-        } catch (IOException e) {
-            throw new RepositoryException(e);
-        }
-    }
-
-
-    @Override
-    public void addRelation(String relation, String namespace, String targetRelation) throws RepositoryException {
+    public void relsExtAddRelation(String relation, String namespace, String targetRelation) {
         try {
             RepositoryDatastream stream = this.getStream(RepositoryUtils.RELS_EXT_STREAM);
-            Document document = XMLUtils.parseDocument(stream.getContent(), true);
+            Document document = XMLUtils.parseDocument(stream.getLastVersionContent(), true);
             Element rdfDesc = XMLUtils.findElement(document.getDocumentElement(), RDF_DESCRIPTION_ELEMENT, RepositoryNamespaces.RDF_NAMESPACE_URI);
             Element subElm = document.createElementNS(namespace, relation);
             subElm.setAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "rdf:resource", targetRelation);
             rdfDesc.appendChild(subElm);
-            changeRelations(document);
-        } catch (ParserConfigurationException e) {
-            throw new RepositoryException(e);
-        } catch (SAXException e) {
-            throw new RepositoryException(e);
-        } catch (IOException e) {
-            throw new RepositoryException(e);
-        } catch (TransformerException e) {
+            changeRelsExtRelations(document);
+        } catch (Exception e) {
             throw new RepositoryException(e);
         }
     }
 
-    private void changeRelations(Document document) throws TransformerException, RepositoryException {
-        StringWriter stringWriter = new StringWriter();
-        XMLUtils.print(document, stringWriter);
-
-        this.deleteStream(RepositoryUtils.RELS_EXT_STREAM);
-        this.createStream(RepositoryUtils.RELS_EXT_STREAM, "text/xml", new ByteArrayInputStream(stringWriter.toString().getBytes(Charset.forName("UTF-8"))));
-    }
-
     @Override
-    public void addLiteral(String relation, String namespace, String value) throws RepositoryException {
-        // only  RELS_EXT
+    public void relsExtAddLiteral(String relation, String namespace, String value) {
         try {
             RepositoryDatastream stream = this.getStream(RepositoryUtils.RELS_EXT_STREAM);
-            Document document = XMLUtils.parseDocument(stream.getContent(), true);
+            Document document = XMLUtils.parseDocument(stream.getLastVersionContent(), true);
             Element rdfDesc = XMLUtils.findElement(document.getDocumentElement(), RDF_DESCRIPTION_ELEMENT, RepositoryNamespaces.RDF_NAMESPACE_URI);
             Element subElm = document.createElementNS(namespace, relation);
             subElm.setTextContent(value);
             rdfDesc.appendChild(subElm);
-            changeRelations(document);
-        } catch (ParserConfigurationException e) {
-            throw new RepositoryException(e);
-        } catch (SAXException e) {
-            throw new RepositoryException(e);
-        } catch (IOException e) {
-            throw new RepositoryException(e);
-        } catch (TransformerException e) {
+            changeRelsExtRelations(document);
+        } catch (Exception e) {
             throw new RepositoryException(e);
         }
     }
 
     @Override
-    public void removeRelation(String relation, String namespace, String targetRelation) throws RepositoryException {
-        try {
-            final String targetPID = targetRelation.startsWith(PIDParser.INFO_FEDORA_PREFIX) ? targetRelation : PIDParser.INFO_FEDORA_PREFIX + targetRelation;
-            RepositoryDatastream stream = this.getStream(RepositoryUtils.RELS_EXT_STREAM);
-            Document document = XMLUtils.parseDocument(stream.getContent(), true);
-            Element relationElement = XMLUtils.findElement(document.getDocumentElement(), (element) -> {
-                String elmNamespace = element.getNamespaceURI();
-                String elmLocalname = element.getLocalName();
-                String elmResourceAttribute = element.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
-                return (elmNamespace.equals(namespace)) && (elmLocalname.equals(relation)) && elmResourceAttribute.equals(targetPID);
-            });
-
-            // Change RELS-EXT relations
-            if (relationElement != null) {
-                relationElement.getParentNode().removeChild(relationElement);
-                changeRelations(document);
-            } else {
-                LOGGER.warning("Cannot find relation '" + namespace + relation);
-            }
-
-
-        } catch (ParserConfigurationException e) {
-            throw new RepositoryException(e);
-        } catch (SAXException e) {
-            throw new RepositoryException(e);
-        } catch (IOException e) {
-            throw new RepositoryException(e);
-        } catch (TransformerException e) {
-            throw new RepositoryException(e);
-        }
-    }
-
-
-    public List<Triple<String, String, String>> getRelations(String namespace) throws RepositoryException {
-        try {
-            Document metadata = XMLUtils.parseDocument(getStream(RepositoryUtils.RELS_EXT_STREAM).getContent(), true);
-            List<Triple<String, String, String>> retvals = XMLUtils.getElementsRecursive(metadata.getDocumentElement(), (element) -> {
-                String elmNamespace = element.getNamespaceURI();
-                if (namespace != null) {
-                    return namespace.equals(elmNamespace) && element.hasAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
-                } else {
-                    return element.hasAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
-                }
-            }).stream().map((elm) -> {
-                String resource = elm.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
-                if (resource.startsWith(PIDParser.INFO_FEDORA_PREFIX)) {
-                    resource = resource.substring(PIDParser.INFO_FEDORA_PREFIX.length());
-                }
-
-                Triple<String, String, String> triple = new ImmutableTriple<>(elm.getNamespaceURI(), elm.getLocalName(), resource);
-                return triple;
-            }).collect(Collectors.toList());
-            Collections.reverse(retvals);
-            return retvals;
-        } catch (ParserConfigurationException e) {
-            throw new RepositoryException(e);
-        } catch (SAXException e) {
-            throw new RepositoryException(e);
-        } catch (IOException e) {
-            throw new RepositoryException(e);
-        }
-    }
-
-
-    public List<Triple<String, String, String>> getLiterals(String namespace) throws RepositoryException {
-        try {
-            Document metadata = XMLUtils.parseDocument(getStream(RepositoryUtils.RELS_EXT_STREAM).getContent(), true);
-
-            List<Triple<String, String, String>> retvals = XMLUtils.getElementsRecursive(metadata.getDocumentElement(), (element) -> {
-                String elmNamespace = element.getNamespaceURI();
-                if (namespace != null) {
-                    return namespace.equals(elmNamespace) && !element.hasAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource") && StringUtils.isAnyString(element.getTextContent());
-                } else {
-                    return !element.hasAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource") && StringUtils.isAnyString(element.getTextContent());
-                }
-            }).stream().filter((elm) -> {
-                return !elm.getLocalName().equals(RDF_ELEMENT) && !elm.getLocalName().equals(RDF_DESCRIPTION_ELEMENT);
-            }).map((elm) -> {
-                String content = elm.getTextContent();
-                Triple<String, String, String> triple = new ImmutableTriple<>(elm.getNamespaceURI(), elm.getLocalName(), content);
-                return triple;
-            }).collect(Collectors.toList());
-
-            Collections.reverse(retvals);
-            return retvals;
-        } catch (ParserConfigurationException e) {
-            throw new RepositoryException(e);
-        } catch (SAXException e) {
-            throw new RepositoryException(e);
-        } catch (IOException e) {
-            throw new RepositoryException(e);
-        }
-    }
-
-    private Element findRelationElement(String relation, String namespace, String targetRelation) throws RepositoryException {
-        final String targetPID = targetRelation.startsWith(PIDParser.INFO_FEDORA_PREFIX) ? targetRelation : PIDParser.INFO_FEDORA_PREFIX + targetRelation;
-        RepositoryDatastream stream = this.getStream(RepositoryUtils.RELS_EXT_STREAM);
-        if (stream == null) {
-            throw new RepositoryException("FOXML object " + this.getPid() + "does not have RELS-EXT stream ");
-        }
-        Document document;
-        try {
-            document = XMLUtils.parseDocument(stream.getContent(), true);
-        } catch (ParserConfigurationException e) {
-            throw new RepositoryException(e);
-        } catch (SAXException e) {
-            throw new RepositoryException(e);
-        } catch (IOException e) {
-            throw new RepositoryException(e);
-        }
-        Element relationElement = XMLUtils.findElement(document.getDocumentElement(), (element) -> {
-            String elmNamespace = element.getNamespaceURI();
-            String elmLocalname = element.getLocalName();
-            String elmResourceAttribute = element.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
-            return (elmNamespace.equals(namespace)) && (elmLocalname.equals(relation)) && elmResourceAttribute.equals(targetPID);
-        });
-        return relationElement;
-    }
-
-
-    @Override
-    public boolean relationExists(String relation, String namespace, String targetRelation) throws RepositoryException {
-        Element foundElement = findRelationElement(relation, namespace, targetRelation);
-        return foundElement != null;
-    }
-
-    @Override
-    public boolean literalExists(String relation, String namespace, String value) throws RepositoryException {
-        try {
-            Document metadata = XMLUtils.parseDocument(getStream(RepositoryUtils.RELS_EXT_STREAM).getContent(), true);
-            Element foundElement = XMLUtils.findElement(metadata.getDocumentElement(), (element) -> {
-                String elmNamespace = element.getNamespaceURI();
-                String elmName = element.getLocalName();
-                if (elmName.equals(relation) && namespace.equals(elmNamespace)) {
-                    String cont = element.getTextContent();
-                    return cont.endsWith(value);
-                }
-                return false;
-            });
-            return foundElement != null;
-        } catch (RepositoryException e) {
-            throw new RepositoryException(e);
-        } catch (ParserConfigurationException e) {
-            throw new RepositoryException(e);
-        } catch (IOException e) {
-            throw new RepositoryException(e);
-        } catch (SAXException e) {
-            throw new RepositoryException(e);
-        }
-    }
-
-    @Override
-    public void removeLiteral(String relation, String namespace, String value) throws RepositoryException {
-
-        // Element subElm = document.createElementNS(namespace, relation);
+    public void relsExtRemoveLiteral(String relation, String namespace, String value) {
         try {
             RepositoryDatastream stream = this.getStream(RepositoryUtils.RELS_EXT_STREAM);
-            Document document = XMLUtils.parseDocument(stream.getContent(), true);
+            Document document = XMLUtils.parseDocument(stream.getLastVersionContent(), true);
 
             Element rdfDesc = XMLUtils.findElement(document.getDocumentElement(), RDF_DESCRIPTION_ELEMENT, RepositoryNamespaces.RDF_NAMESPACE_URI);
 
@@ -491,25 +285,65 @@ class RepositoryObjectImpl implements RepositoryObject {
                 descs.stream().forEach(literal -> {
                     literal.getParentNode().removeChild(literal);
                 });
-                changeRelations(document);
+                changeRelsExtRelations(document);
             }
-        } catch (ParserConfigurationException e) {
-            throw new RepositoryException(e);
-        } catch (SAXException e) {
-            throw new RepositoryException(e);
-        } catch (IOException e) {
-            throw new RepositoryException(e);
-        } catch (TransformerException e) {
+        } catch (Exception e) {
             throw new RepositoryException(e);
         }
 
     }
 
     @Override
-    public void removeRelationsByNamespace(String namespace) throws RepositoryException {
+    public void relsExtRemoveRelation(String relation, String namespace, String targetRelation) {
+        try {
+            final String targetPID = targetRelation.startsWith(PIDParser.INFO_FEDORA_PREFIX) ? targetRelation : PIDParser.INFO_FEDORA_PREFIX + targetRelation;
+            RepositoryDatastream stream = this.getStream(RepositoryUtils.RELS_EXT_STREAM);
+            Document document = XMLUtils.parseDocument(stream.getLastVersionContent(), true);
+            Element relationElement = XMLUtils.findElement(document.getDocumentElement(), (element) -> {
+                String elmNamespace = element.getNamespaceURI();
+                String elmLocalname = element.getLocalName();
+                String elmResourceAttribute = element.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
+                return (elmNamespace.equals(namespace)) && (elmLocalname.equals(relation)) && elmResourceAttribute.equals(targetPID);
+            });
+            if (relationElement != null) {
+                relationElement.getParentNode().removeChild(relationElement);
+                changeRelsExtRelations(document);
+            } else {
+                LOGGER.warning("Cannot find relation '" + namespace + relation);
+            }
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
+    }
+
+    @Override
+    public void relsExtRemoveRelationsByNameAndNamespace(String relation, String namespace) {
         try {
             RepositoryDatastream stream = this.getStream(RepositoryUtils.RELS_EXT_STREAM);
-            Document document = XMLUtils.parseDocument(stream.getContent(), true);
+            Document document = XMLUtils.parseDocument(stream.getLastVersionContent(), true);
+            List<Element> relationElements = XMLUtils.getElementsRecursive(document.getDocumentElement(), (element) -> {
+                String elmNamespace = element.getNamespaceURI();
+                String elmLocalname = element.getLocalName();
+                return (elmNamespace.equals(namespace)) && (elmLocalname.equals(relation));
+            });
+            if (!relationElements.isEmpty()) {
+                relationElements.stream().forEach((elm) -> {
+                    elm.getParentNode().removeChild(elm);
+                });
+                changeRelsExtRelations(document);
+            } else {
+                LOGGER.info("Cannot find relation '" + namespace + relation);
+            }
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
+    }
+
+    @Override
+    public void relsExtRemoveRelationsByNamespace(String namespace) {
+        try {
+            RepositoryDatastream stream = this.getStream(RepositoryUtils.RELS_EXT_STREAM);
+            Document document = XMLUtils.parseDocument(stream.getLastVersionContent(), true);
             List<Element> relationElements = XMLUtils.getElementsRecursive(document.getDocumentElement(), (element) -> {
                 String elmNamespace = element.getNamespaceURI();
                 return (elmNamespace.equals(namespace));
@@ -521,96 +355,154 @@ class RepositoryObjectImpl implements RepositoryObject {
                 relationElements.stream().forEach((elm) -> {
                     elm.getParentNode().removeChild(elm);
                 });
-                changeRelations(document);
+                changeRelsExtRelations(document);
             } else {
                 LOGGER.warning("Cannot find relation '" + namespace);
             }
 
-        } catch (ParserConfigurationException e) {
-            throw new RepositoryException(e);
-        } catch (SAXException e) {
-            throw new RepositoryException(e);
-        } catch (IOException e) {
-            throw new RepositoryException(e);
-        } catch (TransformerException e) {
+        } catch (Exception e) {
             throw new RepositoryException(e);
         }
     }
 
+    private void changeRelsExtRelations(Document document) throws TransformerException {
+        StringWriter stringWriter = new StringWriter();
+        XMLUtils.print(document, stringWriter);
+
+        this.deleteStream(RepositoryUtils.RELS_EXT_STREAM);
+        this.createXMLStream(RepositoryUtils.RELS_EXT_STREAM, "text/xml", new ByteArrayInputStream(stringWriter.toString().getBytes(Charset.forName("UTF-8"))));
+    }
+
     @Override
-    public void removeRelationsByNameAndNamespace(String relation, String namespace) throws RepositoryException {
+    public List<Triple<String, String, String>> relsExtGetRelations(String namespace) {
         try {
-            RepositoryDatastream stream = this.getStream(RepositoryUtils.RELS_EXT_STREAM);
-            Document document = XMLUtils.parseDocument(stream.getContent(), true);
-            List<Element> relationElements = XMLUtils.getElementsRecursive(document.getDocumentElement(), (element) -> {
+            Document metadata = XMLUtils.parseDocument(getStream(RepositoryUtils.RELS_EXT_STREAM).getLastVersionContent(), true);
+            List<Triple<String, String, String>> retvals = XMLUtils.getElementsRecursive(metadata.getDocumentElement(), (element) -> {
                 String elmNamespace = element.getNamespaceURI();
-                String elmLocalname = element.getLocalName();
-                return (elmNamespace.equals(namespace)) && (elmLocalname.equals(relation));
-            });
+                if (namespace != null) {
+                    return namespace.equals(elmNamespace) && element.hasAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
+                } else {
+                    return element.hasAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
+                }
+            }).stream().map((elm) -> {
+                String resource = elm.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
+                if (resource.startsWith(PIDParser.INFO_FEDORA_PREFIX)) {
+                    resource = resource.substring(PIDParser.INFO_FEDORA_PREFIX.length());
+                }
 
-            // Change RELS-EXT relations
-            if (!relationElements.isEmpty()) {
-                relationElements.stream().forEach((elm) -> {
-                    elm.getParentNode().removeChild(elm);
-                });
-                changeRelations(document);
-            } else {
-                LOGGER.info("Cannot find relation '" + namespace + relation);
-            }
-
-        } catch (ParserConfigurationException e) {
-            throw new RepositoryException(e);
-        } catch (SAXException e) {
-            throw new RepositoryException(e);
-        } catch (IOException e) {
-            throw new RepositoryException(e);
-        } catch (TransformerException e) {
+                Triple<String, String, String> triple = new ImmutableTriple<>(elm.getNamespaceURI(), elm.getLocalName(), resource);
+                return triple;
+            }).collect(Collectors.toList());
+            Collections.reverse(retvals);
+            return retvals;
+        } catch (Exception e) {
             throw new RepositoryException(e);
         }
     }
 
     @Override
-    public boolean relationsExists(String relation, String namespace) throws RepositoryException {
+    public List<Triple<String, String, String>> relsExtGetLiterals(String namespace) {
         try {
-            Document metadata = XMLUtils.parseDocument(this.getStream(RepositoryUtils.RELS_EXT_STREAM).getContent(), true);
+            Document metadata = XMLUtils.parseDocument(getStream(RepositoryUtils.RELS_EXT_STREAM).getLastVersionContent(), true);
+
+            List<Triple<String, String, String>> retvals = XMLUtils.getElementsRecursive(metadata.getDocumentElement(), (element) -> {
+                String elmNamespace = element.getNamespaceURI();
+                if (namespace != null) {
+                    return namespace.equals(elmNamespace) && !element.hasAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource") && StringUtils.isAnyString(element.getTextContent());
+                } else {
+                    return !element.hasAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource") && StringUtils.isAnyString(element.getTextContent());
+                }
+            }).stream().filter((elm) -> {
+                return !elm.getLocalName().equals(RDF_ELEMENT) && !elm.getLocalName().equals(RDF_DESCRIPTION_ELEMENT);
+            }).map((elm) -> {
+                String content = elm.getTextContent();
+                Triple<String, String, String> triple = new ImmutableTriple<>(elm.getNamespaceURI(), elm.getLocalName(), content);
+                return triple;
+            }).collect(Collectors.toList());
+
+            Collections.reverse(retvals);
+            return retvals;
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
+    }
+
+    private Element findRelsExtRelationElement(String relation, String namespace, String targetRelation) {
+        final String targetPID = targetRelation.startsWith(PIDParser.INFO_FEDORA_PREFIX) ? targetRelation : PIDParser.INFO_FEDORA_PREFIX + targetRelation;
+        RepositoryDatastream stream = this.getStream(RepositoryUtils.RELS_EXT_STREAM);
+        if (stream == null) {
+            throw new RepositoryException("FOXML object " + this.getPid() + "does not have RELS-EXT stream ");
+        }
+        Document document;
+        try {
+            document = XMLUtils.parseDocument(stream.getLastVersionContent(), true);
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
+        Element relationElement = XMLUtils.findElement(document.getDocumentElement(), (element) -> {
+            String elmNamespace = element.getNamespaceURI();
+            String elmLocalname = element.getLocalName();
+            String elmResourceAttribute = element.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
+            return (elmNamespace.equals(namespace)) && (elmLocalname.equals(relation)) && elmResourceAttribute.equals(targetPID);
+        });
+        return relationElement;
+    }
+
+    @Override
+    public boolean relsExtRelationExists(String relation, String namespace, String targetRelation) {
+        Element foundElement = findRelsExtRelationElement(relation, namespace, targetRelation);
+        return foundElement != null;
+    }
+
+    @Override
+    public boolean relsExtLiteralExists(String relation, String namespace, String value) {
+        try {
+            Document metadata = XMLUtils.parseDocument(getStream(RepositoryUtils.RELS_EXT_STREAM).getLastVersionContent(), true);
+            Element foundElement = XMLUtils.findElement(metadata.getDocumentElement(), (element) -> {
+                String elmNamespace = element.getNamespaceURI();
+                String elmName = element.getLocalName();
+                if (elmName.equals(relation) && namespace.equals(elmNamespace)) {
+                    String cont = element.getTextContent();
+                    return cont.endsWith(value);
+                }
+                return false;
+            });
+            return foundElement != null;
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
+    }
+
+    @Override
+    public boolean relsExtRelationsExists(String relation, String namespace) {
+        try {
+            Document metadata = XMLUtils.parseDocument(this.getStream(RepositoryUtils.RELS_EXT_STREAM).getLastVersionContent(), true);
             Element foundElement = XMLUtils.findElement(metadata.getDocumentElement(), (element) -> {
                 String elmNamespace = element.getNamespaceURI();
                 String elmName = element.getLocalName();
                 return (elmName.equals(relation) && namespace.equals(elmNamespace));
             });
             return foundElement != null;
-        } catch (ParserConfigurationException e) {
-            throw new RepositoryException(e);
-        } catch (SAXException e) {
-            throw new RepositoryException(e);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RepositoryException(e);
         }
     }
 
     @Override
-    public void removeRelationsAndRelsExt() throws RepositoryException {
+    public void relsExtRemoveRelations() {
         if (this.streamExists(RepositoryUtils.RELS_EXT_STREAM)) {
-            this.removeRelationsByNamespace(RepositoryNamespaces.KRAMERIUS_URI);
-            this.removeRelationsByNameAndNamespace("isMemberOfCollection", RepositoryNamespaces.RDF_NAMESPACE_URI);
+            this.relsExtRemoveRelationsByNamespace(RepositoryNamespaces.KRAMERIUS_URI);
+            this.relsExtRemoveRelationsByNameAndNamespace("isMemberOfCollection", RepositoryNamespaces.RDF_NAMESPACE_URI);
             this.deleteStream(RepositoryUtils.RELS_EXT_STREAM);
         }
     }
 
     @Override
-    public String getFullPath() throws RepositoryException {
-        throw new UnsupportedOperationException("getFullPath is not supported in Akubra");
-    }
-
-    @Override
-    public void rebuildProcessingIndex() throws RepositoryException {
+    public void rebuildProcessingIndex() {
         RepositoryDatastream stream = this.getStream(RepositoryUtils.RELS_EXT_STREAM);
-        InputStream content = stream.getContent();
+        InputStream content = stream.getLastVersionContent();
         feeder.rebuildProcessingIndex(this, content);
     }
 
 
-    DigitalObject getDigitalObject() {
-        return digitalObject;
-    }
 }

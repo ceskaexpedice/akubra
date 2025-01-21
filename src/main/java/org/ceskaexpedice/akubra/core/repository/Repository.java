@@ -46,13 +46,7 @@ public interface Repository {
      */
     RepositoryObject getObject(String pid);
 
-    DigitalObject readObjectCloneFromStorage(String pid);
-
-    DigitalObject readObjectFromStorage(String pid);
-
-    InputStream retrieveDatastream(String dsKey);
-
-    InputStream retrieveObject(String pid);
+    RepositoryObject getObject(String pid, boolean useCache);
 
     /**
      * Creates an empty object or finds an existing object
@@ -60,15 +54,15 @@ public interface Repository {
      * @return
      * @throws
      */
-    RepositoryObject createOrFindObject(String pid);
+    RepositoryObject createOrGetObject(String pid);
 
     /**
      * Ingest new digital object from the provided object representation
-     * @param contents
+     * @param digitalObject
      * @return
      * @throws
      */
-    RepositoryObject ingestObject(DigitalObject contents);
+    RepositoryObject ingestObject(DigitalObject digitalObject);
 
     /**
      * Deletes object
@@ -93,12 +87,6 @@ public interface Repository {
      * @throws
      */
     void commitTransaction();
-
-    /**
-     * Rolls back current transaction
-     * @throws
-     */
-    void rollbackTransaction();
 
     /**
      * Returns processing index feeder

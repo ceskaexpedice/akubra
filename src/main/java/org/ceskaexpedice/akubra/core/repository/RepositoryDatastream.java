@@ -1,7 +1,5 @@
 package org.ceskaexpedice.akubra.core.repository;
 
-import org.w3c.dom.Document;
-
 import java.io.InputStream;
 import java.util.Date;
 
@@ -10,7 +8,7 @@ import java.util.Date;
  */
 public interface RepositoryDatastream {
 
-    public static enum Type {
+    enum Type {
         DIRECT,
         INDIRECT;
     }
@@ -23,33 +21,26 @@ public interface RepositoryDatastream {
     String getName();
 
     /**
-     * Return metadata document
-     * @return
-     * @throws
-     */
-    Document getMetadata();
-
-    /**
-     * Return content of the stream
-     * @return
-     * @throws
-     */
-    InputStream getContent();
-
-    /**
      * Return mimetype
      * @return
      * @throws
      */
-    String getMimeType();
+    String getLastVersionMimeType();
 
     /**
      * Return last modified flag
      * @return
      * @throws
      */
-    Date getLastModified();
+    Date getLastVersionLastModified();
 
     Type getStreamType();
-    
+
+    /**
+     * Return content of the stream
+     * @return
+     * @throws
+     */
+    InputStream getLastVersionContent();
+
 }

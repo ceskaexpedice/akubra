@@ -22,10 +22,7 @@ class RepositoryDatastreamImpl implements RepositoryDatastream {
     private final String name;
     private final Type type;
 
-    private String transactionId;
-
-
-    RepositoryDatastreamImpl(AkubraDOManager manager, DatastreamType datastream, String name, Type type) {
+    RepositoryDatastreamImpl(DatastreamType datastream, String name, Type type, AkubraDOManager manager) {
         super();
         this.manager = manager;
         this.datastream = datastream;
@@ -33,47 +30,30 @@ class RepositoryDatastreamImpl implements RepositoryDatastream {
         this.type = type;
     }
 
-    RepositoryDatastreamImpl(AkubraDOManager manager, DatastreamType datastream, String name) {
-        this(manager,datastream, name, Type.DIRECT);
-    }
-
     @Override
-    public String getName() throws RepositoryException {
+    public String getName() {
         return this.name;
     }
 
     @Override
-    public InputStream getContent() throws RepositoryException {
-        /* TODO
-        try {
-            return RepositoryUtils.getStreamContent(RepositoryUtils.getLastStreamVersion(datastream), manager);
-        } catch (Exception e) {
-            throw new RepositoryException(e);
-        }
-
-         */
-        return null;
+    public Date getLastVersionLastModified() {
+        return RepositoryUtils.getLastStreamVersion(datastream).getCREATED().toGregorianCalendar().getTime();
     }
 
     @Override
-    public Document getMetadata() throws RepositoryException {
-        return null;
-    }
-
-    @Override
-    public String getMimeType() throws RepositoryException {
+    public String getLastVersionMimeType() {
         return RepositoryUtils.getLastStreamVersion(datastream).getMIMETYPE();
     }
 
+    @Override
+    public InputStream getLastVersionContent() {
+        return RepositoryUtils.getStreamContent(RepositoryUtils.getLastStreamVersion(datastream), manager);
+    }
 
     @Override
-    public Type getStreamType() throws RepositoryException {
+    public Type getStreamType() {
         return this.type;
     }
 
-    @Override
-    public Date getLastModified() throws RepositoryException {
-        return RepositoryUtils.getLastStreamVersion(datastream).getCREATED().toGregorianCalendar().getTime();
-    }
 
 }
