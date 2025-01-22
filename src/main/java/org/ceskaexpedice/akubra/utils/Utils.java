@@ -1,6 +1,7 @@
 package org.ceskaexpedice.akubra.utils;
 
 import com.google.common.io.CharStreams;
+import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
@@ -18,40 +19,20 @@ public class Utils {
      * @return String or null (when in is null)
      * @throws IOException
      */
-    public static String inputstreamToString(InputStream in) throws IOException {
-        if (in == null) {
-            return null;
-        }
-        try (final Reader reader = new InputStreamReader(in)) {
-            return CharStreams.toString(reader);
+    public static String inputstreamToString(InputStream in) {
+        try {
+            if (in == null) {
+                return null;
+            }
+            try (final Reader reader = new InputStreamReader(in)) {
+                return CharStreams.toString(reader);
+            }
+        } catch (IOException e) {
+            throw new RepositoryException(e);
         }
     }
 
-    /**
-     * InputStream is being closed here (after extracting String or error).
-     *
-     * @param in
-     * @param nsAware if false, namespaces will be removed
-     * @return Document or null (when in is null)
-     * @throws IOException
-     */
-    public static Document inputstreamToDocument(InputStream in, boolean nsAware) throws IOException {
-        if (in == null) {
-            return null;
-        }
-        try {
-            SAXReader reader = new SAXReader();
-            Document doc = reader.read(in);
-            if (!nsAware) {
-                doc.accept(new NamespaceRemovingVisitor(true, true));
-            }
-            return doc;
-        } catch (DocumentException e) {
-            throw new IOException(e);
-        } finally {
-            in.close();
-        }
-    }
+
 
     /**
      * InputStream is being closed here (after extracting String or error).

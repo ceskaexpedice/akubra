@@ -1,8 +1,7 @@
 package org.ceskaexpedice.akubra.core.processingindex;
 
 import org.ceskaexpedice.akubra.utils.StringUtils;
-import org.ceskaexpedice.akubra.utils.XMLUtils;
-import org.ceskaexpedice.akubra.core.Configuration;
+import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.model.RepositoryNamespaceContext;
 import org.ceskaexpedice.model.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
@@ -37,8 +36,8 @@ class RELSEXTSPARQLBuilderImpl implements RELSEXTSPARQLBuilder {
     public String sparqlProps(String relsExt, RELSEXTSPARQLBuilderListener listener) throws IOException, SAXException, ParserConfigurationException, RepositoryException {
         StringTemplateGroup strGroup = SPARQL_TEMPLATES();
 
-        Document document = XMLUtils.parseDocument(new StringReader(relsExt), true);
-        Element description = XMLUtils.findElement(document.getDocumentElement(), "Description", RepositoryNamespaces.RDF_NAMESPACE_URI);
+        Document document = DomUtils.parseDocument(new StringReader(relsExt), true);
+        Element description = DomUtils.findElement(document.getDocumentElement(), "Description", RepositoryNamespaces.RDF_NAMESPACE_URI);
         NodeList childNodes = description.getChildNodes();
 
         List<Triple<String,String,String>> triples = new ArrayList<>();

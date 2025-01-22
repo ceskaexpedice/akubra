@@ -8,9 +8,6 @@ import org.ceskaexpedice.akubra.core.repository.Repository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
-import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
-import org.ceskaexpedice.akubra.utils.Dom4jUtils;
-import org.ceskaexpedice.model.DatastreamVersionType;
 import org.ceskaexpedice.model.DigitalObject;
 import org.w3c.dom.Document;
 
@@ -23,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
+
+import static org.ceskaexpedice.akubra.utils.Dom4jUtils.extractProperty;
 
 public class RepositoryAccessImpl implements RepositoryAccess {
 
@@ -61,19 +60,22 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     }
 
     @Override
-    public RepositoryObjectWrapper getFoxml(String pid) {
-        return new RepositoryObjectWrapperImpl(pid, repository);
+    public RepositoryObjectWrapper getObject(String pid, FoxmlType foxmlType) {
+        InputStream objectStream;
+        RepositoryObject repositoryObject = repository.getObject(pid);
+        if (foxmlType == FoxmlType.archive) {
+            DigitalObject digitalObject = repository.getObject(pid, false).getDigitalObject();
+            repository.resolveArchivedDatastreams(digitalObject);
+            objectStream = this.repository.marshallObject(digitalObject);
+        } else {
+            objectStream = repositoryObject.getFoxml();
+        }
+        return new RepositoryObjectWrapperImpl(objectStream);
     }
 
     @Override
-    public String getProperty(String pid, String propertyName) {
-        org.dom4j.Document objectFoxml = getFoxml(pid).asXml(FoxmlType.regular);
-        return objectFoxml == null ? null : extractProperty(objectFoxml, propertyName);
-    }
-
-    @Override
-    public ObjectAccessHelper getObjectAccessHelper() {
-        return new ObjectAccessHelperImpl(this);
+    public RepositoryObjectProperties getObjectProperties() {
+        return new RepositoryObjectPropertiesImpl(this);
     }
 
     // ------------- stream
@@ -95,22 +97,30 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     }
 
     @Override
-    public DatastreamContentWrapper getDatastreamContent(String pid, String dsId) {
+    public RepositoryObjectWrapper getDatastreamContent(String pid, String dsId) {
         try {
             /*
             pid = makeSureObjectPid(pid);
             if (this.accessLog != null && this.accessLog.isReportingAccess(pid, datastreamName)) {
                 reportAccess(pid, datastreamName);
             }*/
+
             DigitalObject object = repository.getObject(pid).getDigitalObject();
             if (object != null) {
+                InputStream lastVersionContent = repository.getObject(pid).getStream(dsId).getLastVersionContent();
+                return new DatastreamContentWrapperImpl(lastVersionContent);
+                /* TODO
                 DatastreamVersionType stream = RepositoryUtils.getLastStreamVersion(object, dsId);
                 if (stream != null) {
+                    InputStream lastVersionContent = repository.getObject(pid).getStream(dsId).getLastVersionContent();
+                    return new DatastreamContentWrapperImpl(object, lastVersionContent);
                     // TODO return new DatastreamContentWrapperImpl(object, RepositoryUtils.getStreamContent(stream, repository));
                     return null;
                 } else {
                     throw new IOException("cannot find stream '" + dsId + "' for pid '" + pid + "'");
                 }
+
+                 */
             } else {
                 throw new IOException("cannot find pid '" + pid + "'");
             }
@@ -120,7 +130,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     }
 
     @Override
-    public DatastreamContentWrapper getDatastreamContent(String pid, String dsId, String version) {
+    public RepositoryObjectWrapper getDatastreamContent(String pid, String dsId, String version) {
         return null;
     }
 
@@ -130,7 +140,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     }
 
     @Override
-    public RelsExtWrapper processRelsExt(String pid) {
+    public RelsExtWrapper processDatastreamRelsExt(String pid) {
         Document xmlDom = getDatastreamContent(pid, KnownDatastreams.RELS_EXT.toString()).asXmlDom();
         return new RelsExtWrapperImpl(xmlDom);
     }
@@ -582,10 +592,6 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         return maxVersion;
     }*/
 
-    private String extractProperty(org.dom4j.Document foxmlDoc, String name) {
-        org.dom4j.Node node = Dom4jUtils.buildXpath(String.format("/foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='%s']/@VALUE", name)).selectSingleNode(foxmlDoc);
-        return node == null ? null : Dom4jUtils.toStringOrNull(node);
-    }
 
 
 }

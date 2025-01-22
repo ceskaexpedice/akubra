@@ -1,7 +1,8 @@
 package org.ceskaexpedice.akubra.core.processingindex;
 
+import org.ceskaexpedice.akubra.access.RepositoryAccess;
 import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
-import org.ceskaexpedice.akubra.utils.XMLUtils;
+import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.model.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
@@ -39,23 +40,18 @@ import java.util.stream.Collectors;
  */
 public class ProcessingIndexFeeder {
     
-    public static enum TitleType {
+    enum TitleType {
         dc,mods;
     }
-
-    public static final String DEFAULT_ITERATE_QUERY = "*:*";
-
     private static final String TYPE_RELATION = "relation";
     private static final String TYPE_DESC = "description";
 
-    public static final Logger LOGGER = Logger.getLogger(ProcessingIndexFeeder.class.getName());
-
+    private static final Logger LOGGER = Logger.getLogger(ProcessingIndexFeeder.class.getName());
     private SolrClient solrClient;
 
     public ProcessingIndexFeeder(SolrClient solrClient) {
         super();
         this.solrClient = solrClient;
-
     }
 
     // 1 ---------------------------------
@@ -274,9 +270,9 @@ public class ProcessingIndexFeeder {
     private void processRELSEXTRelationAndFeedProcessingIndex(RepositoryObject repositoryObject, String object, String localName) {
         if (localName.equals("hasModel")) {
             try {
-                boolean dcStreamExists = repositoryObject.streamExists(RepositoryUtils.DC_STREAM);
+                boolean dcStreamExists = repositoryObject.streamExists(RepositoryAccess.KnownDatastreams.BIBLIO_DC.name());
                 // TODO: Biblio mods ukladat jinam ??
-                boolean modsStreamExists = repositoryObject.streamExists(RepositoryUtils.BIBLIO_MODS_STREAM);
+                boolean modsStreamExists = repositoryObject.streamExists(RepositoryAccess.KnownDatastreams.BIBLIO_MODS.name());
                 if (dcStreamExists || modsStreamExists) {
                     try {
                         //LOGGER.info("DC or BIBLIOMODS exists");
@@ -320,24 +316,24 @@ public class ProcessingIndexFeeder {
     }
 
     private void indexDescription(String pid, String model, String title, ProcessingIndexFeeder.TitleType ttype) throws IOException, SolrServerException {
-        this.feedDescriptionDocument(pid, model, title.trim(), org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.getAkubraInternalId(pid), new Date(), ttype);
+        this.feedDescriptionDocument(pid, model, title.trim(), RepositoryUtils.getAkubraInternalId(pid), new Date(), ttype);
     }
 
     private void indexDescription(String pid, String model, String title) throws IOException, SolrServerException {
-        this.feedDescriptionDocument(pid, model, title.trim(), org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.getAkubraInternalId(pid), new Date());
+        this.feedDescriptionDocument(pid, model, title.trim(), RepositoryUtils.getAkubraInternalId(pid), new Date());
     }
 
     private List<String> dcTitle(RepositoryObject repositoryObject) throws RepositoryException, ParserConfigurationException, SAXException, IOException {
-        InputStream stream = repositoryObject.getStream(RepositoryUtils.DC_STREAM).getLastVersionContent();
-        Element title = XMLUtils.findElement(XMLUtils.parseDocument(stream, true).getDocumentElement(), "title", RepositoryNamespaces.DC_NAMESPACE_URI);
+        InputStream stream = repositoryObject.getStream(RepositoryAccess.KnownDatastreams.BIBLIO_DC.name()).getLastVersionContent();
+        Element title = DomUtils.findElement(DomUtils.parseDocument(stream, true).getDocumentElement(), "title", RepositoryNamespaces.DC_NAMESPACE_URI);
         return title != null ? Arrays.asList(title.getTextContent()) : new ArrayList<>();
     }
 
     private List<String> modsTitle(RepositoryObject repositoryObject, String lang) throws RepositoryException, ParserConfigurationException, SAXException, IOException {
-        InputStream stream = repositoryObject.getStream(RepositoryUtils.BIBLIO_MODS_STREAM).getLastVersionContent();
-        Element docElement = XMLUtils.parseDocument(stream, true).getDocumentElement();
+        InputStream stream = repositoryObject.getStream(RepositoryAccess.KnownDatastreams.BIBLIO_MODS.name()).getLastVersionContent();
+        Element docElement = DomUtils.parseDocument(stream, true).getDocumentElement();
 
-        List<Element> elements = XMLUtils.getElementsRecursive(docElement, new XMLUtils.ElementsFilter() {
+        List<Element> elements = DomUtils.getElementsRecursive(docElement, new DomUtils.ElementsFilter() {
             @Override
             public boolean acceptElement(Element element) {
                 if (element.getNamespaceURI().equals(RepositoryNamespaces.BIBILO_MODS_URI)) {
@@ -351,7 +347,7 @@ public class ProcessingIndexFeeder {
 
 
         if (elements.isEmpty()) {
-            elements = XMLUtils.getElementsRecursive(docElement, new XMLUtils.ElementsFilter() {
+            elements = DomUtils.getElementsRecursive(docElement, new DomUtils.ElementsFilter() {
                 @Override
                 public boolean acceptElement(Element element) {
                     if (element.getNamespaceURI().equals(RepositoryNamespaces.BIBILO_MODS_URI)) {

@@ -20,12 +20,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.ceskaexpedice.akubra.access.RepositoryAccess;
 import org.ceskaexpedice.akubra.utils.pid.LexerException;
 import org.ceskaexpedice.akubra.utils.pid.PIDParser;
-import org.ceskaexpedice.model.RepositoryNamespaceContext;
 import org.ceskaexpedice.model.RepositoryNamespaces;
 import org.w3c.dom.*;
 
 import javax.xml.xpath.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,12 +31,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class RelsExtHelper {
+public class RelsExtUtils {
 
-    public static final Logger LOGGER = Logger.getLogger(RelsExtHelper.class.getName());
+    public static final Logger LOGGER = Logger.getLogger(RelsExtUtils.class.getName());
 
 
-    private RelsExtHelper() {
+    private RelsExtUtils() {
     }
     
     
@@ -63,7 +61,7 @@ public class RelsExtHelper {
      */
     public static String getModel(Element relsExt) throws XPathExpressionException, LexerException {
         //<hasModel xmlns="
-        Element foundElement = XMLUtils.findElement(relsExt, "hasModel", RepositoryNamespaces.FEDORA_MODELS_URI);
+        Element foundElement = DomUtils.findElement(relsExt, "hasModel", RepositoryNamespaces.FEDORA_MODELS_URI);
         if (foundElement != null) {
             String sform = foundElement.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
             PIDParser pidParser = new PIDParser(sform);
@@ -192,7 +190,7 @@ public class RelsExtHelper {
 
         List<Pair<String, String>> pairs = new ArrayList<>();
         List<String> names = Arrays.stream(RepositoryAccess.KnownRelations.values()).map(RepositoryAccess.KnownRelations::toString).collect(Collectors.toList());
-        List<Element> elms = XMLUtils.getElementsRecursive(relsExt, new XMLUtils.ElementsFilter() {
+        List<Element> elms = DomUtils.getElementsRecursive(relsExt, new DomUtils.ElementsFilter() {
 
             @Override
             public boolean acceptElement(Element element) {

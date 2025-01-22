@@ -1,5 +1,6 @@
 package org.ceskaexpedice.akubra.utils;
 
+import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.dom4j.*;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
@@ -225,7 +226,42 @@ public class Dom4jUtils {
         return out.toString();
     }
 
+    /**
+     * InputStream is being closed here (after extracting String or error).
+     *
+     * @param in
+     * @param nsAware if false, namespaces will be removed
+     * @return Document or null (when in is null)
+     * @throws IOException
+     */
+    public static Document inputstreamToDocument(InputStream in, boolean nsAware) {
+        try {
+            if (in == null) {
+                return null;
+            }
+            try {
+                SAXReader reader = new SAXReader();
+                Document doc = reader.read(in);
+                if (!nsAware) {
+                    doc.accept(new NamespaceRemovingVisitor(true, true));
+                }
+                return doc;
+            } catch (DocumentException e) {
+                throw new IOException(e);
+            } finally {
+                in.close();
+            }
+        } catch (IOException e) {
+            throw new RepositoryException(e);
+        }
+    }
     public static String getNamespaceUri(String prefix) {
         return NAMESPACE_URIS.get(prefix);
     }
+
+    public static String extractProperty(Document foxmlDoc, String name) {
+        org.dom4j.Node node = Dom4jUtils.buildXpath(String.format("/foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='%s']/@VALUE", name)).selectSingleNode(foxmlDoc);
+        return node == null ? null : Dom4jUtils.toStringOrNull(node);
+    }
+
 }

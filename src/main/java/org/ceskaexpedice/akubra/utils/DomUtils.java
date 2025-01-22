@@ -1,5 +1,6 @@
 package org.ceskaexpedice.akubra.utils;
 
+import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.w3c.dom.*;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
@@ -30,9 +31,9 @@ import java.util.logging.Logger;
  *
  * <b>Implementation note: All DOM access methods are synchronized on Document object </b>
  */
-public class XMLUtils {
+public class DomUtils {
 
-    public static final Logger LOGGER = Logger.getLogger(XMLUtils.class.getName());
+    public static final Logger LOGGER = Logger.getLogger(DomUtils.class.getName());
 
 
     /**
@@ -78,11 +79,15 @@ public class XMLUtils {
      * @throws SAXException
      * @throws IOException
      */
-    public static Document parseDocument(InputStream is) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory newInstance = DocumentBuilderFactory.newInstance();
-        LOGGER.log(Level.FINE, "builder factory instance :" + newInstance.getClass().getResource(newInstance.getClass().getSimpleName() + ".class"));
-        DocumentBuilder builder = newInstance.newDocumentBuilder();
-        return builder.parse(is);
+    public static Document parseDocument(InputStream is) {
+        try {
+            DocumentBuilderFactory newInstance = DocumentBuilderFactory.newInstance();
+            LOGGER.log(Level.FINE, "builder factory instance :" + newInstance.getClass().getResource(newInstance.getClass().getSimpleName() + ".class"));
+            DocumentBuilder builder = newInstance.newDocumentBuilder();
+            return builder.parse(is);
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
     }
 
     /**

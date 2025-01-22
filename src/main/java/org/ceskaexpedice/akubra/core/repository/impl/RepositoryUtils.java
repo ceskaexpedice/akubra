@@ -1,10 +1,10 @@
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import org.ceskaexpedice.akubra.core.repository.Repository;
+import org.ceskaexpedice.akubra.access.RepositoryAccess;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.model.*;
 import org.ceskaexpedice.akubra.utils.SafeSimpleDateFormat;
-import org.ceskaexpedice.akubra.utils.XMLUtils;
+import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.akubraproject.map.IdMapper;
 import org.apache.commons.io.IOUtils;
 import org.fcrepo.common.PID;
@@ -14,7 +14,6 @@ import org.w3c.dom.Element;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.transform.TransformerException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,12 +33,9 @@ import java.util.zip.GZIPInputStream;
 public class RepositoryUtils {
     private static final Logger LOGGER = Logger.getLogger(RepositoryUtils.class.getName());
     private static final SafeSimpleDateFormat DATE_FORMAT = new SafeSimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSS'Z'");
-    private static final String RELS_EXT_STREAM = "RELS-EXT";
     private static final String RELS_EXT_FORMAT_URI = "info:fedora/fedora-system:FedoraRELSExt-1.0";
     private static final String BIBLIO_MODS_FORMAT_URI = "http://www.loc.gov/mods/v3";
     private static final String DC_FORMAT_URI = "http://www.openarchives.org/OAI/2.0/oai_dc/";
-    private static final String DC_STREAM = "DC";
-    private static final String BIBLIO_MODS_STREAM = "BIBLIO_MODS";
     private static final String LOCAL_REF_PREFIX = "http://local.fedora.server/fedora/get/";
 
     private RepositoryUtils() {
@@ -81,7 +77,7 @@ public class RepositoryUtils {
             if (stream.getXmlContent() != null) {
                 StringWriter wrt = new StringWriter();
                 for (Element element : stream.getXmlContent().getAny()) {
-                    XMLUtils.print(element, wrt);
+                    DomUtils.print(element, wrt);
                 }
                 return IOUtils.toInputStream(wrt.toString(), Charset.forName("UTF-8"));
             } else if (stream.getContentLocation() != null) {
@@ -140,7 +136,7 @@ public class RepositoryUtils {
      * @param pid PID of the FOXML object (uuid:xxxxxx...)
      * @return internal file path relative to object store root, depends ob the property objectStore.pattern
      */
-    static String getAkubraInternalId(String pid) {
+    public static String getAkubraInternalId(String pid) {
         if (pid == null) {
             return "";
         }
@@ -202,13 +198,13 @@ public class RepositoryUtils {
     }
 
     static String getFormatUriForDS(String dsID) {
-        if (RELS_EXT_STREAM.equals(dsID)) {
+        if (RepositoryAccess.KnownDatastreams.RELS_EXT.name().equals(dsID)) {
             return RELS_EXT_FORMAT_URI;
         }
-        if (BIBLIO_MODS_STREAM.equals(dsID)) {
+        if (RepositoryAccess.KnownDatastreams.BIBLIO_MODS.name().equals(dsID)) {
             return BIBLIO_MODS_FORMAT_URI;
         }
-        if (DC_STREAM.equals(dsID)) {
+        if (RepositoryAccess.KnownDatastreams.BIBLIO_DC.name().equals(dsID)) {
             return DC_FORMAT_URI;
         }
         return null;

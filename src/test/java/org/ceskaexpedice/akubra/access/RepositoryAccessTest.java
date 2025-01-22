@@ -1,11 +1,8 @@
 package org.ceskaexpedice.akubra.access;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.ceskaexpedice.akubra.access.impl.DatastreamContentWrapperImpl;
 import org.ceskaexpedice.akubra.access.impl.ProcessingIndexItemImpl;
 import org.ceskaexpedice.akubra.core.Configuration;
 import org.ceskaexpedice.akubra.locks.HazelcastServerNode;
-import org.ceskaexpedice.akubra.utils.RelsExtHelper;
 import org.dom4j.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -51,42 +48,61 @@ public class RepositoryAccessTest {
     }
 
     @Test
-    void testGetObject_regular() {
-        RepositoryObjectWrapper repositoryObjectWrapper = repositoryAccess.getFoxml("uuid:12993b4a-71b4-4f19-8953-0701243cc25d");
+    void testGetObject_regular_stream() {
+        RepositoryObjectWrapper repositoryObjectWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.regular);
         assertNotNull(repositoryObjectWrapper);
-        InputStream repositoryObjectWrapperStream = repositoryObjectWrapper.asStream(FoxmlType.regular);
+        InputStream repositoryObjectWrapperStream = repositoryObjectWrapper.asStream();
         assertNotNull(repositoryObjectWrapperStream);
+
+        // TODO
         String regularObjectAsString = convertUsingBytes(repositoryObjectWrapperStream);
         System.out.println(regularObjectAsString);
     }
 
     @Test
-    void testGetObject_archive() {
-        RepositoryObjectWrapper repositoryObjectWrapper = repositoryAccess.getFoxml("uuid:12993b4a-71b4-4f19-8953-0701243cc25d");
+    void testGetObject_archive_stream() {
+        RepositoryObjectWrapper repositoryObjectWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.archive);
         assertNotNull(repositoryObjectWrapper);
-        InputStream repositoryObjectWrapperStream = repositoryObjectWrapper.asStream(FoxmlType.archive);
+        InputStream repositoryObjectWrapperStream = repositoryObjectWrapper.asStream();
         assertNotNull(repositoryObjectWrapperStream);
+
+        // TODO
         String regularObjectAsString = convertUsingBytes(repositoryObjectWrapperStream);
         System.out.println(regularObjectAsString);
     }
 
     @Test
-    void testGetObject_xml() {
-        RepositoryObjectWrapper repositoryObjectWrapper = repositoryAccess.getFoxml("uuid:12993b4a-71b4-4f19-8953-0701243cc25d");
+    void testGetObject_regular_xmlDom4j() {
+        RepositoryObjectWrapper repositoryObjectWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.regular);
         assertNotNull(repositoryObjectWrapper);
-        Document objectWrapperXml = repositoryObjectWrapper.asXml(FoxmlType.regular);
+        Document objectWrapperXml = repositoryObjectWrapper.asXmlDom4j();
         assertNotNull(objectWrapperXml);
+
+        // TODO
         System.out.println(objectWrapperXml.asXML());
     }
 
     @Test
-    void testGetProperty() {
-        String createdDate = repositoryAccess.getProperty("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", "info:fedora/fedora-system:def/model#createdDate");
+    void testGetObject_archive_xmlDom4j() {
+        RepositoryObjectWrapper repositoryObjectWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.archive);
+        assertNotNull(repositoryObjectWrapper);
+        Document objectWrapperXml = repositoryObjectWrapper.asXmlDom4j();
+        assertNotNull(objectWrapperXml);
+
+        // TODO
+        System.out.println(objectWrapperXml.asXML());
+    }
+
+    @Test
+    void testGetObjectProperty() {
+        String createdDate = repositoryAccess.getObjectProperties().getProperty("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", "info:fedora/fedora-system:def/model#createdDate");
         assertNotNull(createdDate);
+
+        // TODO
         System.out.println(createdDate);
-        System.out.println(repositoryAccess.getObjectAccessHelper().getPropertyCreated("uuid:12993b4a-71b4-4f19-8953-0701243cc25d"));
-        System.out.println(repositoryAccess.getObjectAccessHelper().getPropertyLabel("uuid:12993b4a-71b4-4f19-8953-0701243cc25d"));
-        System.out.println(repositoryAccess.getObjectAccessHelper().getPropertyLastModified("uuid:12993b4a-71b4-4f19-8953-0701243cc25d"));
+        System.out.println(repositoryAccess.getObjectProperties().getPropertyCreated("uuid:12993b4a-71b4-4f19-8953-0701243cc25d"));
+        System.out.println(repositoryAccess.getObjectProperties().getPropertyLabel("uuid:12993b4a-71b4-4f19-8953-0701243cc25d"));
+        System.out.println(repositoryAccess.getObjectProperties().getPropertyLastModified("uuid:12993b4a-71b4-4f19-8953-0701243cc25d"));
     }
 
     @Test
@@ -108,7 +124,7 @@ public class RepositoryAccessTest {
 
     @Test
     void testGetDatastreamContent_relsExt() throws IOException {
-        Document document = repositoryAccess.getDatastreamContent("uuid:5035a48a-5e2e-486c-8127-2fa650842e46", "RELS-EXT").asXml();
+        Document document = repositoryAccess.getDatastreamContent("uuid:5035a48a-5e2e-486c-8127-2fa650842e46", "RELS-EXT").asXmlDom4j();
         assertNotNull(document);
         System.out.println(document.asXML());
     }
@@ -116,7 +132,7 @@ public class RepositoryAccessTest {
     @Test
     void testGetDatastreamContent_relsExtDom() throws Exception {
         // TODO
-        RelsExtWrapper relsExtWrapper = repositoryAccess.processRelsExt("uuid:5035a48a-5e2e-486c-8127-2fa650842e46");
+        RelsExtWrapper relsExtWrapper = repositoryAccess.processDatastreamRelsExt("uuid:5035a48a-5e2e-486c-8127-2fa650842e46");
         assertNotNull(relsExtWrapper);
         relsExtWrapper.getRelations().forEach(System.out::println);
 //        String model = RelsExtHelper.getModel(xmlDom.getDocumentElement());

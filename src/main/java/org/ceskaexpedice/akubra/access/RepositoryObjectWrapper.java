@@ -1,18 +1,17 @@
 package org.ceskaexpedice.akubra.access;
 
-
 import org.dom4j.Document;
 
 import java.io.InputStream;
 
 public interface RepositoryObjectWrapper {
 
-    InputStream asStream(FoxmlType foxmlType);
+    InputStream asStream();
 
-    Document asXml(FoxmlType foxmlType);
+    Document asXmlDom4j();
 
-    org.w3c.dom.Document asXmlDom(FoxmlType foxmlType);
+    org.w3c.dom.Document asXmlDom();
 
-    String asString(FoxmlType foxmlType);
+    String asString();
 
 }
