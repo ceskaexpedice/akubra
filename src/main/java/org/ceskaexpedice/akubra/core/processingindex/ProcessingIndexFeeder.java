@@ -1,9 +1,10 @@
 package org.ceskaexpedice.akubra.core.processingindex;
 
 import org.ceskaexpedice.akubra.access.RepositoryAccess;
+import org.ceskaexpedice.akubra.core.repository.KnownDatastreams;
 import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
 import org.ceskaexpedice.akubra.utils.DomUtils;
-import org.ceskaexpedice.model.RepositoryNamespaces;
+import org.ceskaexpedice.akubra.core.repository.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import org.apache.commons.io.IOUtils;
@@ -270,9 +271,9 @@ public class ProcessingIndexFeeder {
     private void processRELSEXTRelationAndFeedProcessingIndex(RepositoryObject repositoryObject, String object, String localName) {
         if (localName.equals("hasModel")) {
             try {
-                boolean dcStreamExists = repositoryObject.streamExists(RepositoryAccess.KnownDatastreams.BIBLIO_DC.name());
+                boolean dcStreamExists = repositoryObject.streamExists(KnownDatastreams.BIBLIO_DC.name());
                 // TODO: Biblio mods ukladat jinam ??
-                boolean modsStreamExists = repositoryObject.streamExists(RepositoryAccess.KnownDatastreams.BIBLIO_MODS.name());
+                boolean modsStreamExists = repositoryObject.streamExists(KnownDatastreams.BIBLIO_MODS.name());
                 if (dcStreamExists || modsStreamExists) {
                     try {
                         //LOGGER.info("DC or BIBLIOMODS exists");
@@ -324,13 +325,13 @@ public class ProcessingIndexFeeder {
     }
 
     private List<String> dcTitle(RepositoryObject repositoryObject) throws RepositoryException, ParserConfigurationException, SAXException, IOException {
-        InputStream stream = repositoryObject.getStream(RepositoryAccess.KnownDatastreams.BIBLIO_DC.name()).getLastVersionContent();
+        InputStream stream = repositoryObject.getStream(KnownDatastreams.BIBLIO_DC.name()).getLastVersionContent();
         Element title = DomUtils.findElement(DomUtils.parseDocument(stream, true).getDocumentElement(), "title", RepositoryNamespaces.DC_NAMESPACE_URI);
         return title != null ? Arrays.asList(title.getTextContent()) : new ArrayList<>();
     }
 
     private List<String> modsTitle(RepositoryObject repositoryObject, String lang) throws RepositoryException, ParserConfigurationException, SAXException, IOException {
-        InputStream stream = repositoryObject.getStream(RepositoryAccess.KnownDatastreams.BIBLIO_MODS.name()).getLastVersionContent();
+        InputStream stream = repositoryObject.getStream(KnownDatastreams.BIBLIO_MODS.name()).getLastVersionContent();
         Element docElement = DomUtils.parseDocument(stream, true).getDocumentElement();
 
         List<Element> elements = DomUtils.getElementsRecursive(docElement, new DomUtils.ElementsFilter() {

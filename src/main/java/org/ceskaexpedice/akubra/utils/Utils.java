@@ -2,9 +2,6 @@ package org.ceskaexpedice.akubra.utils;
 
 import com.google.common.io.CharStreams;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.io.SAXReader;
 
 import java.io.IOException;
 import java.io.InputStream;

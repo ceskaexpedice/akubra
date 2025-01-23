@@ -1,9 +1,7 @@
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import org.ceskaexpedice.model.DatastreamType;
+import org.ceskaexpedice.jaxbmodel.DatastreamType;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
-import org.ceskaexpedice.akubra.core.repository.RepositoryException;
-import org.w3c.dom.Document;
 
 import java.io.*;
 import java.util.Date;

@@ -6,7 +6,7 @@
 //
 
 
-package org.ceskaexpedice.model;
+package org.ceskaexpedice.jaxbmodel;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -15,29 +15,30 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for contentLocationType complex type.
+ * <p>Java class for contentDigestType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="contentLocationType"&gt;
+ * &lt;complexType name="contentDigestType"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="TYPE" use="required"&gt;
+ *       &lt;attribute name="TYPE"&gt;
  *         &lt;simpleType&gt;
  *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
- *             &lt;enumeration value="INTERNAL_ID"/&gt;
- *             &lt;enumeration value="URL"/&gt;
+ *             &lt;enumeration value="MD5"/&gt;
+ *             &lt;enumeration value="SHA-1"/&gt;
+ *             &lt;enumeration value="SHA-256"/&gt;
+ *             &lt;enumeration value="SHA-384"/&gt;
+ *             &lt;enumeration value="SHA-512"/&gt;
+ *             &lt;enumeration value="HAVAL"/&gt;
+ *             &lt;enumeration value="TIGER"/&gt;
+ *             &lt;enumeration value="WHIRLPOOL"/&gt;
+ *             &lt;enumeration value="DISABLED"/&gt;
  *           &lt;/restriction&gt;
  *         &lt;/simpleType&gt;
  *       &lt;/attribute&gt;
- *       &lt;attribute name="REF" use="required"&gt;
- *         &lt;simpleType&gt;
- *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyURI"&gt;
- *             &lt;minLength value="1"/&gt;
- *           &lt;/restriction&gt;
- *         &lt;/simpleType&gt;
- *       &lt;/attribute&gt;
+ *       &lt;attribute name="DIGEST" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -46,13 +47,13 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "contentLocationType")
-public class ContentLocationType {
+@XmlType(name = "contentDigestType")
+public class ContentDigestType {
 
-    @XmlAttribute(name = "TYPE", required = true)
+    @XmlAttribute(name = "TYPE")
     protected String type;
-    @XmlAttribute(name = "REF", required = true)
-    protected String ref;
+    @XmlAttribute(name = "DIGEST")
+    protected String digest;
 
     /**
      * Gets the value of the type property.
@@ -79,27 +80,27 @@ public class ContentLocationType {
     }
 
     /**
-     * Gets the value of the ref property.
+     * Gets the value of the digest property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getREF() {
-        return ref;
+    public String getDIGEST() {
+        return digest;
     }
 
     /**
-     * Sets the value of the ref property.
+     * Sets the value of the digest property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setREF(String value) {
-        this.ref = value;
+    public void setDIGEST(String value) {
+        this.digest = value;
     }
 
 }

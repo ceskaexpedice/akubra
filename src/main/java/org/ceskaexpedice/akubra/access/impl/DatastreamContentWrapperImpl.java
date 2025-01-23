@@ -1,7 +1,7 @@
 package org.ceskaexpedice.akubra.access.impl;
 
 import org.ceskaexpedice.akubra.access.RepositoryObjectWrapper;
-import org.ceskaexpedice.model.DigitalObject;
+import org.ceskaexpedice.jaxbmodel.DigitalObject;
 import org.dom4j.Document;
 
 import java.io.InputStream;

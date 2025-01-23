@@ -6,7 +6,7 @@
 //
 
 
-package org.ceskaexpedice.model;
+package org.ceskaexpedice.jaxbmodel;
 
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;

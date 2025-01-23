@@ -18,9 +18,10 @@ package org.ceskaexpedice.akubra.utils;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.ceskaexpedice.akubra.access.RepositoryAccess;
+import org.ceskaexpedice.akubra.core.repository.KnownRelations;
 import org.ceskaexpedice.akubra.utils.pid.LexerException;
 import org.ceskaexpedice.akubra.utils.pid.PIDParser;
-import org.ceskaexpedice.model.RepositoryNamespaces;
+import org.ceskaexpedice.akubra.core.repository.RepositoryNamespaces;
 import org.w3c.dom.*;
 
 import javax.xml.xpath.*;
@@ -189,7 +190,7 @@ public class RelsExtUtils {
 
 
         List<Pair<String, String>> pairs = new ArrayList<>();
-        List<String> names = Arrays.stream(RepositoryAccess.KnownRelations.values()).map(RepositoryAccess.KnownRelations::toString).collect(Collectors.toList());
+        List<String> names = Arrays.stream(KnownRelations.values()).map(KnownRelations::toString).collect(Collectors.toList());
         List<Element> elms = DomUtils.getElementsRecursive(relsExt, new DomUtils.ElementsFilter() {
 
             @Override

@@ -1,8 +1,8 @@
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import org.ceskaexpedice.akubra.access.RepositoryAccess;
+import org.ceskaexpedice.akubra.core.repository.KnownDatastreams;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
-import org.ceskaexpedice.model.*;
+import org.ceskaexpedice.jaxbmodel.*;
 import org.ceskaexpedice.akubra.utils.SafeSimpleDateFormat;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.akubraproject.map.IdMapper;
@@ -198,13 +198,13 @@ public class RepositoryUtils {
     }
 
     static String getFormatUriForDS(String dsID) {
-        if (RepositoryAccess.KnownDatastreams.RELS_EXT.name().equals(dsID)) {
+        if (KnownDatastreams.RELS_EXT.name().equals(dsID)) {
             return RELS_EXT_FORMAT_URI;
         }
-        if (RepositoryAccess.KnownDatastreams.BIBLIO_MODS.name().equals(dsID)) {
+        if (KnownDatastreams.BIBLIO_MODS.name().equals(dsID)) {
             return BIBLIO_MODS_FORMAT_URI;
         }
-        if (RepositoryAccess.KnownDatastreams.BIBLIO_DC.name().equals(dsID)) {
+        if (KnownDatastreams.BIBLIO_DC.name().equals(dsID)) {
             return DC_FORMAT_URI;
         }
         return null;

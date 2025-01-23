@@ -2,8 +2,8 @@ package org.ceskaexpedice.akubra.core.processingindex;
 
 import org.ceskaexpedice.akubra.utils.StringUtils;
 import org.ceskaexpedice.akubra.utils.DomUtils;
-import org.ceskaexpedice.model.RepositoryNamespaceContext;
-import org.ceskaexpedice.model.RepositoryNamespaces;
+import org.ceskaexpedice.akubra.core.repository.RepositoryNamespaceContext;
+import org.ceskaexpedice.akubra.core.repository.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.utils.pid.PIDParser;
 import org.antlr.stringtemplate.StringTemplate;

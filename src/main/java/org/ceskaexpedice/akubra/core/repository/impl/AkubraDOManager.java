@@ -12,7 +12,7 @@ import org.akubraproject.map.IdMapper;
 import org.akubraproject.map.IdMappingBlobStore;
 import org.apache.commons.io.IOUtils;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
-import org.ceskaexpedice.model.*;
+import org.ceskaexpedice.jaxbmodel.*;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheConfigurationBuilder;

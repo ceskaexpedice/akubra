@@ -14,12 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.model;
+package org.ceskaexpedice.akubra.core.repository;
 
 import javax.xml.namespace.NamespaceContext;
 import java.util.*;
 
-import static org.ceskaexpedice.model.RepositoryNamespaces.*;
+import static org.ceskaexpedice.akubra.core.repository.RepositoryNamespaces.*;
 
 /**
  * Fedora XML namespaces

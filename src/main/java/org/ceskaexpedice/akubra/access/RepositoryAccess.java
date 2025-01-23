@@ -40,14 +40,14 @@ public interface RepositoryAccess {
     //void deleteObject(String pid, boolean deleteDataOfManagedDatastreams);
 
     // datastream
+    boolean datastreamExists(String pid, String dsId);
+
     //- getMimeType , getCreatedData, (typ x,M,....control-group)
     DatastreamMetadata getDatastreamMetadata(String pid, String dsId);
 
     RepositoryObjectWrapper getDatastreamContent(String pid, String dsId);
 
     RepositoryObjectWrapper getDatastreamContent(String pid, String dsId, String version);
-
-    boolean datastreamExists(String pid, String dsId);
 
     RelsExtWrapper processDatastreamRelsExt(String pid);
 
@@ -231,76 +231,15 @@ public interface RepositoryAccess {
 
     //---------------KRRepAPI
 
+    /*
     public static class KnownXmlFormatUris {
         public static final String RELS_EXT = "info:fedora/fedora-system:FedoraRELSExt-1.0";
         public static final String BIBLIO_MODS = "http://www.loc.gov/mods/v3";
         public static final String BIBLIO_DC = "http://www.openarchives.org/OAI/2.0/oai_dc/";
-    }
-
-    enum KnownDatastreams {
-        RELS_EXT("RELS-EXT"),
-
-        BIBLIO_MODS("BIBLIO_MODS"),
-        BIBLIO_DC("DC"),
-
-        OCR_ALTO("ALTO"),
-        OCR_TEXT("TEXT_OCR"),
-
-        IMG_FULL("IMG_FULL"),
-        IMG_THUMB("IMG_THUMB"),
-        IMG_PREVIEW("IMG_PREVIEW"),
-
-        AUDIO_MP3("MP3"),
-        AUDIO_OGG("OGG"),
-        AUDIO_WAV("WAV"),
-
-        // known but not used datastreams
-        POLICY("POLICY"),
-        MIGRATION("MIGRATION"),
-        IMG_FULL_ADM("IMG_FULL_ADM"),
-        AUDIT("AUDIT"),
-        TEXT_OCR_ADM("TEXT_OCR_ADM"),
-
-        COLLECTION_CLIPPINGS("COLLECTION_CLIPPINGS");
+    }*/
 
 
-        private final String value;
 
-        KnownDatastreams(String value) {
-            this.value = value;
-        }
-
-        public String toString() {
-            return value;
-        }
-    }
-
-    enum KnownRelations {
-        //own relations (define object tree)
-        HAS_PAGE("hasPage"),
-        HAS_UNIT("hasUnit"), //monograph -> monographUnit, convolute -> anything_top-level_but_collection
-        HAS_VOLUME("hasVolume"), //periodical -> periodicalVolume
-        HAS_ITEM("hasItem"), //periodical -> (periodicalItem, supplement)
-        HAS_SOUND_UNIT("hasSoundUnit"), //soundRecording -> soundUnit
-        HAS_TRACK("hasTrack"), //(soundRecording, soundUnit) -> track
-        CONTAINS_TRACK("containsTrack"), //old version of HAS_TRACK
-        HAS_INT_COMP_PART("hasIntCompPart"), //periodicalItem  -> (internalPart, article)
-        //foster relations
-        IS_ON_PAGE("isOnPage"), //(article, internalPart) -> page
-        CONTAINS("contains"); //collection -> (monograph, periodical, ... anything, even other collection)
-        //RDF relations, that don't connect two objects are not considered here
-        //i.e. hasModel, hasDonator, contract, policy, itemId, handle
-
-        private final String value;
-
-        KnownRelations(String value) {
-            this.value = value;
-        }
-
-        public String toString() {
-            return value;
-        }
-    }
 
 
     /*

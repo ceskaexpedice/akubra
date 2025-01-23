@@ -17,9 +17,7 @@
 
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import org.ceskaexpedice.model.DigitalObject;
-import org.ceskaexpedice.model.ObjectPropertiesType;
-import org.ceskaexpedice.model.PropertyType;
+import org.ceskaexpedice.jaxbmodel.DigitalObject;
 import org.ceskaexpedice.akubra.core.repository.Repository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
@@ -28,7 +26,6 @@ import org.apache.solr.client.solrj.SolrServerException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;

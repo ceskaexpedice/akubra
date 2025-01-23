@@ -4,11 +4,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
 import org.ceskaexpedice.akubra.access.*;
-import org.ceskaexpedice.akubra.core.repository.Repository;
-import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
-import org.ceskaexpedice.akubra.core.repository.RepositoryException;
-import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
-import org.ceskaexpedice.model.DigitalObject;
+import org.ceskaexpedice.akubra.core.repository.*;
+import org.ceskaexpedice.jaxbmodel.DigitalObject;
 import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -18,10 +15,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
-
-import static org.ceskaexpedice.akubra.utils.Dom4jUtils.extractProperty;
 
 public class RepositoryAccessImpl implements RepositoryAccess {
 
@@ -64,7 +58,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         InputStream objectStream;
         RepositoryObject repositoryObject = repository.getObject(pid);
         if (foxmlType == FoxmlType.archive) {
-            DigitalObject digitalObject = repository.getObject(pid, false).getDigitalObject();
+            DigitalObject digitalObject = repositoryObject.getDigitalObject();
             repository.resolveArchivedDatastreams(digitalObject);
             objectStream = this.repository.marshallObject(digitalObject);
         } else {
@@ -80,7 +74,16 @@ public class RepositoryAccessImpl implements RepositoryAccess {
 
     // ------------- stream
     @Override
+    public boolean datastreamExists(String pid, String dsId) {
+        return false;
+    }
+
+    @Override
     public DatastreamMetadata getDatastreamMetadata(String pid, String dsId) {
+        RepositoryObject object = repository.getObject(pid);
+        RepositoryDatastream stream = object.getStream(dsId);
+        return new DatastreamMetadataImpl(stream);
+        /*
         Lock readLock = repository.getReadLock(pid);
         try {
             RepositoryObject object = repository.getObject(pid);
@@ -93,50 +96,48 @@ public class RepositoryAccessImpl implements RepositoryAccess {
             return null;
         } finally {
             readLock.unlock();
-        }
+        }*/
     }
 
     @Override
     public RepositoryObjectWrapper getDatastreamContent(String pid, String dsId) {
-        try {
-            /*
-            pid = makeSureObjectPid(pid);
-            if (this.accessLog != null && this.accessLog.isReportingAccess(pid, datastreamName)) {
-                reportAccess(pid, datastreamName);
-            }*/
-
-            DigitalObject object = repository.getObject(pid).getDigitalObject();
-            if (object != null) {
-                InputStream lastVersionContent = repository.getObject(pid).getStream(dsId).getLastVersionContent();
-                return new DatastreamContentWrapperImpl(lastVersionContent);
-                /* TODO
-                DatastreamVersionType stream = RepositoryUtils.getLastStreamVersion(object, dsId);
-                if (stream != null) {
-                    InputStream lastVersionContent = repository.getObject(pid).getStream(dsId).getLastVersionContent();
-                    return new DatastreamContentWrapperImpl(object, lastVersionContent);
-                    // TODO return new DatastreamContentWrapperImpl(object, RepositoryUtils.getStreamContent(stream, repository));
-                    return null;
-                } else {
-                    throw new IOException("cannot find stream '" + dsId + "' for pid '" + pid + "'");
-                }
-
-                 */
-            } else {
-                throw new IOException("cannot find pid '" + pid + "'");
-            }
-        } catch (Exception e) {
-            throw new RepositoryException(e);
-        }
+        InputStream lastVersionContent = repository.getObject(pid).getStream(dsId).getLastVersionContent();
+        return new DatastreamContentWrapperImpl(lastVersionContent);
+//        try {
+//            /*
+//            pid = makeSureObjectPid(pid);
+//            if (this.accessLog != null && this.accessLog.isReportingAccess(pid, datastreamName)) {
+//                reportAccess(pid, datastreamName);
+//            }*/
+//
+//            DigitalObject object = repository.getObject(pid).getDigitalObject();
+//            if (object != null) {
+//                InputStream lastVersionContent = repository.getObject(pid).getStream(dsId).getLastVersionContent();
+//                return new DatastreamContentWrapperImpl(lastVersionContent);
+//                /* TODO
+//                DatastreamVersionType stream = RepositoryUtils.getLastStreamVersion(object, dsId);
+//                if (stream != null) {
+//                    InputStream lastVersionContent = repository.getObject(pid).getStream(dsId).getLastVersionContent();
+//                    return new DatastreamContentWrapperImpl(object, lastVersionContent);
+//                    // TODO return new DatastreamContentWrapperImpl(object, RepositoryUtils.getStreamContent(stream, repository));
+//                    return null;
+//                } else {
+//                    throw new IOException("cannot find stream '" + dsId + "' for pid '" + pid + "'");
+//                }
+//
+//                 */
+//            } else {
+//                throw new IOException("cannot find pid '" + pid + "'");
+//            }
+//        } catch (Exception e) {
+//            throw new RepositoryException(e);
+//        }
     }
 
     @Override
     public RepositoryObjectWrapper getDatastreamContent(String pid, String dsId, String version) {
+        // TODO
         return null;
-    }
-
-    @Override
-    public boolean datastreamExists(String pid, String dsId) {
-        return false;
     }
 
     @Override
@@ -309,7 +310,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
                             params.getPageIndex(),
                             params.getFieldsToFetch()
                     );
-            for(SolrDocument doc : cp.getRight()) {
+            for (SolrDocument doc : cp.getRight()) {
                 // TODO
                 mapper.accept(new ProcessingIndexItemImpl(doc));
             }
@@ -591,7 +592,6 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         }
         return maxVersion;
     }*/
-
 
 
 }

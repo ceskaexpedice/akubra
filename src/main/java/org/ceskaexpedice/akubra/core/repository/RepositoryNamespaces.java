@@ -1,4 +1,4 @@
-package org.ceskaexpedice.model;
+package org.ceskaexpedice.akubra.core.repository;
 
 /**
  * Namespaces in fedora
