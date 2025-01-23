@@ -95,14 +95,14 @@ public class RepositoryAccessTest {
 
     @Test
     void testGetObjectProperty() {
-        String createdDate = repositoryAccess.getObjectProperties().getProperty("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", "info:fedora/fedora-system:def/model#createdDate");
+        String createdDate = repositoryAccess.getObjectProperties("uuid:12993b4a-71b4-4f19-8953-0701243cc25d").getProperty("info:fedora/fedora-system:def/model#createdDate");
         assertNotNull(createdDate);
 
         // TODO
         System.out.println(createdDate);
-        System.out.println(repositoryAccess.getObjectProperties().getPropertyCreated("uuid:12993b4a-71b4-4f19-8953-0701243cc25d"));
-        System.out.println(repositoryAccess.getObjectProperties().getPropertyLabel("uuid:12993b4a-71b4-4f19-8953-0701243cc25d"));
-        System.out.println(repositoryAccess.getObjectProperties().getPropertyLastModified("uuid:12993b4a-71b4-4f19-8953-0701243cc25d"));
+        System.out.println(repositoryAccess.getObjectProperties("uuid:12993b4a-71b4-4f19-8953-0701243cc25d").getPropertyCreated());
+        System.out.println(repositoryAccess.getObjectProperties("uuid:12993b4a-71b4-4f19-8953-0701243cc25d").getPropertyLabel());
+        System.out.println(repositoryAccess.getObjectProperties("uuid:12993b4a-71b4-4f19-8953-0701243cc25d").getPropertyLastModified());
     }
 
     @Test
@@ -130,7 +130,7 @@ public class RepositoryAccessTest {
     }
 
     @Test
-    void testGetDatastreamContent_relsExtDom() throws Exception {
+    void testProcessRelsExt() {
         // TODO
         RelsExtWrapper relsExtWrapper = repositoryAccess.processDatastreamRelsExt("uuid:5035a48a-5e2e-486c-8127-2fa650842e46");
         assertNotNull(relsExtWrapper);

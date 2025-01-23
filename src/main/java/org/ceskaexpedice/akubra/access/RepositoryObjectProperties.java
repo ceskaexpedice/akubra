@@ -4,12 +4,12 @@ import java.time.LocalDateTime;
 
 public interface RepositoryObjectProperties {
 
-    String getProperty(String pid, String propertyName);
+    String getProperty(String propertyName);
 
-    String getPropertyLabel(String pid);
+    String getPropertyLabel();
 
-    LocalDateTime getPropertyCreated(String pid);
+    LocalDateTime getPropertyCreated();
 
-    LocalDateTime getPropertyLastModified(String pid);
+    LocalDateTime getPropertyLastModified();
 
 }

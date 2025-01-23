@@ -100,12 +100,16 @@ public class DomUtils {
      * @throws SAXException
      * @throws IOException
      */
-    public static Document parseDocument(InputStream is, boolean namespaceaware) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        LOGGER.log(Level.FINE, "builder factory instance :" + factory.getClass().getResource(factory.getClass().getSimpleName() + ".class"));
-        factory.setNamespaceAware(namespaceaware);
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        return builder.parse(is);
+    public static Document parseDocument(InputStream is, boolean namespaceaware) {
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            LOGGER.log(Level.FINE, "builder factory instance :" + factory.getClass().getResource(factory.getClass().getSimpleName() + ".class"));
+            factory.setNamespaceAware(namespaceaware);
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            return builder.parse(is);
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
     }
 
     /**

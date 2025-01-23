@@ -1,6 +1,7 @@
 package org.ceskaexpedice.akubra.access.impl;
 
 import org.ceskaexpedice.akubra.access.RepositoryObjectWrapper;
+import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.jaxbmodel.DigitalObject;
 import org.dom4j.Document;
 
@@ -50,6 +51,7 @@ public class DatastreamContentWrapperImpl implements RepositoryObjectWrapper {
     // TODO
     @Override
     public org.w3c.dom.Document asXmlDom() {
+        return DomUtils.parseDocument(content, true);
         /* TODO
         DatastreamVersionType stream = RepositoryUtils.getLastStreamVersion(digitalObject, "RELS-EXT");
 
@@ -68,7 +70,6 @@ public class DatastreamContentWrapperImpl implements RepositoryObjectWrapper {
         }
 
          */
-        return null;
 
         /*
         try {

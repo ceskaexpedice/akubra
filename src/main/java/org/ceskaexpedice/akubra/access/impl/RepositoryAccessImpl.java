@@ -1,6 +1,7 @@
 package org.ceskaexpedice.akubra.access.impl;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
 import org.ceskaexpedice.akubra.access.*;
@@ -68,8 +69,9 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     }
 
     @Override
-    public RepositoryObjectProperties getObjectProperties() {
-        return new RepositoryObjectPropertiesImpl(this);
+    public RepositoryObjectProperties getObjectProperties(String pid) {
+        RepositoryObject repositoryObject = repository.getObject(pid);
+        return new RepositoryObjectPropertiesImpl(repositoryObject);
     }
 
     // ------------- stream
@@ -142,8 +144,8 @@ public class RepositoryAccessImpl implements RepositoryAccess {
 
     @Override
     public RelsExtWrapper processDatastreamRelsExt(String pid) {
-        Document xmlDom = getDatastreamContent(pid, KnownDatastreams.RELS_EXT.toString()).asXmlDom();
-        return new RelsExtWrapperImpl(xmlDom);
+        RepositoryObject repositoryObject = repository.getObject(pid);
+        return new RelsExtWrapperImpl(repositoryObject);
     }
 
 
