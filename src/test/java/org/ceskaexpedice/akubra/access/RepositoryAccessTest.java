@@ -49,7 +49,7 @@ public class RepositoryAccessTest {
 
     @Test
     void testGetObject_regular_stream() {
-        RepositoryObjectWrapper repositoryObjectWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.regular);
+        ResultWrapper repositoryObjectWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.regular);
         assertNotNull(repositoryObjectWrapper);
         InputStream repositoryObjectWrapperStream = repositoryObjectWrapper.asStream();
         assertNotNull(repositoryObjectWrapperStream);
@@ -61,7 +61,7 @@ public class RepositoryAccessTest {
 
     @Test
     void testGetObject_archive_stream() {
-        RepositoryObjectWrapper repositoryObjectWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.archive);
+        ResultWrapper repositoryObjectWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.archive);
         assertNotNull(repositoryObjectWrapper);
         InputStream repositoryObjectWrapperStream = repositoryObjectWrapper.asStream();
         assertNotNull(repositoryObjectWrapperStream);
@@ -73,7 +73,7 @@ public class RepositoryAccessTest {
 
     @Test
     void testGetObject_regular_xmlDom4j() {
-        RepositoryObjectWrapper repositoryObjectWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.regular);
+        ResultWrapper repositoryObjectWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.regular);
         assertNotNull(repositoryObjectWrapper);
         Document objectWrapperXml = repositoryObjectWrapper.asXmlDom4j();
         assertNotNull(objectWrapperXml);
@@ -84,7 +84,7 @@ public class RepositoryAccessTest {
 
     @Test
     void testGetObject_archive_xmlDom4j() {
-        RepositoryObjectWrapper repositoryObjectWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.archive);
+        ResultWrapper repositoryObjectWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.archive);
         assertNotNull(repositoryObjectWrapper);
         Document objectWrapperXml = repositoryObjectWrapper.asXmlDom4j();
         assertNotNull(objectWrapperXml);

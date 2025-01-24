@@ -16,7 +16,6 @@
  */
 package org.ceskaexpedice.akubra.access;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -31,7 +30,7 @@ public interface RepositoryAccess {
     // object
     boolean objectExists(String pid);
 
-    RepositoryObjectWrapper getObject(String pid, FoxmlType foxmlType);
+    ResultWrapper getObject(String pid, FoxmlType foxmlType);
 
     RepositoryObjectProperties getObjectProperties(String pid);
 
@@ -45,9 +44,9 @@ public interface RepositoryAccess {
     //- getMimeType , getCreatedData, (typ x,M,....control-group)
     DatastreamMetadata getDatastreamMetadata(String pid, String dsId);
 
-    RepositoryObjectWrapper getDatastreamContent(String pid, String dsId);
+    ResultWrapper getDatastreamContent(String pid, String dsId);
 
-    RepositoryObjectWrapper getDatastreamContent(String pid, String dsId, String version);
+    ResultWrapper getDatastreamContent(String pid, String dsId, String version);
 
     RelsExtWrapper processDatastreamRelsExt(String pid);
 

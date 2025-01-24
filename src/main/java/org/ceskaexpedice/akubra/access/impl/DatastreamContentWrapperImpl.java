@@ -1,13 +1,13 @@
 package org.ceskaexpedice.akubra.access.impl;
 
-import org.ceskaexpedice.akubra.access.RepositoryObjectWrapper;
+import org.ceskaexpedice.akubra.access.ResultWrapper;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.jaxbmodel.DigitalObject;
 import org.dom4j.Document;
 
 import java.io.InputStream;
 
-public class DatastreamContentWrapperImpl implements RepositoryObjectWrapper {
+public class DatastreamContentWrapperImpl implements ResultWrapper {
 //    private final RepositoryDatastream content;
     private final InputStream content;
     // TODO

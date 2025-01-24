@@ -1,7 +1,6 @@
 package org.ceskaexpedice.akubra.access.impl;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
 import org.ceskaexpedice.akubra.access.*;
@@ -13,9 +12,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class RepositoryAccessImpl implements RepositoryAccess {
@@ -55,7 +52,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     }
 
     @Override
-    public RepositoryObjectWrapper getObject(String pid, FoxmlType foxmlType) {
+    public ResultWrapper getObject(String pid, FoxmlType foxmlType) {
         InputStream objectStream;
         RepositoryObject repositoryObject = repository.getObject(pid);
         if (foxmlType == FoxmlType.archive) {
@@ -102,7 +99,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     }
 
     @Override
-    public RepositoryObjectWrapper getDatastreamContent(String pid, String dsId) {
+    public ResultWrapper getDatastreamContent(String pid, String dsId) {
         InputStream lastVersionContent = repository.getObject(pid).getStream(dsId).getLastVersionContent();
         return new DatastreamContentWrapperImpl(lastVersionContent);
 //        try {
@@ -137,7 +134,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     }
 
     @Override
-    public RepositoryObjectWrapper getDatastreamContent(String pid, String dsId, String version) {
+    public ResultWrapper getDatastreamContent(String pid, String dsId, String version) {
         // TODO
         return null;
     }
@@ -536,13 +533,13 @@ public class RepositoryAccessImpl implements RepositoryAccess {
             throw new IOException("Failed to parse XML", e);
         }
     }
-
+/*
     private Map<String, String> createMap(String label) {
         Map<String, String> map = new HashMap<String, String>();
         map.put("dsid", label);
         map.put("label", label);
         return map;
-    }
+    }*/
     /*
     private DigitalObject foxmlDocToDigitalObject(org.dom4j.Document foxml) throws IOException {
         try {
