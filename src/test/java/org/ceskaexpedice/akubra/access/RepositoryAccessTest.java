@@ -3,6 +3,7 @@ package org.ceskaexpedice.akubra.access;
 import org.ceskaexpedice.akubra.access.impl.ProcessingIndexItemImpl;
 import org.ceskaexpedice.akubra.core.Configuration;
 import org.ceskaexpedice.akubra.locks.HazelcastServerNode;
+import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.dom4j.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -10,9 +11,11 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -26,11 +29,14 @@ public class RepositoryAccessTest {
 
     @BeforeAll
     static void beforeAll() {
+        URL resource = RepositoryAccessTest.class.getClassLoader().getResource("data");
+        String testRepoPath = resource.getFile() + "/";
+        //String testRepoPath = "c:\\Users\\petr\\.kramerius4\\data\\";
         Configuration config = new Configuration.Builder()
                 .processingIndexHost("http://localhost:8983/solr/processing")
-                .objectStorePath("c:\\Users\\petr\\.kramerius4\\data\\objectStore")
+                .objectStorePath(testRepoPath + "objectStore")
                 .objectStorePattern("##/##")
-                .datastreamStorePath("c:\\Users\\petr\\.kramerius4\\data\\datastreamStore")
+                .datastreamStorePath(testRepoPath + "datastreamStore")
                 .datastreamStorePattern("##/##")
                 .cacheTimeToLiveExpiration(60)
                 .hazelcastInstance("akubrasync")
@@ -48,61 +54,125 @@ public class RepositoryAccessTest {
     }
 
     @Test
-    void testGetObject_regular_stream() {
-        ResultWrapper repositoryObjectWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.regular);
-        assertNotNull(repositoryObjectWrapper);
-        InputStream repositoryObjectWrapperStream = repositoryObjectWrapper.asStream();
-        assertNotNull(repositoryObjectWrapperStream);
-
-        // TODO
-        String regularObjectAsString = convertUsingBytes(repositoryObjectWrapperStream);
-        System.out.println(regularObjectAsString);
+    void testObjectExists() {
+        boolean objectExists = repositoryAccess.objectExists("uuid:12993b4a-71b4-4f19-8953-0701243cc25d");
+        assertTrue(objectExists);
     }
 
     @Test
-    void testGetObject_archive_stream() {
-        ResultWrapper repositoryObjectWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.archive);
-        assertNotNull(repositoryObjectWrapper);
-        InputStream repositoryObjectWrapperStream = repositoryObjectWrapper.asStream();
-        assertNotNull(repositoryObjectWrapperStream);
+    void testGetObject_asStream() {
+        ResultWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.regular);
+        assertNotNull(resultWrapper);
+        InputStream asStream = resultWrapper.asStream();
+        assertNotNull(asStream);
 
         // TODO
-        String regularObjectAsString = convertUsingBytes(repositoryObjectWrapperStream);
-        System.out.println(regularObjectAsString);
+        String testString = convertUsingBytes(asStream);
+        System.out.println(testString);
     }
 
     @Test
-    void testGetObject_regular_xmlDom4j() {
-        ResultWrapper repositoryObjectWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.regular);
-        assertNotNull(repositoryObjectWrapper);
-        Document objectWrapperXml = repositoryObjectWrapper.asXmlDom4j();
-        assertNotNull(objectWrapperXml);
+    void testGetObject_asXmlDom4j() {
+        ResultWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.regular);
+        assertNotNull(resultWrapper);
+        Document asXmlDom4j = resultWrapper.asXmlDom4j();
+        assertNotNull(asXmlDom4j);
 
         // TODO
-        System.out.println(objectWrapperXml.asXML());
+        System.out.println(asXmlDom4j.asXML());
     }
 
     @Test
-    void testGetObject_archive_xmlDom4j() {
-        ResultWrapper repositoryObjectWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.archive);
-        assertNotNull(repositoryObjectWrapper);
-        Document objectWrapperXml = repositoryObjectWrapper.asXmlDom4j();
-        assertNotNull(objectWrapperXml);
+    void testGetObject_asXmlDom() {
+        ResultWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.regular);
+        assertNotNull(resultWrapper);
+        org.w3c.dom.Document asXmlDom = resultWrapper.asXmlDom();
+        assertNotNull(asXmlDom);
 
         // TODO
-        System.out.println(objectWrapperXml.asXML());
+        System.out.println(DomUtils.toString(asXmlDom.getDocumentElement(), true));
+    }
+
+    @Test
+    void testGetObject_asString() {
+        ResultWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.regular);
+        assertNotNull(resultWrapper);
+        String asString = resultWrapper.asString();
+        assertNotNull(asString);
+
+        // TODO
+        System.out.println(asString);
+    }
+
+    @Test
+    void testGetObjectArchive_asStream() {
+        ResultWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.archive);
+        assertNotNull(resultWrapper);
+        InputStream asStream = resultWrapper.asStream();
+        assertNotNull(asStream);
+
+        // TODO
+        String testString = convertUsingBytes(asStream);
+        System.out.println(testString);
+    }
+
+    @Test
+    void testGetObjectArchive_asXmlDom4j() {
+        ResultWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.archive);
+        assertNotNull(resultWrapper);
+        Document asXmlDom4j = resultWrapper.asXmlDom4j();
+        assertNotNull(asXmlDom4j);
+
+        // TODO
+        System.out.println(asXmlDom4j.asXML());
+    }
+
+    @Test
+    void testGetObjectArchive_asXmlDom() {
+        ResultWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.archive);
+        assertNotNull(resultWrapper);
+        org.w3c.dom.Document asXmlDom = resultWrapper.asXmlDom();
+        assertNotNull(asXmlDom);
+
+        // TODO
+        System.out.println(DomUtils.toString(asXmlDom.getDocumentElement(), true));
+    }
+
+    @Test
+    void testGetObjectArchive_asString() {
+        ResultWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.archive);
+        assertNotNull(resultWrapper);
+        String asString = resultWrapper.asString();
+        assertNotNull(asString);
+
+        // TODO
+        System.out.println(asString);
     }
 
     @Test
     void testGetObjectProperty() {
-        String createdDate = repositoryAccess.getObjectProperties("uuid:12993b4a-71b4-4f19-8953-0701243cc25d").getProperty("info:fedora/fedora-system:def/model#createdDate");
-        assertNotNull(createdDate);
+        String propertyOwnerId = repositoryAccess.getObjectProperties("uuid:12993b4a-71b4-4f19-8953-0701243cc25d").getProperty("info:fedora/fedora-system:def/model#ownerId");
+        assertNotNull(propertyOwnerId);
+
+        LocalDateTime propertyCreated = repositoryAccess.getObjectProperties("uuid:12993b4a-71b4-4f19-8953-0701243cc25d").getPropertyCreated();
+        String propertyLabel = repositoryAccess.getObjectProperties("uuid:12993b4a-71b4-4f19-8953-0701243cc25d").getPropertyLabel();
+        LocalDateTime propertyLastModified = repositoryAccess.getObjectProperties("uuid:12993b4a-71b4-4f19-8953-0701243cc25d").getPropertyLastModified();
 
         // TODO
-        System.out.println(createdDate);
-        System.out.println(repositoryAccess.getObjectProperties("uuid:12993b4a-71b4-4f19-8953-0701243cc25d").getPropertyCreated());
-        System.out.println(repositoryAccess.getObjectProperties("uuid:12993b4a-71b4-4f19-8953-0701243cc25d").getPropertyLabel());
-        System.out.println(repositoryAccess.getObjectProperties("uuid:12993b4a-71b4-4f19-8953-0701243cc25d").getPropertyLastModified());
+        System.out.println(propertyOwnerId);
+        System.out.println(propertyCreated);
+        System.out.println(propertyLabel);
+        System.out.println(propertyLastModified);
+    }
+
+    @Test
+    void testDatastreamExists() {
+        /* TODO
+        DatastreamMetadata datastreamMetadata = repositoryAccess.getDatastreamMetadata("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", "DC");
+        assertNotNull(datastreamMetadata);
+        System.out.println(datastreamMetadata.getMimetype());
+
+         */
     }
 
     @Test
@@ -113,34 +183,81 @@ public class RepositoryAccessTest {
     }
 
     @Test
-    void testGetDatastreamContent() throws IOException {
+    void testGetDatastreamContent_asStream() {
         InputStream imgThumb = repositoryAccess.getDatastreamContent("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", "IMG_THUMB").asStream();
         assertNotNull(imgThumb);
 
         // TODO
         Path targetFile = Path.of("c:\\tmp\\output.jpg");
-        Files.copy(imgThumb, targetFile, StandardCopyOption.REPLACE_EXISTING);
+        try {
+            Files.copy(imgThumb, targetFile, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
-    void testGetDatastreamContent_relsExt() throws IOException {
-        Document document = repositoryAccess.getDatastreamContent("uuid:5035a48a-5e2e-486c-8127-2fa650842e46", "RELS-EXT").asXmlDom4j();
-        assertNotNull(document);
-        System.out.println(document.asXML());
+    void testGetDatastreamContent_asXmlDom() {
+        InputStream imgThumb = repositoryAccess.getDatastreamContent("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", "IMG_THUMB").asStream();
+        assertNotNull(imgThumb);
+
+        // TODO
+        Path targetFile = Path.of("c:\\tmp\\output.jpg");
+        try {
+            Files.copy(imgThumb, targetFile, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
-    void testProcessRelsExt() {
+    void testGetDatastreamContent_asXmlDom4j() {
+        InputStream imgThumb = repositoryAccess.getDatastreamContent("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", "IMG_THUMB").asStream();
+        assertNotNull(imgThumb);
+
+        // TODO
+        Path targetFile = Path.of("c:\\tmp\\output.jpg");
+        try {
+            Files.copy(imgThumb, targetFile, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void testGetDatastreamContent_asString() {
+        InputStream imgThumb = repositoryAccess.getDatastreamContent("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", "IMG_THUMB").asStream();
+        assertNotNull(imgThumb);
+
+        // TODO
+        Path targetFile = Path.of("c:\\tmp\\output.jpg");
+        try {
+            Files.copy(imgThumb, targetFile, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void testProcessdatastreamRelsExt() {
         // TODO
         RelsExtWrapper relsExtWrapper = repositoryAccess.processDatastreamRelsExt("uuid:5035a48a-5e2e-486c-8127-2fa650842e46");
         assertNotNull(relsExtWrapper);
         relsExtWrapper.getRelations().forEach(System.out::println);
 //        String model = RelsExtHelper.getModel(xmlDom.getDocumentElement());
-  //      System.out.println(model);
+        //      System.out.println(model);
     }
 
     @Test
-    void testProcessingIndex() {
+    void testGetDatastreamNames() {
+        // TODO
+        RelsExtWrapper relsExtWrapper = repositoryAccess.processDatastreamRelsExt("uuid:5035a48a-5e2e-486c-8127-2fa650842e46");
+        assertNotNull(relsExtWrapper);
+        relsExtWrapper.getRelations().forEach(System.out::println);
+    }
+
+    @Test
+    void testQueryProcessingIndex() {
         String model = "page";
         String query = String.format("type:description AND model:%s", "model\\:" + model); //prvni "model:" je filtr na solr pole, druhy "model:" je hodnota pole, coze  uprime zbytecne
         ProcessingIndexQueryParameters params = new ProcessingIndexQueryParameters.Builder()

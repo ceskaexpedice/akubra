@@ -46,8 +46,6 @@ public interface RepositoryAccess {
 
     ResultWrapper getDatastreamContent(String pid, String dsId);
 
-    ResultWrapper getDatastreamContent(String pid, String dsId, String version);
-
     RelsExtWrapper processDatastreamRelsExt(String pid);
 
     List<String> getDatastreamNames(String pid);

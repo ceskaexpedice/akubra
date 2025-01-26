@@ -134,12 +134,6 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     }
 
     @Override
-    public ResultWrapper getDatastreamContent(String pid, String dsId, String version) {
-        // TODO
-        return null;
-    }
-
-    @Override
     public RelsExtWrapper processDatastreamRelsExt(String pid) {
         RepositoryObject repositoryObject = repository.getObject(pid);
         return new RelsExtWrapperImpl(repositoryObject);
