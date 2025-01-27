@@ -1,18 +1,15 @@
 package org.ceskaexpedice.akubra.access.impl;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
+import org.ceskaexpedice.akubra.access.RelsExtLiteral;
 import org.ceskaexpedice.akubra.access.RelsExtRelation;
 import org.ceskaexpedice.akubra.access.RelsExtWrapper;
-import org.ceskaexpedice.akubra.core.repository.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
-import org.ceskaexpedice.akubra.utils.RelsExtUtils;
-import org.w3c.dom.Document;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RelsExtWrapperImpl implements RelsExtWrapper {
+class RelsExtWrapperImpl implements RelsExtWrapper {
 
     private final RepositoryObject repositoryObject;
 
@@ -21,21 +18,25 @@ public class RelsExtWrapperImpl implements RelsExtWrapper {
     }
 
     @Override
-    public List<RelsExtRelation> getRelations() {
+    public List<RelsExtRelation> getRelations(String namespace) {
         List<RelsExtRelation> rels = new ArrayList<>();
-        // TODO
-        List<Triple<String, String, String>> triples = repositoryObject.relsExtGetRelations(null);
-        List<Triple<String, String, String>> triples1 = repositoryObject.relsExtGetLiterals(null);
-//        List<Triple<String, String, String>> triples = repositoryObject.relsExtGetRelations(RepositoryNamespaces.KRAMERIUS_URI);
-        for (Triple<String, String, String> triple : triples1) {
-            System.out.println(triple.getLeft() + " " + triple.getMiddle() + " " + triple.getRight());
+        List<Triple<String, String, String>> triples = repositoryObject.relsExtGetRelations(namespace);
+        for (Triple<String, String, String> triple : triples) {
+            RelsExtRelation relsExtRelation = new RelsExtRelation(triple.getLeft(), triple.getMiddle(), triple.getRight());
+            rels.add(relsExtRelation);
         }
-
-        /* TODO
-        List<Pair<String, String>> relations = RelsExtUtils.getRelations(document.getDocumentElement());
-        for (Pair<String, String> relation : relations) {
-            rels.add(new RelsExtRelationImpl(relation.getLeft(), relation.getRight()));
-        }*/
         return rels;
     }
+
+    @Override
+    public List<RelsExtLiteral> getLiterals(String namespace) {
+        List<RelsExtLiteral> rels = new ArrayList<>();
+        List<Triple<String, String, String>> triples = repositoryObject.relsExtGetLiterals(namespace);
+        for (Triple<String, String, String> triple : triples) {
+            RelsExtLiteral relsExtLiteral = new RelsExtLiteral(triple.getLeft(), triple.getMiddle(), triple.getRight());
+            rels.add(relsExtLiteral);
+        }
+        return rels;
+    }
+
 }

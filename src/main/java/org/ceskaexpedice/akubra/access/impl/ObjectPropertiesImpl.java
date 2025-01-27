@@ -1,8 +1,6 @@
 package org.ceskaexpedice.akubra.access.impl;
 
-import org.ceskaexpedice.akubra.access.FoxmlType;
-import org.ceskaexpedice.akubra.access.RepositoryObjectProperties;
-import org.ceskaexpedice.akubra.access.RepositoryAccess;
+import org.ceskaexpedice.akubra.access.ObjectProperties;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 
 import java.time.LocalDateTime;
@@ -13,15 +11,15 @@ import java.time.temporal.ChronoField;
 
 import static org.ceskaexpedice.akubra.utils.Dom4jUtils.extractProperty;
 
-public class RepositoryObjectPropertiesImpl implements RepositoryObjectProperties {
+class ObjectPropertiesImpl implements ObjectProperties {
     private RepositoryObject repositoryObject;
-    public static final DateTimeFormatter TIMESTAMP_FORMATTER = new DateTimeFormatterBuilder()
+    private static final DateTimeFormatter TIMESTAMP_FORMATTER = new DateTimeFormatterBuilder()
             .appendPattern("yyyy-MM-dd'T'HH:mm:ss.")
             .appendFraction(ChronoField.MILLI_OF_SECOND, 1, 3, false)
             .appendPattern("'Z'")
             .toFormatter();
 
-    RepositoryObjectPropertiesImpl(RepositoryObject repositoryObject) {
+    ObjectPropertiesImpl(RepositoryObject repositoryObject) {
         this.repositoryObject = repositoryObject;
     }
 

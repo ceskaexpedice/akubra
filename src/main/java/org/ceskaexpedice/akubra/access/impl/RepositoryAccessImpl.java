@@ -52,7 +52,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     }
 
     @Override
-    public ResultWrapper getObject(String pid, FoxmlType foxmlType) {
+    public ContentWrapper getObject(String pid, FoxmlType foxmlType) {
         InputStream objectStream;
         RepositoryObject repositoryObject = repository.getObject(pid);
         if (foxmlType == FoxmlType.archive) {
@@ -66,9 +66,9 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     }
 
     @Override
-    public RepositoryObjectProperties getObjectProperties(String pid) {
+    public ObjectProperties getObjectProperties(String pid) {
         RepositoryObject repositoryObject = repository.getObject(pid);
-        return new RepositoryObjectPropertiesImpl(repositoryObject);
+        return new ObjectPropertiesImpl(repositoryObject);
     }
 
     // ------------- stream
@@ -99,7 +99,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     }
 
     @Override
-    public ResultWrapper getDatastreamContent(String pid, String dsId) {
+    public ContentWrapper getDatastreamContent(String pid, String dsId) {
         InputStream lastVersionContent = repository.getObject(pid).getStream(dsId).getLastVersionContent();
         return new DatastreamContentWrapperImpl(lastVersionContent);
 //        try {

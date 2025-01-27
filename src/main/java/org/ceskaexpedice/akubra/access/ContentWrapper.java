@@ -4,7 +4,7 @@ import org.dom4j.Document;
 
 import java.io.InputStream;
 
-public interface ResultWrapper {
+public interface ContentWrapper {
 
     InputStream asStream();
 

@@ -3,7 +3,7 @@ package org.ceskaexpedice.akubra.access.impl;
 import org.ceskaexpedice.akubra.access.DatastreamMetadata;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 
-public class DatastreamMetadataImpl implements DatastreamMetadata {
+class DatastreamMetadataImpl implements DatastreamMetadata {
     private RepositoryDatastream repositoryDatastream;
 
     DatastreamMetadataImpl(RepositoryDatastream repositoryDatastream) {

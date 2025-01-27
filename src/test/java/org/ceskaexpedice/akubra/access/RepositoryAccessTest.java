@@ -1,6 +1,5 @@
 package org.ceskaexpedice.akubra.access;
 
-import org.ceskaexpedice.akubra.access.impl.ProcessingIndexItemImpl;
 import org.ceskaexpedice.akubra.core.Configuration;
 import org.ceskaexpedice.akubra.locks.HazelcastServerNode;
 import org.ceskaexpedice.akubra.utils.DomUtils;
@@ -61,7 +60,7 @@ public class RepositoryAccessTest {
 
     @Test
     void testGetObject_asStream() {
-        ResultWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.regular);
+        ContentWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.regular);
         assertNotNull(resultWrapper);
         InputStream asStream = resultWrapper.asStream();
         assertNotNull(asStream);
@@ -73,7 +72,7 @@ public class RepositoryAccessTest {
 
     @Test
     void testGetObject_asXmlDom4j() {
-        ResultWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.regular);
+        ContentWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.regular);
         assertNotNull(resultWrapper);
         Document asXmlDom4j = resultWrapper.asXmlDom4j();
         assertNotNull(asXmlDom4j);
@@ -84,7 +83,7 @@ public class RepositoryAccessTest {
 
     @Test
     void testGetObject_asXmlDom() {
-        ResultWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.regular);
+        ContentWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.regular);
         assertNotNull(resultWrapper);
         org.w3c.dom.Document asXmlDom = resultWrapper.asXmlDom();
         assertNotNull(asXmlDom);
@@ -95,7 +94,7 @@ public class RepositoryAccessTest {
 
     @Test
     void testGetObject_asString() {
-        ResultWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.regular);
+        ContentWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.regular);
         assertNotNull(resultWrapper);
         String asString = resultWrapper.asString();
         assertNotNull(asString);
@@ -106,7 +105,7 @@ public class RepositoryAccessTest {
 
     @Test
     void testGetObjectArchive_asStream() {
-        ResultWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.archive);
+        ContentWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.archive);
         assertNotNull(resultWrapper);
         InputStream asStream = resultWrapper.asStream();
         assertNotNull(asStream);
@@ -118,7 +117,7 @@ public class RepositoryAccessTest {
 
     @Test
     void testGetObjectArchive_asXmlDom4j() {
-        ResultWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.archive);
+        ContentWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.archive);
         assertNotNull(resultWrapper);
         Document asXmlDom4j = resultWrapper.asXmlDom4j();
         assertNotNull(asXmlDom4j);
@@ -129,7 +128,7 @@ public class RepositoryAccessTest {
 
     @Test
     void testGetObjectArchive_asXmlDom() {
-        ResultWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.archive);
+        ContentWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.archive);
         assertNotNull(resultWrapper);
         org.w3c.dom.Document asXmlDom = resultWrapper.asXmlDom();
         assertNotNull(asXmlDom);
@@ -140,7 +139,7 @@ public class RepositoryAccessTest {
 
     @Test
     void testGetObjectArchive_asString() {
-        ResultWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.archive);
+        ContentWrapper resultWrapper = repositoryAccess.getObject("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", FoxmlType.archive);
         assertNotNull(resultWrapper);
         String asString = resultWrapper.asString();
         assertNotNull(asString);
@@ -240,20 +239,19 @@ public class RepositoryAccessTest {
 
     @Test
     void testProcessdatastreamRelsExt() {
-        // TODO
         RelsExtWrapper relsExtWrapper = repositoryAccess.processDatastreamRelsExt("uuid:5035a48a-5e2e-486c-8127-2fa650842e46");
         assertNotNull(relsExtWrapper);
-        relsExtWrapper.getRelations().forEach(System.out::println);
-//        String model = RelsExtHelper.getModel(xmlDom.getDocumentElement());
-        //      System.out.println(model);
+
+        // TODO
+        System.out.println("Relations");
+        relsExtWrapper.getRelations(null).forEach(System.out::println);
+        System.out.println("Literals");
+        relsExtWrapper.getLiterals(null).forEach(System.out::println);
     }
 
     @Test
     void testGetDatastreamNames() {
         // TODO
-        RelsExtWrapper relsExtWrapper = repositoryAccess.processDatastreamRelsExt("uuid:5035a48a-5e2e-486c-8127-2fa650842e46");
-        assertNotNull(relsExtWrapper);
-        relsExtWrapper.getRelations().forEach(System.out::println);
     }
 
     @Test
@@ -272,7 +270,7 @@ public class RepositoryAccessTest {
             @Override
             public void accept(ProcessingIndexItem processingIndexItem) {
                 // TODO
-                System.out.println(((ProcessingIndexItemImpl)processingIndexItem).getDocument());
+               // System.out.println(((ProcessingIndexItemImpl)processingIndexItem).getDocument());
             }
         });
 

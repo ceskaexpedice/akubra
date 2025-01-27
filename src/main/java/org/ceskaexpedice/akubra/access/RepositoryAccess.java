@@ -30,9 +30,9 @@ public interface RepositoryAccess {
     // object
     boolean objectExists(String pid);
 
-    ResultWrapper getObject(String pid, FoxmlType foxmlType);
+    ContentWrapper getObject(String pid, FoxmlType foxmlType);
 
-    RepositoryObjectProperties getObjectProperties(String pid);
+    ObjectProperties getObjectProperties(String pid);
 
     //void ingestObject(org.dom4j.Document foxmlDoc, String pid);
 
@@ -44,7 +44,7 @@ public interface RepositoryAccess {
     //- getMimeType , getCreatedData, (typ x,M,....control-group)
     DatastreamMetadata getDatastreamMetadata(String pid, String dsId);
 
-    ResultWrapper getDatastreamContent(String pid, String dsId);
+    ContentWrapper getDatastreamContent(String pid, String dsId);
 
     RelsExtWrapper processDatastreamRelsExt(String pid);
 

@@ -1,6 +1,6 @@
 package org.ceskaexpedice.akubra.access.impl;
 
-import org.ceskaexpedice.akubra.access.ResultWrapper;
+import org.ceskaexpedice.akubra.access.ContentWrapper;
 import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 import org.ceskaexpedice.akubra.utils.Utils;
 import org.ceskaexpedice.akubra.utils.DomUtils;
@@ -8,7 +8,7 @@ import org.dom4j.Document;
 
 import java.io.InputStream;
 
-public class RepositoryObjectWrapperImpl implements ResultWrapper {
+class RepositoryObjectWrapperImpl implements ContentWrapper {
     private final InputStream objectStream;
 
     RepositoryObjectWrapperImpl(InputStream objectStream) {

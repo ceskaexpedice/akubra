@@ -2,7 +2,7 @@ package org.ceskaexpedice.akubra.access;
 
 import java.time.LocalDateTime;
 
-public interface RepositoryObjectProperties {
+public interface ObjectProperties {
 
     String getProperty(String propertyName);
 
