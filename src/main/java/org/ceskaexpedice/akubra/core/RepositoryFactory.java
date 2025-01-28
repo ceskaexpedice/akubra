@@ -18,15 +18,12 @@ package org.ceskaexpedice.akubra.core;
 
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
 import org.ceskaexpedice.akubra.core.repository.Repository;
-import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.impl.AkubraDOManager;
 import org.ceskaexpedice.akubra.core.repository.impl.RepositoryImpl;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.ConcurrentUpdateSolrClient;
 import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheManagerBuilder;
-
-import java.io.IOException;
 
 /**
  * AkubraRepositoryFactory
@@ -38,7 +35,7 @@ public final class RepositoryFactory {
     private RepositoryFactory() {
     }
 
-    public static Repository createCoreRepository(Configuration configuration) {
+    public static Repository createCoreRepository(RepositoryConfiguration configuration) {
         ProcessingIndexFeeder processingIndexFeeder = new ProcessingIndexFeeder(createProcessingUpdateClient(configuration));
         AkubraDOManager akubraDOManager = new AkubraDOManager(createCacheManager(), configuration);
         return new RepositoryImpl(processingIndexFeeder, akubraDOManager);
@@ -56,7 +53,7 @@ public final class RepositoryFactory {
     return new HttpSolrClient.Builder(processingSolrHost).build();
   }*/
 
-    private static SolrClient createProcessingUpdateClient(Configuration configuration) {
+    private static SolrClient createProcessingUpdateClient(RepositoryConfiguration configuration) {
         String processingSolrHost = configuration.getProcessingIndexHost();
         return new ConcurrentUpdateSolrClient.Builder(processingSolrHost).withQueueSize(100).build();
     }

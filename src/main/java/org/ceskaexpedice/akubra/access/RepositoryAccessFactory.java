@@ -17,7 +17,7 @@
 package org.ceskaexpedice.akubra.access;
 
 import org.ceskaexpedice.akubra.access.impl.RepositoryAccessImpl;
-import org.ceskaexpedice.akubra.core.Configuration;
+import org.ceskaexpedice.akubra.core.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.RepositoryFactory;
 import org.ceskaexpedice.akubra.core.repository.Repository;
 
@@ -30,7 +30,7 @@ public final class RepositoryAccessFactory {
   private RepositoryAccessFactory() {
   }
 
-  public static RepositoryAccess createRepositoryAccess(Configuration configuration) {
+  public static RepositoryAccess createRepositoryAccess(RepositoryConfiguration configuration) {
     Repository coreRepository = RepositoryFactory.createCoreRepository(configuration);
     RepositoryAccess repositoryAccess = new RepositoryAccessImpl(coreRepository);
     return repositoryAccess;

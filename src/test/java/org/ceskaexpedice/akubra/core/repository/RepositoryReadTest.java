@@ -1,9 +1,9 @@
 package org.ceskaexpedice.akubra.core.repository;
 
-import org.ceskaexpedice.akubra.core.Configuration;
+import org.ceskaexpedice.akubra.core.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.RepositoryFactory;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
-import org.ceskaexpedice.akubra.locks.HazelcastServerNode;
+import org.ceskaexpedice.hazelcast.ServerNode;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -14,14 +14,13 @@ import java.io.InputStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 // TODO
-public class RepositoryTest {
+public class RepositoryReadTest {
 
-    private static HazelcastServerNode hazelcastServerNode;
     private static Repository akubraRepository;
 
     @BeforeAll
     static void beforeAll() {
-        Configuration config = new Configuration.Builder()
+        RepositoryConfiguration config = new RepositoryConfiguration.Builder()
                 .processingIndexHost("http://localhost:8983/solr/processing")
                 .objectStorePath("c:\\Users\\petr\\.kramerius4\\data\\objectStore")
                 .objectStorePattern("##/##")
@@ -31,15 +30,14 @@ public class RepositoryTest {
                 .hazelcastInstance("akubrasync")
                 .hazelcastUser("dev")
                 .build();
-        hazelcastServerNode = new HazelcastServerNode();
-        // TODO hazelcastServerNode.contextInitialized(null);
-        HazelcastServerNode.ensureHazelcastNode(config);
+        ServerNode.ensureHazelcastNode(config);
         akubraRepository = RepositoryFactory.createCoreRepository(config);
     }
 
     @AfterAll
     static void afterAll() {
-        hazelcastServerNode.contextDestroyed(null);
+        akubraRepository.shutdown();
+        ServerNode.shutdown();
     }
 
     @Test

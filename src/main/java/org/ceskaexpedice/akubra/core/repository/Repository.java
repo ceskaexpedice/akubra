@@ -46,6 +46,11 @@ public interface Repository {
      */
     RepositoryObject getObject(String pid);
 
+    /**
+     * @param pid
+     * @param useCache
+     * @return
+     */
     RepositoryObject getObject(String pid, boolean useCache);
 
     /**
@@ -95,9 +100,31 @@ public interface Repository {
      */
     ProcessingIndexFeeder getProcessingIndexFeeder();
 
+    /**
+     * @param obj
+     */
     void resolveArchivedDatastreams(DigitalObject obj);
 
+    /**
+     * @param obj
+     * @return
+     */
     InputStream marshallObject(DigitalObject obj);
 
+    /**
+     * @param pid
+     * @return
+     */
     Lock getReadLock(String pid);
+
+    /**
+     * @param pid
+     * @return
+     */
+    Lock getWriteLock(String pid);
+
+    /**
+     *
+     */
+    void shutdown();
 }

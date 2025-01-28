@@ -20,41 +20,97 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * This is main point to access to fedora through REST-API
+ * This is main and only repository access point
  *
  * @author pavels
  * 
  */
 public interface RepositoryAccess {
 
-    // object
+    /**
+     * @param pid
+     * @return
+     */
     boolean objectExists(String pid);
 
+    /**
+     * @param pid
+     * @param foxmlType
+     * @return
+     */
     ContentWrapper getObject(String pid, FoxmlType foxmlType);
 
+    /**
+     * @param pid
+     * @return
+     */
     ObjectProperties getObjectProperties(String pid);
 
+    /**
+     * @param pid
+     * @param dsId
+     * @return
+     */
+    boolean datastreamExists(String pid, String dsId);
+
+    /**
+     * @param pid
+     * @param dsId
+     * @return
+     */
+    DatastreamMetadata getDatastreamMetadata(String pid, String dsId);
+
+    /**
+     * @param pid
+     * @param dsId
+     * @return
+     */
+    ContentWrapper getDatastreamContent(String pid, String dsId);
+
+    /**
+     * @param pid
+     * @return
+     */
+    RelsExtWrapper processDatastreamRelsExt(String pid);
+
+    /**
+     * @param pid
+     * @return
+     */
+    List<String> getDatastreamNames(String pid);
+
+    /**
+     * @param params
+     * @param mapper
+     */
+    void queryProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> mapper);
+
+    /**
+     *
+     */
+    void shutdown();
+
+    /**
+     * @param pid
+     * @param operation
+     * @param <T>
+     * @return
+     */
+    <T> T doWithReadLock(String pid, LockOperation<T> operation);
+
+    /**
+     * @param pid
+     * @param operation
+     * @param <T>
+     * @return
+     */
+    <T> T doWithWriteLock(String pid, LockOperation<T> operation);
+
+
+    //------------- podpora zamku zvlast
     //void ingestObject(org.dom4j.Document foxmlDoc, String pid);
 
     //void deleteObject(String pid, boolean deleteDataOfManagedDatastreams);
-
-    // datastream
-    boolean datastreamExists(String pid, String dsId);
-
-    //- getMimeType , getCreatedData, (typ x,M,....control-group)
-    DatastreamMetadata getDatastreamMetadata(String pid, String dsId);
-
-    ContentWrapper getDatastreamContent(String pid, String dsId);
-
-    RelsExtWrapper processDatastreamRelsExt(String pid);
-
-    List<String> getDatastreamNames(String pid);
-
-
-    // Processing index
-    void queryProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> mapper);
-
-    //------------- podpora zamku zvlast
 
     /*
     void updateInlineXmlDatastream(String pid, KnownDatastreams dsId, org.dom4j.Document streamDoc, String formatUri);
@@ -71,7 +127,5 @@ public interface RepositoryAccess {
     void deleteObject(String pid, boolean deleteDataOfManagedDatastreams);
 
 */
-
-    default void shutdown(){};
 
 }

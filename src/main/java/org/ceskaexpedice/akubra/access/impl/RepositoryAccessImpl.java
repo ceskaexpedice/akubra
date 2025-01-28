@@ -1,51 +1,25 @@
 package org.ceskaexpedice.akubra.access.impl;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
 import org.ceskaexpedice.akubra.access.*;
 import org.ceskaexpedice.akubra.core.repository.*;
 import org.ceskaexpedice.jaxbmodel.DigitalObject;
-import org.w3c.dom.Document;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
 
 public class RepositoryAccessImpl implements RepositoryAccess {
 
     private Repository repository;
-    /*
-    private AkubraDOManager manager;
-    private AkubraRepository repository;
-    private ProcessingIndexFeeder feeder;
-    private AggregatedAccessLogs accessLog;
-
-     */
 
     public RepositoryAccessImpl(Repository repository) {
         this.repository = repository;
     }
 
-    /*
-    @Inject
-    public RepositoryAccessImpl(ProcessingIndexFeeder feeder, @Nullable AggregatedAccessLogs accessLog, @Named("akubraCacheManager") CacheManager cacheManager) throws IOException {
-        super( accessLog);
-        try {
-            this.manager = new AkubraDOManager(cacheManager);
-            this.feeder = feeder;
-            this.repository = AkubraRepositoryImpl.build(feeder, this.manager);
-            this.accessLog = accessLog;
-
-        } catch (Exception e) {
-            throw new IOException(e);
-        }
-    }*/
-
-    //-------- Object ------------------------------------------
     @Override
     public boolean objectExists(String pid) {
         return this.repository.objectExists(pid);
@@ -53,16 +27,21 @@ public class RepositoryAccessImpl implements RepositoryAccess {
 
     @Override
     public ContentWrapper getObject(String pid, FoxmlType foxmlType) {
-        InputStream objectStream;
-        RepositoryObject repositoryObject = repository.getObject(pid);
-        if (foxmlType == FoxmlType.archive) {
-            DigitalObject digitalObject = repositoryObject.getDigitalObject();
-            repository.resolveArchivedDatastreams(digitalObject);
-            objectStream = this.repository.marshallObject(digitalObject);
-        } else {
-            objectStream = repositoryObject.getFoxml();
+        Lock readLock = repository.getReadLock(pid);
+        try {
+            InputStream objectStream;
+            RepositoryObject repositoryObject = repository.getObject(pid);
+            if (foxmlType == FoxmlType.archive) {
+                DigitalObject digitalObject = repositoryObject.getDigitalObject();
+                repository.resolveArchivedDatastreams(digitalObject);
+                objectStream = this.repository.marshallObject(digitalObject);
+            } else {
+                objectStream = repositoryObject.getFoxml();
+            }
+            return new RepositoryObjectWrapperImpl(objectStream);
+        } finally {
+            readLock.unlock();
         }
-        return new RepositoryObjectWrapperImpl(objectStream);
     }
 
     @Override
@@ -71,37 +50,33 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         return new ObjectPropertiesImpl(repositoryObject);
     }
 
-    // ------------- stream
     @Override
     public boolean datastreamExists(String pid, String dsId) {
+        // TODO
         return false;
     }
 
     @Override
     public DatastreamMetadata getDatastreamMetadata(String pid, String dsId) {
-        RepositoryObject object = repository.getObject(pid);
-        RepositoryDatastream stream = object.getStream(dsId);
-        return new DatastreamMetadataImpl(stream);
-        /*
         Lock readLock = repository.getReadLock(pid);
         try {
             RepositoryObject object = repository.getObject(pid);
-            if (object != null) {
-                RepositoryDatastream stream = object.getStream(dsId);
-                if (stream != null) {
-                    return new DatastreamMetadataImpl(stream);
-                }
-            }
-            return null;
+            RepositoryDatastream stream = object.getStream(dsId);
+            return new DatastreamMetadataImpl(stream);
         } finally {
             readLock.unlock();
-        }*/
+        }
     }
 
     @Override
     public ContentWrapper getDatastreamContent(String pid, String dsId) {
-        InputStream lastVersionContent = repository.getObject(pid).getStream(dsId).getLastVersionContent();
-        return new DatastreamContentWrapperImpl(lastVersionContent);
+        Lock readLock = repository.getReadLock(pid);
+        try {
+            InputStream lastVersionContent = repository.getObject(pid).getStream(dsId).getLastVersionContent();
+            return new DatastreamContentWrapperImpl(lastVersionContent);
+        } finally {
+            readLock.unlock();
+        }
 //        try {
 //            /*
 //            pid = makeSureObjectPid(pid);
@@ -139,6 +114,71 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         return new RelsExtWrapperImpl(repositoryObject);
     }
 
+    @Override
+    public List<String> getDatastreamNames(String pid) {
+        /*
+        Lock readLock = AkubraDOManager.getReadLock(pid);
+        try {
+            RepositoryObject object = akubraRepositoryImpl.getObject(pid);
+            List<RepositoryDatastream> streams = object.getStreams();
+            return streams.stream().map(it -> {
+                try {
+                    return it.getName();
+                } catch (RepositoryException e) {
+                    LOGGER.log(Level.SEVERE,e.getMessage(),e);
+                    return null;
+                }
+            }).collect(Collectors.toList());
+        } finally {
+            readLock.unlock();
+        }*/
+        return null;
+    }
+
+    @Override
+    public void queryProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> mapper) {
+        try {
+            Pair<Long, List<SolrDocument>> cp =
+                    repository.getProcessingIndexFeeder().getPageSortedByTitle(
+                            params.getQueryString(),
+                            params.getRows(),
+                            params.getPageIndex(),
+                            params.getFieldsToFetch()
+                    );
+            for (SolrDocument doc : cp.getRight()) {
+                // TODO
+                mapper.accept(new ProcessingIndexItemImpl(doc));
+            }
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
+
+    }
+
+    @Override
+    public <T> T doWithReadLock(String pid, LockOperation<T> operation) {
+        Lock readLock = repository.getReadLock(pid);
+        try {
+            return operation.execute();
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public <T> T doWithWriteLock(String pid, LockOperation<T> operation) {
+        Lock writeLock = repository.getWriteLock(pid);
+        try {
+            return operation.execute();
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    @Override
+    public void shutdown() {
+        repository.shutdown();
+    }
 
     /*
     @Override
@@ -237,9 +277,9 @@ public class RepositoryAccessImpl implements RepositoryAccess {
      * @return datastream xml as stored in Fedora
      * @throws IOException IO error has been occurred
      */
-    public InputStream getDataStreamXml(String pid, String datastreamName) {
-        return null;
-    }
+    //public InputStream getDataStreamXml(String pid, String datastreamName) {
+      //  return null;
+    //}
 
     ;
     /**
@@ -266,54 +306,16 @@ public class RepositoryAccessImpl implements RepositoryAccess {
      * @return data
      * @throws IOException IO error has been occurred
      */
+    /*
     public InputStream getDataStream(String pid, String datastreamName) throws IOException {
         return null;
     }
 
     ;
 
-    @Override
-    public List<String> getDatastreamNames(String pid) {
-        /*
-        Lock readLock = AkubraDOManager.getReadLock(pid);
-        try {
-            RepositoryObject object = akubraRepositoryImpl.getObject(pid);
-            List<RepositoryDatastream> streams = object.getStreams();
-            return streams.stream().map(it -> {
-                try {
-                    return it.getName();
-                } catch (RepositoryException e) {
-                    LOGGER.log(Level.SEVERE,e.getMessage(),e);
-                    return null;
-                }
-            }).collect(Collectors.toList());
-        } finally {
-            readLock.unlock();
-        }*/
-        return null;
-    }
+     */
 
-    @Override
-    public void queryProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> mapper) {
-        try {
-            Pair<Long, List<SolrDocument>> cp =
-                    repository.getProcessingIndexFeeder().getPageSortedByTitle(
-                            params.getQueryString(),
-                            params.getRows(),
-                            params.getPageIndex(),
-                            params.getFieldsToFetch()
-                    );
-            for (SolrDocument doc : cp.getRight()) {
-                // TODO
-                mapper.accept(new ProcessingIndexItemImpl(doc));
-            }
-        } catch (IOException e) {
-            throw new RepositoryException(e);
-        } catch (SolrServerException e) {
-            throw new RepositoryException(e);
-        }
 
-    }
     /*
     @Override
     public Pair<Long, List<String>> getPidsOfObjectsByModel(String model, int rows, int pageIndex) throws RepositoryException, IOException, SolrServerException {
@@ -519,6 +521,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         // Mock: Fetch content as bytes from your storage
         //return ("<xml>Content for ID: " + id + "</xml>").getBytes(StandardCharsets.UTF_8);
     }*/
+    /*
     private Document parseXml(byte[] content) throws IOException {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -527,6 +530,8 @@ public class RepositoryAccessImpl implements RepositoryAccess {
             throw new IOException("Failed to parse XML", e);
         }
     }
+
+     */
 /*
     private Map<String, String> createMap(String label) {
         Map<String, String> map = new HashMap<String, String>();
@@ -584,6 +589,28 @@ public class RepositoryAccessImpl implements RepositoryAccess {
             }
         }
         return maxVersion;
+    }*/
+    /*
+    private AkubraDOManager manager;
+    private AkubraRepository repository;
+    private ProcessingIndexFeeder feeder;
+    private AggregatedAccessLogs accessLog;
+
+     */
+
+    /*
+    @Inject
+    public RepositoryAccessImpl(ProcessingIndexFeeder feeder, @Nullable AggregatedAccessLogs accessLog, @Named("akubraCacheManager") CacheManager cacheManager) throws IOException {
+        super( accessLog);
+        try {
+            this.manager = new AkubraDOManager(cacheManager);
+            this.feeder = feeder;
+            this.repository = AkubraRepositoryImpl.build(feeder, this.manager);
+            this.accessLog = accessLog;
+
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
     }*/
 
 

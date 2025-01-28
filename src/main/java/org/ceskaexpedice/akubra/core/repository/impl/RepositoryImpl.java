@@ -125,10 +125,8 @@ public class RepositoryImpl implements Repository {
             try {
                 this.feeder.commit();
                 LOGGER.info("CALLED PROCESSING INDEX COMMIT AFTER DELETE " + pid);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (SolrServerException e) {
-                throw new RuntimeException(e);
+            } catch (Exception e) {
+                throw new RepositoryException(e);
             }
         }
     }
@@ -170,6 +168,17 @@ public class RepositoryImpl implements Repository {
     public Lock getReadLock(String pid) {
         Lock readLock = AkubraDOManager.getReadLock(pid);
         return readLock;
+    }
+
+    @Override
+    public Lock getWriteLock(String pid) {
+        Lock writeLock = AkubraDOManager.getWriteLock(pid);
+        return writeLock;
+    }
+
+    @Override
+    public void shutdown() {
+        manager.shutdown();
     }
 
     /* TODO

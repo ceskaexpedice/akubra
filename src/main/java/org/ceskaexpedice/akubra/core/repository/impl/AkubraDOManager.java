@@ -1,17 +1,15 @@
 package org.ceskaexpedice.akubra.core.repository.impl;
 
 import ca.thoughtwire.lock.DistributedLockService;
-import com.hazelcast.client.HazelcastClient;
-import com.hazelcast.client.config.ClientConfig;
-import com.hazelcast.config.GroupConfig;
 import com.hazelcast.core.*;
-import org.ceskaexpedice.akubra.core.Configuration;
+import org.ceskaexpedice.akubra.core.RepositoryConfiguration;
 import org.akubraproject.BlobStore;
 import org.akubraproject.fs.FSBlobStore;
 import org.akubraproject.map.IdMapper;
 import org.akubraproject.map.IdMappingBlobStore;
 import org.apache.commons.io.IOUtils;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
+import org.ceskaexpedice.hazelcast.ClientNode;
 import org.ceskaexpedice.jaxbmodel.*;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
@@ -43,10 +41,9 @@ import java.util.logging.Logger;
 
 public class AkubraDOManager {
     private static final Logger LOGGER = Logger.getLogger(AkubraDOManager.class.getName());
-    private Configuration configuration;
+    private RepositoryConfiguration configuration;
     private ILowlevelStorage storage;
 
-    private static HazelcastInstance hzInstance;
     private static DistributedLockService lockService;
     private static ITopic<String> cacheInvalidator;
 
@@ -56,7 +53,7 @@ public class AkubraDOManager {
     private static Unmarshaller unmarshaller;
     private static Marshaller marshaller;
 
-    private void initializeStatics(Configuration configuration) {
+    private void initializeStatics(RepositoryConfiguration configuration) {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(DigitalObject.class);
             unmarshaller = jaxbContext.createUnmarshaller();
@@ -66,34 +63,9 @@ public class AkubraDOManager {
             LOGGER.log(Level.SEVERE, "Cannot init JAXB", e);
             throw new RepositoryException(e);
         }
-        ClientConfig config = null;
-        /* TODO
-        File configFile = Configuration.getInstance().findConfigFile("hazelcast.clientconfig");
-        if (configFile != null) {
-            try (FileInputStream configStream = new FileInputStream(configFile)) {
-                config = new XmlClientConfigBuilder(configStream).build();
-            } catch (IOException ex) {
-                LOGGER.warning("Could not load Hazelcast config file " + configFile + ": " + ex);
-            }
-        }
-
-         */
-
-        if (config == null) {
-            config = new ClientConfig();
-
-            // TODO config.setInstanceName(Configuration.getInstance().getConfiguration().getString("hazelcast.instance"));
-            config.setInstanceName(configuration.getHazelcastInstance());
-
-            GroupConfig groupConfig = config.getGroupConfig();
-
-            // TODO groupConfig.setName(Configuration.getInstance().getConfiguration().getString("hazelcast.user"));
-            groupConfig.setName(configuration.getHazelcastUser());
-        }
-        hzInstance = HazelcastClient.newHazelcastClient(config);
-        lockService = DistributedLockService.newHazelcastLockService(hzInstance);
-
-        cacheInvalidator = hzInstance.getTopic("cacheInvalidator");
+        ClientNode.ensureHazelcastNode(configuration);
+        lockService = DistributedLockService.newHazelcastLockService(ClientNode.getHzInstance());
+        cacheInvalidator = ClientNode.getHzInstance().getTopic("cacheInvalidator");
         cacheInvalidator.addMessageListener(new MessageListener<String>() {
             @Override
             public void onMessage(Message<String> message) {
@@ -104,7 +76,7 @@ public class AkubraDOManager {
         });
     }
 
-    public AkubraDOManager(CacheManager cacheManager, Configuration configuration) {
+    public AkubraDOManager(CacheManager cacheManager, RepositoryConfiguration configuration) {
         try {
             this.initializeStatics(configuration);
             this.configuration = configuration;
@@ -139,46 +111,6 @@ public class AkubraDOManager {
         return retval;
     }
 
-    /*
-    private DefaultLowlevelStorage createDefaultLowLevelStorage() throws Exception {
-        Map<String, Object> conf = new HashMap<>();
-        conf.put("path_algorithm", configuration.getProperty("path_algorithm"));
-        conf.put("object_store_base", configuration.getProperty("object_store_base"));
-        conf.put("datastream_store_base", configuration.getProperty("datastream_store_base"));
-        conf.put("path_registry", configuration.getProperty("path_registry"));
-        conf.put("file_system", configuration.getProperty("file_system"));
-        conf.put("backslashIsEscape", configuration.getProperty("backslash_is_escape"));
-        conf.put("connectionPool", createConnectionPool());
-        return new DefaultLowlevelStorage(conf);
-    }
-
-     */
-
-    /*
-    private ConnectionPool createConnectionPool() throws Exception {
-        return new ConnectionPool(
-                configuration.getProperty("legacyfs.jdbcDriverClass"),
-                configuration.getProperty("legacyfs.jdbcURL"),
-                configuration.getProperty("legacyfs.dbUsername"),
-                configuration.getProperty("legacyfs.dbPassword"),
-                (DDLConverter) Class.forName(configuration.getProperty("legacyfs.ddlConverter")).newInstance(),
-                configuration.getConfiguration().getInt("legacyfs.maxActive"),
-                configuration.getConfiguration().getInt("legacyfs.maxIdle"),
-                configuration.getConfiguration().getLong("legacyfs.maxWait"),
-                configuration.getConfiguration().getInt("legacyfs.minIdle"),
-                configuration.getConfiguration().getLong("legacyfs.minEvictableIdleTimeMillis"),
-                configuration.getConfiguration().getInt("legacyfs.numTestsPerEvictionRun"),
-                configuration.getConfiguration().getLong("legacyfs.timeBetweenEvictionRunsMillis"),
-                configuration.getProperty("legacyfs.validationQuery"),
-                configuration.getConfiguration().getBoolean("legacyfs.testOnBorrow"),
-                configuration.getConfiguration().getBoolean("legacyfs.testOnReturn"),
-                configuration.getConfiguration().getBoolean("legacyfs.testWhileIdle"),
-                configuration.getConfiguration().getByte("legacyfs.whenExhaustedAction"));
-    }
-
-     */
-
-
     /**
      * Loads and unmarshalls DigitalObject from Akubra storage, using cache if possible
      *
@@ -205,7 +137,7 @@ public class AkubraDOManager {
     DigitalObject readObjectFromStorageOrCache(String pid, boolean useCache) {
         DigitalObject retval = useCache ? objectCache.get(pid) : null;
         if (retval == null) {
-            Object obj = null;
+            Object obj;
             Lock lock = getReadLock(pid);
             try (InputStream inputStream = this.storage.retrieveObject(pid);) {
                 synchronized (unmarshaller) {
@@ -499,11 +431,9 @@ public class AkubraDOManager {
     }
 
     static void shutdown() {
-        if (lockService != null) {
+        if(lockService != null) {
             lockService.shutdown();
         }
-        if (hzInstance != null) {
-            hzInstance.shutdown();
-        }
+        ClientNode.shutdown();
     }
 }

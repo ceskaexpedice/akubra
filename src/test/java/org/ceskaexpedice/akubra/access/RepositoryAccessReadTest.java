@@ -1,7 +1,7 @@
 package org.ceskaexpedice.akubra.access;
 
-import org.ceskaexpedice.akubra.core.Configuration;
-import org.ceskaexpedice.akubra.locks.HazelcastServerNode;
+import org.ceskaexpedice.akubra.core.RepositoryConfiguration;
+import org.ceskaexpedice.hazelcast.ServerNode;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.dom4j.Document;
 import org.junit.jupiter.api.AfterAll;
@@ -15,24 +15,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class RepositoryAccessTest {
+public class RepositoryAccessReadTest {
 
-    private static HazelcastServerNode hazelcastServerNode;
     private static RepositoryAccess repositoryAccess;
 
     @BeforeAll
     static void beforeAll() {
-        URL resource = RepositoryAccessTest.class.getClassLoader().getResource("data");
+        URL resource = RepositoryAccessReadTest.class.getClassLoader().getResource("data");
         String testRepoPath = resource.getFile() + "/";
         //String testRepoPath = "c:\\Users\\petr\\.kramerius4\\data\\";
-        Configuration config = new Configuration.Builder()
-                .processingIndexHost("http://localhost:8983/solr/processing")
+        RepositoryConfiguration config = new RepositoryConfiguration.Builder()
+                .processingIndexHost("http://notUsed")
                 .objectStorePath(testRepoPath + "objectStore")
                 .objectStorePattern("##/##")
                 .datastreamStorePath(testRepoPath + "datastreamStore")
@@ -41,15 +38,14 @@ public class RepositoryAccessTest {
                 .hazelcastInstance("akubrasync")
                 .hazelcastUser("dev")
                 .build();
-        hazelcastServerNode = new HazelcastServerNode();
-        // TODO hazelcastServerNode.contextInitialized(null);
-        HazelcastServerNode.ensureHazelcastNode(config);
+        ServerNode.ensureHazelcastNode(config);
         repositoryAccess = RepositoryAccessFactory.createRepositoryAccess(config);
     }
 
     @AfterAll
     static void afterAll() {
-        hazelcastServerNode.contextDestroyed(null);
+        repositoryAccess.shutdown();
+        ServerNode.shutdown();
     }
 
     @Test
@@ -255,25 +251,25 @@ public class RepositoryAccessTest {
     }
 
     @Test
-    void testQueryProcessingIndex() {
-        String model = "page";
-        String query = String.format("type:description AND model:%s", "model\\:" + model); //prvni "model:" je filtr na solr pole, druhy "model:" je hodnota pole, coze  uprime zbytecne
-        ProcessingIndexQueryParameters params = new ProcessingIndexQueryParameters.Builder()
-                .queryString(query)
-                .sortField("title")
-                .ascending(true)
-                .rows(10)
-                .pageIndex(0)
-                .fieldsToFetch(List.of("source"))
-                .build();
-        repositoryAccess.queryProcessingIndex(params, new Consumer<ProcessingIndexItem>() {
-            @Override
-            public void accept(ProcessingIndexItem processingIndexItem) {
-                // TODO
-               // System.out.println(((ProcessingIndexItemImpl)processingIndexItem).getDocument());
-            }
-        });
+    void testLocks() {
+        String pid = "uuid:5035a48a-5e2e-486c-8127-2fa650842e46";
+        String pid1 = "uuid:12993b4a-71b4-4f19-8953-0701243cc25d";
+        Boolean result = repositoryAccess.doWithWriteLock(pid, () -> {
+            Document xmlDom4j = repositoryAccess.getObject(pid, FoxmlType.regular).asXmlDom4j();
+            System.out.println(xmlDom4j.asXML());
+            // xmlDom4j.setPolicyDC(pid, policy);
+            // repositoryAccess.ingestObject(xmlDom4j);
 
+            Boolean result1 = repositoryAccess.doWithReadLock(pid1, () -> {
+                Document xmlDom4j1 = repositoryAccess.getObject(pid1, FoxmlType.regular).asXmlDom4j();
+                System.out.println(xmlDom4j1.asXML());
+                // xmlDom4j.setPolicyDC(pid, policy);
+                // repositoryAccess.ingestObject(xmlDom4j);
+                return true;
+            });
+
+            return result1;
+        });
     }
 
     private static String convertUsingBytes(InputStream inputStream) {
