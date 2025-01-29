@@ -1,6 +1,7 @@
 package org.ceskaexpedice.akubra.access;
 
 import org.ceskaexpedice.akubra.core.RepositoryConfiguration;
+import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.hazelcast.ServerNode;
 import org.ceskaexpedice.akubra.utils.DomUtils;
@@ -161,7 +162,9 @@ public class RepositoryAccessReadTest {
         DatastreamMetadata datastreamMetadata = repositoryAccess.getDatastreamMetadata(pidTitlePage, "DC");
         assertNotNull(datastreamMetadata);
         assertEquals("text/xml", datastreamMetadata.getMimetype());
-        // TODO other fields
+        assertEquals("DC", datastreamMetadata.getName());
+        assertEquals(RepositoryDatastream.Type.DIRECT, datastreamMetadata.getType());
+        assertEquals("Mon Feb 26 15:40:29 CET 2018", datastreamMetadata.getLastModified().toString());
     }
 
     @Test
