@@ -4,6 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.common.SolrDocument;
 import org.ceskaexpedice.akubra.access.*;
 import org.ceskaexpedice.akubra.core.repository.*;
+import org.ceskaexpedice.akubra.core.repository.impl.RepositoryImpl;
 import org.ceskaexpedice.jaxbmodel.DigitalObject;
 
 import java.io.IOException;
@@ -11,8 +12,12 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class RepositoryAccessImpl implements RepositoryAccess {
+    private static final Logger LOGGER = Logger.getLogger(RepositoryAccessImpl.class.getName());
 
     private Repository repository;
 
@@ -52,8 +57,8 @@ public class RepositoryAccessImpl implements RepositoryAccess {
 
     @Override
     public boolean datastreamExists(String pid, String dsId) {
-        // TODO
-        return false;
+        RepositoryObject repositoryObject = repository.getObject(pid);
+        return repositoryObject.streamExists(dsId);
     }
 
     @Override
@@ -116,10 +121,9 @@ public class RepositoryAccessImpl implements RepositoryAccess {
 
     @Override
     public List<String> getDatastreamNames(String pid) {
-        /*
-        Lock readLock = AkubraDOManager.getReadLock(pid);
+        Lock readLock = repository.getReadLock(pid);
         try {
-            RepositoryObject object = akubraRepositoryImpl.getObject(pid);
+            RepositoryObject object = repository.getObject(pid);
             List<RepositoryDatastream> streams = object.getStreams();
             return streams.stream().map(it -> {
                 try {
@@ -131,8 +135,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
             }).collect(Collectors.toList());
         } finally {
             readLock.unlock();
-        }*/
-        return null;
+        }
     }
 
     @Override
@@ -205,115 +208,12 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         }
     }*/
 
-    // ----- Stream ---------------------------------------------------
-
     /*
-    @Override
-    public DatastreamAccessHelper getDatastreamAccessHelper(){
-        return null;
-    }
-
-    @Override
-    public String getTypeOfDatastream(String pid, String dsId) {return null;};
-
     @Override
     public boolean datastreamExists(String pid, KnownDatastreams dsId) {
         boolean exists = this.repositoryApi.datastreamExists(pid, dsId);
         return exists;
     }*/
-
-    // TODO archive format.. kdo to pouziva a proc
-    // TODO versions - nepouziva se, ale je treba zkontrolovat, ze se bere urcite posledni verze
-    /*
-    @Override
-    public <T> T getDatastreamFoxmlElement(String pid, KnownDatastreams dsId) {
-        return null;
-    }*/
-
-    /**
-     * @return part of FOXML that contains definition of the datastream. I.e. root element datastream with subelement(s) datastreamVersion.
-     */
-    /*
-    @Override
-    public org.dom4j.Document getDatastreamXml(String pid, KnownDatastreams dsId){return null;}
-
-    @Override
-    public <T> T getDatastreamProperty(String pid, KnownDatastreams dsId, String propertyName, Class<T> returnType) {
-        org.dom4j.Document objectFoxml = getFoxml(pid);
-        return objectFoxml == null ? null : extractProperty(objectFoxml, propertyName);
-    }
-
-    @Override
-    public String getDatastreamMimetype(String pid, KnownDatastreams dsId){return null;}
-*/
-    // TODO nazev, Triplet, Tuple, ????????
-    /*
-    @Override
-    public <T> T getRDFSimpleProperty(String pid, String propertyName, Class<T> returnType) {
-        org.dom4j.Document objectFoxml = getFoxml(pid);
-        return objectFoxml == null ? null : extractProperty(objectFoxml, propertyName);
-    }*/
-
-    /*
-    @Override
-    public DatastreamContentWrapper getDatastreamContent(String pid, KnownDatastreams dsId) {
-        SupportedFormats supportedFormat = determineSupportedFormat(dsId);
-        // Retrieve content as bytes
-        RepositoryDatastream rawContent = null;
-        try {
-            rawContent = fetchContentFromStorage(pid, dsId);
-            return new DatastreamContentWrapper(rawContent, supportedFormat);
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
-    }*/
-
-    /**
-     * TODO: Not Used
-     * Returns xml containing datastream data
-     *
-     * @param pid            pid of reqested object
-     * @param datastreamName datastream name
-     * @return datastream xml as stored in Fedora
-     * @throws IOException IO error has been occurred
-     */
-    //public InputStream getDataStreamXml(String pid, String datastreamName) {
-      //  return null;
-    //}
-
-    ;
-    /**
-     * Returns xml containing datastream data
-     *
-     * @param pid pid of reqested object
-     * @param datastreamName datastream name
-     * @return datastream xml as stored in Fedora
-     * @throws IOException IO error has been occurred
-     */
-    /*
-    public Document getDataStreamXmlAsDocument(String pid, String datastreamName){return null;};
-    InputStream getLatestVersionOfDatastream(String pid, String dsId){return null;};
-    org.dom4j.Document getLatestVersionOfInlineXmlDatastream(String pid, String dsId){return null;};
-    String getLatestVersionOfManagedTextDatastream(String pid, String dsId){return null;};
-
-     */
-
-    /**
-     * Returns data from datastream
-     *
-     * @param pid            pid of reqested object
-     * @param datastreamName datastream name
-     * @return data
-     * @throws IOException IO error has been occurred
-     */
-    /*
-    public InputStream getDataStream(String pid, String datastreamName) throws IOException {
-        return null;
-    }
-
-    ;
-
-     */
 
 
     /*
@@ -427,46 +327,8 @@ public class RepositoryAccessImpl implements RepositoryAccess {
             writeLock.unlock();
         }
     }*/
-    // TODO here we always use AkubraUtils.getStreamContent but we have also AkubraObject.AkubraDatastream for fetching stream content
-    /* TODO
-    @Override
-    public List<Map<String, String>> getStreamsOfObject(String pid) throws IOException {
-        try {
-            List<Map<String, String>> results = new ArrayList<>();
-            DigitalObject obj = manager.readObjectFromStorage(pid);
-
-            return obj.getDatastream().stream().filter((o) -> {
-                try {
-                    // policy stream -> should be ommited?
-                    return (!o.getID().equals("POLICY"));
-                } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                    return false;
-                }
-            }).map((o) -> {
-                Map<String, String> map = null;
-                try {
-                    map = createMap(o.getID());
-                    List<DatastreamVersionType> datastreamVersionList = o.getDatastreamVersion();
-                    map.put("mimetype", datastreamVersionList.get(datastreamVersionList.size() - 1).getMIMETYPE());
-                } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                }
-                return map;
-            }).collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new IOException(e);
-        }
-    }
-     */
 
     //------Processing index----------------------------------------------------
-    /*
-    @Override
-    public ProcessingIndexAccessHelper getProcessingIndexAccessHelper(){
-        return null;
-    }*/
-
     /*
     @Override
     public <T> T queryProcessingIndex(ProcessingIndexQueryParameters params, ProcessingIndexResultMapper<T> mapper) {
@@ -483,16 +345,6 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     };
 */
     /*
-    @Override
-    public void shutdown() {
-        manager.shutdown();
-    }
-    @Override
-    public String getFedoraVersion() throws IOException {
-        return "Akubra";
-    }*/
-
-    /*
     private void reportAccess(String pid, String streamName) {
         try {
             this.accessLog.reportAccess(pid, streamName);
@@ -507,44 +359,6 @@ public class RepositoryAccessImpl implements RepositoryAccess {
             return new SupportedFormats(false, true, false);
         } else {
             return new SupportedFormats(true, true, true);
-        }
-    }*/
-    /*
-    private RepositoryDatastream fetchContentFromStorage(String pid, KnownDatastreams dsId) throws RepositoryException {
-        RepositoryObject object = akubraRepositoryImpl.getObject(pid);
-        if (object.streamExists(dsId)) {
-            RepositoryDatastream stream = object.getStream(dsId);
-            return stream;
-        } else {
-            return null;
-        }
-        // Mock: Fetch content as bytes from your storage
-        //return ("<xml>Content for ID: " + id + "</xml>").getBytes(StandardCharsets.UTF_8);
-    }*/
-    /*
-    private Document parseXml(byte[] content) throws IOException {
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            return factory.newDocumentBuilder().parse(new ByteArrayInputStream(content));
-        } catch (Exception e) {
-            throw new IOException("Failed to parse XML", e);
-        }
-    }
-
-     */
-/*
-    private Map<String, String> createMap(String label) {
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("dsid", label);
-        map.put("label", label);
-        return map;
-    }*/
-    /*
-    private DigitalObject foxmlDocToDigitalObject(org.dom4j.Document foxml) throws IOException {
-        try {
-            return (DigitalObject) digitalObjectUnmarshaller.unmarshal(new StringReader(foxml.asXML()));
-        } catch (JAXBException e) {
-            throw new IOException(e);
         }
     }*/
     /*
