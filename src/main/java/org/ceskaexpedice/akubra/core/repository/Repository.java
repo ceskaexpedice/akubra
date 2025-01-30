@@ -24,7 +24,7 @@ import java.io.InputStream;
 import java.util.concurrent.locks.Lock;
 
 /**
- * Represents access to Akubra repository
+ * Core access to Akubra repository
  * It is basic tool for ingesting and it is basic point for RepositoryAccess facade
  * @author pavels
  */

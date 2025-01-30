@@ -9,14 +9,11 @@ import org.dom4j.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.xml.sax.SAXParseException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,7 +25,7 @@ public class RepositoryAccessReadTest {
 
     private static RepositoryAccess repositoryAccess;
 
-    private boolean debugPrint = true;
+    private final boolean debugPrint = true;
 
     @BeforeAll
     static void beforeAll() {
@@ -251,7 +248,7 @@ public class RepositoryAccessReadTest {
     private String convertUsingBytes(InputStream inputStream) {
         try {
             byte[] bytes = inputStream.readAllBytes();
-            return new String(bytes, "UTF-8");
+            return new String(bytes, StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

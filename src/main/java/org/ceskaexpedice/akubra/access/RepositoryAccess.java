@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 /**
  * This is main and only repository access point
  *
- * @author pavels
+ * @author pavels, petrp
  * 
  */
 public interface RepositoryAccess {
@@ -107,7 +107,7 @@ public interface RepositoryAccess {
     <T> T doWithWriteLock(String pid, LockOperation<T> operation);
 
 
-    //------------- podpora zamku zvlast
+    // TODO update operace
     //void ingestObject(org.dom4j.Document foxmlDoc, String pid);
 
     //void deleteObject(String pid, boolean deleteDataOfManagedDatastreams);
