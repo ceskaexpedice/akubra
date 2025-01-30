@@ -1,6 +1,5 @@
 package org.ceskaexpedice.akubra.core.processingindex;
 
-import org.ceskaexpedice.akubra.access.RepositoryAccess;
 import org.ceskaexpedice.akubra.core.repository.KnownDatastreams;
 import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
 import org.ceskaexpedice.akubra.utils.DomUtils;
@@ -34,14 +33,13 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
- * This is the helper. It is dedicated for creating supporting index which should replace
- * resource index in the future.
+ * ProcessingIndexFeeder
  *
  * @author pstastny
  */
 public class ProcessingIndexFeeder {
     
-    enum TitleType {
+    private enum TitleType {
         dc,mods;
     }
     private static final String TYPE_RELATION = "relation";
@@ -55,121 +53,41 @@ public class ProcessingIndexFeeder {
         this.solrClient = solrClient;
     }
 
-    // 1 ---------------------------------
-    public Pair<Long, List<SolrDocument>> getPageSortedByTitle(String query, int rows, int pageIndex, List<String> fieldList) throws IOException, SolrServerException {
-        SolrQuery solrQuery = new SolrQuery(query);
-        int offset = pageIndex*rows;
-        solrQuery.setStart(offset).setRows(rows);
-        solrQuery.setSort("title", SolrQuery.ORDER.asc);
-        if (fieldList != null &&  !fieldList.isEmpty()) {
-            String[] fl = fieldList.toArray(new String[fieldList.size()]);
-            solrQuery.setFields(fl);
-        }
-        QueryResponse response = this.solrClient.query(solrQuery);
-        long numFound = response.getResults().getNumFound();
-        List<SolrDocument> docs = new ArrayList<>();
-
-        response.getResults().forEach((doc) -> {
-            docs.add(doc);
-        });
-        return Pair.of(numFound, docs);
-    }
-    // 1 -------------------------------
-    public Pair<Long, List<SolrDocument>> getPageSortedByTitle(String query, int rows, int offset) throws IOException, SolrServerException {
-        return getPageSortedByTitle(query, rows, offset, new ArrayList<>());
-    }
-    // 2 -----------------------------------
-    public void iterateSectionOfProcessingSortedByTitle(String query, boolean ascending, int offset, int limit, Consumer<SolrDocument> action) throws IOException, SolrServerException {
-        iterateSectionOfProcessing(query, "dc.title", ascending ? SolrQuery.ORDER.asc : SolrQuery.ORDER.desc, offset, limit, action);
-    }
-    // 3 -----------------------------------------------
-    public String iterateSectionOfProcessingSortedByTitleWithCursor(String query, boolean ascending, String cursor, int limit, Consumer<SolrDocument> action) throws IOException, SolrServerException {
-        SolrQuery solrQuery = new SolrQuery(query);
-        solrQuery.setParam("cursorMark", cursor).setRows(limit);
-        List<SolrQuery.SortClause> sortClauses = new ArrayList<>();
-        sortClauses.add(SolrQuery.SortClause.create("dc.title", ascending ? SolrQuery.ORDER.asc : SolrQuery.ORDER.desc));
-        sortClauses.add(SolrQuery.SortClause.asc("pid")); //cursor query requires unique sorting field
-        solrQuery.setSorts(sortClauses);
-        QueryResponse response = this.solrClient.query(solrQuery);
-        response.getResults().forEach((doc) -> {
-            action.accept(doc);
-        });
-        return response.getNextCursorMark();
-    }
-    // 4 -------------------------------
-    /**
-     * This iteration guarantees, that order of "description" records is always the same after rebuilding Processing index.
-     * Also order of "relation" records from same RELS-EXT is the same, but it does NOT match order of elements in RELS-EXT.
-     * Order of "relation" records from different RELS-EXTs is undefined and may change between rebuilding of Processing index.
-     */
-    public void iterateProcessingSortedByPid(String query, Consumer<SolrDocument> action) throws IOException, SolrServerException {
-        iterateProcessingWithSort(query, "pid", SolrQuery.ORDER.asc, action);
-    }
-    // 4 -------------------------------------------
-    public List<Pair<String, String>> findByTargetPid(String pid) throws IOException, SolrServerException {
-        final List<Pair<String, String>> retvals = new ArrayList<>();
-        iterateProcessingSortedByPid("targetPid:\"" + pid + "\"", (doc) -> {
-            Pair<String, String> pair = new ImmutablePair<>(doc.getFieldValue("source").toString(), doc.getFieldValue("relation").toString());
-            retvals.add(pair);
-        });
-        return retvals;
-    }
-    // 5 ----------------------------------------
-    public void iterateSectionOfProcessingSortedByIndexationDate(String query, int offset, int limit, Consumer<SolrDocument> action) throws IOException, SolrServerException {
-        //řazení podle date zaručí jen jednoznačné řazení, což by ale zvládlo (a lépe) i řazení podle pid
-        //date obsahuje timestamp vytvoření záznamu v processing indexu, ten proces ale probíhá paraleleně, takže tohle pořadí se po rebuildu processing indexu změní
-        //takže "date" nijak nesouvisí s přidáním do repozitáře, nebo snad publikací
-        iterateSectionOfProcessing(query, "date", SolrQuery.ORDER.desc, offset, limit, action);
-    }
-    // 6 ---------------------------------------------
-    /**
-     * This iteration guarantees, that order of "relation" records matches order of elements in any single RELS-EXT.
-     * Order of "description" record is undefined as is order of "relation" records from different RELS-EXTs.
-     * Field "date" depends on process, that rebuilds Processing index. This process is parallelized and results may differ between different runs.
-     */
-    public void iterateProcessingSortedByIndexationDate(String query, boolean ascending, Consumer<SolrDocument> action) throws IOException, SolrServerException {
-        iterateProcessingWithSort(query, "date", ascending ? SolrQuery.ORDER.asc : SolrQuery.ORDER.desc, action);
-    }
-    // 7 ------------------------------------
-    /**
-     * This iteration is convenient, if you want to show data at least somehow sorted
-     */
-    public void iterateProcessingSortedByTitle(String query, Consumer<SolrDocument> action) throws IOException, SolrServerException {
-        // TODO: Change sorting
-        iterateProcessingWithSort(query, "dc.title", SolrQuery.ORDER.asc, action);
-    }
-
-    private void iterateSectionOfProcessing(String query, String sortField, SolrQuery.ORDER order, int offset, int limit, Consumer<SolrDocument> action) throws IOException, SolrServerException {
-        SolrQuery solrQuery = new SolrQuery(query);
-        solrQuery.setStart(offset).setRows(limit);
-        solrQuery.setSort(sortField, order);
-        QueryResponse response = this.solrClient.query(solrQuery);
-        response.getResults().forEach((doc) -> {
-            action.accept(doc);
-        });
-    }
-    private void iterateProcessingWithSort(String query, String sortField, SolrQuery.ORDER order, Consumer<SolrDocument> action) throws IOException, SolrServerException {
-        SolrQuery solrQuery = new SolrQuery(query);
-        int rows = 1000;
-        solrQuery.setRows(rows);
-        solrQuery.addSort("pid", SolrQuery.ORDER.asc);
-        solrQuery.addSort(sortField, order);
-        String cursorMark = CursorMarkParams.CURSOR_MARK_START;
-        boolean done = false;
-        while (!done) {
-            solrQuery.set(CursorMarkParams.CURSOR_MARK_PARAM, cursorMark);
-            QueryResponse response = this.solrClient.query(solrQuery);
-            String nextCursorMark = response.getNextCursorMark();
-            response.getResults().forEach((doc) -> {
-                action.accept(doc);
-            });
-            if (cursorMark.equals(nextCursorMark)) {
-                done = true;
+    // TODO maybe we need also a method to get back next cursor mark
+    public void iterate(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action) {
+        try {
+            SolrQuery solrQuery = new SolrQuery(params.getQueryString());
+            solrQuery.setSort(params.getSortField(), params.isAscending() ? SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
+            solrQuery.setRows(params.getRows());
+            if(params.getCursorMark() == null) {
+                int offset = params.getPageIndex() * params.getRows();
+                solrQuery.setStart(offset);
+                QueryResponse response = this.solrClient.query(solrQuery);
+                response.getResults().forEach((doc) -> {
+                    action.accept(new ProcessingIndexItem(doc));
+                });
+            }else{
+                String cursorMark = params.getCursorMark();
+                boolean done = false;
+                while (!done) {
+                    solrQuery.set(CursorMarkParams.CURSOR_MARK_PARAM, cursorMark);
+                    QueryResponse response = this.solrClient.query(solrQuery);
+                    String nextCursorMark = response.getNextCursorMark();
+                    response.getResults().forEach((doc) -> {
+                        action.accept(new ProcessingIndexItem(doc));
+                    });
+                    if (cursorMark.equals(nextCursorMark)) {
+                        done = true;
+                    }
+                    cursorMark = nextCursorMark;
+                }
             }
-            cursorMark = nextCursorMark;
+        } catch (Exception e) {
+            throw new RepositoryException(e);
         }
     }
 
+    // TODO check update methods
     public UpdateResponse feedDescriptionDocument(String sourcePid, String model, String title, String ref, Date date, TitleType ttype) throws IOException, SolrServerException {
 
         //String processingSolrHost = KConfiguration.getInstance().getSolrProcessingHost();

@@ -1,7 +1,10 @@
 package org.ceskaexpedice.akubra.access;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.ceskaexpedice.akubra.AbstractFunctionalTest;
 import org.ceskaexpedice.akubra.core.RepositoryConfiguration;
+import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
+import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
 import org.ceskaexpedice.hazelcast.ServerNode;
 import org.junit.jupiter.api.*;
 
@@ -10,8 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * ProcessingIndexQueryTest
@@ -22,6 +24,37 @@ public class ProcessingIndexQueryTest extends AbstractFunctionalTest {
     private static RepositoryAccess repositoryAccess;
 
     private final boolean debugPrint = true;
+
+    /* TODO
+    @BeforeAll
+    static void beforeAll() {
+        super.setUp();
+        URL resource = ProcessingIndexQueryTest.class.getClassLoader().getResource("data");
+        String testRepoPath = resource.getFile() + "/";
+        RepositoryConfiguration config = new RepositoryConfiguration.Builder()
+                .processingIndexHost(getProperty("processingIndexHost", null))
+                .objectStorePath(testRepoPath + "objectStore")
+                .objectStorePattern("##/##")
+                .datastreamStorePath(testRepoPath + "datastreamStore")
+                .datastreamStorePattern("##/##")
+                .cacheTimeToLiveExpiration(60)
+                .hazelcastInstance("akubrasync")
+                .hazelcastUser("dev")
+                .build();
+        ServerNode.ensureHazelcastNode(config);
+        repositoryAccess = RepositoryAccessFactory.createRepositoryAccess(config);
+    }
+
+     */
+
+    /* TODO
+    @AfterAll
+    static void afterAll() {
+        repositoryAccess.shutdown();
+        ServerNode.shutdown();
+    }
+
+     */
 
     @BeforeEach
     void beforeEach() {
@@ -49,7 +82,7 @@ public class ProcessingIndexQueryTest extends AbstractFunctionalTest {
     }
 
     @Test
-    void testQueryProcessingIndex() {
+    void testIterate_page() {
         String model = "page";
         String query = String.format("type:description AND model:%s", "model\\:" + model);
         ProcessingIndexQueryParameters params = new ProcessingIndexQueryParameters.Builder()
@@ -60,13 +93,21 @@ public class ProcessingIndexQueryTest extends AbstractFunctionalTest {
                 .pageIndex(0)
                 .fieldsToFetch(List.of("source", "_version_"))
                 .build();
-        repositoryAccess.queryProcessingIndex(params, processingIndexItem -> {
-            Object source = processingIndexItem.getFieldValue("source");
-            assertNotNull(source);
-            Optional<Long> version = processingIndexItem.getFieldValueAs("_version_", Long.class);
-            assertNotNull(version.get());
-            debugPrint(source + "," + version.get());
+        repositoryAccess.iterateProcessingIndex(params, new Consumer<ProcessingIndexItem>() {
+            @Override
+            public void accept(ProcessingIndexItem processingIndexItem) {
+                Object source = processingIndexItem.getFieldValue("source");
+                assertNotNull(source);
+                Optional<Long> version = processingIndexItem.getFieldValueAs("_version_", Long.class);
+                assertNotNull(version.get());
+                debugPrint(source + "," + version.get());
+            }
         });
+    }
+
+    @Test
+    void testIterate_cursor() {
+        // TODO
     }
 
     private void debugPrint(String msg) {

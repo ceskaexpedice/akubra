@@ -1,4 +1,4 @@
-package org.ceskaexpedice.akubra.access;
+package org.ceskaexpedice.akubra.core.processingindex;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,7 @@ public class ProcessingIndexQueryParameters {
     private final boolean ascending;
     private final int rows;
     private final int pageIndex;
+    private final String cursorMark;
     private final List<String> fieldsToFetch;
 
     // Private constructor to enforce the use of the Builder
@@ -18,6 +19,7 @@ public class ProcessingIndexQueryParameters {
         this.ascending = builder.ascending;
         this.rows = builder.rows;
         this.pageIndex = builder.pageIndex;
+        this.cursorMark = builder.cursorMark;
         this.fieldsToFetch = builder.fieldsToFetch;
     }
 
@@ -42,6 +44,10 @@ public class ProcessingIndexQueryParameters {
         return pageIndex;
     }
 
+    public String getCursorMark() {
+        return cursorMark;
+    }
+
     public List<String> getFieldsToFetch() {
         return fieldsToFetch;
     }
@@ -53,6 +59,7 @@ public class ProcessingIndexQueryParameters {
         private boolean ascending = true; // Default sort order
         private int rows = 10;            // Default rows
         private int pageIndex = 0;       // Default page index
+        private String cursorMark;
         private final List<String> fieldsToFetch = new ArrayList<>();
 
         public Builder queryString(String queryString) {
@@ -77,6 +84,11 @@ public class ProcessingIndexQueryParameters {
 
         public Builder pageIndex(int pageIndex) {
             this.pageIndex = pageIndex;
+            return this;
+        }
+
+        public Builder cursorMark(String cursorMark) {
+            this.cursorMark = cursorMark;
             return this;
         }
 

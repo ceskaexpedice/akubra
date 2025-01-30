@@ -16,6 +16,10 @@
  */
 package org.ceskaexpedice.akubra.access;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
+import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
+
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -81,9 +85,9 @@ public interface RepositoryAccess {
 
     /**
      * @param params
-     * @param mapper
+     * @param action
      */
-    void queryProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> mapper);
+    void iterateProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action);
 
     /**
      *

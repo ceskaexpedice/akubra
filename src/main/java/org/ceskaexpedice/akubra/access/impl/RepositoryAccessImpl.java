@@ -1,13 +1,12 @@
 package org.ceskaexpedice.akubra.access.impl;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.solr.common.SolrDocument;
 import org.ceskaexpedice.akubra.access.*;
+import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
+import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
 import org.ceskaexpedice.akubra.core.repository.*;
-import org.ceskaexpedice.akubra.core.repository.impl.RepositoryImpl;
 import org.ceskaexpedice.jaxbmodel.DigitalObject;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -129,7 +128,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
                 try {
                     return it.getName();
                 } catch (RepositoryException e) {
-                    LOGGER.log(Level.SEVERE,e.getMessage(),e);
+                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
                     return null;
                 }
             }).collect(Collectors.toList());
@@ -139,23 +138,8 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     }
 
     @Override
-    public void queryProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> mapper) {
-        try {
-            Pair<Long, List<SolrDocument>> cp =
-                    repository.getProcessingIndexFeeder().getPageSortedByTitle(
-                            params.getQueryString(),
-                            params.getRows(),
-                            params.getPageIndex(),
-                            params.getFieldsToFetch()
-                    );
-            for (SolrDocument doc : cp.getRight()) {
-                // TODO
-                mapper.accept(new ProcessingIndexItemImpl(doc));
-            }
-        } catch (Exception e) {
-            throw new RepositoryException(e);
-        }
-
+    public void iterateProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action){
+        repository.getProcessingIndexFeeder().iterate(params, action);
     }
 
     @Override

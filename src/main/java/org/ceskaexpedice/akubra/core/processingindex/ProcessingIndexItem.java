@@ -1,7 +1,6 @@
-package org.ceskaexpedice.akubra.access.impl;
+package org.ceskaexpedice.akubra.core.processingindex;
 
 import org.apache.solr.common.SolrDocument;
-import org.ceskaexpedice.akubra.access.ProcessingIndexItem;
 
 import java.util.Optional;
 
@@ -10,19 +9,17 @@ import java.util.Optional;
  *
  * @author petr
  */
-class ProcessingIndexItemImpl implements ProcessingIndexItem {
+public class ProcessingIndexItem {
     private SolrDocument solrDocument;
 
-    ProcessingIndexItemImpl(SolrDocument document) {
+    ProcessingIndexItem(SolrDocument document) {
         this.solrDocument = document;
     }
 
-    @Override
     public Object getFieldValue(String fieldName) {
         return solrDocument.getFieldValue(fieldName);
     }
 
-    @Override
     public <T> Optional<T> getFieldValueAs(String fieldName, Class<T> type) {
         Object value = solrDocument.getFieldValue(fieldName);
         if (value == null) {
