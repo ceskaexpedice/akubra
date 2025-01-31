@@ -5,13 +5,19 @@ import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import java.util.Date;
 
 public interface DatastreamMetadata {
-    // TODO - getMimeType , getCreatedData, (typ x,M,....control-group)
+    String getId();
 
     String getMimetype();
 
-    String getName();
-
     RepositoryDatastream.Type getType();
 
+    int getSize();
+
+    String getControlGroup();
+
+    String getLocation();
+
     Date getLastModified();
+
+    Date getCreateDate();
 }

@@ -6,6 +6,7 @@ import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
 import org.ceskaexpedice.akubra.core.repository.*;
 import org.ceskaexpedice.jaxbmodel.DigitalObject;
+import org.dom4j.Document;
 
 import java.io.InputStream;
 import java.util.List;
@@ -22,6 +23,21 @@ public class RepositoryAccessImpl implements RepositoryAccess {
 
     public RepositoryAccessImpl(Repository repository) {
         this.repository = repository;
+    }
+
+    @Override
+    public void ingest(Document foxmlDoc) {
+
+    }
+
+    @Override
+    public void ingest(org.w3c.dom.Document foxmlDoc) {
+
+    }
+
+    @Override
+    public void ingest(DigitalObject digitalObject) {
+
     }
 
     @Override
@@ -52,6 +68,16 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     public ObjectProperties getObjectProperties(String pid) {
         RepositoryObject repositoryObject = repository.getObject(pid);
         return new ObjectPropertiesImpl(repositoryObject);
+    }
+
+    @Override
+    public void deleteObject(String pid) {
+
+    }
+
+    @Override
+    public void deleteObject(String pid, boolean deleteDataOfManagedDatastreams, boolean deleteRelationsWithThisAsTarget) {
+
     }
 
     @Override

@@ -146,7 +146,7 @@ public class RepositoryAccessReadTest {
         DatastreamMetadata datastreamMetadata = repositoryAccess.getDatastreamMetadata(pidTitlePage, "DC");
         assertNotNull(datastreamMetadata);
         assertEquals("text/xml", datastreamMetadata.getMimetype());
-        assertEquals("DC", datastreamMetadata.getName());
+        assertEquals("DC", datastreamMetadata.getId());
         assertEquals(RepositoryDatastream.Type.DIRECT, datastreamMetadata.getType());
         assertEquals("Mon Feb 26 15:40:29 CET 2018", datastreamMetadata.getLastModified().toString());
     }

@@ -18,7 +18,7 @@ class DatastreamMetadataImpl implements DatastreamMetadata {
     }
 
     @Override
-    public String getName() {
+    public String getId() {
         return repositoryDatastream.getName();
     }
 
@@ -28,8 +28,32 @@ class DatastreamMetadataImpl implements DatastreamMetadata {
     }
 
     @Override
+    public int getSize() {
+        // TODO
+        return 0;
+    }
+
+    @Override
+    public String getControlGroup() {
+        // TODO
+        return "";
+    }
+
+    @Override
+    public String getLocation() {
+        // TODO
+        return "";
+    }
+
+    @Override
     public Date getLastModified() {
         return repositoryDatastream.getLastVersionLastModified();
+    }
+
+    @Override
+    public Date getCreateDate() {
+        // TODO
+        return null;
     }
 
 }

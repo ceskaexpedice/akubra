@@ -19,6 +19,8 @@ package org.ceskaexpedice.akubra.access;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
+import org.ceskaexpedice.jaxbmodel.DigitalObject;
+import org.dom4j.Document;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -30,6 +32,22 @@ import java.util.function.Consumer;
  * 
  */
 public interface RepositoryAccess {
+
+    //---------------- Object -------------------------------
+    /**
+     * @param foxmlDoc
+     */
+    void ingest(Document foxmlDoc);
+
+    /**
+     * @param foxmlDoc
+     */
+    void ingest(org.w3c.dom.Document foxmlDoc);
+
+    /**
+     * @param digitalObject
+     */
+    void ingest(DigitalObject digitalObject);
 
     /**
      * @param pid
@@ -52,6 +70,25 @@ public interface RepositoryAccess {
 
     /**
      * @param pid
+     */
+    void deleteObject(String pid);
+
+    /**
+     * Deletes object, possibly without removing relations pointing at this object (from Resource index)
+     * @param pid
+     * @param deleteDataOfManagedDatastreams if true, also managed datastreams of this object will be removed from the Repository (files in Akubra)
+     * @param deleteRelationsWithThisAsTarget if true, also relations with this object as a target will be removed from Resource index.
+     *                                         Which might not be desirable, for example if you want to replace the object with newer version, but keep relations pointing at it.
+     *
+     * @throws
+     */
+    void deleteObject(String pid, boolean deleteDataOfManagedDatastreams, boolean deleteRelationsWithThisAsTarget);
+
+    //-------------------- Datastream ---------------------------
+    // TODO add datastream 3x - inline xml, binary, redirect
+
+    /**
+     * @param pid
      * @param dsId
      * @return
      */
@@ -71,11 +108,16 @@ public interface RepositoryAccess {
      */
     ContentWrapper getDatastreamContent(String pid, String dsId);
 
+    // TODO delete datastream
+
     /**
      * @param pid
      * @return
      */
     RelsExtWrapper processDatastreamRelsExt(String pid);
+
+    // TODO add relation
+    // TODO delete relation
 
     /**
      * @param pid
@@ -83,6 +125,7 @@ public interface RepositoryAccess {
      */
     List<String> getDatastreamNames(String pid);
 
+    // ---------------- Misc ------------------------------------------------------
     /**
      * @param params
      * @param action
@@ -111,10 +154,6 @@ public interface RepositoryAccess {
     <T> T doWithWriteLock(String pid, LockOperation<T> operation);
 
 
-    // TODO update operace
-    //void ingestObject(org.dom4j.Document foxmlDoc, String pid);
-
-    //void deleteObject(String pid, boolean deleteDataOfManagedDatastreams);
 
     /*
     void updateInlineXmlDatastream(String pid, KnownDatastreams dsId, org.dom4j.Document streamDoc, String formatUri);
@@ -125,10 +164,6 @@ public interface RepositoryAccess {
 
     public void deleteDatastream(String pid, KnownDatastreams dsId);
 
-
-    void ingestObject(org.dom4j.Document foxmlDoc, String pid);
-
-    void deleteObject(String pid, boolean deleteDataOfManagedDatastreams);
 
 */
 
