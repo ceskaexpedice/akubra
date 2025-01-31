@@ -1,6 +1,5 @@
 package org.ceskaexpedice.hazelcast;
 
-import ca.thoughtwire.lock.DistributedLockService;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.config.XmlClientConfigBuilder;
@@ -8,7 +7,6 @@ import com.hazelcast.config.GroupConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
-import org.ceskaexpedice.akubra.core.RepositoryConfiguration;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,7 +17,7 @@ public class ClientNode {
     private static final ILogger LOGGER = Logger.getLogger(ClientNode.class);
     private static HazelcastInstance hzInstance;
 
-    public static synchronized void ensureHazelcastNode(RepositoryConfiguration configuration) {
+    public static synchronized void ensureHazelcastNode(HazelcastConfiguration configuration) {
         if (hzInstance != null) {
             return;
         }
@@ -27,7 +25,7 @@ public class ClientNode {
         hzInstance = HazelcastClient.newHazelcastClient(config);
     }
 
-    private static ClientConfig createHazelcastConfig(RepositoryConfiguration configuration) {
+    private static ClientConfig createHazelcastConfig(HazelcastConfiguration configuration) {
         ClientConfig config = null;
         File configFile = configuration.getHazelcastClientConfigFile() == null ? null : new File(configuration.getHazelcastClientConfigFile());
         if (configFile != null) {

@@ -1,5 +1,7 @@
 package org.ceskaexpedice.akubra.core;
 
+import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
+
 public class RepositoryConfiguration {
     private final String processingIndexHost;
     private final String objectStorePath;
@@ -7,10 +9,7 @@ public class RepositoryConfiguration {
     private final String datastreamStorePath;
     private final String datastreamStorePattern;
     private final int cacheTimeToLiveExpiration;
-    private final String hazelcastConfigFile;
-    private final String hazelcastClientConfigFile;
-    private final String hazelcastInstance;
-    private final String hazelcastUser;
+    private final HazelcastConfiguration hazelcastConfiguration;
 
     private RepositoryConfiguration(RepositoryConfiguration.Builder builder) {
         this.processingIndexHost = builder.processingIndexHost;
@@ -19,10 +18,7 @@ public class RepositoryConfiguration {
         this.datastreamStorePath = builder.datastreamStorePath;
         this.datastreamStorePattern = builder.datastreamStorePattern;
         this.cacheTimeToLiveExpiration = builder.cacheTimeToLiveExpiration;
-        this.hazelcastConfigFile = builder.hazelcastConfigFile;
-        this.hazelcastClientConfigFile = builder.hazelcastClientConfigFile;
-        this.hazelcastInstance = builder.hazelcastInstance;
-        this.hazelcastUser = builder.hazelcastUser;
+        this.hazelcastConfiguration = builder.hazelcastConfiguration;
     }
 
     public String getProcessingIndexHost() {
@@ -49,20 +45,8 @@ public class RepositoryConfiguration {
         return cacheTimeToLiveExpiration;
     }
 
-    public String getHazelcastInstance() {
-        return hazelcastInstance;
-    }
-
-    public String getHazelcastUser() {
-        return hazelcastUser;
-    }
-
-    public String getHazelcastConfigFile() {
-        return hazelcastConfigFile;
-    }
-
-    public String getHazelcastClientConfigFile() {
-        return hazelcastClientConfigFile;
+    public HazelcastConfiguration getHazelcastConfiguration() {
+        return hazelcastConfiguration;
     }
 
     public static class Builder {
@@ -72,10 +56,7 @@ public class RepositoryConfiguration {
         private String datastreamStorePath;
         private String datastreamStorePattern;
         private int cacheTimeToLiveExpiration;
-        private String hazelcastConfigFile;
-        private String hazelcastClientConfigFile;
-        private String hazelcastInstance;
-        private String hazelcastUser;
+        private HazelcastConfiguration hazelcastConfiguration;
 
         public RepositoryConfiguration.Builder processingIndexHost(String processingIndexHost) {
             this.processingIndexHost = processingIndexHost;
@@ -107,23 +88,8 @@ public class RepositoryConfiguration {
             return this;
         }
 
-        public RepositoryConfiguration.Builder hazelcastConfigFile(String hazelcastConfigFile) {
-            this.hazelcastConfigFile = hazelcastConfigFile;
-            return this;
-        }
-
-        public RepositoryConfiguration.Builder hazelcastClientConfigFile(String hazelcastClientConfigFile) {
-            this.hazelcastClientConfigFile = hazelcastClientConfigFile;
-            return this;
-        }
-
-        public RepositoryConfiguration.Builder hazelcastInstance(String hazelcastInstance) {
-            this.hazelcastInstance = hazelcastInstance;
-            return this;
-        }
-
-        public RepositoryConfiguration.Builder hazelcastUser(String hazelcastUser) {
-            this.hazelcastUser = hazelcastUser;
+        public RepositoryConfiguration.Builder hazelcastConfiguration(HazelcastConfiguration hazelcastConfiguration) {
+            this.hazelcastConfiguration = hazelcastConfiguration;
             return this;
         }
 

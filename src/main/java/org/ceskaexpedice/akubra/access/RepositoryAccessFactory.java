@@ -31,7 +31,7 @@ public final class RepositoryAccessFactory {
   }
 
   public static RepositoryAccess createRepositoryAccess(RepositoryConfiguration configuration) {
-    Repository coreRepository = RepositoryFactory.createCoreRepository(configuration);
+    Repository coreRepository = RepositoryFactory.createRepository(configuration);
     RepositoryAccess repositoryAccess = new RepositoryAccessImpl(coreRepository);
     return repositoryAccess;
   }

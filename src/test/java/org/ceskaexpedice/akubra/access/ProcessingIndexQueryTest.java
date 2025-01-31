@@ -1,83 +1,51 @@
 package org.ceskaexpedice.akubra.access;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.ceskaexpedice.akubra.AbstractFunctionalTest;
+import org.ceskaexpedice.akubra.TestsUtilities;
 import org.ceskaexpedice.akubra.core.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
+import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
 import org.ceskaexpedice.hazelcast.ServerNode;
 import org.junit.jupiter.api.*;
 
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.function.Consumer;
 
+import static org.ceskaexpedice.akubra.TestsUtilities.debugPrint;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * ProcessingIndexQueryTest
  * !!! It requires Solr instance running with processing index containing appropriate testing data to pass tests
  */
-public class ProcessingIndexQueryTest extends AbstractFunctionalTest {
+public class ProcessingIndexQueryTest {
 
     private static RepositoryAccess repositoryAccess;
+    private static Properties testsProperties;
 
-    private final boolean debugPrint = true;
-
-    /* TODO
     @BeforeAll
     static void beforeAll() {
-        super.setUp();
-        URL resource = ProcessingIndexQueryTest.class.getClassLoader().getResource("data");
-        String testRepoPath = resource.getFile() + "/";
-        RepositoryConfiguration config = new RepositoryConfiguration.Builder()
-                .processingIndexHost(getProperty("processingIndexHost", null))
-                .objectStorePath(testRepoPath + "objectStore")
-                .objectStorePattern("##/##")
-                .datastreamStorePath(testRepoPath + "datastreamStore")
-                .datastreamStorePattern("##/##")
-                .cacheTimeToLiveExpiration(60)
-                .hazelcastInstance("akubrasync")
-                .hazelcastUser("dev")
-                .build();
-        ServerNode.ensureHazelcastNode(config);
+        testsProperties = TestsUtilities.loadProperties();
+        HazelcastConfiguration hazelcastConfig = TestsUtilities.createHazelcastConfig(testsProperties);
+        ServerNode.ensureHazelcastNode(hazelcastConfig);
+
+        RepositoryConfiguration config = TestsUtilities.createRepositoryConfig(testsProperties, hazelcastConfig);
         repositoryAccess = RepositoryAccessFactory.createRepositoryAccess(config);
     }
-
-     */
-
-    /* TODO
-    @AfterAll
-    static void afterAll() {
-        repositoryAccess.shutdown();
-        ServerNode.shutdown();
-    }
-
-     */
 
     @BeforeEach
     void beforeEach() {
-        super.setUp();
-        URL resource = ProcessingIndexQueryTest.class.getClassLoader().getResource("data");
-        String testRepoPath = resource.getFile() + "/";
-        RepositoryConfiguration config = new RepositoryConfiguration.Builder()
-                .processingIndexHost(getProperty("processingIndexHost", null))
-                .objectStorePath(testRepoPath + "objectStore")
-                .objectStorePattern("##/##")
-                .datastreamStorePath(testRepoPath + "datastreamStore")
-                .datastreamStorePattern("##/##")
-                .cacheTimeToLiveExpiration(60)
-                .hazelcastInstance("akubrasync")
-                .hazelcastUser("dev")
-                .build();
-        ServerNode.ensureHazelcastNode(config);
-        repositoryAccess = RepositoryAccessFactory.createRepositoryAccess(config);
+        TestsUtilities.checkFunctionalTestsIgnored(testsProperties);
     }
 
-    @AfterEach
-    void afterAll() {
-        repositoryAccess.shutdown();
+    @AfterAll
+    static void afterAll() {
+        if(repositoryAccess != null) {
+            repositoryAccess.shutdown();
+        }
         ServerNode.shutdown();
     }
 
@@ -100,7 +68,7 @@ public class ProcessingIndexQueryTest extends AbstractFunctionalTest {
                 assertNotNull(source);
                 Optional<Long> version = processingIndexItem.getFieldValueAs("_version_", Long.class);
                 assertNotNull(version.get());
-                debugPrint(source + "," + version.get());
+                debugPrint(source + "," + version.get(), testsProperties);
             }
         });
     }
@@ -108,12 +76,6 @@ public class ProcessingIndexQueryTest extends AbstractFunctionalTest {
     @Test
     void testIterate_cursor() {
         // TODO
-    }
-
-    private void debugPrint(String msg) {
-        if(debugPrint){
-            System.out.println(msg);
-        }
     }
 
 }

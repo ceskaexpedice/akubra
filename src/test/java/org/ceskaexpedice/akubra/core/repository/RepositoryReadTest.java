@@ -1,8 +1,12 @@
 package org.ceskaexpedice.akubra.core.repository;
 
+import org.ceskaexpedice.akubra.TestsUtilities;
+import org.ceskaexpedice.akubra.access.RepositoryAccessFactory;
+import org.ceskaexpedice.akubra.access.RepositoryAccessReadTest;
 import org.ceskaexpedice.akubra.core.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.RepositoryFactory;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
+import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
 import org.ceskaexpedice.hazelcast.ServerNode;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -10,45 +14,42 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 // TODO
 public class RepositoryReadTest {
 
-    private static Repository akubraRepository;
+    private static Repository repository;
+    private static Properties testsProperties;
 
     @BeforeAll
     static void beforeAll() {
-        RepositoryConfiguration config = new RepositoryConfiguration.Builder()
-                .processingIndexHost("http://localhost:8983/solr/processing")
-                .objectStorePath("c:\\Users\\petr\\.kramerius4\\data\\objectStore")
-                .objectStorePattern("##/##")
-                .datastreamStorePath("c:\\Users\\petr\\.kramerius4\\data\\datastreamStore")
-                .datastreamStorePattern("##/##")
-                .cacheTimeToLiveExpiration(60)
-                .hazelcastInstance("akubrasync")
-                .hazelcastUser("dev")
-                .build();
-        ServerNode.ensureHazelcastNode(config);
-        akubraRepository = RepositoryFactory.createCoreRepository(config);
+        testsProperties = TestsUtilities.loadProperties();
+        HazelcastConfiguration hazelcastConfig = TestsUtilities.createHazelcastConfig(testsProperties);
+        ServerNode.ensureHazelcastNode(hazelcastConfig);
+
+        RepositoryConfiguration config = TestsUtilities.createRepositoryConfig(testsProperties, hazelcastConfig);
+        repository = RepositoryFactory.createRepository(config);
     }
 
     @AfterAll
     static void afterAll() {
-        akubraRepository.shutdown();
+        repository.shutdown();
         ServerNode.shutdown();
     }
 
     @Test
     void testObjectExists() {
-        boolean objectExists = akubraRepository.objectExists("uuid:5035a48a-5e2e-486c-8127-2fa650842e46");
+        boolean objectExists = repository.objectExists("uuid:5035a48a-5e2e-486c-8127-2fa650842e46");
         assertTrue(objectExists);
     }
 
     @Test
     void testGetObject() {
-        RepositoryObject repositoryObject = akubraRepository.getObject("uuid:5035a48a-5e2e-486c-8127-2fa650842e46", true);
+        RepositoryObject repositoryObject = repository.getObject("uuid:5035a48a-5e2e-486c-8127-2fa650842e46", true);
         // TODO
         RepositoryDatastream dc = repositoryObject.getStream("DC");
         System.out.println(convertUsingBytes(dc.getLastVersionContent()));
@@ -57,7 +58,7 @@ public class RepositoryReadTest {
 
     @Test
     void testGetProcessingIndexFeeder() {
-        ProcessingIndexFeeder processingIndexFeeder = akubraRepository.getProcessingIndexFeeder();
+        ProcessingIndexFeeder processingIndexFeeder = repository.getProcessingIndexFeeder();
         assertNotNull(processingIndexFeeder);
     }
 

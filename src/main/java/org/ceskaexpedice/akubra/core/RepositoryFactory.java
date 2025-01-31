@@ -35,7 +35,7 @@ public final class RepositoryFactory {
     private RepositoryFactory() {
     }
 
-    public static Repository createCoreRepository(RepositoryConfiguration configuration) {
+    public static Repository createRepository(RepositoryConfiguration configuration) {
         ProcessingIndexFeeder processingIndexFeeder = new ProcessingIndexFeeder(createProcessingUpdateClient(configuration));
         AkubraDOManager akubraDOManager = new AkubraDOManager(createCacheManager(), configuration);
         return new RepositoryImpl(processingIndexFeeder, akubraDOManager);

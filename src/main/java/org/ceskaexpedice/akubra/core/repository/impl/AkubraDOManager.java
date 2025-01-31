@@ -63,7 +63,7 @@ public class AkubraDOManager {
             LOGGER.log(Level.SEVERE, "Cannot init JAXB", e);
             throw new RepositoryException(e);
         }
-        ClientNode.ensureHazelcastNode(configuration);
+        ClientNode.ensureHazelcastNode(configuration.getHazelcastConfiguration());
         lockService = DistributedLockService.newHazelcastLockService(ClientNode.getHzInstance());
         cacheInvalidator = ClientNode.getHzInstance().getTopic("cacheInvalidator");
         cacheInvalidator.addMessageListener(new MessageListener<String>() {

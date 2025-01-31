@@ -1,8 +1,10 @@
 package org.ceskaexpedice.akubra.access;
 
+import org.ceskaexpedice.akubra.TestsUtilities;
 import org.ceskaexpedice.akubra.core.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
+import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
 import org.ceskaexpedice.hazelcast.ServerNode;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.dom4j.Document;
@@ -16,6 +18,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,25 +27,15 @@ public class RepositoryAccessReadTest {
     private static final String pidTitlePage = "uuid:12993b4a-71b4-4f19-8953-0701243cc25d";
 
     private static RepositoryAccess repositoryAccess;
-
-    private final boolean debugPrint = true;
+    private static Properties testsProperties;
 
     @BeforeAll
     static void beforeAll() {
-        URL resource = RepositoryAccessReadTest.class.getClassLoader().getResource("data");
-        String testRepoPath = resource.getFile() + "/";
-        //String testRepoPath = "c:\\Users\\petr\\.kramerius4\\data\\";
-        RepositoryConfiguration config = new RepositoryConfiguration.Builder()
-                .processingIndexHost("http://notUsed")
-                .objectStorePath(testRepoPath + "objectStore")
-                .objectStorePattern("##/##")
-                .datastreamStorePath(testRepoPath + "datastreamStore")
-                .datastreamStorePattern("##/##")
-                .cacheTimeToLiveExpiration(60)
-                .hazelcastInstance("akubrasync")
-                .hazelcastUser("dev")
-                .build();
-        ServerNode.ensureHazelcastNode(config);
+        testsProperties = TestsUtilities.loadProperties();
+        HazelcastConfiguration hazelcastConfig = TestsUtilities.createHazelcastConfig(testsProperties);
+        ServerNode.ensureHazelcastNode(hazelcastConfig);
+
+        RepositoryConfiguration config = TestsUtilities.createRepositoryConfig(testsProperties, hazelcastConfig);
         repositoryAccess = RepositoryAccessFactory.createRepositoryAccess(config);
     }
 
@@ -64,10 +57,7 @@ public class RepositoryAccessReadTest {
         assertNotNull(resultWrapper);
         InputStream asStream = resultWrapper.asStream();
         assertNotNull(asStream);
-        if(debugPrint){
-            String testString = convertUsingBytes(asStream);
-            System.out.println(testString);
-        }
+        TestsUtilities.debugPrint(convertUsingBytes(asStream),testsProperties);
     }
 
     @Test
@@ -76,7 +66,7 @@ public class RepositoryAccessReadTest {
         assertNotNull(resultWrapper);
         Document asXmlDom4j = resultWrapper.asXmlDom4j();
         assertNotNull(asXmlDom4j);
-        debugPrint(asXmlDom4j.asXML());
+        TestsUtilities.debugPrint(asXmlDom4j.asXML(),testsProperties);
     }
 
     @Test
@@ -85,7 +75,7 @@ public class RepositoryAccessReadTest {
         assertNotNull(resultWrapper);
         org.w3c.dom.Document asXmlDom = resultWrapper.asXmlDom();
         assertNotNull(asXmlDom);
-        debugPrint(DomUtils.toString(asXmlDom.getDocumentElement(), true));
+        TestsUtilities.debugPrint(DomUtils.toString(asXmlDom.getDocumentElement(), true),testsProperties);
     }
 
     @Test
@@ -94,7 +84,7 @@ public class RepositoryAccessReadTest {
         assertNotNull(resultWrapper);
         String asString = resultWrapper.asString();
         assertNotNull(asString);
-        debugPrint(asString);
+        TestsUtilities.debugPrint(asString,testsProperties);
     }
 
     @Test
@@ -103,10 +93,7 @@ public class RepositoryAccessReadTest {
         assertNotNull(resultWrapper);
         InputStream asStream = resultWrapper.asStream();
         assertNotNull(asStream);
-        if(debugPrint){
-            String testString = convertUsingBytes(asStream);
-            System.out.println(testString);
-        }
+        TestsUtilities.debugPrint(convertUsingBytes(asStream),testsProperties);
     }
 
     @Test
@@ -115,7 +102,7 @@ public class RepositoryAccessReadTest {
         assertNotNull(resultWrapper);
         Document asXmlDom4j = resultWrapper.asXmlDom4j();
         assertNotNull(asXmlDom4j);
-        debugPrint(asXmlDom4j.asXML());
+        TestsUtilities.debugPrint(asXmlDom4j.asXML(),testsProperties);
     }
 
     @Test
@@ -124,7 +111,7 @@ public class RepositoryAccessReadTest {
         assertNotNull(resultWrapper);
         org.w3c.dom.Document asXmlDom = resultWrapper.asXmlDom();
         assertNotNull(asXmlDom);
-        debugPrint(DomUtils.toString(asXmlDom.getDocumentElement(), true));
+        TestsUtilities.debugPrint(DomUtils.toString(asXmlDom.getDocumentElement(), true),testsProperties);
     }
 
     @Test
@@ -133,7 +120,7 @@ public class RepositoryAccessReadTest {
         assertNotNull(resultWrapper);
         String asString = resultWrapper.asString();
         assertNotNull(asString);
-        debugPrint(asString);
+        TestsUtilities.debugPrint(asString,testsProperties);
     }
 
     @Test
@@ -181,7 +168,7 @@ public class RepositoryAccessReadTest {
     void testGetDatastreamContent_asXmlDom() {
         org.w3c.dom.Document xmlDom = repositoryAccess.getDatastreamContent(pidTitlePage, "DC").asXmlDom();
         assertNotNull(xmlDom);
-        debugPrint(DomUtils.toString(xmlDom.getDocumentElement(), true));
+        TestsUtilities.debugPrint(DomUtils.toString(xmlDom.getDocumentElement(), true),testsProperties);
     }
 
     @Test
@@ -195,21 +182,21 @@ public class RepositoryAccessReadTest {
     void testGetDatastreamContent_asXmlDom4j() {
         Document xmlDom4j = repositoryAccess.getDatastreamContent(pidTitlePage, "DC").asXmlDom4j();
         assertNotNull(xmlDom4j);
-        debugPrint(xmlDom4j.asXML());
+        TestsUtilities.debugPrint(xmlDom4j.asXML(),testsProperties);
     }
 
     @Test
     void testGetDatastreamContentBinary_asString() {
         String imgThumb = repositoryAccess.getDatastreamContent(pidTitlePage, "IMG_THUMB").asString();
         assertNotNull(imgThumb);
-        debugPrint(imgThumb);
+        TestsUtilities.debugPrint(imgThumb,testsProperties);
     }
 
     @Test
     void testGetDatastreamContent_asString() {
         String dc = repositoryAccess.getDatastreamContent(pidTitlePage, "DC").asString();
         assertNotNull(dc);
-        debugPrint(dc);
+        TestsUtilities.debugPrint(dc,testsProperties);
     }
 
     @Test
@@ -226,7 +213,7 @@ public class RepositoryAccessReadTest {
     void testGetDatastreamNames() {
         List<String> datastreamNames = repositoryAccess.getDatastreamNames(pidTitlePage);
         assertEquals(9, datastreamNames.size());
-        debugPrint(String.join(", ", datastreamNames));
+        TestsUtilities.debugPrint(String.join(", ", datastreamNames),testsProperties);
     }
 
     @Test
@@ -254,9 +241,4 @@ public class RepositoryAccessReadTest {
         }
     }
 
-    private void debugPrint(String msg) {
-        if(debugPrint){
-            System.out.println(msg);
-        }
-    }
 }

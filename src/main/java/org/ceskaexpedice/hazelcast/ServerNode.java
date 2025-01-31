@@ -7,7 +7,6 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
-import org.ceskaexpedice.akubra.core.RepositoryConfiguration;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,7 +17,7 @@ public class ServerNode {
     private static final ILogger LOGGER = Logger.getLogger(ServerNode.class);
     private static HazelcastInstance hzInstance;
 
-    public static synchronized void ensureHazelcastNode(RepositoryConfiguration configuration) {
+    public static synchronized void ensureHazelcastNode(HazelcastConfiguration configuration) {
         if (hzInstance != null) {
             return;
         }
@@ -26,7 +25,7 @@ public class ServerNode {
         hzInstance = Hazelcast.getOrCreateHazelcastInstance(config);
     }
 
-    private static Config createHazelcastConfig(RepositoryConfiguration configuration) {
+    private static Config createHazelcastConfig(HazelcastConfiguration configuration) {
         Config config = null;
         File configFile = configuration.getHazelcastConfigFile() == null ? null : new File(configuration.getHazelcastConfigFile());
         if (configFile != null) {
