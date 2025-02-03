@@ -84,6 +84,8 @@ public interface RepositoryAccess {
     //-------------------- Datastream ---------------------------
     // TODO add datastream 3x - inline xml, binary, redirect
 
+    DigitalObject unmarshallStream(InputStream inputStream);
+
     /**
      * @param pid
      * @param dsId

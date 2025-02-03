@@ -165,6 +165,11 @@ public class RepositoryImpl implements Repository {
     }
 
     @Override
+    public DigitalObject unmarshallStream(InputStream inputStream) {
+        return manager.unmarshallStream(inputStream);
+    }
+
+    @Override
     public Lock getReadLock(String pid) {
         Lock readLock = AkubraDOManager.getReadLock(pid);
         return readLock;

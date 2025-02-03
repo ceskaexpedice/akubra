@@ -284,7 +284,20 @@ public class AkubraDOManager {
             return new ByteArrayInputStream(stringWriter.toString().getBytes("UTF-8"));
         } catch (Exception e) {
             LOGGER.severe("Could not marshall object: " + e);
-            throw new RuntimeException(e);
+            throw new RepositoryException(e);
+        }
+    }
+
+    DigitalObject unmarshallStream(InputStream inputStream) {
+        try {
+            Object obj;
+            synchronized (unmarshaller) {
+                obj = unmarshaller.unmarshal(inputStream);
+            }
+            return (DigitalObject) obj;
+        } catch (Exception e) {
+            LOGGER.severe("Could not unmarshall object: " + e);
+            throw new RepositoryException(e);
         }
     }
 

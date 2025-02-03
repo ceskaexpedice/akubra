@@ -111,6 +111,8 @@ public interface Repository {
      */
     InputStream marshallObject(DigitalObject obj);
 
+    DigitalObject unmarshallStream(InputStream inputStream);
+
     /**
      * @param pid
      * @return

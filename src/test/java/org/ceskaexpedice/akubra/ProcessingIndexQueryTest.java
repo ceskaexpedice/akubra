@@ -1,21 +1,19 @@
-package org.ceskaexpedice.akubra.access;
+package org.ceskaexpedice.akubra;
 
-import org.ceskaexpedice.akubra.RepositoryAccess;
-import org.ceskaexpedice.akubra.RepositoryAccessFactory;
-import org.ceskaexpedice.akubra.TestsUtilities;
-import org.ceskaexpedice.akubra.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
+import org.ceskaexpedice.akubra.testutils.TestUtilities;
 import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
 import org.ceskaexpedice.hazelcast.ServerNode;
 import org.junit.jupiter.api.*;
 
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.function.Consumer;
 
-import static org.ceskaexpedice.akubra.TestsUtilities.debugPrint;
+import static org.ceskaexpedice.akubra.testutils.TestUtilities.debugPrint;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -29,17 +27,18 @@ public class ProcessingIndexQueryTest {
 
     @BeforeAll
     static void beforeAll() {
-        testsProperties = TestsUtilities.loadProperties();
-        HazelcastConfiguration hazelcastConfig = TestsUtilities.createHazelcastConfig(testsProperties);
+        testsProperties = TestUtilities.loadProperties();
+        HazelcastConfiguration hazelcastConfig = TestUtilities.createHazelcastConfig(testsProperties);
         ServerNode.ensureHazelcastNode(hazelcastConfig);
 
-        RepositoryConfiguration config = TestsUtilities.createRepositoryConfig(testsProperties, hazelcastConfig);
+        URL resource = TestUtilities.class.getClassLoader().getResource("data");
+        RepositoryConfiguration config = TestUtilities.createRepositoryConfig(resource.getFile(), testsProperties, hazelcastConfig);
         repositoryAccess = RepositoryAccessFactory.createRepositoryAccess(config);
     }
 
     @BeforeEach
     void beforeEach() {
-        TestsUtilities.checkFunctionalTestsIgnored(testsProperties);
+        TestUtilities.checkFunctionalTestsIgnored(testsProperties);
     }
 
     @AfterAll

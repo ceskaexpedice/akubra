@@ -5,7 +5,6 @@ import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
 import org.ceskaexpedice.akubra.core.repository.*;
 import org.ceskaexpedice.jaxbmodel.DigitalObject;
-import org.dom4j.Document;
 
 import java.io.InputStream;
 import java.util.List;
@@ -27,7 +26,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
 
     @Override
     public void ingest(DigitalObject digitalObject) {
-
+        repository.ingestObject(digitalObject);
     }
 
     @Override
@@ -69,6 +68,11 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     @Override
     public InputStream marshallObject(DigitalObject obj) {
         return repository.marshallObject(obj);
+    }
+
+    @Override
+    public DigitalObject unmarshallStream(InputStream inputStream) {
+        return repository.unmarshallStream(inputStream);
     }
 
     @Override

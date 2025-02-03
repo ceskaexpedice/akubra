@@ -14,10 +14,12 @@
  * information or reproduction of this material is strictly forbidden unless
  * prior written permission is obtained from Accenture and/or its affiliates.
  */
-package org.ceskaexpedice.akubra;
+package org.ceskaexpedice.akubra.testutils;
 
+import org.ceskaexpedice.akubra.RepositoryConfiguration;
 import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
@@ -29,12 +31,12 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  *
  * @author ppodsednik
  */
-public final class TestsUtilities {
+public final class TestUtilities {
     private static final String PROPERTIES = "tests.properties";
     private static final String SKIP_FUNCTIONAL_TESTS_PROPERTY = "skipFunctionalTests";
     private static final String DEBUG_PRINT_PROPERTY = "debugPrint";
 
-    private TestsUtilities() {}
+    private TestUtilities() {}
 
     public static void checkFunctionalTestsIgnored(Properties props) {
         assumeTrue(!isIgnored(props), "Test ignored by the property: " + SKIP_FUNCTIONAL_TESTS_PROPERTY);
@@ -43,7 +45,7 @@ public final class TestsUtilities {
     public static Properties loadProperties() {
         Properties properties = new Properties();
         try {
-            properties.load(TestsUtilities.class.getClassLoader().getResourceAsStream(PROPERTIES));
+            properties.load(TestUtilities.class.getClassLoader().getResourceAsStream(PROPERTIES));
         } catch (IOException e) {
             System.out.println("Cannot find property file, will continue anyway:" + PROPERTIES);
         }
@@ -92,12 +94,11 @@ public final class TestsUtilities {
         return hazelcastConfig;
     }
 
-    public static RepositoryConfiguration createRepositoryConfig(Properties props, HazelcastConfiguration hazelcastConfig) {
-        URL resource = TestsUtilities.class.getClassLoader().getResource("data");
-        String testRepoPath = resource.getFile() + "/";
+    public static RepositoryConfiguration createRepositoryConfig(String repoDir, Properties props, HazelcastConfiguration hazelcastConfig) {
+        String testRepoPath = repoDir + "/";
         //String testRepoPath = "c:\\Users\\petr\\.kramerius4\\data\\";
         RepositoryConfiguration config = new RepositoryConfiguration.Builder()
-                .processingIndexHost(TestsUtilities.getProperty("processingIndexHost", null, props))
+                .processingIndexHost(TestUtilities.getProperty("processingIndexHost", null, props))
                 .objectStorePath(testRepoPath + "objectStore")
                 .objectStorePattern("##/##")
                 .datastreamStorePath(testRepoPath + "datastreamStore")

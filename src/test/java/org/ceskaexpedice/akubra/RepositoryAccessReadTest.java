@@ -1,10 +1,8 @@
-package org.ceskaexpedice.akubra.access;
+package org.ceskaexpedice.akubra;
 
-import org.ceskaexpedice.akubra.*;
-import org.ceskaexpedice.akubra.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
-import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.utils.Dom4jUtils;
+import org.ceskaexpedice.akubra.testutils.TestUtilities;
 import org.ceskaexpedice.akubra.utils.Utils;
 import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
 import org.ceskaexpedice.hazelcast.ServerNode;
@@ -17,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,11 +32,12 @@ public class RepositoryAccessReadTest {
 
     @BeforeAll
     static void beforeAll() {
-        testsProperties = TestsUtilities.loadProperties();
-        HazelcastConfiguration hazelcastConfig = TestsUtilities.createHazelcastConfig(testsProperties);
+        testsProperties = TestUtilities.loadProperties();
+        HazelcastConfiguration hazelcastConfig = TestUtilities.createHazelcastConfig(testsProperties);
         ServerNode.ensureHazelcastNode(hazelcastConfig);
 
-        RepositoryConfiguration config = TestsUtilities.createRepositoryConfig(testsProperties, hazelcastConfig);
+        URL resource = TestUtilities.class.getClassLoader().getResource("data");
+        RepositoryConfiguration config = TestUtilities.createRepositoryConfig(resource.getFile(), testsProperties, hazelcastConfig);
         repositoryAccess = RepositoryAccessFactory.createRepositoryAccess(config);
     }
 
@@ -59,7 +59,7 @@ public class RepositoryAccessReadTest {
         assertNotNull(digitalObject);
         InputStream objectStream = repositoryAccess.marshallObject(digitalObject);
         assertNotNull(objectStream);
-        TestsUtilities.debugPrint(convertUsingBytes(objectStream),testsProperties);
+     //   TestUtilities.debugPrint(convertUsingBytes(objectStream),testsProperties);
     }
 
     @Test
@@ -70,7 +70,7 @@ public class RepositoryAccessReadTest {
         assertNotNull(objectStream);
         Document asXmlDom4j =  Dom4jUtils.streamToDocument(objectStream, true);
         assertNotNull(asXmlDom4j);
-        TestsUtilities.debugPrint(asXmlDom4j.asXML(),testsProperties);
+        TestUtilities.debugPrint(asXmlDom4j.asXML(),testsProperties);
     }
 
     @Test
@@ -81,7 +81,7 @@ public class RepositoryAccessReadTest {
         assertNotNull(objectStream);
         org.w3c.dom.Document asXmlDom = DomUtils.streamToDocument(objectStream);
         assertNotNull(asXmlDom);
-        TestsUtilities.debugPrint(DomUtils.toString(asXmlDom.getDocumentElement(), true),testsProperties);
+        TestUtilities.debugPrint(DomUtils.toString(asXmlDom.getDocumentElement(), true),testsProperties);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class RepositoryAccessReadTest {
         assertNotNull(objectStream);
         String asString = Utils.streamToString(objectStream);;
         assertNotNull(asString);
-        TestsUtilities.debugPrint(asString,testsProperties);
+        TestUtilities.debugPrint(asString,testsProperties);
     }
 
     @Test
@@ -101,7 +101,7 @@ public class RepositoryAccessReadTest {
         assertNotNull(digitalObject);
         InputStream objectStream = repositoryAccess.marshallObject(digitalObject);
         assertNotNull(objectStream);
-        TestsUtilities.debugPrint(convertUsingBytes(objectStream),testsProperties);
+        TestUtilities.debugPrint(Utils.streamToString(objectStream),testsProperties);
     }
 
     @Test
@@ -142,21 +142,21 @@ public class RepositoryAccessReadTest {
     void testGetDatastreamContent_asXmlDom() {
         org.w3c.dom.Document xmlDom = DomUtils.streamToDocument(repositoryAccess.getDatastreamContent(pidTitlePage, "DC"));
         assertNotNull(xmlDom);
-        TestsUtilities.debugPrint(DomUtils.toString(xmlDom.getDocumentElement(), true),testsProperties);
+        TestUtilities.debugPrint(DomUtils.toString(xmlDom.getDocumentElement(), true),testsProperties);
     }
 
     @Test
     void testGetDatastreamContent_asXmlDom4j() {
         Document xmlDom4j = Dom4jUtils.streamToDocument(repositoryAccess.getDatastreamContent(pidTitlePage, "DC"), true);
         assertNotNull(xmlDom4j);
-        TestsUtilities.debugPrint(xmlDom4j.asXML(),testsProperties);
+        TestUtilities.debugPrint(xmlDom4j.asXML(),testsProperties);
     }
 
     @Test
     void testGetDatastreamContent_asString() {
         String dc = Utils.streamToString(repositoryAccess.getDatastreamContent(pidTitlePage, "DC"));
         assertNotNull(dc);
-        TestsUtilities.debugPrint(dc,testsProperties);
+        TestUtilities.debugPrint(dc,testsProperties);
     }
 
     @Test
@@ -173,35 +173,23 @@ public class RepositoryAccessReadTest {
     void testGetDatastreamNames() {
         List<String> datastreamNames = repositoryAccess.getDatastreamNames(pidTitlePage);
         assertEquals(9, datastreamNames.size());
-        TestsUtilities.debugPrint(String.join(", ", datastreamNames),testsProperties);
+        TestUtilities.debugPrint(String.join(", ", datastreamNames),testsProperties);
     }
 
     @Test
     void testLocks() {
         // TODO test actual locking with multiple threads
-        /*
         String pid = pidMonograph;
         String pid1 = pidTitlePage;
         Boolean result = repositoryAccess.doWithWriteLock(pid, () -> {
-            Document xmlDom4j = repositoryAccess.getObject(pid, FoxmlType.regular).asXmlDom4j();
+            repositoryAccess.getObject(pid, FoxmlType.regular);
             Boolean result1 = repositoryAccess.doWithReadLock(pid1, () -> {
-                Document xmlDom4j1 = repositoryAccess.getObject(pid1, FoxmlType.regular).asXmlDom4j();
+                repositoryAccess.getObject(pid1, FoxmlType.regular);
                 return true;
             });
             return result1;
         });
         assertTrue(result);
-
-         */
-    }
-
-    private String convertUsingBytes(InputStream inputStream) {
-        try {
-            byte[] bytes = inputStream.readAllBytes();
-            return new String(bytes, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

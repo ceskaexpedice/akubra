@@ -1,6 +1,6 @@
 package org.ceskaexpedice.akubra.core.repository;
 
-import org.ceskaexpedice.akubra.TestsUtilities;
+import org.ceskaexpedice.akubra.testutils.TestUtilities;
 import org.ceskaexpedice.akubra.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.RepositoryFactory;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,11 +25,12 @@ public class RepositoryReadTest {
 
     @BeforeAll
     static void beforeAll() {
-        testsProperties = TestsUtilities.loadProperties();
-        HazelcastConfiguration hazelcastConfig = TestsUtilities.createHazelcastConfig(testsProperties);
+        testsProperties = TestUtilities.loadProperties();
+        HazelcastConfiguration hazelcastConfig = TestUtilities.createHazelcastConfig(testsProperties);
         ServerNode.ensureHazelcastNode(hazelcastConfig);
 
-        RepositoryConfiguration config = TestsUtilities.createRepositoryConfig(testsProperties, hazelcastConfig);
+        URL resource = TestUtilities.class.getClassLoader().getResource("data");
+        RepositoryConfiguration config = TestUtilities.createRepositoryConfig(resource.getFile(), testsProperties, hazelcastConfig);
         repository = RepositoryFactory.createRepository(config);
     }
 
