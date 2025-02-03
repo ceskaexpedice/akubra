@@ -14,14 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.access;
+package org.ceskaexpedice.akubra;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
 import org.ceskaexpedice.jaxbmodel.DigitalObject;
 import org.dom4j.Document;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -34,15 +34,6 @@ import java.util.function.Consumer;
 public interface RepositoryAccess {
 
     //---------------- Object -------------------------------
-    /**
-     * @param foxmlDoc
-     */
-    void ingest(Document foxmlDoc);
-
-    /**
-     * @param foxmlDoc
-     */
-    void ingest(org.w3c.dom.Document foxmlDoc);
 
     /**
      * @param digitalObject
@@ -60,7 +51,7 @@ public interface RepositoryAccess {
      * @param foxmlType
      * @return
      */
-    ContentWrapper getObject(String pid, FoxmlType foxmlType);
+    DigitalObject getObject(String pid, FoxmlType foxmlType);
 
     /**
      * @param pid
@@ -84,6 +75,12 @@ public interface RepositoryAccess {
      */
     void deleteObject(String pid, boolean deleteDataOfManagedDatastreams, boolean deleteRelationsWithThisAsTarget);
 
+    /**
+     * @param obj
+     * @return
+     */
+    InputStream marshallObject(DigitalObject obj);
+
     //-------------------- Datastream ---------------------------
     // TODO add datastream 3x - inline xml, binary, redirect
 
@@ -106,7 +103,7 @@ public interface RepositoryAccess {
      * @param dsId
      * @return
      */
-    ContentWrapper getDatastreamContent(String pid, String dsId);
+    InputStream getDatastreamContent(String pid, String dsId);
 
     // TODO delete datastream
 

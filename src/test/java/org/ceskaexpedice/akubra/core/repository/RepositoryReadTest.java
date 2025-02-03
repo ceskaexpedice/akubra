@@ -1,9 +1,7 @@
 package org.ceskaexpedice.akubra.core.repository;
 
 import org.ceskaexpedice.akubra.TestsUtilities;
-import org.ceskaexpedice.akubra.access.RepositoryAccessFactory;
-import org.ceskaexpedice.akubra.access.RepositoryAccessReadTest;
-import org.ceskaexpedice.akubra.core.RepositoryConfiguration;
+import org.ceskaexpedice.akubra.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.RepositoryFactory;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
 import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
@@ -14,7 +12,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;

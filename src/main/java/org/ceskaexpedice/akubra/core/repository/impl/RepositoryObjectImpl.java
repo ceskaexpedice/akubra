@@ -233,7 +233,7 @@ class RepositoryObjectImpl implements RepositoryObject {
     public void relsExtAddRelation(String relation, String namespace, String targetRelation) {
         try {
             RepositoryDatastream stream = this.getStream(KnownDatastreams.RELS_EXT.toString());
-            Document document = DomUtils.parseDocument(stream.getLastVersionContent(), true);
+            Document document = DomUtils.streamToDocument(stream.getLastVersionContent(), true);
             Element rdfDesc = DomUtils.findElement(document.getDocumentElement(), RDF_DESCRIPTION_ELEMENT, RepositoryNamespaces.RDF_NAMESPACE_URI);
             Element subElm = document.createElementNS(namespace, relation);
             subElm.setAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "rdf:resource", targetRelation);
@@ -248,7 +248,7 @@ class RepositoryObjectImpl implements RepositoryObject {
     public void relsExtAddLiteral(String relation, String namespace, String value) {
         try {
             RepositoryDatastream stream = this.getStream(KnownDatastreams.RELS_EXT.toString());
-            Document document = DomUtils.parseDocument(stream.getLastVersionContent(), true);
+            Document document = DomUtils.streamToDocument(stream.getLastVersionContent(), true);
             Element rdfDesc = DomUtils.findElement(document.getDocumentElement(), RDF_DESCRIPTION_ELEMENT, RepositoryNamespaces.RDF_NAMESPACE_URI);
             Element subElm = document.createElementNS(namespace, relation);
             subElm.setTextContent(value);
@@ -263,7 +263,7 @@ class RepositoryObjectImpl implements RepositoryObject {
     public void relsExtRemoveLiteral(String relation, String namespace, String value) {
         try {
             RepositoryDatastream stream = this.getStream(KnownDatastreams.RELS_EXT.toString());
-            Document document = DomUtils.parseDocument(stream.getLastVersionContent(), true);
+            Document document = DomUtils.streamToDocument(stream.getLastVersionContent(), true);
 
             Element rdfDesc = DomUtils.findElement(document.getDocumentElement(), RDF_DESCRIPTION_ELEMENT, RepositoryNamespaces.RDF_NAMESPACE_URI);
 
@@ -295,7 +295,7 @@ class RepositoryObjectImpl implements RepositoryObject {
         try {
             final String targetPID = targetRelation.startsWith(PIDParser.INFO_FEDORA_PREFIX) ? targetRelation : PIDParser.INFO_FEDORA_PREFIX + targetRelation;
             RepositoryDatastream stream = this.getStream(KnownDatastreams.RELS_EXT.toString());
-            Document document = DomUtils.parseDocument(stream.getLastVersionContent(), true);
+            Document document = DomUtils.streamToDocument(stream.getLastVersionContent(), true);
             Element relationElement = DomUtils.findElement(document.getDocumentElement(), (element) -> {
                 String elmNamespace = element.getNamespaceURI();
                 String elmLocalname = element.getLocalName();
@@ -317,7 +317,7 @@ class RepositoryObjectImpl implements RepositoryObject {
     public void relsExtRemoveRelationsByNameAndNamespace(String relation, String namespace) {
         try {
             RepositoryDatastream stream = this.getStream(KnownDatastreams.RELS_EXT.toString());
-            Document document = DomUtils.parseDocument(stream.getLastVersionContent(), true);
+            Document document = DomUtils.streamToDocument(stream.getLastVersionContent(), true);
             List<Element> relationElements = DomUtils.getElementsRecursive(document.getDocumentElement(), (element) -> {
                 String elmNamespace = element.getNamespaceURI();
                 String elmLocalname = element.getLocalName();
@@ -340,7 +340,7 @@ class RepositoryObjectImpl implements RepositoryObject {
     public void relsExtRemoveRelationsByNamespace(String namespace) {
         try {
             RepositoryDatastream stream = this.getStream(KnownDatastreams.RELS_EXT.toString());
-            Document document = DomUtils.parseDocument(stream.getLastVersionContent(), true);
+            Document document = DomUtils.streamToDocument(stream.getLastVersionContent(), true);
             List<Element> relationElements = DomUtils.getElementsRecursive(document.getDocumentElement(), (element) -> {
                 String elmNamespace = element.getNamespaceURI();
                 return (elmNamespace.equals(namespace));
@@ -373,7 +373,7 @@ class RepositoryObjectImpl implements RepositoryObject {
     @Override
     public List<Triple<String, String, String>> relsExtGetRelations(String namespace) {
         try {
-            Document metadata = DomUtils.parseDocument(getStream(KnownDatastreams.RELS_EXT.toString()).getLastVersionContent(), true);
+            Document metadata = DomUtils.streamToDocument(getStream(KnownDatastreams.RELS_EXT.toString()).getLastVersionContent(), true);
             List<Triple<String, String, String>> retvals = DomUtils.getElementsRecursive(metadata.getDocumentElement(), (element) -> {
                 String elmNamespace = element.getNamespaceURI();
                 if (namespace != null) {
@@ -400,7 +400,7 @@ class RepositoryObjectImpl implements RepositoryObject {
     @Override
     public List<Triple<String, String, String>> relsExtGetLiterals(String namespace) {
         try {
-            Document metadata = DomUtils.parseDocument(getStream(KnownDatastreams.RELS_EXT.toString()).getLastVersionContent(), true);
+            Document metadata = DomUtils.streamToDocument(getStream(KnownDatastreams.RELS_EXT.toString()).getLastVersionContent(), true);
 
             List<Triple<String, String, String>> retvals = DomUtils.getElementsRecursive(metadata.getDocumentElement(), (element) -> {
                 String elmNamespace = element.getNamespaceURI();
@@ -432,7 +432,7 @@ class RepositoryObjectImpl implements RepositoryObject {
         }
         Document document;
         try {
-            document = DomUtils.parseDocument(stream.getLastVersionContent(), true);
+            document = DomUtils.streamToDocument(stream.getLastVersionContent(), true);
         } catch (Exception e) {
             throw new RepositoryException(e);
         }
@@ -454,7 +454,7 @@ class RepositoryObjectImpl implements RepositoryObject {
     @Override
     public boolean relsExtLiteralExists(String relation, String namespace, String value) {
         try {
-            Document metadata = DomUtils.parseDocument(getStream(KnownDatastreams.RELS_EXT.toString()).getLastVersionContent(), true);
+            Document metadata = DomUtils.streamToDocument(getStream(KnownDatastreams.RELS_EXT.toString()).getLastVersionContent(), true);
             Element foundElement = DomUtils.findElement(metadata.getDocumentElement(), (element) -> {
                 String elmNamespace = element.getNamespaceURI();
                 String elmName = element.getLocalName();
@@ -473,7 +473,7 @@ class RepositoryObjectImpl implements RepositoryObject {
     @Override
     public boolean relsExtRelationsExists(String relation, String namespace) {
         try {
-            Document metadata = DomUtils.parseDocument(this.getStream(KnownDatastreams.RELS_EXT.toString()).getLastVersionContent(), true);
+            Document metadata = DomUtils.streamToDocument(this.getStream(KnownDatastreams.RELS_EXT.toString()).getLastVersionContent(), true);
             Element foundElement = DomUtils.findElement(metadata.getDocumentElement(), (element) -> {
                 String elmNamespace = element.getNamespaceURI();
                 String elmName = element.getLocalName();

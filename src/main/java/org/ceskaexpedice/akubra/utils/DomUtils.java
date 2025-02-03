@@ -45,7 +45,7 @@ public class DomUtils {
      * @throws SAXException
      * @throws IOException
      */
-    public static Document parseDocument(Reader reader) throws ParserConfigurationException, SAXException, IOException {
+    public static Document streamToDocument(Reader reader) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory newInstance = DocumentBuilderFactory.newInstance();
         LOGGER.log(Level.FINE, "builder factory instance :" + newInstance.getClass().getResource(newInstance.getClass().getSimpleName() + ".class"));
         DocumentBuilder builder = newInstance.newDocumentBuilder();
@@ -62,7 +62,7 @@ public class DomUtils {
      * @throws SAXException
      * @throws IOException
      */
-    public static Document parseDocument(Reader reader, boolean namespaceaware) throws ParserConfigurationException, SAXException, IOException {
+    public static Document streamToDocument(Reader reader, boolean namespaceaware) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         LOGGER.log(Level.FINE, "builder factory instance :" + factory.getClass().getResource(factory.getClass().getSimpleName() + ".class"));
         factory.setNamespaceAware(namespaceaware);
@@ -79,7 +79,7 @@ public class DomUtils {
      * @throws SAXException
      * @throws IOException
      */
-    public static Document parseDocument(InputStream is) {
+    public static Document streamToDocument(InputStream is) {
         try {
             DocumentBuilderFactory newInstance = DocumentBuilderFactory.newInstance();
             LOGGER.log(Level.FINE, "builder factory instance :" + newInstance.getClass().getResource(newInstance.getClass().getSimpleName() + ".class"));
@@ -100,7 +100,7 @@ public class DomUtils {
      * @throws SAXException
      * @throws IOException
      */
-    public static Document parseDocument(InputStream is, boolean namespaceaware) {
+    public static Document streamToDocument(InputStream is, boolean namespaceaware) {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             LOGGER.log(Level.FINE, "builder factory instance :" + factory.getClass().getResource(factory.getClass().getSimpleName() + ".class"));

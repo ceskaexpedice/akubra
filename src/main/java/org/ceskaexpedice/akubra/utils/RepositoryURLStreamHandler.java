@@ -1,6 +1,6 @@
 package org.ceskaexpedice.akubra.utils;
 
-import org.ceskaexpedice.akubra.access.RepositoryAccess;
+import org.ceskaexpedice.akubra.RepositoryAccess;
 
 import java.io.IOException;
 import java.net.Proxy;

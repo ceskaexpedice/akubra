@@ -234,7 +234,7 @@ public class Dom4jUtils {
      * @return Document or null (when in is null)
      * @throws IOException
      */
-    public static Document inputstreamToDocument(InputStream in, boolean nsAware) {
+    public static Document streamToDocument(InputStream in, boolean nsAware) {
         try {
             if (in == null) {
                 return null;

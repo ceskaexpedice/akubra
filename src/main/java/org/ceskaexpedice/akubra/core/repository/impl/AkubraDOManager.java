@@ -2,7 +2,7 @@ package org.ceskaexpedice.akubra.core.repository.impl;
 
 import ca.thoughtwire.lock.DistributedLockService;
 import com.hazelcast.core.*;
-import org.ceskaexpedice.akubra.core.RepositoryConfiguration;
+import org.ceskaexpedice.akubra.RepositoryConfiguration;
 import org.akubraproject.BlobStore;
 import org.akubraproject.fs.FSBlobStore;
 import org.akubraproject.map.IdMapper;

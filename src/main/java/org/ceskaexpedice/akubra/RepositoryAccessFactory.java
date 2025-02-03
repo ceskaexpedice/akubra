@@ -14,10 +14,9 @@
  * information or reproduction of this material is strictly forbidden unless
  * prior written permission is obtained from Accenture and/or its affiliates.
  */
-package org.ceskaexpedice.akubra.access;
+package org.ceskaexpedice.akubra;
 
-import org.ceskaexpedice.akubra.access.impl.RepositoryAccessImpl;
-import org.ceskaexpedice.akubra.core.RepositoryConfiguration;
+import org.ceskaexpedice.akubra.impl.RepositoryAccessImpl;
 import org.ceskaexpedice.akubra.core.RepositoryFactory;
 import org.ceskaexpedice.akubra.core.repository.Repository;
 

@@ -36,7 +36,7 @@ class RELSEXTSPARQLBuilderImpl implements RELSEXTSPARQLBuilder {
     public String sparqlProps(String relsExt, RELSEXTSPARQLBuilderListener listener) throws IOException, SAXException, ParserConfigurationException, RepositoryException {
         StringTemplateGroup strGroup = SPARQL_TEMPLATES();
 
-        Document document = DomUtils.parseDocument(new StringReader(relsExt), true);
+        Document document = DomUtils.streamToDocument(new StringReader(relsExt), true);
         Element description = DomUtils.findElement(document.getDocumentElement(), "Description", RepositoryNamespaces.RDF_NAMESPACE_URI);
         NodeList childNodes = description.getChildNodes();
 

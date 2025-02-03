@@ -1,4 +1,4 @@
-package org.ceskaexpedice.akubra.access;
+package org.ceskaexpedice.akubra;
 
 public class RelsExtRelation extends RelsExtItem{
     private String resource;

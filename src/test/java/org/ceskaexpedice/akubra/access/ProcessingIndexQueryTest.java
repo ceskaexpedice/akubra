@@ -1,14 +1,15 @@
 package org.ceskaexpedice.akubra.access;
 
+import org.ceskaexpedice.akubra.RepositoryAccess;
+import org.ceskaexpedice.akubra.RepositoryAccessFactory;
 import org.ceskaexpedice.akubra.TestsUtilities;
-import org.ceskaexpedice.akubra.core.RepositoryConfiguration;
+import org.ceskaexpedice.akubra.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
 import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
 import org.ceskaexpedice.hazelcast.ServerNode;
 import org.junit.jupiter.api.*;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;

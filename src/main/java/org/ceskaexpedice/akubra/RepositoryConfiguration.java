@@ -1,4 +1,4 @@
-package org.ceskaexpedice.akubra.core;
+package org.ceskaexpedice.akubra;
 
 import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
 

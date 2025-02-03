@@ -16,8 +16,6 @@
  */
 package org.ceskaexpedice.akubra;
 
-import org.ceskaexpedice.akubra.access.RepositoryAccessReadTest;
-import org.ceskaexpedice.akubra.core.RepositoryConfiguration;
 import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
 
 import java.io.IOException;

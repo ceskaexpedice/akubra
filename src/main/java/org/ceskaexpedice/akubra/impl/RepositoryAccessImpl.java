@@ -1,7 +1,6 @@
-package org.ceskaexpedice.akubra.access.impl;
+package org.ceskaexpedice.akubra.impl;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.ceskaexpedice.akubra.access.*;
+import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
 import org.ceskaexpedice.akubra.core.repository.*;
@@ -25,15 +24,6 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         this.repository = repository;
     }
 
-    @Override
-    public void ingest(Document foxmlDoc) {
-
-    }
-
-    @Override
-    public void ingest(org.w3c.dom.Document foxmlDoc) {
-
-    }
 
     @Override
     public void ingest(DigitalObject digitalObject) {
@@ -46,19 +36,15 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     }
 
     @Override
-    public ContentWrapper getObject(String pid, FoxmlType foxmlType) {
+    public DigitalObject getObject(String pid, FoxmlType foxmlType) {
         Lock readLock = repository.getReadLock(pid);
         try {
-            InputStream objectStream;
             RepositoryObject repositoryObject = repository.getObject(pid);
             if (foxmlType == FoxmlType.archive) {
                 DigitalObject digitalObject = repositoryObject.getDigitalObject();
                 repository.resolveArchivedDatastreams(digitalObject);
-                objectStream = this.repository.marshallObject(digitalObject);
-            } else {
-                objectStream = repositoryObject.getFoxml();
             }
-            return new RepositoryObjectWrapperImpl(objectStream);
+            return repositoryObject.getDigitalObject();
         } finally {
             readLock.unlock();
         }
@@ -81,6 +67,11 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     }
 
     @Override
+    public InputStream marshallObject(DigitalObject obj) {
+        return repository.marshallObject(obj);
+    }
+
+    @Override
     public boolean datastreamExists(String pid, String dsId) {
         RepositoryObject repositoryObject = repository.getObject(pid);
         return repositoryObject.streamExists(dsId);
@@ -99,11 +90,11 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     }
 
     @Override
-    public ContentWrapper getDatastreamContent(String pid, String dsId) {
+    public InputStream getDatastreamContent(String pid, String dsId) {
         Lock readLock = repository.getReadLock(pid);
         try {
             InputStream lastVersionContent = repository.getObject(pid).getStream(dsId).getLastVersionContent();
-            return new DatastreamContentWrapperImpl(lastVersionContent);
+            return lastVersionContent;
         } finally {
             readLock.unlock();
         }
@@ -164,7 +155,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     }
 
     @Override
-    public void iterateProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action){
+    public void iterateProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action) {
         repository.getProcessingIndexFeeder().iterate(params, action);
     }
 

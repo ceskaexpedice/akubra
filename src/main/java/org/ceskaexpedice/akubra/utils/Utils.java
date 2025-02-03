@@ -16,7 +16,7 @@ public class Utils {
      * @return String or null (when in is null)
      * @throws IOException
      */
-    public static String inputstreamToString(InputStream in) {
+    public static String streamToString(InputStream in) {
         try {
             if (in == null) {
                 return null;

@@ -1,6 +1,6 @@
-package org.ceskaexpedice.akubra.access.impl;
+package org.ceskaexpedice.akubra.impl;
 
-import org.ceskaexpedice.akubra.access.DatastreamMetadata;
+import org.ceskaexpedice.akubra.DatastreamMetadata;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 
 import java.util.Date;

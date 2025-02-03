@@ -7,14 +7,11 @@ import org.ceskaexpedice.akubra.core.repository.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
-import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CursorMarkParams;
 import org.w3c.dom.Element;
@@ -244,13 +241,13 @@ public class ProcessingIndexFeeder {
 
     private List<String> dcTitle(RepositoryObject repositoryObject) throws RepositoryException, ParserConfigurationException, SAXException, IOException {
         InputStream stream = repositoryObject.getStream(KnownDatastreams.BIBLIO_DC.name()).getLastVersionContent();
-        Element title = DomUtils.findElement(DomUtils.parseDocument(stream, true).getDocumentElement(), "title", RepositoryNamespaces.DC_NAMESPACE_URI);
+        Element title = DomUtils.findElement(DomUtils.streamToDocument(stream, true).getDocumentElement(), "title", RepositoryNamespaces.DC_NAMESPACE_URI);
         return title != null ? Arrays.asList(title.getTextContent()) : new ArrayList<>();
     }
 
     private List<String> modsTitle(RepositoryObject repositoryObject, String lang) throws RepositoryException, ParserConfigurationException, SAXException, IOException {
         InputStream stream = repositoryObject.getStream(KnownDatastreams.BIBLIO_MODS.name()).getLastVersionContent();
-        Element docElement = DomUtils.parseDocument(stream, true).getDocumentElement();
+        Element docElement = DomUtils.streamToDocument(stream, true).getDocumentElement();
 
         List<Element> elements = DomUtils.getElementsRecursive(docElement, new DomUtils.ElementsFilter() {
             @Override

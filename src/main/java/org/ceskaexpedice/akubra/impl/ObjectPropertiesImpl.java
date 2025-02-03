@@ -1,7 +1,8 @@
-package org.ceskaexpedice.akubra.access.impl;
+package org.ceskaexpedice.akubra.impl;
 
-import org.ceskaexpedice.akubra.access.ObjectProperties;
+import org.ceskaexpedice.akubra.ObjectProperties;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
+import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -25,7 +26,7 @@ class ObjectPropertiesImpl implements ObjectProperties {
 
     @Override
     public String getProperty(String propertyName) {
-        org.dom4j.Document objectFoxml = new RepositoryObjectWrapperImpl(repositoryObject.getFoxml()).asXmlDom4j();
+        org.dom4j.Document objectFoxml = Dom4jUtils.streamToDocument(repositoryObject.getFoxml(), true);
         return objectFoxml == null ? null : extractProperty(objectFoxml, propertyName);
     }
 

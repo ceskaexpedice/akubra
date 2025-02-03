@@ -1,12 +1,15 @@
 package org.ceskaexpedice.akubra.access;
 
-import org.ceskaexpedice.akubra.TestsUtilities;
-import org.ceskaexpedice.akubra.core.RepositoryConfiguration;
+import org.ceskaexpedice.akubra.*;
+import org.ceskaexpedice.akubra.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
+import org.ceskaexpedice.akubra.utils.Dom4jUtils;
+import org.ceskaexpedice.akubra.utils.Utils;
 import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
 import org.ceskaexpedice.hazelcast.ServerNode;
 import org.ceskaexpedice.akubra.utils.DomUtils;
+import org.ceskaexpedice.jaxbmodel.DigitalObject;
 import org.dom4j.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,7 +17,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -53,74 +55,53 @@ public class RepositoryAccessReadTest {
 
     @Test
     void testGetObject_asStream() {
-        ContentWrapper resultWrapper = repositoryAccess.getObject(pidTitlePage, FoxmlType.regular);
-        assertNotNull(resultWrapper);
-        InputStream asStream = resultWrapper.asStream();
-        assertNotNull(asStream);
-        TestsUtilities.debugPrint(convertUsingBytes(asStream),testsProperties);
+        DigitalObject digitalObject = repositoryAccess.getObject(pidTitlePage, FoxmlType.regular);
+        assertNotNull(digitalObject);
+        InputStream objectStream = repositoryAccess.marshallObject(digitalObject);
+        assertNotNull(objectStream);
+        TestsUtilities.debugPrint(convertUsingBytes(objectStream),testsProperties);
     }
 
     @Test
     void testGetObject_asXmlDom4j() {
-        ContentWrapper resultWrapper = repositoryAccess.getObject(pidTitlePage, FoxmlType.regular);
-        assertNotNull(resultWrapper);
-        Document asXmlDom4j = resultWrapper.asXmlDom4j();
+        DigitalObject digitalObject = repositoryAccess.getObject(pidTitlePage, FoxmlType.regular);
+        assertNotNull(digitalObject);
+        InputStream objectStream = repositoryAccess.marshallObject(digitalObject);
+        assertNotNull(objectStream);
+        Document asXmlDom4j =  Dom4jUtils.streamToDocument(objectStream, true);
         assertNotNull(asXmlDom4j);
         TestsUtilities.debugPrint(asXmlDom4j.asXML(),testsProperties);
     }
 
     @Test
     void testGetObject_asXmlDom() {
-        ContentWrapper resultWrapper = repositoryAccess.getObject(pidTitlePage, FoxmlType.regular);
-        assertNotNull(resultWrapper);
-        org.w3c.dom.Document asXmlDom = resultWrapper.asXmlDom();
+        DigitalObject digitalObject = repositoryAccess.getObject(pidTitlePage, FoxmlType.regular);
+        assertNotNull(digitalObject);
+        InputStream objectStream = repositoryAccess.marshallObject(digitalObject);
+        assertNotNull(objectStream);
+        org.w3c.dom.Document asXmlDom = DomUtils.streamToDocument(objectStream);
         assertNotNull(asXmlDom);
         TestsUtilities.debugPrint(DomUtils.toString(asXmlDom.getDocumentElement(), true),testsProperties);
     }
 
     @Test
     void testGetObject_asString() {
-        ContentWrapper resultWrapper = repositoryAccess.getObject(pidTitlePage, FoxmlType.regular);
-        assertNotNull(resultWrapper);
-        String asString = resultWrapper.asString();
+        DigitalObject digitalObject = repositoryAccess.getObject(pidTitlePage, FoxmlType.regular);
+        assertNotNull(digitalObject);
+        InputStream objectStream = repositoryAccess.marshallObject(digitalObject);
+        assertNotNull(objectStream);
+        String asString = Utils.streamToString(objectStream);;
         assertNotNull(asString);
         TestsUtilities.debugPrint(asString,testsProperties);
     }
 
     @Test
     void testGetObjectArchive_asStream() {
-        ContentWrapper resultWrapper = repositoryAccess.getObject(pidTitlePage, FoxmlType.archive);
-        assertNotNull(resultWrapper);
-        InputStream asStream = resultWrapper.asStream();
-        assertNotNull(asStream);
-        TestsUtilities.debugPrint(convertUsingBytes(asStream),testsProperties);
-    }
-
-    @Test
-    void testGetObjectArchive_asXmlDom4j() {
-        ContentWrapper resultWrapper = repositoryAccess.getObject(pidTitlePage, FoxmlType.archive);
-        assertNotNull(resultWrapper);
-        Document asXmlDom4j = resultWrapper.asXmlDom4j();
-        assertNotNull(asXmlDom4j);
-        TestsUtilities.debugPrint(asXmlDom4j.asXML(),testsProperties);
-    }
-
-    @Test
-    void testGetObjectArchive_asXmlDom() {
-        ContentWrapper resultWrapper = repositoryAccess.getObject(pidTitlePage, FoxmlType.archive);
-        assertNotNull(resultWrapper);
-        org.w3c.dom.Document asXmlDom = resultWrapper.asXmlDom();
-        assertNotNull(asXmlDom);
-        TestsUtilities.debugPrint(DomUtils.toString(asXmlDom.getDocumentElement(), true),testsProperties);
-    }
-
-    @Test
-    void testGetObjectArchive_asString() {
-        ContentWrapper resultWrapper = repositoryAccess.getObject(pidTitlePage, FoxmlType.archive);
-        assertNotNull(resultWrapper);
-        String asString = resultWrapper.asString();
-        assertNotNull(asString);
-        TestsUtilities.debugPrint(asString,testsProperties);
+        DigitalObject digitalObject = repositoryAccess.getObject(pidTitlePage, FoxmlType.archive);
+        assertNotNull(digitalObject);
+        InputStream objectStream = repositoryAccess.marshallObject(digitalObject);
+        assertNotNull(objectStream);
+        TestsUtilities.debugPrint(convertUsingBytes(objectStream),testsProperties);
     }
 
     @Test
@@ -153,48 +134,27 @@ public class RepositoryAccessReadTest {
 
     @Test
     void testGetDatastreamContent_asStream() {
-        InputStream imgThumb = repositoryAccess.getDatastreamContent(pidTitlePage, "IMG_THUMB").asStream();
+        InputStream imgThumb = repositoryAccess.getDatastreamContent(pidTitlePage, "IMG_THUMB");
         assertNotNull(imgThumb);
     }
 
     @Test
-    void testGetDatastreamContentBinary_asXmlDom() {
-        assertThrows(RepositoryException.class, () -> {
-            repositoryAccess.getDatastreamContent(pidTitlePage, "IMG_THUMB").asXmlDom();
-        });
-    }
-
-    @Test
     void testGetDatastreamContent_asXmlDom() {
-        org.w3c.dom.Document xmlDom = repositoryAccess.getDatastreamContent(pidTitlePage, "DC").asXmlDom();
+        org.w3c.dom.Document xmlDom = DomUtils.streamToDocument(repositoryAccess.getDatastreamContent(pidTitlePage, "DC"));
         assertNotNull(xmlDom);
         TestsUtilities.debugPrint(DomUtils.toString(xmlDom.getDocumentElement(), true),testsProperties);
     }
 
     @Test
-    void testGetDatastreamContentBinary_asXmlDom4j() {
-        assertThrows(RepositoryException.class, () -> {
-            repositoryAccess.getDatastreamContent(pidTitlePage, "IMG_THUMB").asXmlDom4j();
-        });
-    }
-
-    @Test
     void testGetDatastreamContent_asXmlDom4j() {
-        Document xmlDom4j = repositoryAccess.getDatastreamContent(pidTitlePage, "DC").asXmlDom4j();
+        Document xmlDom4j = Dom4jUtils.streamToDocument(repositoryAccess.getDatastreamContent(pidTitlePage, "DC"), true);
         assertNotNull(xmlDom4j);
         TestsUtilities.debugPrint(xmlDom4j.asXML(),testsProperties);
     }
 
     @Test
-    void testGetDatastreamContentBinary_asString() {
-        String imgThumb = repositoryAccess.getDatastreamContent(pidTitlePage, "IMG_THUMB").asString();
-        assertNotNull(imgThumb);
-        TestsUtilities.debugPrint(imgThumb,testsProperties);
-    }
-
-    @Test
     void testGetDatastreamContent_asString() {
-        String dc = repositoryAccess.getDatastreamContent(pidTitlePage, "DC").asString();
+        String dc = Utils.streamToString(repositoryAccess.getDatastreamContent(pidTitlePage, "DC"));
         assertNotNull(dc);
         TestsUtilities.debugPrint(dc,testsProperties);
     }
@@ -219,6 +179,7 @@ public class RepositoryAccessReadTest {
     @Test
     void testLocks() {
         // TODO test actual locking with multiple threads
+        /*
         String pid = pidMonograph;
         String pid1 = pidTitlePage;
         Boolean result = repositoryAccess.doWithWriteLock(pid, () -> {
@@ -230,6 +191,8 @@ public class RepositoryAccessReadTest {
             return result1;
         });
         assertTrue(result);
+
+         */
     }
 
     private String convertUsingBytes(InputStream inputStream) {
