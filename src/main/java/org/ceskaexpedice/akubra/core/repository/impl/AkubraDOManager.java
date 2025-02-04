@@ -40,20 +40,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AkubraDOManager {
+    private static final String DIGITALOBJECT_CACHE_ALIAS = "DigitalObjectCache";
     private static final Logger LOGGER = Logger.getLogger(AkubraDOManager.class.getName());
+
     private RepositoryConfiguration configuration;
     private ILowlevelStorage storage;
 
-    private static DistributedLockService lockService;
-    private static ITopic<String> cacheInvalidator;
+    private DistributedLockService lockService;
+    private ITopic<String> cacheInvalidator;
+    private ClientNode clientNode;
 
-    private static Cache<String, DigitalObject> objectCache;
-    private static final String DIGITALOBJECT_CACHE_ALIAS = "DigitalObjectCache";
+    private Cache<String, DigitalObject> objectCache;
 
-    private static Unmarshaller unmarshaller;
-    private static Marshaller marshaller;
+    private Unmarshaller unmarshaller;
+    private Marshaller marshaller;
 
-    private void initializeStatics(RepositoryConfiguration configuration) {
+    private void initialize(RepositoryConfiguration configuration) {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(DigitalObject.class);
             unmarshaller = jaxbContext.createUnmarshaller();
@@ -63,9 +65,10 @@ public class AkubraDOManager {
             LOGGER.log(Level.SEVERE, "Cannot init JAXB", e);
             throw new RepositoryException(e);
         }
-        ClientNode.ensureHazelcastNode(configuration.getHazelcastConfiguration());
-        lockService = DistributedLockService.newHazelcastLockService(ClientNode.getHzInstance());
-        cacheInvalidator = ClientNode.getHzInstance().getTopic("cacheInvalidator");
+        clientNode = new ClientNode();
+        clientNode.ensureHazelcastNode(configuration.getHazelcastConfiguration());
+        lockService = DistributedLockService.newHazelcastLockService(clientNode.getHzInstance());
+        cacheInvalidator = clientNode.getHzInstance().getTopic("cacheInvalidator");
         cacheInvalidator.addMessageListener(new MessageListener<String>() {
             @Override
             public void onMessage(Message<String> message) {
@@ -78,7 +81,7 @@ public class AkubraDOManager {
 
     public AkubraDOManager(CacheManager cacheManager, RepositoryConfiguration configuration) {
         try {
-            this.initializeStatics(configuration);
+            this.initialize(configuration);
             this.configuration = configuration;
             this.storage = initLowLevelStorage();
             if (cacheManager != null) {
@@ -135,7 +138,7 @@ public class AkubraDOManager {
     }
 
     DigitalObject readObjectFromStorageOrCache(String pid, boolean useCache) {
-        DigitalObject retval = useCache ? objectCache.get(pid) : null;
+        DigitalObject retval = (useCache && objectCache != null) ? objectCache.get(pid) : null;
         if (retval == null) {
             Object obj;
             Lock lock = getReadLock(pid);
@@ -151,7 +154,7 @@ public class AkubraDOManager {
                 lock.unlock();
             }
             retval = (DigitalObject) obj;
-            if (useCache) {
+            if (useCache && objectCache != null) {
                 objectCache.put(pid, retval);
             }
         }
@@ -421,7 +424,7 @@ public class AkubraDOManager {
         }
     }
 
-    static Lock getWriteLock(String pid) {
+    Lock getWriteLock(String pid) {
         if (pid == null) {
             throw new IllegalArgumentException("pid cannot be null");
         }
@@ -430,7 +433,7 @@ public class AkubraDOManager {
         return lock.writeLock();
     }
 
-    static Lock getReadLock(String pid) {
+    Lock getReadLock(String pid) {
         if (pid == null) {
             throw new IllegalArgumentException("pid cannot be null");
         }
@@ -439,14 +442,14 @@ public class AkubraDOManager {
         return lock.readLock();
     }
 
-    private static void invalidateCache(String pid) {
+    private void invalidateCache(String pid) {
         cacheInvalidator.publish(pid);
     }
 
-    static void shutdown() {
+    void shutdown() {
         if(lockService != null) {
             lockService.shutdown();
         }
-        ClientNode.shutdown();
+        clientNode.shutdown();
     }
 }

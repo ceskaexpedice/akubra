@@ -7,6 +7,7 @@ import org.ceskaexpedice.akubra.testutils.TestUtilities;
 import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
 import org.ceskaexpedice.hazelcast.ServerNode;
 import org.ceskaexpedice.jaxbmodel.DigitalObject;
+import org.ehcache.CacheManager;
 import org.junit.jupiter.api.*;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -29,16 +30,27 @@ public class RepositoryAccessWriteTest {
 
     private static Properties testsProperties;
     private static HazelcastConfiguration hazelcastConfig;
+    private static ProcessingIndexFeeder mockFeeder;
+    private static RepositoryAccess repositoryAccess;
 
     @BeforeAll
     static void beforeAll() {
         testsProperties = TestUtilities.loadProperties();
         hazelcastConfig = TestUtilities.createHazelcastConfig(testsProperties);
         ServerNode.ensureHazelcastNode(hazelcastConfig);
+        // configure repository
+        mockFeeder = mock(ProcessingIndexFeeder.class);
+        try (MockedStatic<RepositoryFactory> mockedStatic = mockStatic(RepositoryFactory.class, Mockito.CALLS_REAL_METHODS)) {
+            mockedStatic.when(() -> RepositoryFactory.createProcessingIndexFeeder(any())).thenReturn(mockFeeder);
+            mockedStatic.when(() -> RepositoryFactory.createCacheManager()).thenReturn(null);
+            RepositoryConfiguration config = TestUtilities.createRepositoryConfig(TEST_OUTPUT_REPOSITORY.toFile().getAbsolutePath(), testsProperties, hazelcastConfig);
+            repositoryAccess = RepositoryAccessFactory.createRepositoryAccess(config);
+        }
     }
 
     @AfterAll
     static void afterAll() {
+        repositoryAccess.shutdown();
         ServerNode.shutdown();
     }
 
@@ -57,24 +69,19 @@ public class RepositoryAccessWriteTest {
 
     @Test
     void testIngest() throws IOException {
-        RepositoryAccess repositoryAccess;
-        ProcessingIndexFeeder mockFeeder = mock(ProcessingIndexFeeder.class);
-        try (MockedStatic<RepositoryFactory> mockedStatic = mockStatic(RepositoryFactory.class, Mockito.CALLS_REAL_METHODS)) {
-            mockedStatic.when(() -> RepositoryFactory.createProcessingIndexFeeder(any())).thenReturn(mockFeeder);
-            RepositoryConfiguration config = TestUtilities.createRepositoryConfig(TEST_OUTPUT_REPOSITORY.toFile().getAbsolutePath(), testsProperties, hazelcastConfig);
-            repositoryAccess = RepositoryAccessFactory.createRepositoryAccess(config);
-        }
-
+        // prepare import document
         DigitalObject digitalObjectImported = repositoryAccess.getObject(pidImported, FoxmlType.regular);
         Assertions.assertNull(digitalObjectImported);
         Path importFile = Path.of("src/test/resources/titlePageImport.xml");
         InputStream inputStream = Files.newInputStream(importFile);
         DigitalObject digitalObject = repositoryAccess.unmarshallStream(inputStream);
+        // ingest document
+        reset(mockFeeder);
         repositoryAccess.ingest(digitalObject);
+        // test ingest result
         digitalObjectImported = repositoryAccess.getObject(pidImported, FoxmlType.regular);
         Assertions.assertNotNull(digitalObjectImported);
         verify(mockFeeder, times(1)).rebuildProcessingIndex(any(), any());
-        repositoryAccess.shutdown();
     }
 
 }

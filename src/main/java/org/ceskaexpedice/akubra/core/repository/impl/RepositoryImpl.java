@@ -172,13 +172,13 @@ public class RepositoryImpl implements Repository {
 
     @Override
     public Lock getReadLock(String pid) {
-        Lock readLock = AkubraDOManager.getReadLock(pid);
+        Lock readLock = manager.getReadLock(pid);
         return readLock;
     }
 
     @Override
     public Lock getWriteLock(String pid) {
-        Lock writeLock = AkubraDOManager.getWriteLock(pid);
+        Lock writeLock = manager.getWriteLock(pid);
         return writeLock;
     }
 

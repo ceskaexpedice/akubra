@@ -15,9 +15,9 @@ import java.io.IOException;
 public class ClientNode {
 
     private static final ILogger LOGGER = Logger.getLogger(ClientNode.class);
-    private static HazelcastInstance hzInstance;
+    private HazelcastInstance hzInstance;
 
-    public static synchronized void ensureHazelcastNode(HazelcastConfiguration configuration) {
+    public void ensureHazelcastNode(HazelcastConfiguration configuration) {
         if (hzInstance != null) {
             return;
         }
@@ -25,7 +25,7 @@ public class ClientNode {
         hzInstance = HazelcastClient.newHazelcastClient(config);
     }
 
-    private static ClientConfig createHazelcastConfig(HazelcastConfiguration configuration) {
+    private ClientConfig createHazelcastConfig(HazelcastConfiguration configuration) {
         ClientConfig config = null;
         File configFile = configuration.getHazelcastClientConfigFile() == null ? null : new File(configuration.getHazelcastClientConfigFile());
         if (configFile != null) {
@@ -42,11 +42,11 @@ public class ClientNode {
         }
         return config;
     }
-    public static HazelcastInstance getHzInstance() {
+    public HazelcastInstance getHzInstance() {
         return hzInstance;
     }
 
-    public static void shutdown() {
+    public void shutdown() {
         if (hzInstance != null) {
             hzInstance.shutdown();
         }

@@ -3,6 +3,7 @@ package org.ceskaexpedice.akubra.core.repository;
 import org.ceskaexpedice.akubra.testutils.TestUtilities;
 import org.ceskaexpedice.akubra.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.RepositoryFactory;
+import org.ceskaexpedice.akubra.utils.Utils;
 import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
 import org.ceskaexpedice.hazelcast.ServerNode;
 import org.junit.jupiter.api.AfterAll;
@@ -50,7 +51,7 @@ public class RepositoryReadTest {
         RepositoryObject repositoryObject = repository.getObject("uuid:5035a48a-5e2e-486c-8127-2fa650842e46", true);
         // TODO
         RepositoryDatastream dc = repositoryObject.getStream("DC");
-        System.out.println(convertUsingBytes(dc.getLastVersionContent()));
+        System.out.println(Utils.streamToString(dc.getLastVersionContent()));
         assertTrue(1 == 1);
     }
 
@@ -60,13 +61,5 @@ public class RepositoryReadTest {
         assertNotNull(processingIndexFeeder);
     }
 
-    private static String convertUsingBytes(InputStream inputStream) {
-        byte[] bytes = null;
-        try {
-            bytes = inputStream.readAllBytes();
-            return new String(bytes, "UTF-8"); // Specify encoding, e.g., UTF-8
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+
 }

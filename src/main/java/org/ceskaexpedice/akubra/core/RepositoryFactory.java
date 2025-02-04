@@ -48,7 +48,7 @@ public final class RepositoryFactory {
         return processingIndexFeeder;
     }
 
-    private static CacheManager createCacheManager() {
+    public static CacheManager createCacheManager() {
         CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder().build();
         cacheManager.init();
         return cacheManager;
