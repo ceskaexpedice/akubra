@@ -16,7 +16,6 @@
  */
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
 import org.ceskaexpedice.akubra.core.repository.*;
 import org.ceskaexpedice.akubra.utils.StringUtils;
 import org.ceskaexpedice.akubra.utils.DomUtils;

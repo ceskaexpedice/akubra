@@ -18,7 +18,6 @@
 package org.ceskaexpedice.akubra.core.repository;
 
 import org.ceskaexpedice.jaxbmodel.DigitalObject;
-import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
 
 import java.io.InputStream;
 import java.util.concurrent.locks.Lock;

@@ -39,6 +39,9 @@ public class RepositoryAccessImpl implements RepositoryAccess {
         Lock readLock = repository.getReadLock(pid);
         try {
             RepositoryObject repositoryObject = repository.getObject(pid);
+            if(repositoryObject == null) {
+                return null;
+            }
             if (foxmlType == FoxmlType.archive) {
                 DigitalObject digitalObject = repositoryObject.getDigitalObject();
                 repository.resolveArchivedDatastreams(digitalObject);

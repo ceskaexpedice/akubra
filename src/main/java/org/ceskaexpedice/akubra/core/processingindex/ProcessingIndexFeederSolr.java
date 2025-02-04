@@ -1,11 +1,8 @@
 package org.ceskaexpedice.akubra.core.processingindex;
 
-import org.ceskaexpedice.akubra.core.repository.KnownDatastreams;
+import org.ceskaexpedice.akubra.core.repository.*;
 import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
 import org.ceskaexpedice.akubra.utils.DomUtils;
-import org.ceskaexpedice.akubra.core.repository.RepositoryNamespaces;
-import org.ceskaexpedice.akubra.core.repository.RepositoryException;
-import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -34,23 +31,18 @@ import java.util.stream.Collectors;
  *
  * @author pstastny
  */
-public class ProcessingIndexFeeder {
+public class ProcessingIndexFeederSolr implements ProcessingIndexFeeder {
     
-    private enum TitleType {
-        dc,mods;
-    }
-    private static final String TYPE_RELATION = "relation";
-    private static final String TYPE_DESC = "description";
 
-    private static final Logger LOGGER = Logger.getLogger(ProcessingIndexFeeder.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ProcessingIndexFeederSolr.class.getName());
     private SolrClient solrClient;
 
-    public ProcessingIndexFeeder(SolrClient solrClient) {
+    public ProcessingIndexFeederSolr(SolrClient solrClient) {
         super();
         this.solrClient = solrClient;
     }
 
-    // TODO maybe we need also a method to get back next cursor mark
+    @Override
     public void iterate(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action) {
         try {
             SolrQuery solrQuery = new SolrQuery(params.getQueryString());
@@ -137,25 +129,50 @@ public class ProcessingIndexFeeder {
         UpdateResponse response = this.solrClient.deleteByQuery("*:*");
         return response;
     }
-    public UpdateResponse deleteByPid(String pid) throws IOException, SolrServerException {
-        UpdateResponse response = this.solrClient.deleteByQuery("source:\"" + pid + "\"");
-        return response;
-    }
-    public UpdateResponse deleteByTargetPid(String pid) throws IOException, SolrServerException {
-        UpdateResponse response = this.solrClient.deleteByQuery("targetPid:\"" + pid + "\"");
-        return response;
-    }
-    public UpdateResponse deleteDescriptionByPid(String pid) throws IOException, SolrServerException {
-        UpdateResponse response = this.solrClient.deleteByQuery("source:\"" + pid + "\" AND type:\"description\"");
-        return response;
-    }
-    public UpdateResponse deleteByRelationsForPid(String pid) throws IOException, SolrServerException {
-        String query = "source:\"" + pid + "\" AND type:\"relation\"";
-        UpdateResponse response = this.solrClient.deleteByQuery(query);
-        return response;
+
+    @Override
+    public void deleteByPid(String pid) {
+        try {
+            UpdateResponse response = this.solrClient.deleteByQuery("source:\"" + pid + "\"");
+            // TODO return response;
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
     }
 
-    public void rebuildProcessingIndex(RepositoryObject repositoryObject, InputStream content) throws RepositoryException {
+    @Override
+    public void deleteByTargetPid(String pid) {
+        try {
+            UpdateResponse response = this.solrClient.deleteByQuery("targetPid:\"" + pid + "\"");
+            // TODO return response;
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
+    }
+
+    @Override
+    public void deleteDescriptionByPid(String pid) {
+        try {
+            UpdateResponse response = this.solrClient.deleteByQuery("source:\"" + pid + "\" AND type:\"description\"");
+            // TODO return response;
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
+    }
+
+    @Override
+    public void deleteByRelationsForPid(String pid) {
+        try {
+            String query = "source:\"" + pid + "\" AND type:\"relation\"";
+            UpdateResponse response = this.solrClient.deleteByQuery(query);
+            // TODO return response;
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
+    }
+
+    @Override
+    public void rebuildProcessingIndex(RepositoryObject repositoryObject, InputStream content) {
         try {
             String s = IOUtils.toString(content, "UTF-8");
             RELSEXTSPARQLBuilder sparqlBuilder = new RELSEXTSPARQLBuilderImpl();
@@ -163,19 +180,13 @@ public class ProcessingIndexFeeder {
                 processRELSEXTRelationAndFeedProcessingIndex(repositoryObject, object, localName);
                 return object;
             });
-        } catch (IOException e) {
-            throw new RepositoryException(e);
-        } catch (SAXException e) {
-            throw new RepositoryException(e);
-        } catch (ParserConfigurationException e) {
+        } catch (Exception e) {
             throw new RepositoryException(e);
         } finally {
             try {
                 this.commit();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (SolrServerException e) {
-                throw new RuntimeException(e);
+            } catch (Exception e) {
+                throw new RepositoryException(e);
             }
         }
     }
@@ -203,7 +214,7 @@ public class ProcessingIndexFeeder {
                             // czech title or default
                             List<String> modsTList = modsTitle(repositoryObject, "cze");
                             if (modsTList != null && !modsTList.isEmpty()) {
-                                this.indexDescription(repositoryObject.getPid(), object, modsTList.stream().collect(Collectors.joining(" ")), ProcessingIndexFeeder.TitleType.mods);
+                                this.indexDescription(repositoryObject.getPid(), object, modsTList.stream().collect(Collectors.joining(" ")), ProcessingIndexFeederSolr.TitleType.mods);
                             } else {
                                 this.indexDescription(repositoryObject.getPid(), object, "");
                             }
@@ -281,10 +292,15 @@ public class ProcessingIndexFeeder {
         return elements.stream().map(Element::getTextContent).collect(Collectors.toList());
 
     }
-    // commit to solr
-    public void commit() throws IOException, SolrServerException {
-        this.solrClient.commit();
-        LOGGER.info("Processing index commit ");
+
+    @Override
+    public void commit() {
+        try {
+            this.solrClient.commit();
+            LOGGER.info("Processing index commit ");
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
     }
 
 

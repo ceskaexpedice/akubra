@@ -17,7 +17,8 @@
 package org.ceskaexpedice.akubra.core;
 
 import org.ceskaexpedice.akubra.RepositoryConfiguration;
-import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
+import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeederSolr;
+import org.ceskaexpedice.akubra.core.repository.ProcessingIndexFeeder;
 import org.ceskaexpedice.akubra.core.repository.Repository;
 import org.ceskaexpedice.akubra.core.repository.impl.AkubraDOManager;
 import org.ceskaexpedice.akubra.core.repository.impl.RepositoryImpl;
@@ -37,9 +38,14 @@ public final class RepositoryFactory {
     }
 
     public static Repository createRepository(RepositoryConfiguration configuration) {
-        ProcessingIndexFeeder processingIndexFeeder = new ProcessingIndexFeeder(createProcessingUpdateClient(configuration));
+        ProcessingIndexFeeder processingIndexFeeder = createProcessingIndexFeeder(configuration);
         AkubraDOManager akubraDOManager = new AkubraDOManager(createCacheManager(), configuration);
         return new RepositoryImpl(processingIndexFeeder, akubraDOManager);
+    }
+
+    public static ProcessingIndexFeeder createProcessingIndexFeeder(RepositoryConfiguration configuration) {
+        ProcessingIndexFeeder processingIndexFeeder = new ProcessingIndexFeederSolr(createProcessingUpdateClient(configuration));
+        return processingIndexFeeder;
     }
 
     private static CacheManager createCacheManager() {

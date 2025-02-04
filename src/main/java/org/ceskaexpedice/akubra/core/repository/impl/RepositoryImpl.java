@@ -17,11 +17,11 @@
 
 package org.ceskaexpedice.akubra.core.repository.impl;
 
+import org.ceskaexpedice.akubra.core.repository.ProcessingIndexFeeder;
 import org.ceskaexpedice.jaxbmodel.DigitalObject;
 import org.ceskaexpedice.akubra.core.repository.Repository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
-import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeeder;
 import org.apache.solr.client.solrj.SolrServerException;
 
 import java.io.IOException;
@@ -63,7 +63,8 @@ public class RepositoryImpl implements Repository {
         DigitalObject digitalObject = this.manager.readObjectFromStorageOrCache(ident, useCache);
         if (digitalObject == null) {
             //otherwise later causes NPE at places like AkubraUtils.streamExists(DigitalObject object, String streamID)
-            throw new RepositoryException("object not consistently found in storage: " + ident);
+            // TODO throw new RepositoryException("object not consistently found in storage: " + ident);
+            return null;
         }
         RepositoryObjectImpl obj = new RepositoryObjectImpl(digitalObject, this.manager, this.feeder);
         return obj;
@@ -144,7 +145,7 @@ public class RepositoryImpl implements Repository {
         try {
             //to avoid temporary inconsistency between Akubra and Processing index
             this.feeder.commit();
-        } catch (IOException | SolrServerException e) {
+        } catch (Exception e) {
             throw new RepositoryException(e);
         }
     }

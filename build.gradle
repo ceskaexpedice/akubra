@@ -111,6 +111,9 @@ dependencies {
 
     // implementation 'com.google.guava:guava:32.1.2-jre' // Replace with your main dependency
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0' // Replace with your test dependency
+    testImplementation 'org.mockito:mockito-core:5.14.2'
+    testImplementation 'org.mockito:mockito-inline:5.2.0'
+
 }
 
 test {
