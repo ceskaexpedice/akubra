@@ -20,19 +20,31 @@ import org.ceskaexpedice.akubra.impl.RepositoryAccessImpl;
 import org.ceskaexpedice.akubra.core.RepositoryFactory;
 import org.ceskaexpedice.akubra.core.repository.Repository;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicReference;
+
 /**
  * RepositoryAccessFactory
+ *
  * @author ppodsednik
  */
 public final class RepositoryAccessFactory {
+    private static final AtomicReference<RepositoryAccess> INSTANCE = new AtomicReference<>();
 
-  private RepositoryAccessFactory() {
-  }
+    private RepositoryAccessFactory() {
+    }
 
-  public static RepositoryAccess createRepositoryAccess(RepositoryConfiguration configuration) {
-    Repository coreRepository = RepositoryFactory.createRepository(configuration);
-    RepositoryAccess repositoryAccess = new RepositoryAccessImpl(coreRepository);
-    return repositoryAccess;
-  }
+    public static RepositoryAccess createRepositoryAccess(RepositoryConfiguration configuration) {
+        return INSTANCE.updateAndGet(existingInstance -> {
+            if (existingInstance == null) {
+                Repository coreRepository = RepositoryFactory.createRepository(configuration);
+                RepositoryAccess baseAccess = new RepositoryAccessImpl(coreRepository);
+                // TODO we can also instantiate decorators here; for now let us return just basic access
+                return baseAccess;
+            }
+            return existingInstance;
+        });
+    }
 
 }
