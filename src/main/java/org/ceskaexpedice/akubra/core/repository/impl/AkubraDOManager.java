@@ -9,8 +9,8 @@ import org.akubraproject.map.IdMapper;
 import org.akubraproject.map.IdMappingBlobStore;
 import org.apache.commons.io.IOUtils;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
-import org.ceskaexpedice.hazelcast.ClientNode;
-import org.ceskaexpedice.jaxbmodel.*;
+import org.ceskaexpedice.akubra.core.lock.hazelcast.ClientNode;
+import org.ceskaexpedice.fedoramodel.*;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
@@ -291,7 +291,7 @@ public class AkubraDOManager {
         }
     }
 
-    DigitalObject unmarshallStream(InputStream inputStream) {
+    DigitalObject unmarshallObject(InputStream inputStream) {
         try {
             Object obj;
             synchronized (unmarshaller) {

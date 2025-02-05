@@ -6,7 +6,7 @@
 //
 
 
-package org.ceskaexpedice.jaxbmodel;
+package org.ceskaexpedice.fedoramodel;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -15,30 +15,26 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for contentDigestType complex type.
+ * <p>Java class for propertyType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="contentDigestType"&gt;
+ * &lt;complexType name="propertyType"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="TYPE"&gt;
+ *       &lt;attribute name="NAME" use="required"&gt;
  *         &lt;simpleType&gt;
  *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
- *             &lt;enumeration value="MD5"/&gt;
- *             &lt;enumeration value="SHA-1"/&gt;
- *             &lt;enumeration value="SHA-256"/&gt;
- *             &lt;enumeration value="SHA-384"/&gt;
- *             &lt;enumeration value="SHA-512"/&gt;
- *             &lt;enumeration value="HAVAL"/&gt;
- *             &lt;enumeration value="TIGER"/&gt;
- *             &lt;enumeration value="WHIRLPOOL"/&gt;
- *             &lt;enumeration value="DISABLED"/&gt;
+ *             &lt;enumeration value="info:fedora/fedora-system:def/model#state"/&gt;
+ *             &lt;enumeration value="info:fedora/fedora-system:def/model#label"/&gt;
+ *             &lt;enumeration value="info:fedora/fedora-system:def/model#createdDate"/&gt;
+ *             &lt;enumeration value="info:fedora/fedora-system:def/view#lastModifiedDate"/&gt;
+ *             &lt;enumeration value="info:fedora/fedora-system:def/model#ownerId"/&gt;
  *           &lt;/restriction&gt;
  *         &lt;/simpleType&gt;
  *       &lt;/attribute&gt;
- *       &lt;attribute name="DIGEST" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="VALUE" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -47,60 +43,60 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "contentDigestType")
-public class ContentDigestType {
+@XmlType(name = "propertyType")
+public class PropertyType {
 
-    @XmlAttribute(name = "TYPE")
-    protected String type;
-    @XmlAttribute(name = "DIGEST")
-    protected String digest;
+    @XmlAttribute(name = "NAME", required = true)
+    protected String name;
+    @XmlAttribute(name = "VALUE", required = true)
+    protected String value;
 
     /**
-     * Gets the value of the type property.
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getTYPE() {
-        return type;
+    public String getNAME() {
+        return name;
     }
 
     /**
-     * Sets the value of the type property.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setTYPE(String value) {
-        this.type = value;
+    public void setNAME(String value) {
+        this.name = value;
     }
 
     /**
-     * Gets the value of the digest property.
+     * Gets the value of the value property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getDIGEST() {
-        return digest;
+    public String getVALUE() {
+        return value;
     }
 
     /**
-     * Sets the value of the digest property.
+     * Sets the value of the value property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setDIGEST(String value) {
-        this.digest = value;
+    public void setVALUE(String value) {
+        this.value = value;
     }
 
 }

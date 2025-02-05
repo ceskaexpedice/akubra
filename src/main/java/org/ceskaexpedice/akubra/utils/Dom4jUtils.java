@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class Dom4jUtils {
 
-    public static Map<String, String> NAMESPACE_URIS = new HashMap<>();
+    private static Map<String, String> NAMESPACE_URIS = new HashMap<>();
 
     static {
         NAMESPACE_URIS.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
@@ -255,6 +255,7 @@ public class Dom4jUtils {
             throw new RepositoryException(e);
         }
     }
+
     public static String getNamespaceUri(String prefix) {
         return NAMESPACE_URIS.get(prefix);
     }

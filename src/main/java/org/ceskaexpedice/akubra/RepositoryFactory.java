@@ -16,12 +16,10 @@
  */
 package org.ceskaexpedice.akubra;
 
-import org.ceskaexpedice.akubra.impl.RepositoryAccessImpl;
-import org.ceskaexpedice.akubra.core.RepositoryFactory;
-import org.ceskaexpedice.akubra.core.repository.Repository;
+import org.ceskaexpedice.akubra.impl.RepositoryImpl;
+import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
+import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -29,17 +27,17 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @author ppodsednik
  */
-public final class RepositoryAccessFactory {
-    private static final AtomicReference<RepositoryAccess> INSTANCE = new AtomicReference<>();
+public final class RepositoryFactory {
+    private static final AtomicReference<Repository> INSTANCE = new AtomicReference<>();
 
-    private RepositoryAccessFactory() {
+    private RepositoryFactory() {
     }
 
-    public static RepositoryAccess createRepositoryAccess(RepositoryConfiguration configuration) {
+    public static Repository createRepository(RepositoryConfiguration configuration) {
         return INSTANCE.updateAndGet(existingInstance -> {
             if (existingInstance == null) {
-                Repository coreRepository = RepositoryFactory.createRepository(configuration);
-                RepositoryAccess baseAccess = new RepositoryAccessImpl(coreRepository);
+                CoreRepository coreRepository = CoreRepositoryFactory.createRepository(configuration);
+                Repository baseAccess = new RepositoryImpl(coreRepository);
                 // TODO we can also instantiate decorators here; for now let us return just basic access
                 return baseAccess;
             }

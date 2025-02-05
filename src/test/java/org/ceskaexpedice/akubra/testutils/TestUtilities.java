@@ -17,11 +17,9 @@
 package org.ceskaexpedice.akubra.testutils;
 
 import org.ceskaexpedice.akubra.RepositoryConfiguration;
-import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
+import org.ceskaexpedice.akubra.core.lock.hazelcast.HazelcastConfiguration;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assumptions.assumeTrue;

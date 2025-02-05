@@ -6,7 +6,7 @@
 //
 
 
-package org.ceskaexpedice.jaxbmodel;
+package org.ceskaexpedice.fedoramodel;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

@@ -4,7 +4,7 @@ import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
 import org.ceskaexpedice.akubra.core.repository.*;
-import org.ceskaexpedice.jaxbmodel.DigitalObject;
+import org.ceskaexpedice.fedoramodel.DigitalObject;
 
 import java.io.InputStream;
 import java.util.List;
@@ -14,37 +14,37 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class RepositoryAccessImpl implements RepositoryAccess {
-    private static final Logger LOGGER = Logger.getLogger(RepositoryAccessImpl.class.getName());
+public class RepositoryImpl implements Repository {
+    private static final Logger LOGGER = Logger.getLogger(RepositoryImpl.class.getName());
 
-    private Repository repository;
+    private CoreRepository coreRepository;
 
-    public RepositoryAccessImpl(Repository repository) {
-        this.repository = repository;
+    public RepositoryImpl(CoreRepository coreRepository) {
+        this.coreRepository = coreRepository;
     }
 
 
     @Override
     public void ingest(DigitalObject digitalObject) {
-        repository.ingestObject(digitalObject);
+        coreRepository.ingestObject(digitalObject);
     }
 
     @Override
     public boolean objectExists(String pid) {
-        return this.repository.objectExists(pid);
+        return this.coreRepository.objectExists(pid);
     }
 
     @Override
     public DigitalObject getObject(String pid, FoxmlType foxmlType) {
-        Lock readLock = repository.getReadLock(pid);
+        Lock readLock = coreRepository.getReadLock(pid);
         try {
-            RepositoryObject repositoryObject = repository.getObject(pid);
+            RepositoryObject repositoryObject = coreRepository.getObject(pid);
             if(repositoryObject == null) {
                 return null;
             }
             if (foxmlType == FoxmlType.archive) {
                 DigitalObject digitalObject = repositoryObject.getDigitalObject();
-                repository.resolveArchivedDatastreams(digitalObject);
+                coreRepository.resolveArchivedDatastreams(digitalObject);
             }
             return repositoryObject.getDigitalObject();
         } finally {
@@ -54,7 +54,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
 
     @Override
     public ObjectProperties getObjectProperties(String pid) {
-        RepositoryObject repositoryObject = repository.getObject(pid);
+        RepositoryObject repositoryObject = coreRepository.getObject(pid);
         return new ObjectPropertiesImpl(repositoryObject);
     }
 
@@ -70,25 +70,40 @@ public class RepositoryAccessImpl implements RepositoryAccess {
 
     @Override
     public InputStream marshallObject(DigitalObject obj) {
-        return repository.marshallObject(obj);
+        return coreRepository.marshallObject(obj);
     }
 
     @Override
-    public DigitalObject unmarshallStream(InputStream inputStream) {
-        return repository.unmarshallStream(inputStream);
+    public DigitalObject unmarshallObject(InputStream inputStream) {
+        return coreRepository.unmarshallObject(inputStream);
+    }
+
+    @Override
+    public void createXMLDatastream(String pid, String dsId, String mimeType, InputStream xmlContent) {
+
+    }
+
+    @Override
+    public void createManagedDatastream(String pid, String dsId, String mimeType, InputStream binaryContent) {
+
+    }
+
+    @Override
+    public void createRedirectedDatastream(String pid, String dsId, String url, String mimeType) {
+
     }
 
     @Override
     public boolean datastreamExists(String pid, String dsId) {
-        RepositoryObject repositoryObject = repository.getObject(pid);
+        RepositoryObject repositoryObject = coreRepository.getObject(pid);
         return repositoryObject.streamExists(dsId);
     }
 
     @Override
     public DatastreamMetadata getDatastreamMetadata(String pid, String dsId) {
-        Lock readLock = repository.getReadLock(pid);
+        Lock readLock = coreRepository.getReadLock(pid);
         try {
-            RepositoryObject object = repository.getObject(pid);
+            RepositoryObject object = coreRepository.getObject(pid);
             RepositoryDatastream stream = object.getStream(dsId);
             return new DatastreamMetadataImpl(stream);
         } finally {
@@ -98,9 +113,9 @@ public class RepositoryAccessImpl implements RepositoryAccess {
 
     @Override
     public InputStream getDatastreamContent(String pid, String dsId) {
-        Lock readLock = repository.getReadLock(pid);
+        Lock readLock = coreRepository.getReadLock(pid);
         try {
-            InputStream lastVersionContent = repository.getObject(pid).getStream(dsId).getLastVersionContent();
+            InputStream lastVersionContent = coreRepository.getObject(pid).getStream(dsId).getLastVersionContent();
             return lastVersionContent;
         } finally {
             readLock.unlock();
@@ -137,16 +152,41 @@ public class RepositoryAccessImpl implements RepositoryAccess {
     }
 
     @Override
-    public RelsExtWrapper processDatastreamRelsExt(String pid) {
-        RepositoryObject repositoryObject = repository.getObject(pid);
+    public void deleteDatastream(String pid, String dsId) {
+
+    }
+
+    @Override
+    public RelsExtWrapper relsExtGet(String pid) {
+        RepositoryObject repositoryObject = coreRepository.getObject(pid);
         return new RelsExtWrapperImpl(repositoryObject);
     }
 
     @Override
+    public void relsExtAddRelation(String pid, String relation, String namespace, String targetRelation) {
+
+    }
+
+    @Override
+    public void relsExtRemoveRelation(String pid, String relation, String namespace, String targetRelation) {
+
+    }
+
+    @Override
+    public void relsExtAddLiteral(String pid, String relation, String namespace, String value) {
+
+    }
+
+    @Override
+    public void relsExtRemoveLiteral(String pid, String relation, String namespace, String value) {
+
+    }
+
+    @Override
     public List<String> getDatastreamNames(String pid) {
-        Lock readLock = repository.getReadLock(pid);
+        Lock readLock = coreRepository.getReadLock(pid);
         try {
-            RepositoryObject object = repository.getObject(pid);
+            RepositoryObject object = coreRepository.getObject(pid);
             List<RepositoryDatastream> streams = object.getStreams();
             return streams.stream().map(it -> {
                 try {
@@ -163,12 +203,12 @@ public class RepositoryAccessImpl implements RepositoryAccess {
 
     @Override
     public void iterateProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action) {
-        repository.getProcessingIndexFeeder().iterate(params, action);
+        coreRepository.getProcessingIndexFeeder().iterate(params, action);
     }
 
     @Override
     public <T> T doWithReadLock(String pid, LockOperation<T> operation) {
-        Lock readLock = repository.getReadLock(pid);
+        Lock readLock = coreRepository.getReadLock(pid);
         try {
             return operation.execute();
         } finally {
@@ -178,7 +218,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
 
     @Override
     public <T> T doWithWriteLock(String pid, LockOperation<T> operation) {
-        Lock writeLock = repository.getWriteLock(pid);
+        Lock writeLock = coreRepository.getWriteLock(pid);
         try {
             return operation.execute();
         } finally {
@@ -188,7 +228,7 @@ public class RepositoryAccessImpl implements RepositoryAccess {
 
     @Override
     public void shutdown() {
-        repository.shutdown();
+        coreRepository.shutdown();
     }
 
     /*

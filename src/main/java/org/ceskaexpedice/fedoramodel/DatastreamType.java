@@ -6,7 +6,7 @@
 //
 
 
-package org.ceskaexpedice.jaxbmodel;
+package org.ceskaexpedice.fedoramodel;
 
 import java.util.ArrayList;
 import java.util.List;

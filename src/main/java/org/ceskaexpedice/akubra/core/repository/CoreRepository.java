@@ -17,7 +17,7 @@
 
 package org.ceskaexpedice.akubra.core.repository;
 
-import org.ceskaexpedice.jaxbmodel.DigitalObject;
+import org.ceskaexpedice.fedoramodel.DigitalObject;
 
 import java.io.InputStream;
 import java.util.concurrent.locks.Lock;
@@ -27,7 +27,7 @@ import java.util.concurrent.locks.Lock;
  * It is basic tool for ingesting and it is basic point for RepositoryAccess facade
  * @author pavels
  */
-public interface Repository {
+public interface CoreRepository {
 
     /**
      * Returns true if object exists and if it is raw object
@@ -36,6 +36,22 @@ public interface Repository {
      * @throws
      */
     boolean  objectExists(String pid);
+
+    /**
+     * Ingest new digital object from the provided object representation
+     * @param digitalObject
+     * @return
+     * @throws
+     */
+    RepositoryObject ingestObject(DigitalObject digitalObject);
+
+    /**
+     * Creates an empty object or finds an existing object
+     * @param pid Identification of the object
+     * @return
+     * @throws
+     */
+    RepositoryObject createOrGetObject(String pid);
 
     /**
      * Returns object
@@ -53,20 +69,21 @@ public interface Repository {
     RepositoryObject getObject(String pid, boolean useCache);
 
     /**
-     * Creates an empty object or finds an existing object
-     * @param pid Identification of the object
-     * @return
-     * @throws
+     * @param obj
      */
-    RepositoryObject createOrGetObject(String pid);
+    void resolveArchivedDatastreams(DigitalObject obj);
 
     /**
-     * Ingest new digital object from the provided object representation
-     * @param digitalObject
+     * @param obj
      * @return
-     * @throws
      */
-    RepositoryObject ingestObject(DigitalObject digitalObject);
+    InputStream marshallObject(DigitalObject obj);
+
+    /**
+     * @param inputStream
+     * @return
+     */
+    DigitalObject unmarshallObject(InputStream inputStream);
 
     /**
      * Deletes object
@@ -87,32 +104,6 @@ public interface Repository {
     void deleteObject(String pid, boolean deleteDataOfManagedDatastreams, boolean deleteRelationsWithThisAsTarget);
 
     /**
-     * Commits current transaction
-     * @throws
-     */
-    void commitTransaction();
-
-    /**
-     * Returns processing index feeder
-     * @return
-     * @throws
-     */
-    ProcessingIndexFeeder getProcessingIndexFeeder();
-
-    /**
-     * @param obj
-     */
-    void resolveArchivedDatastreams(DigitalObject obj);
-
-    /**
-     * @param obj
-     * @return
-     */
-    InputStream marshallObject(DigitalObject obj);
-
-    DigitalObject unmarshallStream(InputStream inputStream);
-
-    /**
      * @param pid
      * @return
      */
@@ -123,6 +114,13 @@ public interface Repository {
      * @return
      */
     Lock getWriteLock(String pid);
+
+    /**
+     * Returns processing index feeder
+     * @return
+     * @throws
+     */
+    ProcessingIndexFeeder getProcessingIndexFeeder();
 
     /**
      *

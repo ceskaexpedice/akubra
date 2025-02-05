@@ -1,6 +1,6 @@
 package org.ceskaexpedice.akubra;
 
-import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
+import org.ceskaexpedice.akubra.core.lock.hazelcast.HazelcastConfiguration;
 
 public class RepositoryConfiguration {
     private final String processingIndexHost;

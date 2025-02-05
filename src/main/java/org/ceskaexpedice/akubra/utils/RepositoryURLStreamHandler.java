@@ -1,6 +1,6 @@
 package org.ceskaexpedice.akubra.utils;
 
-import org.ceskaexpedice.akubra.RepositoryAccess;
+import org.ceskaexpedice.akubra.Repository;
 
 import java.io.IOException;
 import java.net.Proxy;
@@ -10,7 +10,7 @@ import java.net.URLStreamHandler;
 
 public class RepositoryURLStreamHandler extends URLStreamHandler {
 
-    private RepositoryAccess fedoraAccess;
+    private Repository fedoraAccess;
 
     /*
     @Inject

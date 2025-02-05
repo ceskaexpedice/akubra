@@ -1,4 +1,4 @@
-package org.ceskaexpedice.hazelcast;
+package org.ceskaexpedice.akubra.core.lock.hazelcast;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;

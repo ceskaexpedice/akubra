@@ -16,7 +16,10 @@
  */
 package org.ceskaexpedice.akubra.utils;
 
-import java.io.StringWriter;
+import com.google.common.io.CharStreams;
+import org.ceskaexpedice.akubra.core.repository.RepositoryException;
+
+import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
@@ -98,4 +101,25 @@ public class StringUtils {
     public static boolean isAnyString(String input) {
         return input != null && (!input.trim().equals(""));
     }
+
+    /**
+     * InputStream is being closed here (after extracting String or error).
+     *
+     * @param in
+     * @return String or null (when in is null)
+     * @throws IOException
+     */
+    public static String streamToString(InputStream in) {
+        try {
+            if (in == null) {
+                return null;
+            }
+            try (final Reader reader = new InputStreamReader(in)) {
+                return CharStreams.toString(reader);
+            }
+        } catch (IOException e) {
+            throw new RepositoryException(e);
+        }
+    }
+
 }

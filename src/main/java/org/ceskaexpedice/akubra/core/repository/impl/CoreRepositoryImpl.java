@@ -18,13 +18,11 @@
 package org.ceskaexpedice.akubra.core.repository.impl;
 
 import org.ceskaexpedice.akubra.core.repository.ProcessingIndexFeeder;
-import org.ceskaexpedice.jaxbmodel.DigitalObject;
-import org.ceskaexpedice.akubra.core.repository.Repository;
+import org.ceskaexpedice.fedoramodel.DigitalObject;
+import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
-import org.apache.solr.client.solrj.SolrServerException;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
@@ -35,14 +33,14 @@ import static org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.crea
 /**
  * @author pavels
  */
-public class RepositoryImpl implements Repository {
+public class CoreRepositoryImpl implements CoreRepository {
 
-    private static final Logger LOGGER = Logger.getLogger(RepositoryImpl.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(CoreRepositoryImpl.class.getName());
 
     private AkubraDOManager manager;
     private ProcessingIndexFeeder feeder;
 
-    public RepositoryImpl(ProcessingIndexFeeder feeder, AkubraDOManager manager) {
+    public CoreRepositoryImpl(ProcessingIndexFeeder feeder, AkubraDOManager manager) {
         super();
         this.feeder = feeder;
         this.manager = manager;
@@ -137,18 +135,6 @@ public class RepositoryImpl implements Repository {
         deleteObject(pid, true, true);
     }
 
-    /* (non-Javadoc)
-     * @see cz.incad.fcrepo.Repository#commitTransaction()
-     */
-    @Override
-    public void commitTransaction() {
-        try {
-            //to avoid temporary inconsistency between Akubra and Processing index
-            this.feeder.commit();
-        } catch (Exception e) {
-            throw new RepositoryException(e);
-        }
-    }
 
     @Override
     public ProcessingIndexFeeder getProcessingIndexFeeder() {
@@ -166,8 +152,8 @@ public class RepositoryImpl implements Repository {
     }
 
     @Override
-    public DigitalObject unmarshallStream(InputStream inputStream) {
-        return manager.unmarshallStream(inputStream);
+    public DigitalObject unmarshallObject(InputStream inputStream) {
+        return manager.unmarshallObject(inputStream);
     }
 
     @Override

@@ -2,7 +2,7 @@ package org.ceskaexpedice.akubra.core.repository.impl;
 
 import org.ceskaexpedice.akubra.core.repository.KnownDatastreams;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
-import org.ceskaexpedice.jaxbmodel.*;
+import org.ceskaexpedice.fedoramodel.*;
 import org.ceskaexpedice.akubra.utils.SafeSimpleDateFormat;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.akubraproject.map.IdMapper;

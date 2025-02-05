@@ -1,4 +1,4 @@
-package org.ceskaexpedice.hazelcast;
+package org.ceskaexpedice.akubra.core.lock.hazelcast;
 
 public class HazelcastConfiguration {
     private final String hazelcastConfigFile;

@@ -1,6 +1,6 @@
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import org.ceskaexpedice.jaxbmodel.DatastreamType;
+import org.ceskaexpedice.fedoramodel.DatastreamType;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 
 import java.io.*;
