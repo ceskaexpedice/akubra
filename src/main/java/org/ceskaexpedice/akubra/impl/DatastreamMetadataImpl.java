@@ -2,6 +2,7 @@ package org.ceskaexpedice.akubra.impl;
 
 import org.ceskaexpedice.akubra.DatastreamMetadata;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
+import org.ceskaexpedice.fedoramodel.ContentLocationType;
 
 import java.util.Date;
 
@@ -28,21 +29,19 @@ class DatastreamMetadataImpl implements DatastreamMetadata {
     }
 
     @Override
-    public int getSize() {
-        // TODO
-        return 0;
+    public long getSize() {
+        return repositoryDatastream.getDatastream().getDatastreamVersion().get(0).getSIZE();
     }
 
     @Override
     public String getControlGroup() {
-        // TODO
-        return "";
+        return repositoryDatastream.getDatastream().getCONTROLGROUP();
     }
 
     @Override
     public String getLocation() {
-        // TODO
-        return "";
+        ContentLocationType contentLocation = repositoryDatastream.getDatastream().getDatastreamVersion().get(0).getContentLocation();
+        return contentLocation == null ? null : contentLocation.getREF();
     }
 
     @Override
@@ -52,8 +51,7 @@ class DatastreamMetadataImpl implements DatastreamMetadata {
 
     @Override
     public Date getCreateDate() {
-        // TODO
-        return null;
+        return repositoryDatastream.getDatastream().getDatastreamVersion().get(0).getCREATED().toGregorianCalendar().getTime();
     }
 
 }

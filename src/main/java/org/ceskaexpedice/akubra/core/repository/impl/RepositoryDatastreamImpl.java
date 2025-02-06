@@ -1,9 +1,9 @@
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import org.ceskaexpedice.fedoramodel.DatastreamType;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
+import org.ceskaexpedice.fedoramodel.DatastreamType;
 
-import java.io.*;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.logging.Logger;
 
@@ -53,5 +53,8 @@ class RepositoryDatastreamImpl implements RepositoryDatastream {
         return this.type;
     }
 
-
+    @Override
+    public DatastreamType getDatastream() {
+        return datastream;
+    }
 }

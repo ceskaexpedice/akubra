@@ -1,9 +1,7 @@
 package org.ceskaexpedice.akubra.core.repository;
 
 import org.apache.commons.io.FileUtils;
-import org.ceskaexpedice.akubra.FoxmlType;
 import org.ceskaexpedice.akubra.RepositoryConfiguration;
-import org.ceskaexpedice.akubra.RepositoryFactory;
 import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
 import org.ceskaexpedice.akubra.core.lock.hazelcast.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.core.lock.hazelcast.ServerNode;
@@ -24,9 +22,9 @@ import static org.mockito.Mockito.*;
 public class CoreRepositoryWriteTest {
     private static final Path TEST_REPOSITORY = Path.of("src/test/resources/data");
     private static final Path TEST_OUTPUT_REPOSITORY = Path.of("testoutput/data");
-    private static final String pidMonograph = "uuid:5035a48a-5e2e-486c-8127-2fa650842e46";
-    private static final String pidTitlePage = "uuid:12993b4a-71b4-4f19-8953-0701243cc25d";
-    private static final String pidImported = "uuid:32993b4a-71b4-4f19-8953-0701243cc25d";
+    private static final String PID_MONOGRAPH = "uuid:5035a48a-5e2e-486c-8127-2fa650842e46";
+    private static final String PID_TITLE_PAGE = "uuid:12993b4a-71b4-4f19-8953-0701243cc25d";
+    private static final String PID_IMPORTED = "uuid:32993b4a-71b4-4f19-8953-0701243cc25d";
 
     private static Properties testsProperties;
     private static HazelcastConfiguration hazelcastConfig;
@@ -70,7 +68,7 @@ public class CoreRepositoryWriteTest {
     @Test
     void testIngest() throws IOException {
         // prepare import document
-        RepositoryObject digitalObjectImported = coreRepository.getObject(pidImported);
+        RepositoryObject digitalObjectImported = coreRepository.getObject(PID_IMPORTED);
         Assertions.assertNull(digitalObjectImported);
         Path importFile = Path.of("src/test/resources/titlePageImport.xml");
         InputStream inputStream = Files.newInputStream(importFile);
@@ -79,19 +77,33 @@ public class CoreRepositoryWriteTest {
         reset(mockFeeder);
         coreRepository.ingestObject(digitalObject);
         // test ingest result
-        digitalObjectImported = coreRepository.getObject(pidImported);
+        digitalObjectImported = coreRepository.getObject(PID_IMPORTED);
         Assertions.assertNotNull(digitalObjectImported);
         verify(mockFeeder, times(1)).rebuildProcessingIndex(any(), any());
     }
 
     @Test
     void testCreateOrGetObject() {
-        // TODO
+        RepositoryObject repositoryObject = coreRepository.createOrGetObject(PID_MONOGRAPH);
+        Assertions.assertNotNull(repositoryObject);
+        repositoryObject = coreRepository.getObject(PID_IMPORTED);
+        Assertions.assertNull(repositoryObject);
+        repositoryObject = coreRepository.createOrGetObject(PID_IMPORTED);
+        Assertions.assertNotNull(repositoryObject);
+        verify(mockFeeder, times(1)).deleteByPid(eq(PID_IMPORTED));
     }
 
     @Test
     void testDeleteObject() {
-        // TODO
+        RepositoryObject repositoryObject = coreRepository.getObject(PID_TITLE_PAGE);
+        Assertions.assertNotNull(repositoryObject);
+        reset(mockFeeder);
+        coreRepository.deleteObject(PID_TITLE_PAGE);
+        repositoryObject = coreRepository.getObject(PID_TITLE_PAGE);
+        Assertions.assertNull(repositoryObject);
+        verify(mockFeeder, times(1)).deleteByRelationsForPid(eq(PID_TITLE_PAGE));
+        verify(mockFeeder, times(1)).deleteByTargetPid(eq(PID_TITLE_PAGE));
+        verify(mockFeeder, times(1)).deleteDescriptionByPid(eq(PID_TITLE_PAGE));
     }
 
 }

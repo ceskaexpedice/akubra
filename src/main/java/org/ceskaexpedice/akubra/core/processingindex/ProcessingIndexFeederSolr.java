@@ -1,8 +1,5 @@
 package org.ceskaexpedice.akubra.core.processingindex;
 
-import org.ceskaexpedice.akubra.core.repository.*;
-import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
-import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -11,6 +8,9 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CursorMarkParams;
+import org.ceskaexpedice.akubra.core.repository.*;
+import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
+import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
@@ -76,11 +76,7 @@ public class ProcessingIndexFeederSolr implements ProcessingIndexFeeder {
         }
     }
 
-    // TODO check update methods
-    public UpdateResponse feedDescriptionDocument(String sourcePid, String model, String title, String ref, Date date, TitleType ttype) throws IOException, SolrServerException {
-
-        //String processingSolrHost = KConfiguration.getInstance().getSolrProcessingHost();
-
+    private UpdateResponse feedDescriptionDocument(String sourcePid, String model, String title, String ref, Date date, TitleType ttype) {
         SolrInputDocument sdoc = new SolrInputDocument();
         sdoc.addField("source", sourcePid);
         sdoc.addField("type", TYPE_DESC);
@@ -95,7 +91,8 @@ public class ProcessingIndexFeederSolr implements ProcessingIndexFeeder {
         sdoc.addField("pid", TYPE_DESC + "|" + sourcePid);
         return feedDescriptionDocument(sdoc);
     }
-    public UpdateResponse feedDescriptionDocument(String sourcePid, String model, String title, String ref, Date date) throws IOException, SolrServerException {
+
+    private UpdateResponse feedDescriptionDocument(String sourcePid, String model, String title, String ref, Date date) {
         SolrInputDocument sdoc = new SolrInputDocument();
         sdoc.addField("source", sourcePid);
         sdoc.addField("type", TYPE_DESC);
@@ -106,12 +103,17 @@ public class ProcessingIndexFeederSolr implements ProcessingIndexFeeder {
         sdoc.addField("pid", TYPE_DESC + "|" + sourcePid);
         return feedDescriptionDocument(sdoc);
     }
-    public UpdateResponse feedDescriptionDocument(SolrInputDocument doc) throws IOException, SolrServerException {
-        UpdateResponse response = this.solrClient.add(doc);
-        return response;
+
+    private UpdateResponse feedDescriptionDocument(SolrInputDocument doc) {
+        try {
+            UpdateResponse response = this.solrClient.add(doc);
+            return response;
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
     }
 
-    public UpdateResponse feedRelationDocument(String sourcePid, String relation, String targetPid) throws IOException, SolrServerException {
+    private UpdateResponse feedRelationDocument(String sourcePid, String relation, String targetPid) {
         SolrInputDocument sdoc = new SolrInputDocument();
         sdoc.addField("source", sourcePid);
         sdoc.addField("type", TYPE_RELATION);
@@ -120,21 +122,29 @@ public class ProcessingIndexFeederSolr implements ProcessingIndexFeeder {
         sdoc.addField("pid", TYPE_RELATION + "|" + sourcePid + "|" + relation + "|" + targetPid);
         return feedRelationDocument(sdoc);
     }
-    public UpdateResponse feedRelationDocument(SolrInputDocument sdoc) throws IOException, SolrServerException {
-        UpdateResponse resp = this.solrClient.add(sdoc);
-        return resp;
+
+    private UpdateResponse feedRelationDocument(SolrInputDocument sdoc) {
+        try {
+            UpdateResponse resp = this.solrClient.add(sdoc);
+            return resp;
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
     }
 
-    public UpdateResponse deleteProcessingIndex() throws IOException, SolrServerException {
-        UpdateResponse response = this.solrClient.deleteByQuery("*:*");
-        return response;
+    private UpdateResponse deleteProcessingIndex() {
+        try {
+            UpdateResponse response = this.solrClient.deleteByQuery("*:*");
+            return response;
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
     }
 
     @Override
     public void deleteByPid(String pid) {
         try {
             UpdateResponse response = this.solrClient.deleteByQuery("source:\"" + pid + "\"");
-            // TODO return response;
         } catch (Exception e) {
             throw new RepositoryException(e);
         }
@@ -144,7 +154,6 @@ public class ProcessingIndexFeederSolr implements ProcessingIndexFeeder {
     public void deleteByTargetPid(String pid) {
         try {
             UpdateResponse response = this.solrClient.deleteByQuery("targetPid:\"" + pid + "\"");
-            // TODO return response;
         } catch (Exception e) {
             throw new RepositoryException(e);
         }
@@ -154,7 +163,6 @@ public class ProcessingIndexFeederSolr implements ProcessingIndexFeeder {
     public void deleteDescriptionByPid(String pid) {
         try {
             UpdateResponse response = this.solrClient.deleteByQuery("source:\"" + pid + "\" AND type:\"description\"");
-            // TODO return response;
         } catch (Exception e) {
             throw new RepositoryException(e);
         }
@@ -165,7 +173,6 @@ public class ProcessingIndexFeederSolr implements ProcessingIndexFeeder {
         try {
             String query = "source:\"" + pid + "\" AND type:\"relation\"";
             UpdateResponse response = this.solrClient.deleteByQuery(query);
-            // TODO return response;
         } catch (Exception e) {
             throw new RepositoryException(e);
         }
@@ -302,7 +309,5 @@ public class ProcessingIndexFeederSolr implements ProcessingIndexFeeder {
             throw new RepositoryException(e);
         }
     }
-
-
 
 }

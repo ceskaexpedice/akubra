@@ -1,5 +1,7 @@
 package org.ceskaexpedice.akubra.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.ceskaexpedice.akubra.ObjectProperties;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import org.ceskaexpedice.akubra.utils.Dom4jUtils;
@@ -9,10 +11,13 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
+import java.util.logging.Logger;
 
 import static org.ceskaexpedice.akubra.utils.Dom4jUtils.extractProperty;
 
 class ObjectPropertiesImpl implements ObjectProperties {
+    private static final Logger LOGGER = Logger.getLogger(ObjectPropertiesImpl.class.getName());
+    private static final Log log = LogFactory.getLog(ObjectPropertiesImpl.class);
     private RepositoryObject repositoryObject;
     private static final DateTimeFormatter TIMESTAMP_FORMATTER = new DateTimeFormatterBuilder()
             .appendPattern("yyyy-MM-dd'T'HH:mm:ss.")
@@ -42,8 +47,7 @@ class ObjectPropertiesImpl implements ObjectProperties {
             try {
                 return LocalDateTime.parse(propertyValue, TIMESTAMP_FORMATTER);
             } catch (DateTimeParseException e) {
-                // TODO
-                System.out.println(String.format("cannot parse createdDate %s from object %s", propertyValue, repositoryObject.getPid()));
+                LOGGER.warning(String.format("cannot parse createdDate %s from object %s", propertyValue, repositoryObject.getPid()));
             }
         }
         return null;
@@ -56,8 +60,7 @@ class ObjectPropertiesImpl implements ObjectProperties {
             try {
                 return LocalDateTime.parse(propertyValue, TIMESTAMP_FORMATTER);
             } catch (DateTimeParseException e) {
-                // TODO
-                System.out.println(String.format("cannot parse lastModifiedDate %s from object %s", propertyValue, repositoryObject.getPid()));
+                LOGGER.warning(String.format("cannot parse lastModifiedDate %s from object %s", propertyValue, repositoryObject.getPid()));
             }
         }
         return null;

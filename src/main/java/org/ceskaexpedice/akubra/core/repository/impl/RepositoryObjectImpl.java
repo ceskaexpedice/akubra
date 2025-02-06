@@ -16,13 +16,13 @@
  */
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import org.ceskaexpedice.akubra.core.repository.*;
-import org.ceskaexpedice.akubra.utils.StringUtils;
-import org.ceskaexpedice.akubra.utils.DomUtils;
-import org.ceskaexpedice.akubra.utils.pid.PIDParser;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
+import org.ceskaexpedice.akubra.core.repository.*;
+import org.ceskaexpedice.akubra.utils.DomUtils;
+import org.ceskaexpedice.akubra.utils.StringUtils;
+import org.ceskaexpedice.akubra.utils.pid.PIDParser;
 import org.ceskaexpedice.fedoramodel.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -31,7 +31,9 @@ import org.xml.sax.InputSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerException;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.logging.Level;

@@ -38,18 +38,11 @@ build
 classes
 deploy
 
-
 **/build
 **/out
 **/nbactions.xml
 
 #**/index/*
-
-
-
 **/tlog/*
-
-
-
 /time
 testoutput

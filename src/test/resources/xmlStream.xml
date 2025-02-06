@@ -1,0 +1,11 @@
+<oai_dc:dc
+        xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd"
+        xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
+        xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:foxml="info:fedora/fedora-system:def/foxml#"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <dc:title>[1a]</dc:title>
+    <dc:type>Text</dc:type>
+    <dc:type>model:page</dc:type>
+    <dc:identifier>uuid:12993b4a-71b4-4f19-8953-0701243cc25d</dc:identifier>
+    <dc:rights>policy:private</dc:rights>
+</oai_dc:dc>

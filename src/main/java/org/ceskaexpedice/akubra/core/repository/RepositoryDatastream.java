@@ -1,5 +1,7 @@
 package org.ceskaexpedice.akubra.core.repository;
 
+import org.ceskaexpedice.fedoramodel.DatastreamType;
+
 import java.io.InputStream;
 import java.util.Date;
 
@@ -7,6 +9,8 @@ import java.util.Date;
  * Represents datastream
  */
 public interface RepositoryDatastream {
+
+    DatastreamType getDatastream();
 
     enum Type {
         DIRECT,

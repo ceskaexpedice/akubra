@@ -11,7 +11,7 @@ public interface DatastreamMetadata {
 
     RepositoryDatastream.Type getType();
 
-    int getSize();
+    long getSize();
 
     String getControlGroup();
 

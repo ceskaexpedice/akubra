@@ -6,18 +6,10 @@
 package org.fcrepo.server.utilities;
 
 
-import org.fcrepo.server.errors.InconsistentTableSpecException;
-import org.fcrepo.server.storage.ConnectionPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 
 
 /**

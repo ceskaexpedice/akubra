@@ -1,7 +1,6 @@
 package ca.thoughtwire.concurrent;
 
 import com.hazelcast.client.impl.clientside.HazelcastClientProxy;
-import com.hazelcast.client.proxy.ClientClusterProxy;
 import com.hazelcast.core.*;
 
 import java.util.ArrayList;

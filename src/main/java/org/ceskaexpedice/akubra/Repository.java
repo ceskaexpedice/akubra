@@ -46,6 +46,12 @@ public interface Repository {
 
     /**
      * @param pid
+     * @return
+     */
+    DigitalObject getObject(String pid);
+
+    /**
+     * @param pid
      * @param foxmlType
      * @return
      */

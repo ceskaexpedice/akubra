@@ -17,11 +17,11 @@
 
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import org.ceskaexpedice.akubra.core.repository.ProcessingIndexFeeder;
-import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
+import org.ceskaexpedice.akubra.core.repository.ProcessingIndexFeeder;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
+import org.ceskaexpedice.fedoramodel.DigitalObject;
 
 import java.io.InputStream;
 import java.util.concurrent.locks.Lock;
@@ -60,17 +60,12 @@ public class CoreRepositoryImpl implements CoreRepository {
     public RepositoryObject getObject(String ident, boolean useCache) {
         DigitalObject digitalObject = this.manager.readObjectFromStorageOrCache(ident, useCache);
         if (digitalObject == null) {
-            //otherwise later causes NPE at places like AkubraUtils.streamExists(DigitalObject object, String streamID)
-            // TODO throw new RepositoryException("object not consistently found in storage: " + ident);
             return null;
         }
         RepositoryObjectImpl obj = new RepositoryObjectImpl(digitalObject, this.manager, this.feeder);
         return obj;
     }
 
-    /* (non-Javadoc)
-     * @see cz.incad.fcrepo.Repository#createOrFindObject(java.lang.String)
-     */
     @Override
     public RepositoryObject createOrGetObject(String ident) {
         if (objectExists(ident)) {
@@ -135,7 +130,6 @@ public class CoreRepositoryImpl implements CoreRepository {
         deleteObject(pid, true, true);
     }
 
-
     @Override
     public ProcessingIndexFeeder getProcessingIndexFeeder() {
         return this.feeder;
@@ -172,47 +166,5 @@ public class CoreRepositoryImpl implements CoreRepository {
     public void shutdown() {
         manager.shutdown();
     }
-
-    /* TODO
-
-    public static final String DELETE_LITERAL( String relation,String namespace, String value) throws IOException {
-        StringTemplate deleteRelation = RELSEXTSPARQLBuilderImpl.SPARQL_TEMPLATES().getInstanceOf("deleteliteral_sparql");
-        deleteRelation.setAttribute("namespace", namespace);
-        deleteRelation.setAttribute("relation",relation);
-        deleteRelation.setAttribute("value",value);
-        return deleteRelation.toString();
-    }
-
-    public static final String DELETE_RELATION( String relation,String namespace, String target) throws IOException {
-        StringTemplate deleteRelation = RELSEXTSPARQLBuilderImpl.SPARQL_TEMPLATES().getInstanceOf("deleterelation_sparql");
-        deleteRelation.setAttribute("namespace", namespace);
-        deleteRelation.setAttribute("relation",relation);
-        deleteRelation.setAttribute("target",target);
-        return deleteRelation.toString();
-    }
-
-    public static final String DELETE_RELATIONS(Collection<Triple<String,String,String>> triples) throws IOException {
-        StringTemplate deleteRelation = RELSEXTSPARQLBuilderImpl.SPARQL_TEMPLATES().getInstanceOf("delete_general");
-        deleteRelation.setAttribute("triples", triples);
-        return deleteRelation.toString();
-    }
-
-    public static final String UPDATE_PID(String pid ) throws IOException {
-        StringTemplate updatePid = RELSEXTSPARQLBuilderImpl.SPARQL_TEMPLATES().getInstanceOf("updatepid_sparql");
-        updatePid.setAttribute("pid",pid);
-        return updatePid.toString();
-    }
-
-    public static final String UPDATE_INDEXING_SPARQL() throws IOException {
-        StringTemplate indexPid = RELSEXTSPARQLBuilderImpl.SPARQL_TEMPLATES().getInstanceOf("indexable_sparql");
-        return indexPid.toString();
-    }
-    */
-
-    /* TODO
-    @Override
-    public String getBoundContext() throws RepositoryException {
-        throw new RepositoryException("BOUND CONTEXT not supported in Akubra");
-    }*/
 
 }

@@ -26,7 +26,6 @@ public class RepositoryURLStreamHandler extends URLStreamHandler {
 
     @Override
     protected URLConnection openConnection(URL u, Proxy p) throws IOException {
-        // TODO Auto-generated method stub
         return super.openConnection(u, p);
     }
 

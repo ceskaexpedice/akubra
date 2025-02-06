@@ -16,9 +16,9 @@
  */
 package org.ceskaexpedice.akubra;
 
-import org.ceskaexpedice.akubra.impl.RepositoryImpl;
 import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
+import org.ceskaexpedice.akubra.impl.RepositoryImpl;
 
 import java.util.concurrent.atomic.AtomicReference;
 

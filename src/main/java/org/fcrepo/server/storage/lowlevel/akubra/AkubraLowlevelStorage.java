@@ -8,7 +8,6 @@ import org.akubraproject.*;
 import org.apache.commons.io.IOUtils;
 import org.fcrepo.common.Constants;
 import org.fcrepo.common.FaultException;
-import org.fcrepo.common.MalformedPIDException;
 import org.fcrepo.common.PID;
 import org.fcrepo.server.errors.LowlevelStorageException;
 import org.fcrepo.server.errors.MalformedPidException;

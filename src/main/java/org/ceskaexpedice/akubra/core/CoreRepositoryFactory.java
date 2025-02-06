@@ -16,14 +16,14 @@
  */
 package org.ceskaexpedice.akubra.core;
 
-import org.ceskaexpedice.akubra.RepositoryConfiguration;
-import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeederSolr;
-import org.ceskaexpedice.akubra.core.repository.ProcessingIndexFeeder;
-import org.ceskaexpedice.akubra.core.repository.CoreRepository;
-import org.ceskaexpedice.akubra.core.repository.impl.AkubraDOManager;
-import org.ceskaexpedice.akubra.core.repository.impl.CoreRepositoryImpl;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.ConcurrentUpdateSolrClient;
+import org.ceskaexpedice.akubra.RepositoryConfiguration;
+import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeederSolr;
+import org.ceskaexpedice.akubra.core.repository.CoreRepository;
+import org.ceskaexpedice.akubra.core.repository.ProcessingIndexFeeder;
+import org.ceskaexpedice.akubra.core.repository.impl.AkubraDOManager;
+import org.ceskaexpedice.akubra.core.repository.impl.CoreRepositoryImpl;
 import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheManagerBuilder;
 

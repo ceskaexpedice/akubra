@@ -1,21 +1,25 @@
 package org.ceskaexpedice.akubra.core.repository;
 
-import org.ceskaexpedice.akubra.testutils.TestUtilities;
 import org.ceskaexpedice.akubra.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
 import org.ceskaexpedice.akubra.core.lock.hazelcast.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.core.lock.hazelcast.ServerNode;
-import org.ceskaexpedice.akubra.utils.StringUtils;
+import org.ceskaexpedice.akubra.testutils.TestUtilities;
+import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
+import java.util.concurrent.locks.Lock;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CoreRepositoryReadTest {
+    private static final String PID_TITLE_PAGE = "uuid:12993b4a-71b4-4f19-8953-0701243cc25d";
+    private static final String PID_NOT_EXISTS = "uuid:92993b4a-71b4-4f19-8953-0701243cc25d";
 
     private static CoreRepository coreRepository;
     private static Properties testsProperties;
@@ -39,37 +43,52 @@ public class CoreRepositoryReadTest {
 
     @Test
     void testObjectExists() {
-        boolean objectExists = coreRepository.objectExists("uuid:5035a48a-5e2e-486c-8127-2fa650842e46");
+        boolean objectExists = coreRepository.objectExists(PID_TITLE_PAGE);
         assertTrue(objectExists);
     }
 
     @Test
     void testGetObject() {
-        RepositoryObject repositoryObject = coreRepository.getObject("uuid:5035a48a-5e2e-486c-8127-2fa650842e46", true);
-        // TODO
-        RepositoryDatastream dc = repositoryObject.getStream("DC");
-        System.out.println(StringUtils.streamToString(dc.getLastVersionContent()));
-        assertTrue(1 == 1);
+        final RepositoryObject[] repositoryObject = {null};
+        assertThrows(RepositoryException.class, () -> {
+            repositoryObject[0] = coreRepository.getObject("WrongPidFormat", true);
+        });
+        repositoryObject[0] = coreRepository.getObject(PID_NOT_EXISTS, true);
+        assertNull(repositoryObject[0]);
+        repositoryObject[0] = coreRepository.getObject(PID_TITLE_PAGE, true);
+        assertNotNull(repositoryObject[0]);
     }
 
     @Test
     void testResolveArchivedDatastreams() {
-        // TODO
+        RepositoryObject repositoryObject = coreRepository.getObject(PID_TITLE_PAGE);
+        RepositoryDatastream thumbStream = repositoryObject.getStream(KnownDatastreams.IMG_THUMB.name());
+        assertNull(thumbStream.getDatastream().getDatastreamVersion().get(0).getBinaryContent());
+        coreRepository.resolveArchivedDatastreams(repositoryObject.getDigitalObject());
+        assertNotNull(thumbStream.getDatastream().getDatastreamVersion().get(0).getBinaryContent());
     }
 
     @Test
-    void testMarshalObject() {
-        // TODO
+    void testMarshalling() {
+        RepositoryObject repositoryObject = coreRepository.getObject(PID_TITLE_PAGE);
+        InputStream inputStream = coreRepository.marshallObject(repositoryObject.getDigitalObject());
+        assertNotNull(inputStream);
+        DigitalObject digitalObject = coreRepository.unmarshallObject(inputStream);
+        assertEquals(repositoryObject.getDigitalObject().getDatastream().size(), digitalObject.getDatastream().size());
     }
 
-    @Test
-    void testUnmarshalObject() {
-        // TODO
-    }
 
     @Test
-    void testLocks() {
-        // TODO
+    void testLocks_simple() {
+        Lock readLock = null;
+        try {
+            readLock = coreRepository.getReadLock(PID_TITLE_PAGE);
+            assertNotNull(readLock);
+        } finally {
+            if(readLock != null){
+                readLock.unlock();
+            }
+        }
     }
 
     @Test

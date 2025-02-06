@@ -28,7 +28,7 @@
     <foxml:datastream ID="ALTO" STATE="A" CONTROL_GROUP="X" VERSIONABLE="false">
         <foxml:datastreamVersion ID="ALTO.0" LABEL="ALTO description of current object" CREATED="2018-02-26T14:40:29Z" MIMETYPE="text/xml">
             <foxml:xmlContent>
-                <alto xmlns="http://www.loc.gov/standards/alto/ns-v2#" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/standards/alto/ns-v2# http://www.loc.gov/standards/alto/alto-v2.0.xsd">
+                <alto xmlns="http://www.loc.gov/standards/alto/ns-v2#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/standards/alto/ns-v2# http://www.loc.gov/standards/alto/alto-v2.0.xsd">
                     <Description>
                         <MeasurementUnit>pixel</MeasurementUnit>
                         <OCRProcessing ID="IdOcr"><ocrProcessingStep><processingDateTime>2014-06-16</processingDateTime><processingSoftware><softwareCreator>ABBYY</softwareCreator><softwareName>ABBYY Recognition Server</softwareName><softwareVersion>4.0</softwareVersion></processingSoftware></ocrProcessingStep></OCRProcessing>
@@ -94,7 +94,9 @@
     <foxml:datastream ID="BIBLIO_MODS" STATE="A" CONTROL_GROUP="X" VERSIONABLE="false">
         <foxml:datastreamVersion ID="BIBLIO_MODS.0" LABEL="BIBLIO_MODS description of current object" CREATED="2018-02-26T14:40:29Z" MIMETYPE="text/xml">
             <foxml:xmlContent>
-                <mods:modsCollection xmlns:mods="http://www.loc.gov/mods/v3" xmlns:foxml="info:fedora/fedora-system:def/foxml#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><mods:mods xmlns="http://www.loc.gov/mods/v3" xmlns:ns2="http://www.w3.org/1999/xlink" version="3.5" xmlns:foxml="info:fedora/fedora-system:def/foxml#"><typeOfResource>text</typeOfResource><identifier type="uuid">32993b4a-71b4-4f19-8953-0701243cc25d</identifier><part type="FrontCover"><detail type="pageIndex"><number>1</number>
+                <mods:modsCollection xmlns:mods="http://www.loc.gov/mods/v3" xmlns:foxml="info:fedora/fedora-system:def/foxml#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                    <mods:mods xmlns="http://www.loc.gov/mods/v3"
+                               version="3.5" xmlns:foxml="info:fedora/fedora-system:def/foxml#"><typeOfResource>text</typeOfResource><identifier type="uuid">32993b4a-71b4-4f19-8953-0701243cc25d</identifier><part type="FrontCover"><detail type="pageIndex"><number>1</number>
                 </detail><detail type="pageNumber"><number>[1a]</number>
                 </detail>
                 </part>

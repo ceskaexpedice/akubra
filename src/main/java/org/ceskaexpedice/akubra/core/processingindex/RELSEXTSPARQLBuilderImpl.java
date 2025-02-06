@@ -1,16 +1,16 @@
 package org.ceskaexpedice.akubra.core.processingindex;
 
-import org.ceskaexpedice.akubra.utils.StringUtils;
-import org.ceskaexpedice.akubra.utils.DomUtils;
-import org.ceskaexpedice.akubra.core.repository.RepositoryNamespaceContext;
-import org.ceskaexpedice.akubra.core.repository.RepositoryNamespaces;
-import org.ceskaexpedice.akubra.core.repository.RepositoryException;
-import org.ceskaexpedice.akubra.utils.pid.PIDParser;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
+import org.ceskaexpedice.akubra.core.repository.RepositoryException;
+import org.ceskaexpedice.akubra.core.repository.RepositoryNamespaceContext;
+import org.ceskaexpedice.akubra.core.repository.RepositoryNamespaces;
+import org.ceskaexpedice.akubra.utils.DomUtils;
+import org.ceskaexpedice.akubra.utils.StringUtils;
+import org.ceskaexpedice.akubra.utils.pid.PIDParser;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -19,7 +19,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by pstastny on 10/11/2017.
