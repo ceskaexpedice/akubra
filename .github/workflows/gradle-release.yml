@@ -45,7 +45,11 @@ jobs:
       run: chmod +x ./gradlew
     - name: Build with Gradle
       run: ./gradlew build clean build
-           
+
+    - name: List contents
+      run: |
+        ls -R .
+
     - uses: actions/upload-artifact@v4
       with:
         name: akubra-${{ inputs.tag_name }}.jar
