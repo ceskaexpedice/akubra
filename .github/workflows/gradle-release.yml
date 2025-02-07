@@ -53,7 +53,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: akubra-${{ inputs.tag_name }}.jar
-        path: build/libs
+        path: ./build/libs
 
     - name: Upload Release Asset
       id: upload-release-asset
