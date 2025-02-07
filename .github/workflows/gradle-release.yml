@@ -63,6 +63,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: build/libs
+        asset_path: build/libs/akubra-${{ inputs.tag_name }}.jar
         asset_name: akubra-${{ inputs.tag_name }}.jar
         asset_content_type: application/zip
