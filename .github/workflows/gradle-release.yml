@@ -48,7 +48,7 @@ jobs:
            
     - uses: actions/upload-artifact@v4
       with:
-        name: akubra-${{ inputs.tag_name }}
+        name: akubra-${{ inputs.tag_name }}.jar
         path: build/libs
 
     - name: Upload Release Asset
@@ -59,6 +59,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ steps.find_zip.outputs.ZIP_FILE }}
-        asset_name: akubra.jar
+        asset_path: build/libs
+        asset_name: akubra-${{ inputs.tag_name }}.jar
         asset_content_type: application/zip
