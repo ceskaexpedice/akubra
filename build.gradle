@@ -78,4 +78,5 @@ dependencies {
 
 test {
     useJUnitPlatform() // Configures the test task to use JUnit 5
+    forkEvery = 1
 }
