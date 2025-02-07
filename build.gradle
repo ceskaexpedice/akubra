@@ -81,8 +81,6 @@ test {
     forkEvery = 1
 }
 
-task build {
-    doLast {
-        println "Build outputs located in ${project.buildDir}"
-    }
+build.doLast {
+    println "Build outputs located in ${project.buildDir}"
 }
