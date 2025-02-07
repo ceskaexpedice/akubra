@@ -103,12 +103,20 @@ public class RepositoryImpl implements Repository {
 
     @Override
     public void createManagedDatastream(String pid, String dsId, String mimeType, InputStream binaryContent) {
-        // TODO
+        RepositoryObject repositoryObject = coreRepository.getObject(pid);
+        if(repositoryObject == null) {
+            return;
+        }
+        repositoryObject.createManagedStream(dsId, mimeType, binaryContent);
     }
 
     @Override
     public void createRedirectedDatastream(String pid, String dsId, String url, String mimeType) {
-        // TODO
+        RepositoryObject repositoryObject = coreRepository.getObject(pid);
+        if(repositoryObject == null) {
+            return;
+        }
+        repositoryObject.createRedirectedStream(dsId, url, mimeType);
     }
 
     @Override
@@ -146,7 +154,11 @@ public class RepositoryImpl implements Repository {
 
     @Override
     public void deleteDatastream(String pid, String dsId) {
-        // TODO
+        RepositoryObject repositoryObject = coreRepository.getObject(pid);
+        if(repositoryObject == null) {
+            return;
+        }
+        repositoryObject.deleteStream(dsId);
     }
 
     @Override
@@ -160,22 +172,38 @@ public class RepositoryImpl implements Repository {
 
     @Override
     public void relsExtAddRelation(String pid, String relation, String namespace, String targetRelation) {
-        // TODO
+        RepositoryObject repositoryObject = coreRepository.getObject(pid);
+        if(repositoryObject == null) {
+            return;
+        }
+        repositoryObject.relsExtAddRelation(relation, namespace, targetRelation);
     }
 
     @Override
     public void relsExtRemoveRelation(String pid, String relation, String namespace, String targetRelation) {
-        // TODO
+        RepositoryObject repositoryObject = coreRepository.getObject(pid);
+        if(repositoryObject == null) {
+            return;
+        }
+        repositoryObject.relsExtRemoveRelation(relation, namespace, targetRelation);
     }
 
     @Override
     public void relsExtAddLiteral(String pid, String relation, String namespace, String value) {
-        // TODO
+        RepositoryObject repositoryObject = coreRepository.getObject(pid);
+        if(repositoryObject == null) {
+            return;
+        }
+        repositoryObject.relsExtAddLiteral(relation, namespace, value);
     }
 
     @Override
     public void relsExtRemoveLiteral(String pid, String relation, String namespace, String value) {
-        // TODO
+        RepositoryObject repositoryObject = coreRepository.getObject(pid);
+        if(repositoryObject == null) {
+            return;
+        }
+        repositoryObject.relsExtRemoveLiteral(relation, namespace, value);
     }
 
     @Override
