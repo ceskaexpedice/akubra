@@ -1,5 +1,26 @@
 plugins {
     id 'java-library' // Applies the Java plugin
+	id 'maven-publish'
+}
+
+publishing {
+
+  publications {
+        myLibrary(MavenPublication) {
+            from components.java
+        }
+    }
+
+  repositories {
+    maven {
+      name = "GitHubPackages"
+      url = "https://maven.pkg.github.com/ceskaexpedice/akubra"
+      credentials {
+        username = System.getenv("GITHUB_ACTOR")
+        password = System.getenv("GITHUB_TOKEN")
+      }
+    }
+  }
 }
 
 repositories {
