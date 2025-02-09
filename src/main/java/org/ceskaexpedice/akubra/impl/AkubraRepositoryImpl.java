@@ -17,12 +17,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class RepositoryImpl implements Repository {
-    private static final Logger LOGGER = Logger.getLogger(RepositoryImpl.class.getName());
+public class AkubraRepositoryImpl implements AkubraRepository {
+    private static final Logger LOGGER = Logger.getLogger(AkubraRepositoryImpl.class.getName());
 
     private CoreRepository coreRepository;
 
-    public RepositoryImpl(CoreRepository coreRepository) {
+    public AkubraRepositoryImpl(CoreRepository coreRepository) {
         this.coreRepository = coreRepository;
     }
 

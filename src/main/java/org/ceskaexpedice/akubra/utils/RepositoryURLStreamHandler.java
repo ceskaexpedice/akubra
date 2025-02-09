@@ -1,6 +1,6 @@
 package org.ceskaexpedice.akubra.utils;
 
-import org.ceskaexpedice.akubra.Repository;
+import org.ceskaexpedice.akubra.AkubraRepository;
 
 import java.io.IOException;
 import java.net.Proxy;
@@ -10,7 +10,7 @@ import java.net.URLStreamHandler;
 
 public class RepositoryURLStreamHandler extends URLStreamHandler {
 
-    private Repository fedoraAccess;
+    private AkubraRepository akubraRepository;
 
     /*
     @Inject
@@ -21,7 +21,7 @@ public class RepositoryURLStreamHandler extends URLStreamHandler {
 
     @Override
     protected URLConnection openConnection(URL u) throws IOException {
-        return new RepositoryURLConnection(u, fedoraAccess);
+        return new RepositoryURLConnection(u, akubraRepository);
     }
 
     @Override

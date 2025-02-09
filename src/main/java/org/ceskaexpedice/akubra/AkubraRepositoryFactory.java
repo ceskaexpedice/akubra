@@ -18,7 +18,7 @@ package org.ceskaexpedice.akubra;
 
 import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
-import org.ceskaexpedice.akubra.impl.RepositoryImpl;
+import org.ceskaexpedice.akubra.impl.AkubraRepositoryImpl;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -27,17 +27,17 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @author ppodsednik
  */
-public final class RepositoryFactory {
-    private static final AtomicReference<Repository> INSTANCE = new AtomicReference<>();
+public final class AkubraRepositoryFactory {
+    private static final AtomicReference<AkubraRepository> INSTANCE = new AtomicReference<>();
 
-    private RepositoryFactory() {
+    private AkubraRepositoryFactory() {
     }
 
-    public static Repository createRepository(RepositoryConfiguration configuration) {
+    public static AkubraRepository createRepository(RepositoryConfiguration configuration) {
         return INSTANCE.updateAndGet(existingInstance -> {
             if (existingInstance == null) {
                 CoreRepository coreRepository = CoreRepositoryFactory.createRepository(configuration);
-                Repository baseAccess = new RepositoryImpl(coreRepository);
+                AkubraRepository baseAccess = new AkubraRepositoryImpl(coreRepository);
                 // TODO we can also instantiate decorators here; for now let us return just basic access
                 return baseAccess;
             }

@@ -1,7 +1,7 @@
 package org.ceskaexpedice.akubra.utils;
 
 
-import org.ceskaexpedice.akubra.Repository;
+import org.ceskaexpedice.akubra.AkubraRepository;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,11 +13,11 @@ public class RepositoryURLConnection extends URLConnection {
     public static final String IMG_FULL = "IMG_FULL";
     public static final String IMG_THUMB = "IMG_THUMB";
 
-    private Repository fedoraAccess;
+    private AkubraRepository akubraRepository;
 
-    RepositoryURLConnection(URL url, Repository fedoraAccess) {
+    RepositoryURLConnection(URL url, AkubraRepository akubraRepository) {
         super(url);
-        this.fedoraAccess = fedoraAccess;
+        this.akubraRepository = akubraRepository;
     }
 
     @Override

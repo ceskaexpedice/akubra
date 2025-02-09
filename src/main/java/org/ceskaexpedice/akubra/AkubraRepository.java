@@ -29,7 +29,7 @@ import java.util.function.Consumer;
  *
  * @author pavels, petrp
  */
-public interface Repository {
+public interface AkubraRepository {
 
     //---------------- Object -------------------------------
 

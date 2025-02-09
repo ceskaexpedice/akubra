@@ -22,13 +22,13 @@ import java.util.Properties;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * RepositoryReadTest
+ * AkubraRepositoryReadTest
  */
-public class RepositoryReadTest {
+public class AkubraRepositoryReadTest {
     private static final String PID_MONOGRAPH = "uuid:5035a48a-5e2e-486c-8127-2fa650842e46";
     private static final String PID_TITLE_PAGE = "uuid:12993b4a-71b4-4f19-8953-0701243cc25d";
 
-    private static Repository repository;
+    private static AkubraRepository akubraRepository;
     private static Properties testsProperties;
 
     @BeforeAll
@@ -39,35 +39,35 @@ public class RepositoryReadTest {
 
         URL resource = TestUtilities.class.getClassLoader().getResource("data");
         RepositoryConfiguration config = TestUtilities.createRepositoryConfig(resource.getFile(), testsProperties, hazelcastConfig);
-        repository = RepositoryFactory.createRepository(config);
+        akubraRepository = AkubraRepositoryFactory.createRepository(config);
     }
 
     @AfterAll
     static void afterAll() {
-        repository.shutdown();
+        akubraRepository.shutdown();
         ServerNode.shutdown();
     }
 
     @Test
     void testObjectExists() {
-        boolean objectExists = repository.objectExists(PID_TITLE_PAGE);
+        boolean objectExists = akubraRepository.objectExists(PID_TITLE_PAGE);
         assertTrue(objectExists);
     }
 
     @Test
     void testGetObject_asStream() {
-        DigitalObject digitalObject = repository.getObject(PID_TITLE_PAGE, FoxmlType.managed);
+        DigitalObject digitalObject = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed);
         assertNotNull(digitalObject);
-        InputStream objectStream = repository.marshallObject(digitalObject);
+        InputStream objectStream = akubraRepository.marshallObject(digitalObject);
         assertNotNull(objectStream);
         TestUtilities.debugPrint(StringUtils.streamToString(objectStream), testsProperties);
     }
 
     @Test
     void testGetObject_asXmlDom4j() {
-        DigitalObject digitalObject = repository.getObject(PID_TITLE_PAGE, FoxmlType.managed);
+        DigitalObject digitalObject = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed);
         assertNotNull(digitalObject);
-        InputStream objectStream = repository.marshallObject(digitalObject);
+        InputStream objectStream = akubraRepository.marshallObject(digitalObject);
         assertNotNull(objectStream);
         Document asXmlDom4j = Dom4jUtils.streamToDocument(objectStream, true);
         assertNotNull(asXmlDom4j);
@@ -76,9 +76,9 @@ public class RepositoryReadTest {
 
     @Test
     void testGetObject_asXmlDom() {
-        DigitalObject digitalObject = repository.getObject(PID_TITLE_PAGE, FoxmlType.managed);
+        DigitalObject digitalObject = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed);
         assertNotNull(digitalObject);
-        InputStream objectStream = repository.marshallObject(digitalObject);
+        InputStream objectStream = akubraRepository.marshallObject(digitalObject);
         assertNotNull(objectStream);
         org.w3c.dom.Document asXmlDom = DomUtils.streamToDocument(objectStream);
         assertNotNull(asXmlDom);
@@ -87,9 +87,9 @@ public class RepositoryReadTest {
 
     @Test
     void testGetObject_asString() {
-        DigitalObject digitalObject = repository.getObject(PID_TITLE_PAGE, FoxmlType.managed);
+        DigitalObject digitalObject = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed);
         assertNotNull(digitalObject);
-        InputStream objectStream = repository.marshallObject(digitalObject);
+        InputStream objectStream = akubraRepository.marshallObject(digitalObject);
         assertNotNull(objectStream);
         String asString = StringUtils.streamToString(objectStream);
         ;
@@ -99,34 +99,34 @@ public class RepositoryReadTest {
 
     @Test
     void testGetObjectArchive_asStream() {
-        DigitalObject digitalObject = repository.getObject(PID_TITLE_PAGE, FoxmlType.archive);
+        DigitalObject digitalObject = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.archive);
         assertNotNull(digitalObject);
-        InputStream objectStream = repository.marshallObject(digitalObject);
+        InputStream objectStream = akubraRepository.marshallObject(digitalObject);
         assertNotNull(objectStream);
         TestUtilities.debugPrint(StringUtils.streamToString(objectStream), testsProperties);
     }
 
     @Test
     void testGetObjectProperty() {
-        String propertyOwnerId = repository.getObjectProperties(PID_TITLE_PAGE).getProperty("info:fedora/fedora-system:def/model#ownerId");
+        String propertyOwnerId = akubraRepository.getObjectProperties(PID_TITLE_PAGE).getProperty("info:fedora/fedora-system:def/model#ownerId");
         assertEquals("fedoraAdmin", propertyOwnerId);
-        LocalDateTime propertyCreated = repository.getObjectProperties(PID_TITLE_PAGE).getPropertyCreated();
+        LocalDateTime propertyCreated = akubraRepository.getObjectProperties(PID_TITLE_PAGE).getPropertyCreated();
         assertNull(propertyCreated); // no milliseconds in test data
-        String propertyLabel = repository.getObjectProperties(PID_TITLE_PAGE).getPropertyLabel();
+        String propertyLabel = akubraRepository.getObjectProperties(PID_TITLE_PAGE).getPropertyLabel();
         assertEquals("- none -", propertyLabel);
-        LocalDateTime propertyLastModified = repository.getObjectProperties(PID_TITLE_PAGE).getPropertyLastModified();
+        LocalDateTime propertyLastModified = akubraRepository.getObjectProperties(PID_TITLE_PAGE).getPropertyLastModified();
         assertEquals("2024-05-20T13:03:27.151", propertyLastModified.toString());
     }
 
     @Test
     void testDatastreamExists() {
-        boolean exists = repository.datastreamExists(PID_TITLE_PAGE, "DC");
+        boolean exists = akubraRepository.datastreamExists(PID_TITLE_PAGE, "DC");
         assertTrue(exists);
     }
 
     @Test
     void testGetDatastreamMetadata() {
-        DatastreamMetadata datastreamMetadata = repository.getDatastreamMetadata(PID_TITLE_PAGE, "DC");
+        DatastreamMetadata datastreamMetadata = akubraRepository.getDatastreamMetadata(PID_TITLE_PAGE, "DC");
         assertNotNull(datastreamMetadata);
 
         assertEquals("DC", datastreamMetadata.getId());
@@ -141,34 +141,34 @@ public class RepositoryReadTest {
 
     @Test
     void testGetDatastreamContent_asStream() {
-        InputStream imgThumb = repository.getDatastreamContent(PID_TITLE_PAGE, "IMG_THUMB");
+        InputStream imgThumb = akubraRepository.getDatastreamContent(PID_TITLE_PAGE, "IMG_THUMB");
         assertNotNull(imgThumb);
     }
 
     @Test
     void testGetDatastreamContent_asXmlDom() {
-        org.w3c.dom.Document xmlDom = DomUtils.streamToDocument(repository.getDatastreamContent(PID_TITLE_PAGE, "DC"));
+        org.w3c.dom.Document xmlDom = DomUtils.streamToDocument(akubraRepository.getDatastreamContent(PID_TITLE_PAGE, "DC"));
         assertNotNull(xmlDom);
         TestUtilities.debugPrint(DomUtils.toString(xmlDom.getDocumentElement(), true), testsProperties);
     }
 
     @Test
     void testGetDatastreamContent_asXmlDom4j() {
-        Document xmlDom4j = Dom4jUtils.streamToDocument(repository.getDatastreamContent(PID_TITLE_PAGE, "DC"), true);
+        Document xmlDom4j = Dom4jUtils.streamToDocument(akubraRepository.getDatastreamContent(PID_TITLE_PAGE, "DC"), true);
         assertNotNull(xmlDom4j);
         TestUtilities.debugPrint(xmlDom4j.asXML(), testsProperties);
     }
 
     @Test
     void testGetDatastreamContent_asString() {
-        String dc = StringUtils.streamToString(repository.getDatastreamContent(PID_TITLE_PAGE, "DC"));
+        String dc = StringUtils.streamToString(akubraRepository.getDatastreamContent(PID_TITLE_PAGE, "DC"));
         assertNotNull(dc);
         TestUtilities.debugPrint(dc, testsProperties);
     }
 
     @Test
     void testRelsExtGet() {
-        RelsExtWrapper relsExtWrapper = repository.relsExtGet(PID_MONOGRAPH);
+        RelsExtWrapper relsExtWrapper = akubraRepository.relsExtGet(PID_MONOGRAPH);
         assertNotNull(relsExtWrapper);
         List<RelsExtRelation> relations = relsExtWrapper.getRelations(null);
         assertEquals(37, relations.size());
@@ -178,7 +178,7 @@ public class RepositoryReadTest {
 
     @Test
     void testGetDatastreamNames() {
-        List<String> datastreamNames = repository.getDatastreamNames(PID_TITLE_PAGE);
+        List<String> datastreamNames = akubraRepository.getDatastreamNames(PID_TITLE_PAGE);
         assertEquals(9, datastreamNames.size());
         TestUtilities.debugPrint(String.join(", ", datastreamNames), testsProperties);
     }
@@ -187,10 +187,10 @@ public class RepositoryReadTest {
     void testDoWithLocks_simple() {
         String pid = PID_MONOGRAPH;
         String pid1 = PID_TITLE_PAGE;
-        Boolean result = repository.doWithWriteLock(pid, () -> {
-            repository.getObject(pid, FoxmlType.managed);
-            Boolean result1 = repository.doWithReadLock(pid1, () -> {
-                repository.getObject(pid1, FoxmlType.managed);
+        Boolean result = akubraRepository.doWithWriteLock(pid, () -> {
+            akubraRepository.getObject(pid, FoxmlType.managed);
+            Boolean result1 = akubraRepository.doWithReadLock(pid1, () -> {
+                akubraRepository.getObject(pid1, FoxmlType.managed);
                 return true;
             });
             return result1;
