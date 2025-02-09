@@ -28,7 +28,7 @@ import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheManagerBuilder;
 
 /**
- * AkubraRepositoryFactory
+ * CoreRepositoryFactory
  *
  * @author ppodsednik
  */
