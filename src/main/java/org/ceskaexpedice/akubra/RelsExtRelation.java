@@ -16,20 +16,46 @@
  */
 package org.ceskaexpedice.akubra;
 
-public class RelsExtRelation extends RelsExtItem{
+/**
+ * Represents a relation item in the RelsExt part of the Akubra Fefora model stream.
+ * This class extends {@link RelsExtItem} and holds a reference to another resource
+ * in addition to the namespace and local name.
+ */
+public class RelsExtRelation extends RelsExtItem {
+
+    // The resource associated with this RelsExt relation.
     private String resource;
 
+    /**
+     * Constructs a RelsExtRelation with the specified namespace, local name, and resource.
+     *
+     * @param namespace The namespace of the RelsExt item.
+     * @param localName The local name of the RelsExt item.
+     * @param resource The resource related to this RelsExt item.
+     */
     public RelsExtRelation(String namespace, String localName, String resource) {
         super(namespace, localName);
         this.resource = resource;
     }
 
+    /**
+     * Retrieves the resource associated with this RelsExtRelation item.
+     *
+     * @return The resource associated with the RelsExtRelation item.
+     */
     public String getResource() {
         return resource;
     }
 
+    /**
+     * Returns a string representation of the RelsExtRelation item, combining the
+     * namespace, local name, and resource.
+     *
+     * @return A string representation of the RelsExtRelation item.
+     */
     @Override
     public String toString() {
         return super.toString() + " " + resource;
     }
 }
+

@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.ceskaexpedice.akubra;
 
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
@@ -25,196 +26,247 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * This is main and only repository access point
+ * Main repository access point for managing digital objects and datastreams.
+ * Provides methods for object lifecycle management, metadata retrieval,
+ * and processing index iteration.
+ *
+ * <p>Implementations of this interface interact with the Akubra storage backend.</p>
  *
  * @author pavels, petrp
  */
 public interface AkubraRepository {
 
-    //---------------- Object -------------------------------
+    //---------------- Object Management -------------------------------
 
     /**
-     * @param pid
-     * @return
+     * Checks if a digital object exists in the repository.
+     *
+     * @param pid The persistent identifier of the object.
+     * @return {@code true} if the object exists, {@code false} otherwise.
      */
     boolean objectExists(String pid);
 
     /**
-     * @param digitalObject
+     * Ingests a new digital object into the repository.
+     *
+     * @param digitalObject The digital object to be stored.
      */
     void ingest(DigitalObject digitalObject);
 
     /**
-     * @param pid
-     * @return
+     * Retrieves a digital object by its persistent identifier.
+     *
+     * @param pid The persistent identifier of the object.
+     * @return The digital object, or {@code null} if not found.
      */
     DigitalObject getObject(String pid);
 
     /**
-     * @param pid
-     * @param foxmlType
-     * @return
+     * Retrieves a digital object in a specific FOXML format.
+     *
+     * @param pid       The persistent identifier of the object.
+     * @param foxmlType The FOXML type format.
+     * @return The digital object in the specified format, or {@code null} if not found.
      */
     DigitalObject getObject(String pid, FoxmlType foxmlType);
 
     /**
-     * @param pid
-     * @return
+     * Retrieves metadata properties of a digital object.
+     *
+     * @param pid The persistent identifier of the object.
+     * @return The object properties containing metadata.
      */
     ObjectProperties getObjectProperties(String pid);
 
     /**
-     * @param pid
+     * Deletes a digital object from the repository.
+     *
+     * @param pid The persistent identifier of the object to delete.
      */
     void deleteObject(String pid);
 
     /**
-     * Deletes object, possibly without removing relations pointing at this object (from Resource index)
+     * Deletes an object from the repository with optional removal of related data.
      *
-     * @param pid
-     * @param deleteDataOfManagedDatastreams  if true, also managed datastreams of this object will be removed from the Repository (files in Akubra)
-     * @param deleteRelationsWithThisAsTarget if true, also relations with this object as a target will be removed from Resource index.
-     *                                        Which might not be desirable, for example if you want to replace the object with newer version, but keep relations pointing at it.
-     * @throws
+     * @param pid                             The persistent identifier of the object.
+     * @param deleteDataOfManagedDatastreams  If {@code true}, deletes associated managed datastreams.
+     * @param deleteRelationsWithThisAsTarget If {@code true}, removes relations where this object is the target.
      */
     void deleteObject(String pid, boolean deleteDataOfManagedDatastreams, boolean deleteRelationsWithThisAsTarget);
 
     /**
-     * @param obj
-     * @return
+     * Marshalls a digital object into an XML representation.
+     *
+     * @param obj The digital object to serialize.
+     * @return An {@link InputStream} containing the serialized XML representation.
      */
     InputStream marshallObject(DigitalObject obj);
 
     /**
-     * @param inputStream
-     * @return
+     * Unmarshalls a digital object from an XML input stream.
+     *
+     * @param inputStream The input stream containing the XML representation.
+     * @return The deserialized digital object.
      */
     DigitalObject unmarshallObject(InputStream inputStream);
 
-    //-------------------- Datastream ---------------------------
+    //-------------------- Datastream Management ---------------------------
 
     /**
-     * @param pid
-     * @param dsId
-     * @param mimeType
-     * @param xmlContent
+     * Creates an XML datastream for a digital object.
+     *
+     * @param pid        The persistent identifier of the object.
+     * @param dsId       The datastream identifier.
+     * @param mimeType   The MIME type of the datastream.
+     * @param xmlContent The XML content as an input stream.
      */
     void createXMLDatastream(String pid, String dsId, String mimeType, InputStream xmlContent);
 
     /**
-     * @param pid
-     * @param dsId
-     * @param mimeType
-     * @param binaryContent
+     * Creates a managed datastream for a digital object.
+     *
+     * @param pid           The persistent identifier of the object.
+     * @param dsId          The datastream identifier.
+     * @param mimeType      The MIME type of the datastream.
+     * @param binaryContent The binary content as an input stream.
      */
     void createManagedDatastream(String pid, String dsId, String mimeType, InputStream binaryContent);
 
     /**
-     * @param pid
-     * @param dsId
-     * @param url
-     * @param mimeType
+     * Creates a redirected datastream linking to an external resource.
+     *
+     * @param pid      The persistent identifier of the object.
+     * @param dsId     The datastream identifier.
+     * @param url      The external URL.
+     * @param mimeType The MIME type of the datastream.
      */
     void createRedirectedDatastream(String pid, String dsId, String url, String mimeType);
 
     /**
-     * @param pid
-     * @param dsId
-     * @return
+     * Checks if a datastream exists for a given object.
+     *
+     * @param pid  The persistent identifier of the object.
+     * @param dsId The datastream identifier.
+     * @return {@code true} if the datastream exists, {@code false} otherwise.
      */
     boolean datastreamExists(String pid, String dsId);
 
     /**
-     * @param pid
-     * @param dsId
-     * @return
+     * Retrieves metadata of a specific datastream.
+     *
+     * @param pid  The persistent identifier of the object.
+     * @param dsId The datastream identifier.
+     * @return Metadata of the datastream.
      */
     DatastreamMetadata getDatastreamMetadata(String pid, String dsId);
 
     /**
-     * @param pid
-     * @param dsId
-     * @return
+     * Retrieves the content of a datastream.
+     *
+     * @param pid  The persistent identifier of the object.
+     * @param dsId The datastream identifier.
+     * @return An input stream containing the datastream content.
      */
     InputStream getDatastreamContent(String pid, String dsId);
 
     /**
-     * @param pid
-     * @param dsId
+     * Deletes a datastream from an object.
+     *
+     * @param pid  The persistent identifier of the object.
+     * @param dsId The datastream identifier.
      */
     void deleteDatastream(String pid, String dsId);
 
-    /**
-     * @param pid
-     * @return
-     */
-    RelsExtWrapper relsExtGet(String pid);
+    //-------------------- Relations Management ---------------------------
 
     /**
-     * @param pid
-     * @param relation
-     * @param namespace
-     * @param targetRelation
+     * Adds a new relationship to the RELS-EXT datastream of a digital object.
+     *
+     * @param pid           The persistent identifier of the object.
+     * @param relation      The relationship type (e.g., "isPartOf").
+     * @param namespace     The namespace URI for the relationship.
+     * @param targetRelation The target object of the relationship.
      */
     void relsExtAddRelation(String pid, String relation, String namespace, String targetRelation);
 
     /**
-     * @param pid
-     * @param relation
-     * @param namespace
-     * @param targetRelation
+     * Removes a specific relationship from the RELS-EXT datastream of a digital object.
+     *
+     * @param pid           The persistent identifier of the object.
+     * @param relation      The relationship type.
+     * @param namespace     The namespace URI of the relationship.
+     * @param targetRelation The target object of the relationship.
      */
     void relsExtRemoveRelation(String pid, String relation, String namespace, String targetRelation);
 
     /**
-     * @param pid
-     * @param relation
-     * @param namespace
-     * @param value
+     * Adds a literal value to the RELS-EXT datastream of a digital object.
+     *
+     * @param pid       The persistent identifier of the object.
+     * @param relation  The property name.
+     * @param namespace The namespace URI for the property.
+     * @param value     The literal value to be stored.
      */
     void relsExtAddLiteral(String pid, String relation, String namespace, String value);
 
     /**
-     * @param pid
-     * @param relation
-     * @param namespace
-     * @param value
+     * Removes a specific literal value from the RELS-EXT datastream of a digital object.
+     *
+     * @param pid       The persistent identifier of the object.
+     * @param relation  The property name.
+     * @param namespace The namespace URI of the property.
+     * @param value     The literal value to be removed.
      */
     void relsExtRemoveLiteral(String pid, String relation, String namespace, String value);
 
     /**
-     * @param pid
-     * @return
+     * Retrieves the RELS-EXT datastream content of a digital object.
+     *
+     * @param pid The persistent identifier of the object.
+     * @return A {@link RelsExtWrapper} containing the RELS-EXT datastream content.
+     */
+    RelsExtWrapper relsExtGet(String pid);
+
+    /**
+     * Retrieves all datastream names for a given object.
+     *
+     * @param pid The persistent identifier of the object.
+     * @return A list of datastream names.
      */
     List<String> getDatastreamNames(String pid);
 
-    // ---------------- Misc ------------------------------------------------------
+    //-------------------- Miscellaneous ---------------------------
 
     /**
-     * @param params
-     * @param action
+     * Iterates over the processing index and applies an action to each item.
+     *
+     * @param params The query parameters for filtering the index.
+     * @param action The action to perform on each processing index item.
      */
     void iterateProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action);
 
     /**
-     *
+     * Shuts down the repository, releasing resources.
      */
     void shutdown();
 
     /**
-     * @param pid
-     * @param operation
-     * @param <T>
-     * @return
+     * Executes an operation with a read lock on the specified object.
+     *
+     * @param pid       The persistent identifier of the object.
+     * @param operation The operation to execute.
+     * @param <T>       The return type of the operation.
+     * @return The result of the operation.
      */
     <T> T doWithReadLock(String pid, LockOperation<T> operation);
 
     /**
-     * @param pid
-     * @param operation
-     * @param <T>
-     * @return
+     * Executes an operation with a write lock on the specified object.
+     *
+     * @param pid       The persistent identifier of the object.
+     * @param operation The operation to execute.
+     * @param <T>       The return type of the operation.
+     * @return The result of the operation.
      */
     <T> T doWithWriteLock(String pid, LockOperation<T> operation);
-
 }

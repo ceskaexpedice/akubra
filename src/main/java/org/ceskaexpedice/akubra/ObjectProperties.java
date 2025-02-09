@@ -18,14 +18,40 @@ package org.ceskaexpedice.akubra;
 
 import java.time.LocalDateTime;
 
+/**
+ * Interface that defines the properties of an object, including the ability to retrieve
+ * property values, labels, and metadata such as creation and modification timestamps.
+ * Implementing classes should provide the logic for handling properties and metadata.
+ */
 public interface ObjectProperties {
 
+    /**
+     * Retrieves the value of a property by its name.
+     *
+     * @param propertyName The name of the property to retrieve.
+     * @return The value of the specified property.
+     */
     String getProperty(String propertyName);
 
+    /**
+     * Retrieves the label or description of the property.
+     *
+     * @return The label of the property.
+     */
     String getPropertyLabel();
 
+    /**
+     * Retrieves the timestamp when the property was created.
+     *
+     * @return The creation timestamp of the property.
+     */
     LocalDateTime getPropertyCreated();
 
+    /**
+     * Retrieves the timestamp when the property was last modified.
+     *
+     * @return The last modification timestamp of the property.
+     */
     LocalDateTime getPropertyLastModified();
-
 }
+

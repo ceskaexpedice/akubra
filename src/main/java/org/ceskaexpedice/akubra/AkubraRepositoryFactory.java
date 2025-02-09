@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.ceskaexpedice.akubra;
 
 import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
@@ -23,26 +24,52 @@ import org.ceskaexpedice.akubra.impl.AkubraRepositoryImpl;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * RepositoryAccessFactory
+ * Factory for creating instances of {@link AkubraRepository}.
+ *
+ * <p>This class ensures that a single instance of {@code AkubraRepository} is created
+ * and reused whenever requested, implementing a thread-safe singleton pattern.</p>
+ *
+ * <p>The repository is built using a {@link CoreRepository} obtained from
+ * {@link CoreRepositoryFactory}, and additional decorators could be added
+ * in the future.</p>
+ *
+ * <p>This class cannot be instantiated.</p>
  *
  * @author ppodsednik
  */
 public final class AkubraRepositoryFactory {
+
+    /**
+     * Holds the singleton instance of {@link AkubraRepository}.
+     */
     private static final AtomicReference<AkubraRepository> INSTANCE = new AtomicReference<>();
 
+    /**
+     * Private constructor to prevent instantiation.
+     */
     private AkubraRepositoryFactory() {
     }
 
+    /**
+     * Creates or retrieves a singleton instance of {@link AkubraRepository}.
+     *
+     * <p>If an instance does not already exist, this method initializes one using
+     * the provided {@link RepositoryConfiguration}. The implementation currently
+     * returns an instance of {@link AkubraRepositoryImpl}, but future enhancements
+     * may introduce additional decorators.</p>
+     *
+     * @param configuration The repository configuration settings.
+     * @return A singleton instance of {@link AkubraRepository}.
+     */
     public static AkubraRepository createRepository(RepositoryConfiguration configuration) {
         return INSTANCE.updateAndGet(existingInstance -> {
             if (existingInstance == null) {
                 CoreRepository coreRepository = CoreRepositoryFactory.createRepository(configuration);
                 AkubraRepository baseAccess = new AkubraRepositoryImpl(coreRepository);
-                // TODO we can also instantiate decorators here; for now let us return just basic access
+                // TODO: Consider adding decorators in the future.
                 return baseAccess;
             }
             return existingInstance;
         });
     }
-
 }

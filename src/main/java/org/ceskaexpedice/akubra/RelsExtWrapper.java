@@ -18,10 +18,26 @@ package org.ceskaexpedice.akubra;
 
 import java.util.List;
 
+/**
+ * A wrapper interface for handling RelsExt relations and literals in the Akubra Fefora model stream.
+ * This interface provides methods to retrieve collections of relations and literals for a given namespace.
+ */
 public interface RelsExtWrapper {
 
+    /**
+     * Retrieves a list of {@link RelsExtRelation} objects associated with the specified namespace.
+     *
+     * @param namespace The namespace for which to retrieve the relations.
+     * @return A list of {@link RelsExtRelation} objects that belong to the specified namespace.
+     */
     List<RelsExtRelation> getRelations(String namespace);
 
+    /**
+     * Retrieves a list of {@link RelsExtLiteral} objects associated with the specified namespace.
+     *
+     * @param namespace The namespace for which to retrieve the literals.
+     * @return A list of {@link RelsExtLiteral} objects that belong to the specified namespace.
+     */
     List<RelsExtLiteral> getLiterals(String namespace);
-
 }
+

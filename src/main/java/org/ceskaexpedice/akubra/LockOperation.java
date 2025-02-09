@@ -14,10 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.ceskaexpedice.akubra;
 
+/**
+ * Represents an operation that should be executed within a lock.
+ * <p>
+ * This interface is typically used with repository methods that apply
+ * read or write locks to ensure thread-safe execution of operations.
+ * </p>
+ *
+ * <p>Implementations define the actual logic to be executed within
+ * the locking mechanism.</p>
+ *
+ * @param <T> The type of the result returned by the operation.
+ *
+ * @author Inovatika
+ */
 public interface LockOperation<T> {
 
+    /**
+     * Executes the locked operation.
+     *
+     * @return The result of the operation.
+     */
     T execute();
 
 }
+

@@ -16,20 +16,46 @@
  */
 package org.ceskaexpedice.akubra;
 
-public class RelsExtLiteral extends RelsExtItem{
+/**
+ * Represents a literal item in the RelsExt part of the Akubra Fefora model stream.
+ * This class extends {@link RelsExtItem} to hold a literal content value in addition
+ * to the namespace and local name.
+ */
+public class RelsExtLiteral extends RelsExtItem {
+
+    // The literal content associated with this RelsExt item.
     private String content;
 
+    /**
+     * Constructs a RelsExtLiteral with the specified namespace, local name, and content.
+     *
+     * @param namespace The namespace of the RelsExt item.
+     * @param localName The local name of the RelsExt item.
+     * @param content The literal content associated with this RelsExt item.
+     */
     public RelsExtLiteral(String namespace, String localName, String content) {
         super(namespace, localName);
         this.content = content;
     }
 
+    /**
+     * Retrieves the content of this RelsExtLiteral item.
+     *
+     * @return The content of the RelsExtLiteral item.
+     */
     public String getContent() {
         return content;
     }
 
+    /**
+     * Returns a string representation of the RelsExtLiteral item, combining the
+     * namespace, local name, and content.
+     *
+     * @return A string representation of the RelsExtLiteral item.
+     */
     @Override
     public String toString() {
         return super.toString() + " " + content;
     }
 }
+

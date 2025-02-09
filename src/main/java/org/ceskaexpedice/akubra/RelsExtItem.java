@@ -16,23 +16,53 @@
  */
 package org.ceskaexpedice.akubra;
 
+/**
+ * Represents an item in the RelsExt part of the Akubra Fefora model stream.
+ * This class is intended to hold information related to a namespace and a local name.
+ * It serves as a base class for extensions that define specific RelsExt items.
+ */
 public abstract class RelsExtItem {
+
+    // The namespace associated with this RelsExt item.
     private String namespace;
+
+    // The local name of the RelsExt item.
     private String localName;
 
+    /**
+     * Constructs a RelsExtItem with the specified namespace and local name.
+     *
+     * @param namespace The namespace of the RelsExt item.
+     * @param localName The local name of the RelsExt item.
+     */
     public RelsExtItem(String namespace, String localName) {
         this.namespace = namespace;
         this.localName = localName;
     }
 
+    /**
+     * Retrieves the namespace associated with this RelsExt item.
+     *
+     * @return The namespace of the RelsExt item.
+     */
     public String getNamespace() {
         return namespace;
     }
 
+    /**
+     * Retrieves the local name of this RelsExt item.
+     *
+     * @return The local name of the RelsExt item.
+     */
     public String getLocalName() {
         return localName;
     }
 
+    /**
+     * Returns a string representation of the RelsExt item, combining the namespace and local name.
+     *
+     * @return A string representation of the RelsExt item.
+     */
     @Override
     public String toString() {
         return namespace + " " + localName;
