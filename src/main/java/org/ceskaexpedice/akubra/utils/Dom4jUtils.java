@@ -34,6 +34,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Dom4jUtils
+ */
 public class Dom4jUtils {
 
     private static Map<String, String> NAMESPACE_URIS = new HashMap<>();

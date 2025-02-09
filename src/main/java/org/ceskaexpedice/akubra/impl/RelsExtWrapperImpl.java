@@ -25,6 +25,9 @@ import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * RelsExtWrapperImpl
+ */
 class RelsExtWrapperImpl implements RelsExtWrapper {
 
     private final RepositoryObject repositoryObject;

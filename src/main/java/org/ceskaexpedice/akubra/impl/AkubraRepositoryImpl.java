@@ -33,6 +33,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+/**
+ * AkubraRepositoryImpl
+ */
 public class AkubraRepositoryImpl implements AkubraRepository {
     private static final Logger LOGGER = Logger.getLogger(AkubraRepositoryImpl.class.getName());
 

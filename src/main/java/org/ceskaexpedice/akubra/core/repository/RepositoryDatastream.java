@@ -22,45 +22,73 @@ import java.io.InputStream;
 import java.util.Date;
 
 /**
- * Represents datastream
+ * Represents a datastream in the repository system.
+ * A datastream is an associated data entity within the repository object,
+ * and this interface provides access to its metadata and content.
  */
 public interface RepositoryDatastream {
 
+    /**
+     * Returns the associated datastream type.
+     *
+     * @return A DatastreamType object representing the type of this datastream.
+     */
     DatastreamType getDatastream();
 
+    /**
+     * Enum representing the two types of datastreams:
+     * DIRECT and INDIRECT.
+     */
     enum Type {
+        /**
+         * A direct datastream, typically representing content directly
+         * stored within the repository.
+         */
         DIRECT,
+
+        /**
+         * An indirect datastream, often representing a pointer or a link
+         * to external content.
+         */
         INDIRECT;
     }
 
     /**
-     * Return name
-     * @return
-     * @throws
+     * Returns the name of the datastream.
+     *
+     * @return A string representing the name of the datastream.
+     * @throws IllegalStateException If the name cannot be retrieved.
      */
     String getName();
 
     /**
-     * Return mimetype
-     * @return
-     * @throws
+     * Returns the MIME type of the last version of the datastream.
+     *
+     * @return A string representing the MIME type of the last version.
+     * @throws IllegalStateException If the MIME type cannot be determined.
      */
     String getLastVersionMimeType();
 
     /**
-     * Return last modified flag
-     * @return
-     * @throws
+     * Returns the last modified date of the datastream.
+     *
+     * @return A Date object representing the last modification timestamp.
+     * @throws IllegalStateException If the last modified date is unavailable.
      */
     Date getLastVersionLastModified();
 
+    /**
+     * Returns the type of the datastream (either DIRECT or INDIRECT).
+     *
+     * @return A Type enumeration representing the datastream's type.
+     */
     Type getStreamType();
 
     /**
-     * Return content of the stream
-     * @return
-     * @throws
+     * Returns the content of the last version of the datastream.
+     *
+     * @return An InputStream containing the content of the last version.
+     * @throws IllegalStateException If the content cannot be retrieved.
      */
     InputStream getLastVersionContent();
-
 }

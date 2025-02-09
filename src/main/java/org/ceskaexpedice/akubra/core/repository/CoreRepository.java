@@ -22,107 +22,120 @@ import java.io.InputStream;
 import java.util.concurrent.locks.Lock;
 
 /**
- * Core access to Akubra repository
- * It is basic tool for ingesting and it is basic point for RepositoryAccess facade
- * @author pavels
+ * Core access to Akubra repository.
+ * This interface provides the primary functions for ingesting, accessing, and managing digital objects
+ * in the repository. It serves as the core for repository access.
+ * It also handles repository object locks and data marshaling operations.
  */
 public interface CoreRepository {
 
     /**
-     * Returns true if object exists and if it is raw object
-     * @param pid
-     * @return
-     * @throws
+     * Checks if a digital object exists in the repository and whether it is a raw object.
+     *
+     * @param pid The unique identifier of the object.
+     * @return true if the object exists and is a raw object, false otherwise.
      */
-    boolean  objectExists(String pid);
+    boolean objectExists(String pid);
 
     /**
-     * Ingest new digital object from the provided object representation
-     * @param digitalObject
-     * @return
-     * @throws
+     * Ingests a new digital object into the repository from the provided object representation.
+     *
+     * @param digitalObject The digital object to be ingested.
+     * @return The ingested RepositoryObject.
      */
     RepositoryObject ingestObject(DigitalObject digitalObject);
 
     /**
-     * Creates an empty object or finds an existing object
-     * @param pid Identification of the object
-     * @return
-     * @throws
+     * Creates a new object or retrieves an existing one from the repository.
+     *
+     * @param pid The unique identifier of the object.
+     * @return The RepositoryObject, either newly created or fetched from the repository.
      */
     RepositoryObject createOrGetObject(String pid);
 
     /**
-     * Returns object
-     * @param pid
-     * @return
-     * @throws
+     * Retrieves an object from the repository.
+     *
+     * @param pid The unique identifier of the object.
+     * @return The RepositoryObject corresponding to the given pid.
      */
     RepositoryObject getObject(String pid);
 
     /**
-     * @param pid
-     * @param useCache
-     * @return
+     * Retrieves an object from the repository with the option to use cache.
+     *
+     * @param pid The unique identifier of the object.
+     * @param useCache If true, the cache will be used to fetch the object; otherwise, the repository is queried directly.
+     * @return The RepositoryObject corresponding to the given pid.
      */
     RepositoryObject getObject(String pid, boolean useCache);
 
     /**
-     * @param obj
+     * Resolves archived datastreams for the provided digital object.
+     *
+     * @param obj The digital object whose datastreams need to be resolved.
      */
     void resolveArchivedDatastreams(DigitalObject obj);
 
     /**
-     * @param obj
-     * @return
+     * Marshals a digital object into an InputStream representation.
+     *
+     * @param obj The digital object to be marshaled.
+     * @return An InputStream representation of the digital object.
      */
     InputStream marshallObject(DigitalObject obj);
 
     /**
-     * @param inputStream
-     * @return
+     * Unmarshals an InputStream into a digital object.
+     *
+     * @param inputStream The InputStream to be unmarshaled.
+     * @return The unmarshaled digital object.
      */
     DigitalObject unmarshallObject(InputStream inputStream);
 
     /**
-     * Deletes object
-     * @param pid
-     * @throws
+     * Deletes a digital object from the repository.
+     *
+     * @param pid The unique identifier of the object to be deleted.
      */
     void deleteObject(String pid);
 
     /**
-     * Deletes object, possibly without removing relations pointing at this object (from Resource index)
-     * @param pid
-     * @param deleteDataOfManagedDatastreams if true, also managed datastreams of this object will be removed from the Repository (files in Akubra)
-     * @param deleteRelationsWithThisAsTarget if true, also relations with this object as a target will be removed from Resource index.
-     *                                         Which might not be desirable, for example if you want to replace the object with newer version, but keep relations pointing at it.
+     * Deletes a digital object from the repository, with options for handling related data and relations.
      *
-     * @throws
+     * @param pid The unique identifier of the object to be deleted.
+     * @param deleteDataOfManagedDatastreams If true, the managed datastreams of the object will also be removed.
+     * @param deleteRelationsWithThisAsTarget If true, relations where this object is the target will be removed from the resource index.
      */
     void deleteObject(String pid, boolean deleteDataOfManagedDatastreams, boolean deleteRelationsWithThisAsTarget);
 
     /**
-     * @param pid
-     * @return
+     * Retrieves a read lock for a digital object.
+     *
+     * @param pid The unique identifier of the object.
+     * @return A Lock instance that ensures read access to the object.
      */
     Lock getReadLock(String pid);
 
     /**
-     * @param pid
-     * @return
+     * Retrieves a write lock for a digital object.
+     *
+     * @param pid The unique identifier of the object.
+     * @return A Lock instance that ensures write access to the object.
      */
     Lock getWriteLock(String pid);
 
     /**
-     * Returns processing index feeder
-     * @return
-     * @throws
+     * Returns a processing index feeder for the repository.
+     *
+     * @return A ProcessingIndexFeeder instance for processing index feeding.
      */
     ProcessingIndexFeeder getProcessingIndexFeeder();
 
     /**
-     *
+     * Shuts down the repository access system.
+     * This method is typically called when the repository access system is no longer needed.
      */
     void shutdown();
 }
+

@@ -31,6 +31,9 @@ import java.util.logging.Logger;
 
 import static org.ceskaexpedice.akubra.utils.Dom4jUtils.extractProperty;
 
+/**
+ * ObjectPropertiesImpl
+ */
 class ObjectPropertiesImpl implements ObjectProperties {
     private static final Logger LOGGER = Logger.getLogger(ObjectPropertiesImpl.class.getName());
     private static final Log log = LogFactory.getLog(ObjectPropertiesImpl.class);

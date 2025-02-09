@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 import static org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.createEmptyDigitalObject;
 
 /**
+ * CoreRepositoryImpl
  * @author pavels
  */
 public class CoreRepositoryImpl implements CoreRepository {

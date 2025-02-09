@@ -22,6 +22,9 @@ import org.ceskaexpedice.fedoramodel.ContentLocationType;
 
 import java.util.Date;
 
+/**
+ * DatastreamMetadataImpl
+ */
 class DatastreamMetadataImpl implements DatastreamMetadata {
     private RepositoryDatastream repositoryDatastream;
 

@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.logging.Logger;
 
 /**
+ * RepositoryDatastreamImpl
  * Created by pstastny on 10/13/2017.
  */
 class RepositoryDatastreamImpl implements RepositoryDatastream {

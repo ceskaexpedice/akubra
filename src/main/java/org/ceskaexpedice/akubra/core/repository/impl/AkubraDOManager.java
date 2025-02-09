@@ -57,6 +57,9 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * AkubraDOManager
+ */
 public class AkubraDOManager {
     private static final String DIGITALOBJECT_CACHE_ALIAS = "DigitalObjectCache";
     private static final Logger LOGGER = Logger.getLogger(AkubraDOManager.class.getName());

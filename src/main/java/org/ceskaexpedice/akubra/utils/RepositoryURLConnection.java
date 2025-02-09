@@ -24,6 +24,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+/**
+ * RepositoryURLConnection
+ */
 public class RepositoryURLConnection extends URLConnection {
 
     public static final String IMG_FULL = "IMG_FULL";
@@ -38,7 +41,7 @@ public class RepositoryURLConnection extends URLConnection {
 
     @Override
     public InputStream getInputStream() throws IOException {
-        /*
+        /* TODO
         String path = getURL().getPath();
         String pid = null;
         String stream = null;

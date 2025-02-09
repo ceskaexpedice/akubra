@@ -21,6 +21,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * SafeSimpleDateFormat
+ */
 public class SafeSimpleDateFormat extends SimpleDateFormat {
 
     public SafeSimpleDateFormat(String pattern) {

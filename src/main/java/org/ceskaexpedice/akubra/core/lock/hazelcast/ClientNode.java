@@ -28,11 +28,36 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+/**
+ * Manages the Hazelcast client node for connecting to a Hazelcast cluster.
+ * This class ensures that a Hazelcast client instance is created and connected to the Hazelcast cluster.
+ * It provides methods to initialize the client, retrieve the instance, and shut it down.
+ *
+ * <p>
+ * The Hazelcast client configuration can either be loaded from a file or created programmatically.
+ * This class ensures that only one instance of the Hazelcast client is created at a time.
+ * </p>
+ *
+ * <p>
+ * This class is thread-safe and ensures the Hazelcast client instance is only created once.
+ * </p>
+ *
+ * @author pavels
+ */
 public class ClientNode {
 
     private static final ILogger LOGGER = Logger.getLogger(ClientNode.class);
     private HazelcastInstance hzInstance;
 
+    /**
+     * Ensures that a Hazelcast client node is created and connected to the Hazelcast cluster.
+     * <p>
+     * This method creates a new Hazelcast client instance if one does not already exist. It loads the configuration
+     * from the specified configuration file, or constructs it programmatically if no file is provided.
+     * </p>
+     *
+     * @param configuration The configuration containing details such as the Hazelcast client config file and user credentials.
+     */
     public void ensureHazelcastNode(HazelcastConfiguration configuration) {
         if (hzInstance != null) {
             return;
@@ -41,6 +66,16 @@ public class ClientNode {
         hzInstance = HazelcastClient.newHazelcastClient(config);
     }
 
+    /**
+     * Creates the Hazelcast client configuration based on the provided configuration details.
+     * <p>
+     * This method either loads the configuration from an XML file if provided, or constructs the configuration
+     * programmatically if no file is specified.
+     * </p>
+     *
+     * @param configuration The configuration containing details such as the config file path and user credentials.
+     * @return The Hazelcast client configuration object.
+     */
     private ClientConfig createHazelcastConfig(HazelcastConfiguration configuration) {
         ClientConfig config = null;
         File configFile = configuration.getHazelcastClientConfigFile() == null ? null : new File(configuration.getHazelcastClientConfigFile());
@@ -50,7 +85,7 @@ public class ClientNode {
             } catch (IOException ex) {
                 LOGGER.warning("Could not load Hazelcast config file " + configFile, ex);
             }
-        }else{
+        } else {
             config = new ClientConfig();
             config.setInstanceName(configuration.getHazelcastInstance());
             GroupConfig groupConfig = config.getGroupConfig();
@@ -58,10 +93,22 @@ public class ClientNode {
         }
         return config;
     }
+
+    /**
+     * Retrieves the Hazelcast client instance.
+     *
+     * @return The Hazelcast client instance.
+     */
     public HazelcastInstance getHzInstance() {
         return hzInstance;
     }
 
+    /**
+     * Shuts down the running Hazelcast client instance, if one is currently active.
+     * <p>
+     * This method ensures that the Hazelcast client instance is properly shut down and its resources are released.
+     * </p>
+     */
     public void shutdown() {
         if (hzInstance != null) {
             hzInstance.shutdown();

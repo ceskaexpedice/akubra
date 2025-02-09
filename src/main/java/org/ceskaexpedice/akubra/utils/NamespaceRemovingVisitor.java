@@ -18,6 +18,9 @@ package org.ceskaexpedice.akubra.utils;
 
 import org.dom4j.*;
 
+/**
+ * NamespaceRemovingVisitor
+ */
 public class NamespaceRemovingVisitor extends VisitorSupport {
     private final boolean removeNsFromElements;
     private final boolean removeNsFromAttributes;

@@ -24,16 +24,12 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
+/**
+ * RepositoryURLStreamHandler
+ */
 public class RepositoryURLStreamHandler extends URLStreamHandler {
 
     private AkubraRepository akubraRepository;
-
-    /*
-    @Inject
-    public Handler(RepositoryAccess fedoraAccess) {
-        super();
-        this.fedoraAccess = fedoraAccess;
-    }*/
 
     @Override
     protected URLConnection openConnection(URL u) throws IOException {
