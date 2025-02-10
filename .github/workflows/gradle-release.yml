@@ -49,6 +49,10 @@ jobs:
           
     - name: Build with Gradle
       run: ./gradlew build publish
+      env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
     - name: List contents
       run: |
