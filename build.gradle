@@ -1,26 +1,27 @@
 plugins {
     id 'java-library' // Applies the Java plugin
-	id 'maven-publish'
+    id 'maven-publish'
 }
 
 publishing {
 
-  publications {
+    publications {
         myLibrary(MavenPublication) {
             from components.java
         }
     }
 
-  repositories {
-    maven {
-      name = "GitHubPackages"
-      url = "https://maven.pkg.github.com/ceskaexpedice/akubra"
-      credentials {
-        username = System.getenv("GITHUB_ACTOR")
-        password = System.getenv("GITHUB_TOKEN")
-      }
+    repositories {
+        //mavenLocal()
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/ceskaexpedice/akubra"
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
     }
-  }
 }
 
 repositories {
@@ -86,7 +87,7 @@ dependencies {
     implementation 'org.apache.solr:solr-solrj:8.8.1'
     implementation "org.apache.commons:commons-lang3:3.5"
     implementation "org.antlr:stringtemplate:3.2.1"
-    implementation'net.jcip:jcip-annotations:1.0'
+    implementation 'net.jcip:jcip-annotations:1.0'
     implementation "commons-dbcp:commons-dbcp:1.4"
     implementation 'fast-md5:fast-md5:2.5'
 

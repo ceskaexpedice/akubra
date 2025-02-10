@@ -51,6 +51,8 @@ import java.io.*;
 import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -62,6 +64,7 @@ import java.util.logging.Logger;
  */
 public class AkubraDOManager {
     private static final String DIGITALOBJECT_CACHE_ALIAS = "DigitalObjectCache";
+    private static final int UNMARSHALLER_POOL_CAPACITY = 50;
     private static final Logger LOGGER = Logger.getLogger(AkubraDOManager.class.getName());
 
     private RepositoryConfiguration configuration;
@@ -73,14 +76,15 @@ public class AkubraDOManager {
 
     private Cache<String, DigitalObject> objectCache;
 
-    private Unmarshaller unmarshaller;
+    private final BlockingQueue<Unmarshaller> unmarshallerPool = new LinkedBlockingQueue<>(UNMARSHALLER_POOL_CAPACITY);
     private Marshaller marshaller;
 
     private void initialize(RepositoryConfiguration configuration) {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(DigitalObject.class);
-            unmarshaller = jaxbContext.createUnmarshaller();
-            //JAXBContext jaxbdatastreamContext = JAXBContext.newInstance(DatastreamType.class);
+            for (int i = 0; i < UNMARSHALLER_POOL_CAPACITY; i++) {
+                unmarshallerPool.offer(jaxbContext.createUnmarshaller());
+            }
             marshaller = jaxbContext.createMarshaller();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Cannot init JAXB", e);
@@ -164,9 +168,9 @@ public class AkubraDOManager {
             Object obj;
             Lock lock = getReadLock(pid);
             try (InputStream inputStream = this.storage.retrieveObject(pid);) {
-                synchronized (unmarshaller) {
-                    obj = unmarshaller.unmarshal(inputStream);
-                }
+                Unmarshaller unmarshaller = unmarshallerPool.take();
+                obj = unmarshaller.unmarshal(inputStream);
+                unmarshallerPool.offer(unmarshaller);
             } catch (ObjectNotInLowlevelStorageException ex) {
                 return null;
             } catch (Exception e) {
@@ -315,9 +319,9 @@ public class AkubraDOManager {
     DigitalObject unmarshallObject(InputStream inputStream) {
         try {
             Object obj;
-            synchronized (unmarshaller) {
-                obj = unmarshaller.unmarshal(inputStream);
-            }
+            Unmarshaller unmarshaller = unmarshallerPool.take();
+            obj = unmarshaller.unmarshal(inputStream);
+            unmarshallerPool.offer(unmarshaller);
             return (DigitalObject) obj;
         } catch (Exception e) {
             LOGGER.severe("Could not unmarshall object: " + e);
