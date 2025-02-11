@@ -48,9 +48,9 @@ import java.util.stream.Collectors;
  * @author pstastny
  */
 public class ProcessingIndexFeederSolr implements ProcessingIndexFeeder {
-    
 
     private static final Logger LOGGER = Logger.getLogger(ProcessingIndexFeederSolr.class.getName());
+
     private SolrClient solrClient;
 
     public ProcessingIndexFeederSolr(SolrClient solrClient) {
@@ -62,9 +62,9 @@ public class ProcessingIndexFeederSolr implements ProcessingIndexFeeder {
     public void iterate(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action) {
         try {
             SolrQuery solrQuery = new SolrQuery(params.getQueryString());
-            solrQuery.setSort(params.getSortField(), params.isAscending() ? SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
             solrQuery.setRows(params.getRows());
             if(params.getCursorMark() == null) {
+                solrQuery.setSort(params.getSortField(), params.isAscending() ? SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
                 int offset = params.getPageIndex() * params.getRows();
                 solrQuery.setStart(offset);
                 QueryResponse response = this.solrClient.query(solrQuery);
@@ -72,6 +72,8 @@ public class ProcessingIndexFeederSolr implements ProcessingIndexFeeder {
                     action.accept(new ProcessingIndexItem(doc));
                 });
             }else{
+                solrQuery.addSort(UNIQUE_KEY, SolrQuery.ORDER.asc);
+                solrQuery.addSort(params.getSortField(), params.isAscending() ? SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
                 String cursorMark = params.getCursorMark();
                 boolean done = false;
                 while (!done) {

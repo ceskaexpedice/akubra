@@ -47,10 +47,11 @@ import java.util.logging.Logger;
  *
  * <b>Implementation note: All DOM access methods are synchronized on Document object </b>
  */
-public class DomUtils {
+public final class DomUtils {
 
     public static final Logger LOGGER = Logger.getLogger(DomUtils.class.getName());
 
+    private DomUtils() {}
 
     /**
      * PArse document from reader

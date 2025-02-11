@@ -32,6 +32,7 @@ public interface ProcessingIndexFeeder {
     // Constants representing types of index entries (relations and descriptions).
     String TYPE_RELATION = "relation";
     String TYPE_DESC = "description";
+    String UNIQUE_KEY = "pid";
 
     /**
      * Enumeration of possible title types for indexing.
