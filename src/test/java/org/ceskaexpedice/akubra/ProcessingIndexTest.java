@@ -20,6 +20,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.ceskaexpedice.akubra.core.lock.hazelcast.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.core.lock.hazelcast.ServerNode;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
+import org.ceskaexpedice.akubra.core.repository.ProcessingIndexFeeder;
 import org.ceskaexpedice.akubra.testutils.TestUtilities;
 import org.ceskaexpedice.akubra.utils.ProcessingIndexUtils;
 import org.junit.jupiter.api.AfterAll;
@@ -98,7 +99,7 @@ public class ProcessingIndexTest {
                 .queryString(query)
                 .sortField("title")
                 .ascending(true)
-                .cursorMark("*")
+                .cursorMark(ProcessingIndexFeeder.CURSOR_MARK_START)
                 .fieldsToFetch(List.of("source", "_version_"))
                 .build();
         akubraRepository.iterateProcessingIndex(params, processingIndexItem -> {

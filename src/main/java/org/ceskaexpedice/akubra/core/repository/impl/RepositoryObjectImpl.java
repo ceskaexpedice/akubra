@@ -117,7 +117,7 @@ class RepositoryObjectImpl implements RepositoryObject {
         RepositoryDatastream ds = new RepositoryDatastreamImpl(datastreamType, streamId, RepositoryDatastream.Type.DIRECT, manager);
 
         try {
-            manager.commit(digitalObject, streamId);
+            manager.write(digitalObject, streamId);
             if (streamId.equals(KnownDatastreams.RELS_EXT.toString())) {
                 try {
                     // process rels-ext and create all children and relations
@@ -141,7 +141,7 @@ class RepositoryObjectImpl implements RepositoryObject {
         try {
             datastreamType.getDatastreamVersion().get(0).setBinaryContent(IOUtils.toByteArray(input));
             RepositoryDatastream ds = new RepositoryDatastreamImpl(datastreamType, streamId, RepositoryDatastream.Type.DIRECT, manager);
-            manager.commit(digitalObject, streamId);
+            manager.write(digitalObject, streamId);
             return ds;
         } catch (Exception ex) {
             throw new RepositoryException(ex);
@@ -158,7 +158,7 @@ class RepositoryObjectImpl implements RepositoryObject {
 
         RepositoryDatastream ds = new RepositoryDatastreamImpl(datastreamType, streamId, RepositoryDatastream.Type.INDIRECT, manager);
 
-        manager.commit(digitalObject, streamId);
+        manager.write(digitalObject, streamId);
         return ds;
     }
 

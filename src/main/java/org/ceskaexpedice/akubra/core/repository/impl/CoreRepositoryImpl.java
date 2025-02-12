@@ -73,7 +73,7 @@ public class CoreRepositoryImpl implements CoreRepository {
             return obj;
         } else {
             DigitalObject emptyDigitalObject = createEmptyDigitalObject(ident);
-            manager.commit(emptyDigitalObject, null);
+            manager.write(emptyDigitalObject, null);
             try {
                 feeder.deleteByPid(emptyDigitalObject.getPID());
             } catch (Throwable th) {
@@ -90,7 +90,7 @@ public class CoreRepositoryImpl implements CoreRepository {
             throw new RepositoryException("Ingested object exists:" + digitalObject.getPID());
         } else {
             RepositoryObjectImpl obj = new RepositoryObjectImpl(digitalObject, this.manager, this.feeder);
-            manager.commit(obj.getDigitalObject(), null);
+            manager.write(obj.getDigitalObject(), null);
             obj.rebuildProcessingIndex();
             return obj;
         }

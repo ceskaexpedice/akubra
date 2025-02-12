@@ -33,6 +33,9 @@ public interface ProcessingIndexFeeder {
     String TYPE_RELATION = "relation";
     String TYPE_DESC = "description";
     String UNIQUE_KEY = "pid";
+    String CURSOR_MARK_PARAM = "cursorMark";
+    String CURSOR_MARK_NEXT = "nextCursorMark";
+    String CURSOR_MARK_START = "*";
 
     /**
      * Enumeration of possible title types for indexing.

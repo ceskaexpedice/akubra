@@ -246,6 +246,11 @@ public interface AkubraRepository {
     void iterateProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action);
 
     /**
+     * Performs commit on processing index
+     */
+    void commitProcessingIndex();
+
+    /**
      * Shuts down the repository, releasing resources.
      */
     void shutdown();

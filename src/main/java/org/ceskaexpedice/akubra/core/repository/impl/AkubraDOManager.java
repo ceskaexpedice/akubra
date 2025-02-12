@@ -270,7 +270,7 @@ public class AkubraDOManager {
         }
     }
 
-    void commit(DigitalObject object, String streamId) {
+    void write(DigitalObject object, String streamId) {
         Lock lock = getWriteLock(object.getPID());
         try {
             List<DatastreamType> datastreamList = object.getDatastream();

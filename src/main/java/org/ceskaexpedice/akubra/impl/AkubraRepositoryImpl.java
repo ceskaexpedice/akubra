@@ -64,26 +64,21 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public DigitalObject getObject(String pid, FoxmlType foxmlType) {
-        Lock readLock = coreRepository.getReadLock(pid);
-        try {
-            RepositoryObject repositoryObject = coreRepository.getObject(pid);
-            if(repositoryObject == null) {
-                return null;
-            }
-            if (foxmlType == FoxmlType.archive) {
-                DigitalObject digitalObject = repositoryObject.getDigitalObject();
-                coreRepository.resolveArchivedDatastreams(digitalObject);
-            }
-            return repositoryObject.getDigitalObject();
-        } finally {
-            readLock.unlock();
+        RepositoryObject repositoryObject = coreRepository.getObject(pid);
+        if (repositoryObject == null) {
+            return null;
         }
+        DigitalObject digitalObject = repositoryObject.getDigitalObject();
+        if(foxmlType == FoxmlType.archive) {
+            coreRepository.resolveArchivedDatastreams(digitalObject);
+        }
+        return digitalObject;
     }
 
     @Override
     public ObjectProperties getObjectProperties(String pid) {
         RepositoryObject repositoryObject = coreRepository.getObject(pid);
-        if(repositoryObject == null) {
+        if (repositoryObject == null) {
             return null;
         }
         return new ObjectPropertiesImpl(repositoryObject);
@@ -92,13 +87,11 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     @Override
     public void deleteObject(String pid) {
         coreRepository.deleteObject(pid);
-        coreRepository.getProcessingIndexFeeder().commit();
     }
 
     @Override
     public void deleteObject(String pid, boolean deleteDataOfManagedDatastreams, boolean deleteRelationsWithThisAsTarget) {
         coreRepository.deleteObject(pid, deleteDataOfManagedDatastreams, deleteRelationsWithThisAsTarget);
-        coreRepository.getProcessingIndexFeeder().commit();
     }
 
     @Override
@@ -114,7 +107,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     @Override
     public void createXMLDatastream(String pid, String dsId, String mimeType, InputStream xmlContent) {
         RepositoryObject repositoryObject = coreRepository.getObject(pid);
-        if(repositoryObject == null) {
+        if (repositoryObject == null) {
             return;
         }
         repositoryObject.createXMLStream(dsId, mimeType, xmlContent);
@@ -123,7 +116,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     @Override
     public void createManagedDatastream(String pid, String dsId, String mimeType, InputStream binaryContent) {
         RepositoryObject repositoryObject = coreRepository.getObject(pid);
-        if(repositoryObject == null) {
+        if (repositoryObject == null) {
             return;
         }
         repositoryObject.createManagedStream(dsId, mimeType, binaryContent);
@@ -132,7 +125,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     @Override
     public void createRedirectedDatastream(String pid, String dsId, String url, String mimeType) {
         RepositoryObject repositoryObject = coreRepository.getObject(pid);
-        if(repositoryObject == null) {
+        if (repositoryObject == null) {
             return;
         }
         repositoryObject.createRedirectedStream(dsId, url, mimeType);
@@ -146,35 +139,25 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public DatastreamMetadata getDatastreamMetadata(String pid, String dsId) {
-        Lock readLock = coreRepository.getReadLock(pid);
-        try {
-            RepositoryObject object = coreRepository.getObject(pid);
-            RepositoryDatastream stream = object.getStream(dsId);
-            return new DatastreamMetadataImpl(stream);
-        } finally {
-            readLock.unlock();
-        }
+        RepositoryObject object = coreRepository.getObject(pid);
+        RepositoryDatastream stream = object.getStream(dsId);
+        return new DatastreamMetadataImpl(stream);
     }
 
     @Override
     public InputStream getDatastreamContent(String pid, String dsId) {
-        Lock readLock = coreRepository.getReadLock(pid);
-        try {
-            RepositoryObject repositoryObject = coreRepository.getObject(pid);
-            if(repositoryObject == null || repositoryObject.getStream(dsId) == null) {
-                return null;
-            }
-            InputStream lastVersionContent = repositoryObject.getStream(dsId).getLastVersionContent();
-            return lastVersionContent;
-        } finally {
-            readLock.unlock();
+        RepositoryObject repositoryObject = coreRepository.getObject(pid);
+        if (repositoryObject == null || repositoryObject.getStream(dsId) == null) {
+            return null;
         }
+        InputStream lastVersionContent = repositoryObject.getStream(dsId).getLastVersionContent();
+        return lastVersionContent;
     }
 
     @Override
     public void deleteDatastream(String pid, String dsId) {
         RepositoryObject repositoryObject = coreRepository.getObject(pid);
-        if(repositoryObject == null) {
+        if (repositoryObject == null) {
             return;
         }
         repositoryObject.deleteStream(dsId);
@@ -183,7 +166,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     @Override
     public RelsExtWrapper relsExtGet(String pid) {
         RepositoryObject repositoryObject = coreRepository.getObject(pid);
-        if(repositoryObject == null) {
+        if (repositoryObject == null) {
             return null;
         }
         return new RelsExtWrapperImpl(repositoryObject);
@@ -192,7 +175,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     @Override
     public void relsExtAddRelation(String pid, String relation, String namespace, String targetRelation) {
         RepositoryObject repositoryObject = coreRepository.getObject(pid);
-        if(repositoryObject == null) {
+        if (repositoryObject == null) {
             return;
         }
         repositoryObject.relsExtAddRelation(relation, namespace, targetRelation);
@@ -201,7 +184,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     @Override
     public void relsExtRemoveRelation(String pid, String relation, String namespace, String targetRelation) {
         RepositoryObject repositoryObject = coreRepository.getObject(pid);
-        if(repositoryObject == null) {
+        if (repositoryObject == null) {
             return;
         }
         repositoryObject.relsExtRemoveRelation(relation, namespace, targetRelation);
@@ -210,7 +193,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     @Override
     public void relsExtAddLiteral(String pid, String relation, String namespace, String value) {
         RepositoryObject repositoryObject = coreRepository.getObject(pid);
-        if(repositoryObject == null) {
+        if (repositoryObject == null) {
             return;
         }
         repositoryObject.relsExtAddLiteral(relation, namespace, value);
@@ -219,7 +202,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     @Override
     public void relsExtRemoveLiteral(String pid, String relation, String namespace, String value) {
         RepositoryObject repositoryObject = coreRepository.getObject(pid);
-        if(repositoryObject == null) {
+        if (repositoryObject == null) {
             return;
         }
         repositoryObject.relsExtRemoveLiteral(relation, namespace, value);
@@ -227,26 +210,26 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public List<String> getDatastreamNames(String pid) {
-        Lock readLock = coreRepository.getReadLock(pid);
-        try {
-            RepositoryObject object = coreRepository.getObject(pid);
-            List<RepositoryDatastream> streams = object.getStreams();
-            return streams.stream().map(it -> {
-                try {
-                    return it.getName();
-                } catch (RepositoryException e) {
-                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                    return null;
-                }
-            }).collect(Collectors.toList());
-        } finally {
-            readLock.unlock();
-        }
+        RepositoryObject object = coreRepository.getObject(pid);
+        List<RepositoryDatastream> streams = object.getStreams();
+        return streams.stream().map(it -> {
+            try {
+                return it.getName();
+            } catch (RepositoryException e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                return null;
+            }
+        }).collect(Collectors.toList());
     }
 
     @Override
     public void iterateProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action) {
         coreRepository.getProcessingIndexFeeder().iterate(params, action);
+    }
+
+    @Override
+    public void commitProcessingIndex() {
+        coreRepository.getProcessingIndexFeeder().commit();
     }
 
     @Override
@@ -274,4 +257,4 @@ public class AkubraRepositoryImpl implements AkubraRepository {
         coreRepository.shutdown();
     }
 
-  }
+}
