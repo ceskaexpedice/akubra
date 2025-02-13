@@ -20,14 +20,26 @@ package org.ceskaexpedice.akubra;
  * ProcessingIndexRelation
  */
 public class ProcessingIndexRelation {
-    public final String source;
-    public final String relation;
-    public final String target;
+    private final String source;
+    private final String relation;
+    private final String target;
 
     public ProcessingIndexRelation(String source, String relation, String target) {
         this.source = source;
         this.relation = relation;
         this.target = target;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public String getRelation() {
+        return relation;
+    }
+
+    public String getTarget() {
+        return target;
     }
 
     @Override

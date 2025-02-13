@@ -18,6 +18,7 @@ package org.ceskaexpedice.akubra.core.processingindex;
 
 import org.apache.solr.common.SolrDocument;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -77,4 +78,12 @@ public class ProcessingIndexItem {
         }
         return Optional.empty(); // Avoids ClassCastException
     }
+
+    /**
+     * @return
+     */
+    public Collection<String> getFieldNames() {
+        return solrDocument.getFieldNames();
+    }
+
 }

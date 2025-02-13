@@ -19,15 +19,15 @@ package org.ceskaexpedice.akubra.utils;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.ceskaexpedice.akubra.AkubraRepository;
 import org.ceskaexpedice.akubra.ProcessingIndexRelation;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
 import org.ceskaexpedice.akubra.core.repository.KnownRelations;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * ProcessingIndexUtils
@@ -49,7 +49,7 @@ public final class ProcessingIndexUtils {
         ProcessingIndexRelation ownParentProcessingIndexRelation = null;
         List<ProcessingIndexRelation> fosterParentProcessingIndexRelations = new ArrayList<>();
         for (ProcessingIndexRelation processingIndexRelation : pseudoparentProcessingIndexRelations) {
-            if (isOwnRelation(processingIndexRelation.relation)) {
+            if (isOwnRelation(processingIndexRelation.getRelation())) {
                 if (ownParentProcessingIndexRelation != null) {
                     throw new RepositoryException(String.format("found multiple own parent relations: %s and %s", ownParentProcessingIndexRelation, processingIndexRelation));
                 } else {
@@ -60,6 +60,67 @@ public final class ProcessingIndexUtils {
             }
         }
         return new ImmutablePair<>(ownParentProcessingIndexRelation, fosterParentProcessingIndexRelations);
+    }
+
+    public static Pair<List<ProcessingIndexRelation>, List<ProcessingIndexRelation>> getChildren(String objectPid, AkubraRepository akubraRepository) {
+        List<ProcessingIndexRelation> pseudochildrenTriplets = getTripletTargets(objectPid, akubraRepository);
+        List<ProcessingIndexRelation> ownChildrenTriplets = new ArrayList<>();
+        List<ProcessingIndexRelation> fosterChildrenTriplets = new ArrayList<>();
+        for (ProcessingIndexRelation triplet : pseudochildrenTriplets) {
+            if (triplet.getTarget().startsWith("uuid:")) { //ignore hasDonator and other indexed relations, that are not binding two objects in repository
+                if (isOwnRelation(triplet.getRelation())) {
+                    ownChildrenTriplets.add(triplet);
+                } else {
+                    fosterChildrenTriplets.add(triplet);
+                }
+            }
+        }
+        return new ImmutablePair<>(ownChildrenTriplets, fosterChildrenTriplets);
+    }
+
+    public static String getModel(String objectPid, AkubraRepository akubraRepository) {
+        Map<String, String> description = getDescription(objectPid, akubraRepository);
+        String model = description.get("model");
+        return model == null ? null : model.substring("model:".length());
+    }
+
+    private static Map<String, String> getDescription(String objectPid, AkubraRepository akubraRepository) {
+        Map<String, String> description = new HashMap<>();
+        String query = String.format("type:description AND source:%s", objectPid.replace(":", "\\:"));
+        ProcessingIndexQueryParameters params = new ProcessingIndexQueryParameters.Builder()
+                .queryString(query)
+                .sortField("pid")
+                .ascending(true)
+                .cursorMark("*")
+                .rows(100)
+                .build();
+        akubraRepository.iterateProcessingIndex(params, processingIndexItem -> {
+            for (String name : processingIndexItem.getFieldNames()) {
+                description.put(name, processingIndexItem.getFieldValue(name).toString());
+            }
+        });
+        return description;
+    }
+
+    private static List<ProcessingIndexRelation> getTripletTargets(String sourcePid, AkubraRepository akubraRepository) {
+        List<ProcessingIndexRelation> triplets = new ArrayList<>();
+        String query = String.format("source:%s", sourcePid.replace(":", "\\:"));
+        ProcessingIndexQueryParameters params = new ProcessingIndexQueryParameters.Builder()
+                .queryString(query)
+                .sortField("date")
+                .ascending(true)
+                .cursorMark("*")
+                .rows(100)
+                .fieldsToFetch(List.of("targetPid", "relation"))
+                .build();
+        akubraRepository.iterateProcessingIndex(params, processingIndexItem -> {
+            Object targetPid = processingIndexItem.getFieldValue("targetPid");
+            Object relation = processingIndexItem.getFieldValue("relation");
+            if (targetPid != null && relation != null) {
+                triplets.add(new ProcessingIndexRelation(sourcePid, relation.toString(), targetPid.toString()));
+            }
+        });
+        return triplets;
     }
 
     private static List<ProcessingIndexRelation> getTripletSources(String targetPid, AkubraRepository akubraRepository) {

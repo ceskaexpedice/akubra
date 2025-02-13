@@ -118,4 +118,17 @@ public class ProcessingIndexTest {
         System.out.println(parents.getRight());
     }
 
+    @Test
+    void testGetChildren() {
+        Pair<List<ProcessingIndexRelation>, List<ProcessingIndexRelation>> children = ProcessingIndexUtils.getChildren(PID_MONOGRAPH, akubraRepository);
+        System.out.println(children.getLeft());
+        System.out.println(children.getRight());
+    }
+
+    @Test
+    void testGetModel() {
+        String model = ProcessingIndexUtils.getModel(PID_MONOGRAPH, akubraRepository);
+        System.out.println(model);
+    }
+
 }

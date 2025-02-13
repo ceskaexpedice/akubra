@@ -16,12 +16,15 @@
  */
 package org.ceskaexpedice.akubra.utils;
 
+import org.ceskaexpedice.akubra.AkubraRepository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
+import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.dom4j.*;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -39,7 +42,8 @@ import java.util.Map;
  */
 public final class Dom4jUtils {
 
-    private Dom4jUtils() {}
+    private Dom4jUtils() {
+    }
 
     private static Map<String, String> NAMESPACE_URIS = new HashMap<>();
 
@@ -120,7 +124,7 @@ public final class Dom4jUtils {
         return retval;
     }
 
-    
+
     public static String stringOrNullFromFirstElementByXpath(Element root, String xpathExpr) {
         XPath xPath = buildXpath(xpathExpr);
         List<Node> result = xPath.selectNodes(root);
@@ -138,8 +142,8 @@ public final class Dom4jUtils {
         }
         return null;
     }
-    
-    
+
+
     public static String stringOrNullFromAttributeByXpath(Element root, String xpathExpr) {
         XPath xPath = buildXpath(xpathExpr);
         List<Node> result = xPath.selectNodes(root);
@@ -284,6 +288,11 @@ public final class Dom4jUtils {
     public static String extractProperty(Document foxmlDoc, String name) {
         org.dom4j.Node node = Dom4jUtils.buildXpath(String.format("/foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='%s']/@VALUE", name)).selectSingleNode(foxmlDoc);
         return node == null ? null : Dom4jUtils.toStringOrNull(node);
+    }
+
+    public static DigitalObject foxmlDocToDigitalObject(Document foxml, AkubraRepository akubraRepository) {
+        DigitalObject digitalObject = akubraRepository.unmarshallObject(new ByteArrayInputStream(foxml.asXML().getBytes(StandardCharsets.UTF_8)));
+        return digitalObject;
     }
 
 }
