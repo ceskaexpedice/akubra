@@ -19,15 +19,20 @@ package org.ceskaexpedice.akubra.utils;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
 import org.ceskaexpedice.akubra.AkubraRepository;
 import org.ceskaexpedice.akubra.ProcessingIndexRelation;
+import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
 import org.ceskaexpedice.akubra.core.repository.KnownRelations;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * ProcessingIndexUtils
@@ -123,6 +128,24 @@ public final class ProcessingIndexUtils {
         return triplets;
     }
 
+    public static List<String> getTripletTargets(String relation, String sourcePid, AkubraRepository akubraRepository){
+        List<String> pids = new ArrayList<>();
+        String query = String.format("source:%s AND relation:%s", sourcePid.replace(":", "\\:"), relation);
+        ProcessingIndexQueryParameters params = new ProcessingIndexQueryParameters.Builder()
+                .queryString(query)
+                .sortField("date")
+                .ascending(true)
+                .cursorMark("*")
+                .rows(100)
+                .fieldsToFetch(List.of("targetPid"))
+                .build();
+        akubraRepository.iterateProcessingIndex(params, processingIndexItem -> {
+            Object targetPid = processingIndexItem.getFieldValue("targetPid");
+            pids.add(targetPid.toString());
+        });
+        return pids;
+    }
+
     private static List<ProcessingIndexRelation> getTripletSources(String targetPid, AkubraRepository akubraRepository) {
         List<ProcessingIndexRelation> processingIndexRelations = new ArrayList<>();
         String query = String.format("targetPid:%s", targetPid.replace(":", "\\:"));
@@ -143,6 +166,68 @@ public final class ProcessingIndexUtils {
         });
         return processingIndexRelations;
     }
+
+    public static List<String> getTripletSources(String relation, String targetPid, AkubraRepository akubraRepository){
+        List<String> pids = new ArrayList<>();
+        String query = String.format("relation:%s AND targetPid:%s", relation, targetPid.replace(":", "\\:"));
+        ProcessingIndexQueryParameters params = new ProcessingIndexQueryParameters.Builder()
+                .queryString(query)
+                .sortField("date")
+                .ascending(true)
+                .cursorMark("*")
+                .rows(100)
+                .fieldsToFetch(List.of("source"))
+                .build();
+        akubraRepository.iterateProcessingIndex(params, processingIndexItem -> {
+            Object sourcePid = processingIndexItem.getFieldValue("source");
+            pids.add(sourcePid.toString());
+        });
+        return pids;
+    }
+
+    public static Pair<Long, List<String>> getPidsOfObjectsByModel(String model, String titlePrefix, int rows, int pageIndex,
+                                                                   AkubraRepository akubraRepository) {
+        String query = String.format("type:description AND model:%s", "model\\:" + model);
+        if (StringUtils.isAnyString(titlePrefix)) {
+            query = String.format("type:description AND model:%s AND title_edge:%s", "model\\:" + model, titlePrefix); //prvni "model:" je filtr na solr pole, druhy "model:" je hodnota pole, coze  uprime zbytecne
+        }
+        Pair<Long, List<ProcessingIndexItem>> cp = getPageSortedByTitle(query, rows, pageIndex, Arrays.asList("source"), akubraRepository);
+        Long numberOfRecords = cp.getLeft();
+        List<String> pids = cp.getRight().stream().map(sd -> {
+            Object fieldValue = sd.getFieldValue("source");
+            return fieldValue.toString();
+        }).collect(Collectors.toList());
+        return new ImmutablePair<>(numberOfRecords, pids);
+    }
+
+    public static List<String> getPidsOfObjectsByModel(String model, AkubraRepository akubraRepository) {
+        String query = String.format("type:description AND model:%s", "model\\:" + model);
+        // TODO rows, pageIndex
+        Pair<Long, List<ProcessingIndexItem>> cp = getPageSortedByTitle(query, Integer.MAX_VALUE, 0, Arrays.asList("source"), akubraRepository);
+        List<String> pids = cp.getRight().stream().map(sd -> {
+            Object fieldValue = sd.getFieldValue("source");
+            return fieldValue.toString();
+        }).collect(Collectors.toList());
+        return pids;
+    }
+
+    private static Pair<Long, List<ProcessingIndexItem>> getPageSortedByTitle(String query, int rows, int pageIndex, List<String> fieldList,
+                                                                              AkubraRepository akubraRepository){
+        List<ProcessingIndexItem> docs = new ArrayList<>();
+        ProcessingIndexQueryParameters params = new ProcessingIndexQueryParameters.Builder()
+                .queryString(query)
+                .sortField("title")
+                .ascending(true)
+                .rows(rows)
+                .pageIndex(pageIndex)
+                .fieldsToFetch(fieldList)
+                .build();
+        akubraRepository.iterateProcessingIndex(params, processingIndexItem -> {
+            docs.add(processingIndexItem);
+        });
+        return new ImmutablePair<>(Long.valueOf(docs.size()), docs);
+    }
+
 
     private static boolean isOwnRelation(String relation) {
         for (KnownRelations knownRelation : OWN_RELATIONS) {

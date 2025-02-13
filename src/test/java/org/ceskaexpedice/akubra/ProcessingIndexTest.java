@@ -20,6 +20,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.ceskaexpedice.akubra.core.lock.hazelcast.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.core.lock.hazelcast.ServerNode;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
+import org.ceskaexpedice.akubra.core.repository.KnownRelations;
 import org.ceskaexpedice.akubra.core.repository.ProcessingIndexFeeder;
 import org.ceskaexpedice.akubra.testutils.TestUtilities;
 import org.ceskaexpedice.akubra.utils.ProcessingIndexUtils;
@@ -129,6 +130,31 @@ public class ProcessingIndexTest {
     void testGetModel() {
         String model = ProcessingIndexUtils.getModel(PID_MONOGRAPH, akubraRepository);
         System.out.println(model);
+    }
+
+    @Test
+    void testGetPidsOfObjectsByModel() {
+        Pair<Long, List<String>> page = ProcessingIndexUtils.getPidsOfObjectsByModel("monograph", "", 10, 0, akubraRepository);
+        System.out.println(page.getLeft());
+        System.out.println(page.getRight());
+    }
+
+    @Test
+    void testGetPidsOfObjectsByModel2() {
+        List<String> page = ProcessingIndexUtils.getPidsOfObjectsByModel("monograph", akubraRepository);
+        System.out.println(page);
+    }
+
+    @Test
+    void testGetTripletSources() {
+        List<String> tripletSources = ProcessingIndexUtils.getTripletSources(KnownRelations.CONTAINS.toString(), PID_TITLE_PAGE, akubraRepository);
+        System.out.println(tripletSources);
+    }
+
+    @Test
+    void testGetTripletTargets() {
+        List<String> tripletTargets = ProcessingIndexUtils.getTripletTargets(KnownRelations.CONTAINS.toString(), PID_TITLE_PAGE, akubraRepository);
+        System.out.println(tripletTargets);
     }
 
 }
