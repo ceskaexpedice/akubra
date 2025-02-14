@@ -32,20 +32,24 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.ceskaexpedice.akubra.ObjectProperties.TIMESTAMP_FORMATTER;
+
 /**
  * Dom4jUtils
  */
 public final class Dom4jUtils {
+    private static final Namespace NS_FOXML = new Namespace("foxml", "info:fedora/fedora-system:def/foxml#");
 
     private Dom4jUtils() {
     }
 
-    private static Map<String, String> NAMESPACE_URIS = new HashMap<>();
+    public static Map<String, String> NAMESPACE_URIS = new HashMap<>();
 
     static {
         NAMESPACE_URIS.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
@@ -293,6 +297,18 @@ public final class Dom4jUtils {
     public static DigitalObject foxmlDocToDigitalObject(Document foxml, AkubraRepository akubraRepository) {
         DigitalObject digitalObject = akubraRepository.unmarshallObject(new ByteArrayInputStream(foxml.asXML().getBytes(StandardCharsets.UTF_8)));
         return digitalObject;
+    }
+
+    public static void updateLastModifiedTimestamp(Document foxml) {
+        Attribute valueAttr = (Attribute) Dom4jUtils.buildXpath("/foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='info:fedora/fedora-system:def/view#lastModifiedDate']/@VALUE").selectSingleNode(foxml);
+        if (valueAttr != null) {
+            valueAttr.setValue(LocalDateTime.now().format(TIMESTAMP_FORMATTER));
+        } else {
+            Element objectProperties = (Element) Dom4jUtils.buildXpath("/foxml:digitalObject/foxml:objectProperties").selectSingleNode(foxml);
+            Element propertyLastModified = objectProperties.addElement(new QName("property", NS_FOXML));
+            propertyLastModified.addAttribute("NAME", "info:fedora/fedora-system:def/view#lastModifiedDate");
+            propertyLastModified.addAttribute("VALUE", LocalDateTime.now().format(TIMESTAMP_FORMATTER));
+        }
     }
 
 }

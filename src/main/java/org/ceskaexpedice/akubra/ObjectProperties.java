@@ -17,6 +17,9 @@
 package org.ceskaexpedice.akubra;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 
 /**
  * Interface that defines the properties of an object, including the ability to retrieve
@@ -24,6 +27,11 @@ import java.time.LocalDateTime;
  * Implementing classes should provide the logic for handling properties and metadata.
  */
 public interface ObjectProperties {
+    DateTimeFormatter TIMESTAMP_FORMATTER = new DateTimeFormatterBuilder()
+            .appendPattern("yyyy-MM-dd'T'HH:mm:ss.")
+            .appendFraction(ChronoField.MILLI_OF_SECOND, 1, 3, false)
+            .appendPattern("'Z'")
+            .toFormatter();
 
     /**
      * Retrieves the value of a property by its name.
