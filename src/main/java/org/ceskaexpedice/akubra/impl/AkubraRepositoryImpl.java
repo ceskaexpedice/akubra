@@ -223,8 +223,8 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     }
 
     @Override
-    public void iterateProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action) {
-        coreRepository.getProcessingIndexFeeder().iterate(params, action);
+    public String iterateProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action) {
+        return coreRepository.getProcessingIndexFeeder().iterate(params, action);
     }
 
     @Override

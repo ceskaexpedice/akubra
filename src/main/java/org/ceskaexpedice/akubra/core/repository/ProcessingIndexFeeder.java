@@ -90,7 +90,7 @@ public interface ProcessingIndexFeeder {
      * @param params The query parameters used to filter processing index entries.
      * @param action The action to be performed on each processing index item.
      */
-    void iterate(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action);
+    String iterate(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action);
 
     /**
      * Commits the changes to the processing index.

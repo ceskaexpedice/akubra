@@ -59,36 +59,41 @@ public class ProcessingIndexFeederSolr implements ProcessingIndexFeeder {
     }
 
     @Override
-    public void iterate(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action) {
+    public String iterate(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action) {
         try {
             SolrQuery solrQuery = new SolrQuery(params.getQueryString());
             solrQuery.setRows(params.getRows());
             if(params.getCursorMark() == null) {
                 solrQuery.setSort(params.getSortField(), params.isAscending() ? SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
-                int offset = params.getPageIndex() * params.getRows();
+                int offset = params.getOffset() != -1 ? params.getOffset() : params.getPageIndex() * params.getRows();
                 solrQuery.setStart(offset);
                 QueryResponse response = this.solrClient.query(solrQuery);
                 response.getResults().forEach((doc) -> {
                     action.accept(new ProcessingIndexItem(doc));
                 });
             }else{
-                solrQuery.addSort(UNIQUE_KEY, SolrQuery.ORDER.asc);
                 solrQuery.addSort(params.getSortField(), params.isAscending() ? SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
+                solrQuery.addSort(UNIQUE_KEY, SolrQuery.ORDER.asc);
                 String cursorMark = params.getCursorMark();
                 boolean done = false;
                 while (!done) {
                     solrQuery.set(CursorMarkParams.CURSOR_MARK_PARAM, cursorMark);
                     QueryResponse response = this.solrClient.query(solrQuery);
-                    String nextCursorMark = response.getNextCursorMark();
                     response.getResults().forEach((doc) -> {
                         action.accept(new ProcessingIndexItem(doc));
                     });
+                    String nextCursorMark = response.getNextCursorMark();
                     if (cursorMark.equals(nextCursorMark)) {
                         done = true;
+                    }else{
+                        if(params.isStopAfterCursorMark()){
+                            return nextCursorMark;
+                        }
                     }
                     cursorMark = nextCursorMark;
                 }
             }
+            return null;
         } catch (Exception e) {
             throw new RepositoryException(e);
         }

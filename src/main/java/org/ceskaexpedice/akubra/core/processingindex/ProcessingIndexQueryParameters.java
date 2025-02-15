@@ -33,7 +33,9 @@ public class ProcessingIndexQueryParameters {
     private final boolean ascending;
     private final int rows;
     private final int pageIndex;
+    private final int offset;
     private final String cursorMark;
+    private final boolean stopAfterCursorMark;
     private final List<String> fieldsToFetch;
 
     /**
@@ -47,7 +49,9 @@ public class ProcessingIndexQueryParameters {
         this.ascending = builder.ascending;
         this.rows = builder.rows;
         this.pageIndex = builder.pageIndex;
+        this.offset = builder.offset;
         this.cursorMark = builder.cursorMark;
+        this.stopAfterCursorMark = builder.stopAfterCursorMark;
         this.fieldsToFetch = builder.fieldsToFetch;
     }
 
@@ -99,12 +103,26 @@ public class ProcessingIndexQueryParameters {
     }
 
     /**
+     * @return
+     */
+    public int getOffset() {
+        return offset;
+    }
+
+    /**
      * Gets the cursor mark for paginated results.
      *
      * @return The cursor mark.
      */
     public String getCursorMark() {
         return cursorMark;
+    }
+
+    /**
+     * @return
+     */
+    public boolean isStopAfterCursorMark() {
+        return stopAfterCursorMark;
     }
 
     /**
@@ -128,7 +146,9 @@ public class ProcessingIndexQueryParameters {
         private boolean ascending = true; // Default sort order
         private int rows = 10;            // Default rows per page
         private int pageIndex = 0;       // Default page index
+        private int offset = -1;       // Default page index
         private String cursorMark;
+        private boolean stopAfterCursorMark;
         private final List<String> fieldsToFetch = new ArrayList<>();
 
         /**
@@ -186,6 +206,11 @@ public class ProcessingIndexQueryParameters {
             return this;
         }
 
+        public Builder offset(int offset) {
+            this.offset = offset;
+            return this;
+        }
+
         /**
          * Sets the cursor mark for paginated results.
          *
@@ -194,6 +219,11 @@ public class ProcessingIndexQueryParameters {
          */
         public Builder cursorMark(String cursorMark) {
             this.cursorMark = cursorMark;
+            return this;
+        }
+
+        public Builder stopAfterCursorMark(boolean stopAfterCursorMark) {
+            this.stopAfterCursorMark = stopAfterCursorMark;
             return this;
         }
 

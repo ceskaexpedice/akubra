@@ -243,7 +243,7 @@ public interface AkubraRepository {
      * @param params The query parameters for filtering the index.
      * @param action The action to perform on each processing index item.
      */
-    void iterateProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action);
+    String iterateProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action);
 
     /**
      * Performs commit on processing index

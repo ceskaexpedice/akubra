@@ -146,6 +146,19 @@ public class ProcessingIndexTest {
     }
 
     @Test
+    void testGetPidsOfObjectsByModel3() {
+        Pair pair = ProcessingIndexUtils.getPidsOfObjectsWithTitlesByModelWithCursor("monograph", true, "*", 10, akubraRepository);
+        System.out.println("titlePidPairs:"  + pair.getLeft());
+        System.out.println("nextCursorMark:"  + pair.getRight());
+    }
+
+    @Test
+    void testGetPidsOfObjectsByModel4() {
+        List<Pair<String, String>> pair = ProcessingIndexUtils.getPidsOfObjectsWithTitlesByModel("monograph", true, 0, 10, akubraRepository);
+        System.out.println(pair);
+    }
+
+    @Test
     void testGetTripletSources() {
         List<String> tripletSources = ProcessingIndexUtils.getTripletSources(KnownRelations.CONTAINS.toString(), PID_TITLE_PAGE, akubraRepository);
         System.out.println(tripletSources);

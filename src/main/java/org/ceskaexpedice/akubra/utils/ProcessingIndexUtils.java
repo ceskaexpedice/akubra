@@ -32,6 +32,7 @@ import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -211,6 +212,53 @@ public final class ProcessingIndexUtils {
         return pids;
     }
 
+    public static List<Pair<String, String>> getPidsOfObjectsWithTitlesByModel(String model, boolean ascendingOrder, int offset, int limit, AkubraRepository akubraRepository) {
+        List<Pair<String, String>> titlePidPairs = new ArrayList<>();
+        String query = String.format("type:description AND model:%s", "model\\:" + model); //prvni "model:" je filtr na solr pole, druhy "model:" je hodnota pole, coze je mozna zbytecne (ten prefix)
+        ProcessingIndexQueryParameters params = new ProcessingIndexQueryParameters.Builder()
+                .queryString(query)
+                .sortField("title")
+                .ascending(ascendingOrder)
+                .rows(limit)
+                .offset(offset)
+                .fieldsToFetch(List.of("source", "dc.title"))
+                .build();
+        akubraRepository.iterateProcessingIndex(params, processingIndexItem -> {
+            Object fieldPid = processingIndexItem.getFieldValue("source");
+            Object fieldTitle = processingIndexItem.getFieldValue("dc.title");
+            String pid = null;
+            String title = null;
+            if (fieldPid != null) {
+                pid = fieldPid.toString();
+            }
+            if (fieldTitle != null) {
+                title = fieldTitle.toString().trim();
+            }
+            titlePidPairs.add(new ImmutablePair<>(title, pid));
+        });
+        return titlePidPairs;
+    }
+
+    public static Pair getPidsOfObjectsWithTitlesByModelWithCursor(String model, boolean ascendingOrder, String cursor, int limit, AkubraRepository akubraRepository){
+        List<Pair<String, String>> titlePidPairs = new ArrayList<>();
+        String query = String.format("type:description AND model:%s", "model\\:" + model); //prvni "model:" je filtr na solr pole, druhy "model:" je hodnota pole, coze je mozna zbytecne (ten prefix)
+        String nextCursorMark = iterateSectionOfProcessingSortedByTitleWithCursor(query, ascendingOrder, cursor, limit, (doc) -> {
+            Object fieldPid = doc.getFieldValue("source");
+            Object fieldTitle = doc.getFieldValue("dc.title");
+            String pid = null;
+            String title = null;
+            if (fieldPid != null) {
+                pid = fieldPid.toString();
+            }
+            if (fieldTitle != null) {
+                title = fieldTitle.toString().trim();
+            }
+            titlePidPairs.add(new ImmutablePair(title, pid));
+        }, akubraRepository);
+        Pair result = new ImmutablePair(titlePidPairs, nextCursorMark);
+        return result;
+    }
+
     private static Pair<Long, List<ProcessingIndexItem>> getPageSortedByTitle(String query, int rows, int pageIndex, List<String> fieldList,
                                                                               AkubraRepository akubraRepository){
         List<ProcessingIndexItem> docs = new ArrayList<>();
@@ -228,6 +276,20 @@ public final class ProcessingIndexUtils {
         return new ImmutablePair<>(Long.valueOf(docs.size()), docs);
     }
 
+    private static  String iterateSectionOfProcessingSortedByTitleWithCursor(String query, boolean ascending, String cursor,
+                                                                             int limit, Consumer<ProcessingIndexItem> action, AkubraRepository akubraRepository) {
+        ProcessingIndexQueryParameters params = new ProcessingIndexQueryParameters.Builder()
+                .queryString(query)
+                .sortField("dc.title")
+                .ascending(ascending)
+                .rows(limit)
+                .cursorMark(cursor)
+                .stopAfterCursorMark(true)
+                .build();
+        return akubraRepository.iterateProcessingIndex(params, processingIndexItem -> {
+            action.accept(processingIndexItem);
+        });
+    }
 
     private static boolean isOwnRelation(String relation) {
         for (KnownRelations knownRelation : OWN_RELATIONS) {
