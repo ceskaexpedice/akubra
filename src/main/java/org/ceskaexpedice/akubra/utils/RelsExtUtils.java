@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -220,6 +221,103 @@ public final class RelsExtUtils {
             rdfDescriptionElement.appendChild(containsLicense);
         }
     }
-    
+
+    public static void processSubtree(String pid, TreeNodeProcessor processor, AkubraRepository akubraRepository) throws ProcessSubtreeException, IOException {
+        try {
+            XPathFactory factory = XPathFactory.newInstance(); // TODO AK_NEW is it ok to create
+            Document relsExt = null;
+            try {
+                // should be from
+                if (akubraRepository.datastreamExists(pid, KnownDatastreams.RELS_EXT.toString())) {
+                    InputStream inputStream = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT.toString());
+                    relsExt = DomUtils.streamToDocument(inputStream);
+                } else {
+                    LOGGER.warning("could not read root RELS-EXT, skipping object  (" + pid + ")");
+                }
+            } catch (Exception ex) {
+                LOGGER.warning("could not read root RELS-EXT, skipping object  (" + pid + "):" + ex);
+            }
+            if (!processor.skipBranch(pid, 0)) {
+                processSubtreeInternal(pid, relsExt, processor, 0, new Stack<String>(), akubraRepository, factory);
+            }
+        } catch (LexerException e) {
+            LOGGER.warning("Error in pid: " + pid);
+            throw new ProcessSubtreeException(e);
+        } catch (XPathExpressionException e) {
+            throw new ProcessSubtreeException(e);
+        }
+    }
+
+    private static boolean processSubtreeInternal(String pid, Document relsExt, TreeNodeProcessor processor, int level,
+                                             Stack<String> pidStack, AkubraRepository akubraRepository, XPathFactory xPathFactory)
+            throws XPathExpressionException, LexerException, IOException, ProcessSubtreeException {
+        processor.process(pid, level);
+        boolean breakProcessing = processor.breakProcessing(pid, level);
+        if (breakProcessing) {
+            return breakProcessing;
+        }
+        if (relsExt == null) {
+            return false;
+        }
+        XPath xpath = xPathFactory.newXPath();
+        xpath.setNamespaceContext(new RepositoryNamespaceContext());
+        XPathExpression expr = xpath.compile("/rdf:RDF/rdf:Description/*");
+        NodeList nodes = (NodeList) expr.evaluate(relsExt, XPathConstants.NODESET);
+
+        if (pidStack.contains(pid)) {
+            LOGGER.log(Level.WARNING, "Cyclic reference on " + pid);
+            return breakProcessing;
+        }
+        pidStack.push(pid);
+        changeStack(processor, pidStack);
+        for (int i = 0, ll = nodes.getLength(); i < ll; i++) {
+            Node node = nodes.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element iteratingElm = (Element) node;
+                String namespaceURI = iteratingElm.getNamespaceURI();
+                if (namespaceURI != null && (namespaceURI.equals(RepositoryNamespaces.ONTOLOGY_RELATIONSHIP_NAMESPACE_URI)
+                        || namespaceURI.equals(RepositoryNamespaces.RDF_NAMESPACE_URI))) {
+                    String attVal = iteratingElm.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
+                    if (!attVal.trim().equals("")) {
+                        PIDParser pidParser = new PIDParser(attVal);
+                        pidParser.disseminationURI();
+                        String objectId = pidParser.getObjectPid();
+                        if (pidParser.getNamespaceId().equals("uuid")) {
+                            if (!processor.skipBranch(objectId, level + 1)) {
+                                Document iterationgRelsExt = null;
+
+                                try {
+                                    InputStream inputStream = akubraRepository.getDatastreamContent(objectId, KnownDatastreams.RELS_EXT.toString());
+                                    iterationgRelsExt = DomUtils.streamToDocument(inputStream);
+                                } catch (Exception ex) {
+                                    LOGGER.warning("could not read RELS-EXT, skipping branch [" + (level + 1)
+                                            + "] and pid (" + objectId + "):" + ex);
+                                }
+                                breakProcessing = processSubtreeInternal(pidParser.getObjectPid(), iterationgRelsExt,
+                                        processor, level + 1, pidStack, akubraRepository, xPathFactory);
+
+                                if (breakProcessing) {
+                                    break;
+                                }
+                            } else {
+                                LOGGER.fine("skipping branch [" + (level + 1) + "] and pid (" + objectId + ")");
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+        pidStack.pop();
+        changeStack(processor, pidStack);
+        return breakProcessing;
+    }
+
+    private static void changeStack(TreeNodeProcessor processor, Stack<String> pidStack) {
+        if (processor instanceof TreeNodeProcessStackAware) {
+            TreeNodeProcessStackAware stackAware = (TreeNodeProcessStackAware) processor;
+            stackAware.changeProcessingStack(pidStack);
+        }
+    }
 
 }
