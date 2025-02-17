@@ -31,6 +31,10 @@ public class RepositoryURLStreamHandler extends URLStreamHandler {
 
     private AkubraRepository akubraRepository;
 
+    public RepositoryURLStreamHandler(AkubraRepository akubraRepository) {
+        this.akubraRepository = akubraRepository;
+    }
+
     @Override
     protected URLConnection openConnection(URL u) throws IOException {
         return new RepositoryURLConnection(u, akubraRepository);
