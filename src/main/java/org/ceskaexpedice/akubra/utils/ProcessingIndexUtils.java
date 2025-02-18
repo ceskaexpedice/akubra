@@ -23,6 +23,7 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.params.CursorMarkParams;
 import org.ceskaexpedice.akubra.AkubraRepository;
 import org.ceskaexpedice.akubra.ProcessingIndexRelation;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
@@ -212,6 +213,16 @@ public final class ProcessingIndexUtils {
         return pids;
     }
 
+    public static List<Pair<String, String>> findByTargetPid(String pid, AkubraRepository akubraRepository) {
+        final List<Pair<String, String>> retvals = new ArrayList<>();
+        iterateSectionOfProcessingSortedByFieldWithCursor("targetPid:\"" + pid + "\"", "pid", true, "*",
+                1000, (doc) -> {
+            Pair<String, String> pair = new ImmutablePair<>(doc.getFieldValue("source").toString(), doc.getFieldValue("relation").toString());
+            retvals.add(pair);
+        }, akubraRepository);
+        return retvals;
+    }
+
     public static List<Pair<String, String>> getPidsOfObjectsWithTitlesByModel(String model, boolean ascendingOrder, int offset, int limit, AkubraRepository akubraRepository) {
         List<Pair<String, String>> titlePidPairs = new ArrayList<>();
         String query = String.format("type:description AND model:%s", "model\\:" + model); //prvni "model:" je filtr na solr pole, druhy "model:" je hodnota pole, coze je mozna zbytecne (ten prefix)
@@ -242,7 +253,7 @@ public final class ProcessingIndexUtils {
     public static Pair getPidsOfObjectsWithTitlesByModelWithCursor(String model, boolean ascendingOrder, String cursor, int limit, AkubraRepository akubraRepository){
         List<Pair<String, String>> titlePidPairs = new ArrayList<>();
         String query = String.format("type:description AND model:%s", "model\\:" + model); //prvni "model:" je filtr na solr pole, druhy "model:" je hodnota pole, coze je mozna zbytecne (ten prefix)
-        String nextCursorMark = iterateSectionOfProcessingSortedByTitleWithCursor(query, ascendingOrder, cursor, limit, (doc) -> {
+        String nextCursorMark = iterateSectionOfProcessingSortedByFieldWithCursor(query, "dc:title", ascendingOrder, cursor, limit, (doc) -> {
             Object fieldPid = doc.getFieldValue("source");
             Object fieldTitle = doc.getFieldValue("dc.title");
             String pid = null;
@@ -276,11 +287,11 @@ public final class ProcessingIndexUtils {
         return new ImmutablePair<>(Long.valueOf(docs.size()), docs);
     }
 
-    private static  String iterateSectionOfProcessingSortedByTitleWithCursor(String query, boolean ascending, String cursor,
+    private static  String iterateSectionOfProcessingSortedByFieldWithCursor(String query, String sortField, boolean ascending, String cursor,
                                                                              int limit, Consumer<ProcessingIndexItem> action, AkubraRepository akubraRepository) {
         ProcessingIndexQueryParameters params = new ProcessingIndexQueryParameters.Builder()
                 .queryString(query)
-                .sortField("dc.title")
+                .sortField(sortField)
                 .ascending(ascending)
                 .rows(limit)
                 .cursorMark(cursor)

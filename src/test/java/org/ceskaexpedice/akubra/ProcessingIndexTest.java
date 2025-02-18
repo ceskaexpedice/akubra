@@ -170,4 +170,10 @@ public class ProcessingIndexTest {
         System.out.println(tripletTargets);
     }
 
+    @Test
+    void testFindByTargetPid() {
+        List<Pair<String, String>> byTargetPid = ProcessingIndexUtils.findByTargetPid(PID_TITLE_PAGE, akubraRepository);
+        System.out.println(byTargetPid);
+    }
+
 }

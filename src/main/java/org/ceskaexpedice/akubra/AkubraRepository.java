@@ -180,6 +180,15 @@ public interface AkubraRepository {
     //-------------------- Relations Management ---------------------------
 
     /**
+     *
+     * @param pid
+     * @param relation
+     * @param namespace
+     * @return
+     */
+    boolean relsExtRelationExists(String pid, String relation, String namespace);
+
+    /**
      * Adds a new relationship to the RELS-EXT datastream of a digital object.
      *
      * @param pid           The persistent identifier of the object.
@@ -198,6 +207,14 @@ public interface AkubraRepository {
      * @param targetRelation The target object of the relationship.
      */
     void relsExtRemoveRelation(String pid, String relation, String namespace, String targetRelation);
+
+    /**
+     *
+     * @param pid
+     * @param relation
+     * @param namespace
+     */
+    void relsExtRemoveRelationsByNameAndNamespace(String pid, String relation, String namespace);
 
     /**
      * Adds a literal value to the RELS-EXT datastream of a digital object.

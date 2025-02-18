@@ -173,6 +173,15 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     }
 
     @Override
+    public boolean relsExtRelationExists(String pid, String relation, String namespace) {
+        RepositoryObject repositoryObject = coreRepository.getObject(pid);
+        if (repositoryObject == null) {
+            return false;
+        }
+        return repositoryObject.relsExtRelationsExists(relation, namespace);
+    }
+
+    @Override
     public void relsExtAddRelation(String pid, String relation, String namespace, String targetRelation) {
         RepositoryObject repositoryObject = coreRepository.getObject(pid);
         if (repositoryObject == null) {
@@ -188,6 +197,15 @@ public class AkubraRepositoryImpl implements AkubraRepository {
             return;
         }
         repositoryObject.relsExtRemoveRelation(relation, namespace, targetRelation);
+    }
+
+    @Override
+    public void relsExtRemoveRelationsByNameAndNamespace(String pid, String relation, String namespace) {
+        RepositoryObject repositoryObject = coreRepository.getObject(pid);
+        if (repositoryObject == null) {
+            return;
+        }
+        repositoryObject.relsExtRemoveRelationsByNameAndNamespace(relation, namespace);
     }
 
     @Override

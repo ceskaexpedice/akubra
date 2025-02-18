@@ -56,7 +56,7 @@ public final class RelsExtUtils {
 
     /** Get model 
      * @throws LexerException */
-    public static String getModel(Element relsExt) throws XPathExpressionException, LexerException {
+    public static String getModel(Element relsExt) throws LexerException {
         //<hasModel xmlns="
         Element foundElement = DomUtils.findElement(relsExt, "hasModel", RepositoryNamespaces.FEDORA_MODELS_URI);
         if (foundElement != null) {
@@ -69,7 +69,7 @@ public final class RelsExtUtils {
         }
     }
     
-    public static Element getRDFDescriptionElement(Element relsExt) throws XPathExpressionException, LexerException {
+    public static Element getRDFDescriptionElement(Element relsExt){
         Element foundElement = DomUtils.findElement(relsExt, "Description", RepositoryNamespaces.RDF_NAMESPACE_URI);
         return foundElement;
     }
@@ -318,6 +318,74 @@ public final class RelsExtUtils {
             TreeNodeProcessStackAware stackAware = (TreeNodeProcessStackAware) processor;
             stackAware.changeProcessingStack(pidStack);
         }
+    }
+
+    public static List<String> getPids(String pid, AkubraRepository akubraRepository) throws IOException {
+        final List<String> retval = new ArrayList<>();
+        try {
+            processSubtree(pid, new TreeNodeProcessor() {
+                @Override
+                public void process(String pid, int level) {
+                    retval.add(pid);
+                }
+
+                @Override
+                public boolean breakProcessing(String pid, int level) {
+                    return false;
+                }
+
+                @Override
+                public boolean skipBranch(String pid, int level) {
+                    return false;
+                }
+            }, akubraRepository);
+        } catch (ProcessSubtreeException e) {
+            throw new IOException(e);
+        }
+        return retval;
+    }
+
+    public static String findFirstViewablePid(String pid, AkubraRepository akubraRepository) throws IOException {
+        final List<String> foundPids = new ArrayList<String>();
+        try {
+            processSubtree(pid, new TreeNodeProcessor() {
+                boolean breakProcess = false;
+                int previousLevel = 0;
+
+                @Override
+                public boolean breakProcessing(String pid, int level) {
+                    return breakProcess;
+                }
+
+                @Override
+                public boolean skipBranch(String pid, int level) {
+                    return false;
+                }
+
+                @Override
+                public void process(String pid, int level) throws ProcessSubtreeException {
+                    try {
+                        if (previousLevel < level || level == 0) {
+                            if (akubraRepository.datastreamExists(pid, KnownDatastreams.IMG_FULL.toString())) {
+                                foundPids.add(pid);
+                                breakProcess = true;
+                            }
+                        } else if (previousLevel > level) {
+                            breakProcess = true;
+                        } else if ((previousLevel == level) && (level != 0)) {
+                            breakProcess = true;
+                        }
+                        previousLevel = level;
+                    } catch (Exception e) {
+                        throw new ProcessSubtreeException(e);
+                    }
+                }
+            }, akubraRepository);
+        } catch (ProcessSubtreeException e) {
+            throw new IOException(e);
+        }
+
+        return foundPids.isEmpty() ? null : foundPids.get(0);
     }
 
 }
