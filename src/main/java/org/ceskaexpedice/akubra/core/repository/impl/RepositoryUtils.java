@@ -19,6 +19,7 @@ package org.ceskaexpedice.akubra.core.repository.impl;
 import org.akubraproject.map.IdMapper;
 import org.apache.commons.io.IOUtils;
 import org.ceskaexpedice.akubra.core.repository.KnownDatastreams;
+import org.ceskaexpedice.akubra.core.repository.KnownXmlFormatUris;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.akubra.utils.SafeSimpleDateFormat;
@@ -52,9 +53,6 @@ import java.util.zip.GZIPInputStream;
 public class RepositoryUtils {
     private static final Logger LOGGER = Logger.getLogger(RepositoryUtils.class.getName());
     private static final SafeSimpleDateFormat DATE_FORMAT = new SafeSimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSS'Z'");
-    private static final String RELS_EXT_FORMAT_URI = "info:fedora/fedora-system:FedoraRELSExt-1.0";
-    private static final String BIBLIO_MODS_FORMAT_URI = "http://www.loc.gov/mods/v3";
-    private static final String DC_FORMAT_URI = "http://www.openarchives.org/OAI/2.0/oai_dc/";
     private static final String LOCAL_REF_PREFIX = "http://local.fedora.server/fedora/get/";
 
     private RepositoryUtils() {
@@ -218,13 +216,13 @@ public class RepositoryUtils {
 
     static String getFormatUriForDS(String dsID) {
         if (KnownDatastreams.RELS_EXT.name().equals(dsID)) {
-            return RELS_EXT_FORMAT_URI;
+            return KnownXmlFormatUris.RELS_EXT;
         }
         if (KnownDatastreams.BIBLIO_MODS.name().equals(dsID)) {
-            return BIBLIO_MODS_FORMAT_URI;
+            return KnownXmlFormatUris.BIBLIO_MODS;
         }
         if (KnownDatastreams.BIBLIO_DC.name().equals(dsID)) {
-            return DC_FORMAT_URI;
+            return KnownXmlFormatUris.BIBLIO_DC;
         }
         return null;
     }
