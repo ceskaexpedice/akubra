@@ -209,6 +209,15 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     }
 
     @Override
+    public void relsExtRemoveRelationsByNamespace(String pid, String namespace) {
+        RepositoryObject repositoryObject = coreRepository.getObject(pid);
+        if (repositoryObject == null) {
+            return;
+        }
+        repositoryObject.relsExtRemoveRelationsByNamespace(namespace);
+    }
+
+    @Override
     public void relsExtAddLiteral(String pid, String relation, String namespace, String value) {
         RepositoryObject repositoryObject = coreRepository.getObject(pid);
         if (repositoryObject == null) {

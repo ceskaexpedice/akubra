@@ -217,6 +217,13 @@ public interface AkubraRepository {
     void relsExtRemoveRelationsByNameAndNamespace(String pid, String relation, String namespace);
 
     /**
+     *
+     * @param pid
+     * @param namespace
+     */
+    void relsExtRemoveRelationsByNamespace(String pid, String namespace);
+
+    /**
      * Adds a literal value to the RELS-EXT datastream of a digital object.
      *
      * @param pid       The persistent identifier of the object.
