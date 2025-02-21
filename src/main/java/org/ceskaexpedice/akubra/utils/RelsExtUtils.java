@@ -68,7 +68,33 @@ public final class RelsExtUtils {
             throw new IllegalArgumentException("cannot find model of given document");
         }
     }
-    
+
+    public static String getModelName(String pid, AkubraRepository akubraRepository) {
+        InputStream inputStream = akubraRepository.getDatastreamContent(KnownDatastreams.RELS_EXT.toString(), pid);
+        return getModelName(DomUtils.streamToDocument(inputStream));
+    }
+
+    public static String getModelName(Document relsExt) {
+        try {
+            //TODO: Duplicate code in RelsExt helper -> mn
+            Element foundElement = DomUtils.findElement(relsExt.getDocumentElement(), "hasModel", RepositoryNamespaces.FEDORA_MODELS_URI);
+            if (foundElement != null) {
+                String sform = foundElement.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
+                PIDParser pidParser = new PIDParser(sform);
+                pidParser.disseminationURI();
+                return pidParser.getObjectId();
+            } else {
+                throw new IllegalArgumentException("cannot find model of given document");
+            }
+        } catch (DOMException e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            throw new IllegalArgumentException(e);
+        } catch (LexerException e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            throw new IllegalArgumentException(e);
+        }
+    }
+
     public static Element getRDFDescriptionElement(Element relsExt){
         Element foundElement = DomUtils.findElement(relsExt, "Description", RepositoryNamespaces.RDF_NAMESPACE_URI);
         return foundElement;
