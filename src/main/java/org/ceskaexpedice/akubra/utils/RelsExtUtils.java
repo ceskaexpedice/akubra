@@ -95,6 +95,58 @@ public final class RelsExtUtils {
         }
     }
 
+    public static String getFirstVolumePid(Document relsExt) throws IOException {
+        try {
+            Element foundElement = DomUtils.findElement(relsExt.getDocumentElement(), "hasVolume", RepositoryNamespaces.KRAMERIUS_URI);
+            if (foundElement != null) {
+                String sform = foundElement.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
+                PIDParser pidParser = new PIDParser(sform);
+                pidParser.disseminationURI();
+                String pidVolume = "uuid:" + pidParser.getObjectId();
+                return pidVolume;
+            } else {
+                return "";
+            }
+        } catch (DOMException e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            throw new IllegalArgumentException(e);
+        } catch (LexerException e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public static String getFirstVolumePid(String pid, AkubraRepository akubraRepository) throws IOException {
+        InputStream inputStream = akubraRepository.getDatastreamContent(KnownDatastreams.RELS_EXT.toString(), pid);
+        return getFirstVolumePid(DomUtils.streamToDocument(inputStream));
+    }
+
+    public static String getFirstItemPid(Document relsExt) throws IOException {
+        try {
+            Element foundElement = DomUtils.findElement(relsExt.getDocumentElement(), "hasItem", RepositoryNamespaces.KRAMERIUS_URI);
+            if (foundElement != null) {
+                String sform = foundElement.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
+                PIDParser pidParser = new PIDParser(sform);
+                pidParser.disseminationURI();
+                String pidItem = "uuid:" + pidParser.getObjectId();
+                return pidItem;
+            } else {
+                return "";
+            }
+        } catch (DOMException e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            throw new IllegalArgumentException(e);
+        } catch (LexerException e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public static String getFirstItemPid(String pid, AkubraRepository akubraRepository) throws IOException {
+        InputStream inputStream = akubraRepository.getDatastreamContent(KnownDatastreams.RELS_EXT.toString(), pid);
+        return getFirstItemPid(DomUtils.streamToDocument(inputStream));
+    }
+
     public static Element getRDFDescriptionElement(Element relsExt){
         Element foundElement = DomUtils.findElement(relsExt, "Description", RepositoryNamespaces.RDF_NAMESPACE_URI);
         return foundElement;
