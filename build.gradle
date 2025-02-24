@@ -90,6 +90,8 @@ dependencies {
     implementation 'net.jcip:jcip-annotations:1.0'
     implementation "commons-dbcp:commons-dbcp:1.4"
     implementation 'fast-md5:fast-md5:2.5'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'org.json:json:20140107'
 
     // test
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0' // Replace with your test dependency

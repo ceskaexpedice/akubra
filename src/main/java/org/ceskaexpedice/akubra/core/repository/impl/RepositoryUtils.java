@@ -58,7 +58,7 @@ public class RepositoryUtils {
     private RepositoryUtils() {
     }
 
-    static DatastreamVersionType getLastStreamVersion(DigitalObject object, String streamID) {
+    public static DatastreamVersionType getLastStreamVersion(DigitalObject object, String streamID) {
         for (DatastreamType datastreamType : object.getDatastream()) {
             if (streamID.equals(datastreamType.getID())) {
                 return getLastStreamVersion(datastreamType);
@@ -175,7 +175,7 @@ public class RepositoryUtils {
         return internalId.toString();
     }
 
-    static Date getLastModified(DigitalObject object) {
+    public static Date getLastModified(DigitalObject object) {
         for (PropertyType propertyType : object.getObjectProperties().getProperty()) {
             if ("info:fedora/fedora-system:def/view#lastModifiedDate".equals(propertyType.getNAME())) {
                 try {

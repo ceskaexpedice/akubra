@@ -17,6 +17,9 @@
 package org.ceskaexpedice.akubra.utils;
 
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -30,10 +33,12 @@ import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
 import org.ceskaexpedice.akubra.core.repository.KnownRelations;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 /**
@@ -314,6 +319,78 @@ public final class ProcessingIndexUtils {
             }
         }
         throw new IllegalArgumentException(String.format("unknown relation '%s'", relation));
+    }
+
+    public static Pair<String, Set<String>> getPidsOfParents(String pid, AkubraRepository akubraRepository) {
+        JsonObject structure = getStructure(pid, akubraRepository);
+        JsonObject parentsJson = structure.getAsJsonObject("parents");
+        //own
+        String ownParent = null;
+        if (parentsJson.has("own")) {
+            ownParent = parentsJson.getAsJsonObject("own").get("pid").getAsString();
+        }
+        //foster
+        JsonArray fosterParentsJson = parentsJson.getAsJsonArray("foster");
+        Set<String> fosterParents = new HashSet<>();
+        Iterator<JsonElement> fosterParentsIt = fosterParentsJson.iterator();
+        while (fosterParentsIt.hasNext()) {
+            fosterParents.add(fosterParentsIt.next().getAsJsonObject().get("pid").getAsString());
+        }
+        return new ImmutablePair<>(ownParent, fosterParents);
+    }
+
+    public static Pair<List<String>, List<String>> getPidsOfChildren(String pid, AkubraRepository akubraRepository) {
+        JsonObject structure = getStructure(pid, akubraRepository);
+        if (structure != null) {
+            JsonObject childrenJson = structure.getAsJsonObject("children");
+            //own
+            JsonArray ownChildrenJson = childrenJson.getAsJsonArray("own");
+            List<String> ownChildren = new ArrayList<>();
+            Iterator<JsonElement> ownChildrenIt = ownChildrenJson.iterator();
+            while (ownChildrenIt.hasNext()) {
+                ownChildren.add(ownChildrenIt.next().getAsJsonObject().get("pid").getAsString());
+            }
+            //foster
+            JsonArray fosterChildrenJson = childrenJson.getAsJsonArray("foster");
+            List<String> fosterChildren = new ArrayList<>();
+            Iterator<JsonElement> fosterParentsIt = fosterChildrenJson.iterator();
+            while (fosterParentsIt.hasNext()) {
+                fosterChildren.add(fosterParentsIt.next().getAsJsonObject().get("pid").getAsString());
+            }
+            return new ImmutablePair<>(ownChildren, fosterChildren);
+        } else return new ImmutablePair<>(new ArrayList<>(), new ArrayList<>());
+    }
+
+    private static JsonObject getStructure(String pid, AkubraRepository akubraRepository) {
+        // TODO AK_NEW caching?
+        /*
+        if (cachingEndabled) {
+            if (pidOfCachedStructure != null && pidOfCachedStructure.equals(pid)) {
+                return cachedStructure;
+            } else {
+                JsonObject structure = fetchStructure(pid);
+                if (structure != null) {
+                    pidOfCachedStructure = pid;
+                    cachedStructure = structure;
+                    return structure;
+                } else return null;
+            }
+        } else {
+            return fetchStructure(pid);
+        }
+
+         */
+        return fetchStructure(pid, akubraRepository);
+    }
+
+    private static JsonObject fetchStructure(String pid, AkubraRepository akubraRepository) {
+        try {
+            JSONObject extractStructureInfo = ExtractStructureHelper.extractStructureInfo(akubraRepository, pid);
+            return StringUtils.stringToJsonObject(extractStructureInfo.toString());
+        } catch (RepositoryException  | SolrServerException | IOException e) {
+            // TODO AK_NEW LOGGER.log(Level.SEVERE,e.getMessage(),e);
+            return null;
+        }
     }
 
 }

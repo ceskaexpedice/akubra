@@ -1,0 +1,45 @@
+/*
+ * Copyright (C) 2025 Inovatika
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.ceskaexpedice.akubra.utils;
+
+import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
+import org.ceskaexpedice.fedoramodel.DatastreamVersionType;
+import org.ceskaexpedice.fedoramodel.DigitalObject;
+
+import java.util.Date;
+import java.util.logging.Logger;
+
+/**
+ * DigitalObjectUtils
+ */
+public class DigitalObjectUtils {
+    private static final Logger LOGGER = Logger.getLogger(DigitalObjectUtils.class.getName());
+    private static final SafeSimpleDateFormat DATE_FORMAT = new SafeSimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSS'Z'");
+    private static final String LOCAL_REF_PREFIX = "http://local.fedora.server/fedora/get/";
+
+    private DigitalObjectUtils() {
+    }
+
+    public static DatastreamVersionType getLastStreamVersion(DigitalObject object, String streamID) {
+        return RepositoryUtils.getLastStreamVersion(object, streamID);
+    }
+
+    public static Date getLastModified(DigitalObject object) {
+        return RepositoryUtils.getLastModified(object);
+    }
+
+}

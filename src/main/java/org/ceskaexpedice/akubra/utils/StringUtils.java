@@ -17,6 +17,8 @@
 package org.ceskaexpedice.akubra.utils;
 
 import com.google.common.io.CharStreams;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.ceskaexpedice.akubra.core.repository.RepositoryException;
 
 import java.io.*;
@@ -121,6 +123,14 @@ public final class StringUtils {
             }
         } catch (IOException e) {
             throw new RepositoryException(e);
+        }
+    }
+
+    public static JsonObject stringToJsonObject(String content) throws IOException {
+        try (final Reader reader = new StringReader(content)) {
+            //String json = CharStreams.toString(reader);
+            JsonParser parser = new JsonParser();
+            return parser.parse(reader).getAsJsonObject();
         }
     }
 
