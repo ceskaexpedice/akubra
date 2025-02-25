@@ -393,4 +393,16 @@ public final class ProcessingIndexUtils {
         }
     }
 
+    public static void doWithProcessingIndexCommit(AkubraRepository rep, OperationsHandler op) throws RepositoryException {
+        try {
+            op.operations(rep);
+        } finally {
+            rep.commitProcessingIndex();
+        }
+    }
+
+    public static interface OperationsHandler {
+        public void operations(AkubraRepository rep) throws RepositoryException;
+    }
+
 }
