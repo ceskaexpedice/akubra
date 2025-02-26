@@ -21,7 +21,7 @@ import org.ceskaexpedice.akubra.core.lock.hazelcast.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.core.lock.hazelcast.ServerNode;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
 import org.ceskaexpedice.akubra.core.repository.KnownRelations;
-import org.ceskaexpedice.akubra.core.repository.ProcessingIndexFeeder;
+import org.ceskaexpedice.akubra.core.repository.ProcessingIndex;
 import org.ceskaexpedice.akubra.testutils.TestUtilities;
 import org.ceskaexpedice.akubra.utils.ProcessingIndexUtils;
 import org.junit.jupiter.api.AfterAll;
@@ -83,7 +83,7 @@ public class ProcessingIndexTest {
                 .pageIndex(0)
                 .fieldsToFetch(List.of("source", "_version_"))
                 .build();
-        akubraRepository.iterateProcessingIndex(params, processingIndexItem -> {
+        akubraRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
             Object source = processingIndexItem.getFieldValue("source");
             assertNotNull(source);
             Optional<Long> version = processingIndexItem.getFieldValueAs("_version_", Long.class);
@@ -100,10 +100,10 @@ public class ProcessingIndexTest {
                 .queryString(query)
                 .sortField("title")
                 .ascending(true)
-                .cursorMark(ProcessingIndexFeeder.CURSOR_MARK_START)
+                .cursorMark(ProcessingIndex.CURSOR_MARK_START)
                 .fieldsToFetch(List.of("source", "_version_"))
                 .build();
-        akubraRepository.iterateProcessingIndex(params, processingIndexItem -> {
+        akubraRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
             Object source = processingIndexItem.getFieldValue("source");
             assertNotNull(source);
             Optional<Long> version = processingIndexItem.getFieldValueAs("_version_", Long.class);

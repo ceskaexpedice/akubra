@@ -19,10 +19,7 @@ package org.ceskaexpedice.akubra.impl;
 import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
-import org.ceskaexpedice.akubra.core.repository.CoreRepository;
-import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
-import org.ceskaexpedice.akubra.core.repository.RepositoryException;
-import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
+import org.ceskaexpedice.akubra.core.repository.*;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 
 import java.io.InputStream;
@@ -49,7 +46,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     @Override
     public void ingest(DigitalObject digitalObject) {
         coreRepository.ingestObject(digitalObject);
-        coreRepository.getProcessingIndexFeeder().commit();
+        coreRepository.getProcessingIndex().commit();
     }
 
     @Override
@@ -250,13 +247,8 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     }
 
     @Override
-    public String iterateProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action) {
-        return coreRepository.getProcessingIndexFeeder().iterate(params, action);
-    }
-
-    @Override
-    public void commitProcessingIndex() {
-        coreRepository.getProcessingIndexFeeder().commit();
+    public ProcessingIndex getProcessingIndex() {
+        return coreRepository.getProcessingIndex();
     }
 
     @Override

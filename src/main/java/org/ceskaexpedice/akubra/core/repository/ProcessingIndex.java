@@ -16,6 +16,7 @@
  */
 package org.ceskaexpedice.akubra.core.repository;
 
+import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
 
@@ -28,7 +29,7 @@ import java.util.function.Consumer;
  * It also supports descriptions related to the objects. The index allows for efficient querying, updating,
  * and deletion of entries related to object relations and descriptions.
  */
-public interface ProcessingIndexFeeder {
+public interface ProcessingIndex {
     // Constants representing types of index entries (relations and descriptions).
     String TYPE_RELATION = "relation";
     String TYPE_DESC = "description";
@@ -52,6 +53,12 @@ public interface ProcessingIndexFeeder {
      * @param pid The unique identifier of the object whose relations are to be deleted.
      */
     void deleteByRelationsForPid(String pid);
+
+    /**
+     *
+     * @return
+     */
+    void deleteProcessingIndex();
 
     /**
      * Deletes all processing index entries related to the given PID.

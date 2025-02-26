@@ -126,11 +126,11 @@ public interface CoreRepository {
     Lock getWriteLock(String pid);
 
     /**
-     * Returns a processing index feeder for the repository.
+     * Returns a processing index  for the repository.
      *
-     * @return A ProcessingIndexFeeder instance for processing index feeding.
+     * @return A ProcessingIndex instance for processing index feeding and reading.
      */
-    ProcessingIndexFeeder getProcessingIndexFeeder();
+    ProcessingIndex getProcessingIndex();
 
     /**
      * Shuts down the repository access system.

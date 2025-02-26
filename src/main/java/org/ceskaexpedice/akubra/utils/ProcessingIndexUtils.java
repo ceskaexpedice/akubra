@@ -106,7 +106,7 @@ public final class ProcessingIndexUtils {
                 .cursorMark("*")
                 .rows(100)
                 .build();
-        akubraRepository.iterateProcessingIndex(params, processingIndexItem -> {
+        akubraRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
             for (String name : processingIndexItem.getFieldNames()) {
                 description.put(name, processingIndexItem.getFieldValue(name).toString());
             }
@@ -125,7 +125,7 @@ public final class ProcessingIndexUtils {
                 .rows(100)
                 .fieldsToFetch(List.of("targetPid", "relation"))
                 .build();
-        akubraRepository.iterateProcessingIndex(params, processingIndexItem -> {
+        akubraRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
             Object targetPid = processingIndexItem.getFieldValue("targetPid");
             Object relation = processingIndexItem.getFieldValue("relation");
             if (targetPid != null && relation != null) {
@@ -146,7 +146,7 @@ public final class ProcessingIndexUtils {
                 .rows(100)
                 .fieldsToFetch(List.of("targetPid"))
                 .build();
-        akubraRepository.iterateProcessingIndex(params, processingIndexItem -> {
+        akubraRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
             Object targetPid = processingIndexItem.getFieldValue("targetPid");
             pids.add(targetPid.toString());
         });
@@ -164,7 +164,7 @@ public final class ProcessingIndexUtils {
                 .rows(100)
                 .fieldsToFetch(List.of("source", "relation"))
                 .build();
-        akubraRepository.iterateProcessingIndex(params, processingIndexItem -> {
+        akubraRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
             Object sourcePid = processingIndexItem.getFieldValue("source");
             Object relation = processingIndexItem.getFieldValue("relation");
             if (sourcePid != null && relation != null) {
@@ -185,7 +185,7 @@ public final class ProcessingIndexUtils {
                 .rows(100)
                 .fieldsToFetch(List.of("source"))
                 .build();
-        akubraRepository.iterateProcessingIndex(params, processingIndexItem -> {
+        akubraRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
             Object sourcePid = processingIndexItem.getFieldValue("source");
             pids.add(sourcePid.toString());
         });
@@ -239,7 +239,7 @@ public final class ProcessingIndexUtils {
                 .offset(offset)
                 .fieldsToFetch(List.of("source", "dc.title"))
                 .build();
-        akubraRepository.iterateProcessingIndex(params, processingIndexItem -> {
+        akubraRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
             Object fieldPid = processingIndexItem.getFieldValue("source");
             Object fieldTitle = processingIndexItem.getFieldValue("dc.title");
             String pid = null;
@@ -286,7 +286,7 @@ public final class ProcessingIndexUtils {
                 .pageIndex(pageIndex)
                 .fieldsToFetch(fieldList)
                 .build();
-        akubraRepository.iterateProcessingIndex(params, processingIndexItem -> {
+        akubraRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
             docs.add(processingIndexItem);
         });
         return new ImmutablePair<>(Long.valueOf(docs.size()), docs);
@@ -302,7 +302,7 @@ public final class ProcessingIndexUtils {
                 .cursorMark(cursor)
                 .stopAfterCursorMark(true)
                 .build();
-        return akubraRepository.iterateProcessingIndex(params, processingIndexItem -> {
+        return akubraRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
             action.accept(processingIndexItem);
         });
     }
@@ -397,7 +397,7 @@ public final class ProcessingIndexUtils {
         try {
             op.operations(rep);
         } finally {
-            rep.commitProcessingIndex();
+            rep.getProcessingIndex().commit();
         }
     }
 

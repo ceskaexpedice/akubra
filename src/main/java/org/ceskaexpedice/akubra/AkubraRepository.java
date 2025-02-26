@@ -19,6 +19,7 @@ package org.ceskaexpedice.akubra;
 
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
+import org.ceskaexpedice.akubra.core.repository.ProcessingIndex;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 
 import java.io.InputStream;
@@ -259,20 +260,16 @@ public interface AkubraRepository {
      */
     List<String> getDatastreamNames(String pid);
 
-    //-------------------- Miscellaneous ---------------------------
+    //-------------------- processing index -----------------------
 
     /**
-     * Iterates over the processing index and applies an action to each item.
+     * Returns a processing index  for the repository.
      *
-     * @param params The query parameters for filtering the index.
-     * @param action The action to perform on each processing index item.
+     * @return A ProcessingIndex instance for processing index feeding and reading.
      */
-    String iterateProcessingIndex(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action);
+    ProcessingIndex getProcessingIndex();
 
-    /**
-     * Performs commit on processing index
-     */
-    void commitProcessingIndex();
+    //-------------------- Miscellaneous ---------------------------
 
     /**
      * Shuts down the repository, releasing resources.

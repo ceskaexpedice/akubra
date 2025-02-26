@@ -44,7 +44,7 @@ public class CoreRepositoryWriteTest {
 
     private static Properties testsProperties;
     private static HazelcastConfiguration hazelcastConfig;
-    private static ProcessingIndexFeeder mockFeeder;
+    private static ProcessingIndex mockFeeder;
     private static CoreRepository coreRepository;
 
     @BeforeAll
@@ -53,7 +53,7 @@ public class CoreRepositoryWriteTest {
         hazelcastConfig = TestUtilities.createHazelcastConfig(testsProperties);
         ServerNode.ensureHazelcastNode(hazelcastConfig);
         // configure repository
-        mockFeeder = mock(ProcessingIndexFeeder.class);
+        mockFeeder = mock(ProcessingIndex.class);
         try (MockedStatic<CoreRepositoryFactory> mockedStatic = mockStatic(CoreRepositoryFactory.class, Mockito.CALLS_REAL_METHODS)) {
             mockedStatic.when(() -> CoreRepositoryFactory.createProcessingIndexFeeder(any())).thenReturn(mockFeeder);
             mockedStatic.when(() -> CoreRepositoryFactory.createCacheManager()).thenReturn(null);

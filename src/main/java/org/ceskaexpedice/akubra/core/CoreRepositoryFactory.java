@@ -19,9 +19,9 @@ package org.ceskaexpedice.akubra.core;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.ConcurrentUpdateSolrClient;
 import org.ceskaexpedice.akubra.RepositoryConfiguration;
-import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexFeederSolr;
+import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
-import org.ceskaexpedice.akubra.core.repository.ProcessingIndexFeeder;
+import org.ceskaexpedice.akubra.core.repository.ProcessingIndex;
 import org.ceskaexpedice.akubra.core.repository.impl.AkubraDOManager;
 import org.ceskaexpedice.akubra.core.repository.impl.CoreRepositoryImpl;
 import org.ehcache.CacheManager;
@@ -38,14 +38,14 @@ public final class CoreRepositoryFactory {
     }
 
     public static CoreRepository createRepository(RepositoryConfiguration configuration) {
-        ProcessingIndexFeeder processingIndexFeeder = createProcessingIndexFeeder(configuration);
+        ProcessingIndex processingIndex = createProcessingIndexFeeder(configuration);
         AkubraDOManager akubraDOManager = new AkubraDOManager(createCacheManager(), configuration);
-        return new CoreRepositoryImpl(processingIndexFeeder, akubraDOManager);
+        return new CoreRepositoryImpl(processingIndex, akubraDOManager);
     }
 
-    public static ProcessingIndexFeeder createProcessingIndexFeeder(RepositoryConfiguration configuration) {
-        ProcessingIndexFeeder processingIndexFeeder = new ProcessingIndexFeederSolr(createProcessingUpdateClient(configuration));
-        return processingIndexFeeder;
+    public static ProcessingIndex createProcessingIndexFeeder(RepositoryConfiguration configuration) {
+        ProcessingIndex processingIndex = new ProcessingIndexSolr(createProcessingUpdateClient(configuration));
+        return processingIndex;
     }
 
     public static CacheManager createCacheManager() {

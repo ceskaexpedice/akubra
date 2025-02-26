@@ -108,9 +108,9 @@ public class CoreRepositoryReadTest {
     }
 
     @Test
-    void testGetProcessingIndexFeeder() {
-        ProcessingIndexFeeder processingIndexFeeder = coreRepository.getProcessingIndexFeeder();
-        assertNotNull(processingIndexFeeder);
+    void testGetProcessingIndex() {
+        ProcessingIndex processingIndex = coreRepository.getProcessingIndex();
+        assertNotNull(processingIndex);
     }
 
 

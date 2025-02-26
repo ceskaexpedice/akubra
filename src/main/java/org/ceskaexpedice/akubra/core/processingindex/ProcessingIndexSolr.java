@@ -47,13 +47,13 @@ import java.util.stream.Collectors;
  *
  * @author pstastny
  */
-public class ProcessingIndexFeederSolr implements ProcessingIndexFeeder {
+public class ProcessingIndexSolr implements ProcessingIndex {
 
-    private static final Logger LOGGER = Logger.getLogger(ProcessingIndexFeederSolr.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ProcessingIndexSolr.class.getName());
 
     private SolrClient solrClient;
 
-    public ProcessingIndexFeederSolr(SolrClient solrClient) {
+    public ProcessingIndexSolr(SolrClient solrClient) {
         super();
         this.solrClient = solrClient;
     }
@@ -155,10 +155,10 @@ public class ProcessingIndexFeederSolr implements ProcessingIndexFeeder {
         }
     }
 
-    private UpdateResponse deleteProcessingIndex() {
+    @Override
+    public void deleteProcessingIndex() {
         try {
             UpdateResponse response = this.solrClient.deleteByQuery("*:*");
-            return response;
         } catch (Exception e) {
             throw new RepositoryException(e);
         }
@@ -244,7 +244,7 @@ public class ProcessingIndexFeederSolr implements ProcessingIndexFeeder {
                             // czech title or default
                             List<String> modsTList = modsTitle(repositoryObject, "cze");
                             if (modsTList != null && !modsTList.isEmpty()) {
-                                this.indexDescription(repositoryObject.getPid(), object, modsTList.stream().collect(Collectors.joining(" ")), ProcessingIndexFeederSolr.TitleType.mods);
+                                this.indexDescription(repositoryObject.getPid(), object, modsTList.stream().collect(Collectors.joining(" ")), ProcessingIndexSolr.TitleType.mods);
                             } else {
                                 this.indexDescription(repositoryObject.getPid(), object, "");
                             }
@@ -272,7 +272,7 @@ public class ProcessingIndexFeederSolr implements ProcessingIndexFeeder {
         }
     }
 
-    private void indexDescription(String pid, String model, String title, ProcessingIndexFeeder.TitleType ttype) throws IOException, SolrServerException {
+    private void indexDescription(String pid, String model, String title, ProcessingIndex.TitleType ttype) throws IOException, SolrServerException {
         this.feedDescriptionDocument(pid, model, title.trim(), RepositoryUtils.getAkubraInternalId(pid), new Date(), ttype);
     }
 

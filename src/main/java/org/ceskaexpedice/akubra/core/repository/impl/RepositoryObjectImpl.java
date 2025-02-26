@@ -52,9 +52,9 @@ class RepositoryObjectImpl implements RepositoryObject {
     private static final String RDF_ELEMENT = "RDF";
     private AkubraDOManager manager;
     private DigitalObject digitalObject;
-    private ProcessingIndexFeeder feeder;
+    private ProcessingIndex feeder;
 
-    RepositoryObjectImpl(DigitalObject digitalObject, AkubraDOManager manager, ProcessingIndexFeeder feeder) {
+    RepositoryObjectImpl(DigitalObject digitalObject, AkubraDOManager manager, ProcessingIndex feeder) {
         super();
         this.manager = manager;
         this.feeder = feeder;
