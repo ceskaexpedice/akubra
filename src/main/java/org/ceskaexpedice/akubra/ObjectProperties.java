@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
+import java.util.Date;
 
 /**
  * Interface that defines the properties of an object, including the ability to retrieve
@@ -53,13 +54,13 @@ public interface ObjectProperties {
      *
      * @return The creation timestamp of the property.
      */
-    LocalDateTime getPropertyCreated();
+    Date getPropertyCreated();
 
     /**
      * Retrieves the timestamp when the property was last modified.
      *
      * @return The last modification timestamp of the property.
      */
-    LocalDateTime getPropertyLastModified();
+    Date getPropertyLastModified();
 }
 

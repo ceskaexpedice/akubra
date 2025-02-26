@@ -213,14 +213,11 @@ public interface AkubraRepository {
      */
     ProcessingIndex getProcessingIndex();
 
-    //-------------------- Miscellaneous ---------------------------
+    //-------------------- RelsExt -----------------------
 
     RelsExtHandler getRelsExtHandler();
 
-    /**
-     * Shuts down the repository, releasing resources.
-     */
-    void shutdown();
+    //-------------------- Locks ---------------------------
 
     /**
      * Executes an operation with a read lock on the specified object.
@@ -241,4 +238,10 @@ public interface AkubraRepository {
      * @return The result of the operation.
      */
     <T> T doWithWriteLock(String pid, LockOperation<T> operation);
+
+    /**
+     * Shuts down the repository, releasing resources.
+     */
+    void shutdown();
+
 }

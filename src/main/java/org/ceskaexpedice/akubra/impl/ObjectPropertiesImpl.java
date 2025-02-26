@@ -23,10 +23,12 @@ import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
+import java.util.Date;
 import java.util.logging.Logger;
 
 import static org.ceskaexpedice.akubra.utils.Dom4jUtils.extractProperty;
@@ -55,11 +57,13 @@ class ObjectPropertiesImpl implements ObjectProperties {
     }
 
     @Override
-    public LocalDateTime getPropertyCreated() {
+    public Date getPropertyCreated() {
         String propertyValue = getProperty("info:fedora/fedora-system:def/model#createdDate");
         if (propertyValue != null) {
             try {
-                return LocalDateTime.parse(propertyValue, TIMESTAMP_FORMATTER);
+                return Date.from(LocalDateTime.parse(propertyValue, TIMESTAMP_FORMATTER)
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant());
             } catch (DateTimeParseException e) {
                 LOGGER.warning(String.format("cannot parse createdDate %s from object %s", propertyValue, repositoryObject.getPid()));
             }
@@ -68,11 +72,13 @@ class ObjectPropertiesImpl implements ObjectProperties {
     }
 
     @Override
-    public LocalDateTime getPropertyLastModified() {
+    public Date getPropertyLastModified() {
         String propertyValue = getProperty("info:fedora/fedora-system:def/view#lastModifiedDate");
         if (propertyValue != null) {
             try {
-                return LocalDateTime.parse(propertyValue, TIMESTAMP_FORMATTER);
+                return Date.from(LocalDateTime.parse(propertyValue, TIMESTAMP_FORMATTER)
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant());
             } catch (DateTimeParseException e) {
                 LOGGER.warning(String.format("cannot parse lastModifiedDate %s from object %s", propertyValue, repositoryObject.getPid()));
             }
