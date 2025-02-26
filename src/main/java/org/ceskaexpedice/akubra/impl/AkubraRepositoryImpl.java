@@ -52,21 +52,21 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     }
 
     @Override
-    public DigitalObject getObject(String pid) {
+    public DigitalObjectWrapper getObject(String pid) {
         return getObject(pid, FoxmlType.managed);
     }
 
     @Override
-    public DigitalObject getObject(String pid, FoxmlType foxmlType) {
+    public DigitalObjectWrapper getObject(String pid, FoxmlType foxmlType) {
         RepositoryObject repositoryObject = coreRepository.getObject(pid);
         if (repositoryObject == null) {
-            return null;
+            return new DigitalObjectWrapperImpl(null, this);
         }
         DigitalObject digitalObject = repositoryObject.getDigitalObject();
         if(foxmlType == FoxmlType.archive) {
             coreRepository.resolveArchivedDatastreams(digitalObject);
         }
-        return digitalObject;
+        return new DigitalObjectWrapperImpl(digitalObject, this);
     }
 
     @Override

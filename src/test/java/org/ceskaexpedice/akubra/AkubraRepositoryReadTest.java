@@ -72,52 +72,35 @@ public class AkubraRepositoryReadTest {
 
     @Test
     void testGetObject_asStream() {
-        DigitalObject digitalObject = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed);
+        InputStream digitalObject = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed).asInputStream();
         assertNotNull(digitalObject);
-        InputStream objectStream = akubraRepository.marshallObject(digitalObject);
-        assertNotNull(objectStream);
-        TestUtilities.debugPrint(StringUtils.streamToString(objectStream), testsProperties);
+        TestUtilities.debugPrint(StringUtils.streamToString(digitalObject), testsProperties);
     }
 
     @Test
     void testGetObject_asXmlDom4j() {
-        DigitalObject digitalObject = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed);
-        assertNotNull(digitalObject);
-        InputStream objectStream = akubraRepository.marshallObject(digitalObject);
-        assertNotNull(objectStream);
-        Document asXmlDom4j = Dom4jUtils.streamToDocument(objectStream, true);
+        Document asXmlDom4j = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed).asDom4j(true);
         assertNotNull(asXmlDom4j);
         TestUtilities.debugPrint(asXmlDom4j.asXML(), testsProperties);
     }
 
     @Test
     void testGetObject_asXmlDom() {
-        DigitalObject digitalObject = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed);
-        assertNotNull(digitalObject);
-        InputStream objectStream = akubraRepository.marshallObject(digitalObject);
-        assertNotNull(objectStream);
-        org.w3c.dom.Document asXmlDom = DomUtils.streamToDocument(objectStream);
+        org.w3c.dom.Document asXmlDom = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed).asDom(false);
         assertNotNull(asXmlDom);
         TestUtilities.debugPrint(DomUtils.toString(asXmlDom.getDocumentElement(), true), testsProperties);
     }
 
     @Test
     void testGetObject_asString() {
-        DigitalObject digitalObject = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed);
-        assertNotNull(digitalObject);
-        InputStream objectStream = akubraRepository.marshallObject(digitalObject);
-        assertNotNull(objectStream);
-        String asString = StringUtils.streamToString(objectStream);
-        ;
+        String asString = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed).asString();
         assertNotNull(asString);
         TestUtilities.debugPrint(asString, testsProperties);
     }
 
     @Test
     void testGetObjectArchive_asStream() {
-        DigitalObject digitalObject = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.archive);
-        assertNotNull(digitalObject);
-        InputStream objectStream = akubraRepository.marshallObject(digitalObject);
+        InputStream objectStream = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.archive).asInputStream();
         assertNotNull(objectStream);
         TestUtilities.debugPrint(StringUtils.streamToString(objectStream), testsProperties);
     }

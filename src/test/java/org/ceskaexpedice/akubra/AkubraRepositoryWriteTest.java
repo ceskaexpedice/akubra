@@ -88,7 +88,7 @@ public class AkubraRepositoryWriteTest {
     @Test
     void testIngest() throws IOException {
         // prepare import document
-        DigitalObject digitalObjectImported = akubraRepository.getObject(PID_IMPORTED, FoxmlType.managed);
+        DigitalObject digitalObjectImported = akubraRepository.getObject(PID_IMPORTED, FoxmlType.managed).asDigitalObject();
         Assertions.assertNull(digitalObjectImported);
         Path importFile = Path.of("src/test/resources/titlePageImport.xml");
         InputStream inputStream = Files.newInputStream(importFile);
@@ -97,7 +97,7 @@ public class AkubraRepositoryWriteTest {
         reset(mockFeeder);
         akubraRepository.ingest(digitalObject);
         // test ingest result
-        digitalObjectImported = akubraRepository.getObject(PID_IMPORTED, FoxmlType.managed);
+        digitalObjectImported = akubraRepository.getObject(PID_IMPORTED, FoxmlType.managed).asDigitalObject();
         Assertions.assertNotNull(digitalObjectImported);
         verify(mockFeeder, times(1)).rebuildProcessingIndex(any(), any());
         verify(mockFeeder, times(1)).commit();
@@ -105,11 +105,11 @@ public class AkubraRepositoryWriteTest {
 
     @Test
     void testDeleteObject() {
-        DigitalObject repositoryObject = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed);
+        DigitalObject repositoryObject = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed).asDigitalObject();
         Assertions.assertNotNull(repositoryObject);
         reset(mockFeeder);
         akubraRepository.deleteObject(PID_TITLE_PAGE);
-        repositoryObject = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed);
+        repositoryObject = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed).asDigitalObject();
         Assertions.assertNull(repositoryObject);
         verify(mockFeeder, times(1)).deleteByRelationsForPid(eq(PID_TITLE_PAGE));
         verify(mockFeeder, times(1)).deleteByTargetPid(eq(PID_TITLE_PAGE));
@@ -127,7 +127,7 @@ public class AkubraRepositoryWriteTest {
         datastreamExists = akubraRepository.datastreamExists(PID_MONOGRAPH, "pepo");
         Assertions.assertTrue(datastreamExists);
 
-        DigitalObject digitalObject = akubraRepository.getObject(PID_MONOGRAPH);
+        DigitalObject digitalObject = akubraRepository.getObject(PID_MONOGRAPH).asDigitalObject();
         Document document = Dom4jUtils.streamToDocument(akubraRepository.marshallObject(digitalObject), true);
         TestUtilities.debugPrint(document.asXML(),testsProperties);
     }
@@ -143,7 +143,7 @@ public class AkubraRepositoryWriteTest {
         datastreamExists = akubraRepository.datastreamExists(PID_MONOGRAPH, "pepo");
         Assertions.assertTrue(datastreamExists);
 
-        DigitalObject digitalObject = akubraRepository.getObject(PID_MONOGRAPH);
+        DigitalObject digitalObject = akubraRepository.getObject(PID_MONOGRAPH).asDigitalObject();
         Document document = Dom4jUtils.streamToDocument(akubraRepository.marshallObject(digitalObject), true);
         TestUtilities.debugPrint(document.asXML(),testsProperties);
     }
@@ -157,7 +157,7 @@ public class AkubraRepositoryWriteTest {
         datastreamExists = akubraRepository.datastreamExists(PID_MONOGRAPH, "pepo");
         Assertions.assertTrue(datastreamExists);
 
-        DigitalObject digitalObject = akubraRepository.getObject(PID_MONOGRAPH);
+        DigitalObject digitalObject = akubraRepository.getObject(PID_MONOGRAPH).asDigitalObject();
         Document document = Dom4jUtils.streamToDocument(akubraRepository.marshallObject(digitalObject), true);
         TestUtilities.debugPrint(document.asXML(),testsProperties);
     }
@@ -184,7 +184,7 @@ public class AkubraRepositoryWriteTest {
         relations = relsExtWrapper.getRelations(null);
         Assertions.assertEquals(2, relations.size());
 
-        DigitalObject digitalObject = akubraRepository.getObject(PID_TITLE_PAGE);
+        DigitalObject digitalObject = akubraRepository.getObject(PID_TITLE_PAGE).asDigitalObject();
         Document document = Dom4jUtils.streamToDocument(akubraRepository.marshallObject(digitalObject), true);
         TestUtilities.debugPrint(document.asXML(),testsProperties);
     }
@@ -214,7 +214,7 @@ public class AkubraRepositoryWriteTest {
         literals = relsExtWrapper.getLiterals(null);
         Assertions.assertEquals(5, literals.size());
 
-        DigitalObject digitalObject = akubraRepository.getObject(PID_TITLE_PAGE);
+        DigitalObject digitalObject = akubraRepository.getObject(PID_TITLE_PAGE).asDigitalObject();
         Document document = Dom4jUtils.streamToDocument(akubraRepository.marshallObject(digitalObject), true);
         TestUtilities.debugPrint(document.asXML(),testsProperties);
     }

@@ -60,7 +60,7 @@ public interface AkubraRepository {
      * @param pid The persistent identifier of the object.
      * @return The digital object, or {@code null} if not found.
      */
-    DigitalObject getObject(String pid);
+    DigitalObjectWrapper getObject(String pid);
 
     /**
      * Retrieves a digital object in a specific FOXML format.
@@ -69,7 +69,7 @@ public interface AkubraRepository {
      * @param foxmlType The FOXML type format.
      * @return The digital object in the specified format, or {@code null} if not found.
      */
-    DigitalObject getObject(String pid, FoxmlType foxmlType);
+    DigitalObjectWrapper getObject(String pid, FoxmlType foxmlType);
 
     /**
      * Retrieves metadata properties of a digital object.
