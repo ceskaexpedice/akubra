@@ -17,15 +17,12 @@
 package org.ceskaexpedice.akubra.impl;
 
 import org.ceskaexpedice.akubra.*;
-import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
-import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
 import org.ceskaexpedice.akubra.core.repository.*;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 
 import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -111,6 +108,19 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     }
 
     @Override
+    public void updateXMLDatastream(String pid, String dsId, String mimeType, InputStream binaryContent) {
+        doWithWriteLock(pid, () -> {
+            RepositoryObject repositoryObject = coreRepository.getObject(pid);
+            if (repositoryObject == null) {
+                return null;
+            }
+            repositoryObject.deleteStream(dsId);
+            repositoryObject.createXMLStream(dsId, mimeType, binaryContent);
+            return null;
+        });
+    }
+
+    @Override
     public void createManagedDatastream(String pid, String dsId, String mimeType, InputStream binaryContent) {
         RepositoryObject repositoryObject = coreRepository.getObject(pid);
         if (repositoryObject == null) {
@@ -120,12 +130,38 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     }
 
     @Override
+    public void updateManagedDatastream(String pid, String dsId, String mimeType, InputStream binaryContent) {
+        doWithWriteLock(pid, () -> {
+            RepositoryObject repositoryObject = coreRepository.getObject(pid);
+            if (repositoryObject == null) {
+                return null;
+            }
+            repositoryObject.deleteStream(dsId);
+            repositoryObject.createManagedStream(dsId, mimeType, binaryContent);
+            return null;
+        });
+    }
+
+    @Override
     public void createRedirectedDatastream(String pid, String dsId, String url, String mimeType) {
         RepositoryObject repositoryObject = coreRepository.getObject(pid);
         if (repositoryObject == null) {
             return;
         }
         repositoryObject.createRedirectedStream(dsId, url, mimeType);
+    }
+
+    @Override
+    public void updateRedirectedDatastream(String pid, String dsId, String url, String mimeType) {
+        doWithWriteLock(pid, () -> {
+            RepositoryObject repositoryObject = coreRepository.getObject(pid);
+            if (repositoryObject == null) {
+                return null;
+            }
+            repositoryObject.deleteStream(dsId);
+            repositoryObject.createRedirectedStream(dsId, url, mimeType);
+            return null;
+        });
     }
 
     @Override

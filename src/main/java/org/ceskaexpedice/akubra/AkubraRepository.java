@@ -123,6 +123,8 @@ public interface AkubraRepository {
      */
     void createXMLDatastream(String pid, String dsId, String mimeType, InputStream xmlContent);
 
+    void updateXMLDatastream(String pid, String dsId, String mimeType, InputStream binaryContent);
+
     /**
      * Creates a managed datastream for a digital object.
      *
@@ -133,6 +135,8 @@ public interface AkubraRepository {
      */
     void createManagedDatastream(String pid, String dsId, String mimeType, InputStream binaryContent);
 
+    void updateManagedDatastream(String pid, String dsId, String mimeType, InputStream binaryContent);
+
     /**
      * Creates a redirected datastream linking to an external resource.
      *
@@ -142,6 +146,8 @@ public interface AkubraRepository {
      * @param mimeType The MIME type of the datastream.
      */
     void createRedirectedDatastream(String pid, String dsId, String url, String mimeType);
+
+    void updateRedirectedDatastream(String pid, String dsId, String url, String mimeType);
 
     /**
      * Checks if a datastream exists for a given object.
