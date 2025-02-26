@@ -108,6 +108,11 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     }
 
     @Override
+    public void createXMLDatastream(String pid, KnownDatastreams dsId, String mimeType, InputStream xmlContent) {
+        createXMLDatastream(pid, dsId.toString(), mimeType, xmlContent);
+    }
+
+    @Override
     public void updateXMLDatastream(String pid, String dsId, String mimeType, InputStream binaryContent) {
         doWithWriteLock(pid, () -> {
             RepositoryObject repositoryObject = coreRepository.getObject(pid);
@@ -121,12 +126,22 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     }
 
     @Override
+    public void updateXMLDatastream(String pid, KnownDatastreams dsId, String mimeType, InputStream binaryContent) {
+        updateXMLDatastream(pid, dsId.toString(), mimeType, binaryContent);
+    }
+
+    @Override
     public void createManagedDatastream(String pid, String dsId, String mimeType, InputStream binaryContent) {
         RepositoryObject repositoryObject = coreRepository.getObject(pid);
         if (repositoryObject == null) {
             return;
         }
         repositoryObject.createManagedStream(dsId, mimeType, binaryContent);
+    }
+
+    @Override
+    public void createManagedDatastream(String pid, KnownDatastreams dsId, String mimeType, InputStream binaryContent) {
+        createManagedDatastream(pid, dsId.toString(), mimeType, binaryContent);
     }
 
     @Override
@@ -143,12 +158,22 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     }
 
     @Override
+    public void updateManagedDatastream(String pid, KnownDatastreams dsId, String mimeType, InputStream binaryContent) {
+        updateManagedDatastream(pid, dsId.toString(), mimeType, binaryContent);
+    }
+
+    @Override
     public void createRedirectedDatastream(String pid, String dsId, String url, String mimeType) {
         RepositoryObject repositoryObject = coreRepository.getObject(pid);
         if (repositoryObject == null) {
             return;
         }
         repositoryObject.createRedirectedStream(dsId, url, mimeType);
+    }
+
+    @Override
+    public void createRedirectedDatastream(String pid, KnownDatastreams dsId, String url, String mimeType) {
+        createRedirectedDatastream(pid, dsId.toString(), url, mimeType);
     }
 
     @Override
@@ -165,9 +190,19 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     }
 
     @Override
+    public void updateRedirectedDatastream(String pid, KnownDatastreams dsId, String url, String mimeType) {
+        updateRedirectedDatastream(pid, dsId.toString(), url, mimeType);
+    }
+
+    @Override
     public boolean datastreamExists(String pid, String dsId) {
         RepositoryObject repositoryObject = coreRepository.getObject(pid);
         return repositoryObject.streamExists(dsId);
+    }
+
+    @Override
+    public boolean datastreamExists(String pid, KnownDatastreams dsId) {
+        return datastreamExists(pid, dsId.toString());
     }
 
     @Override
@@ -175,6 +210,11 @@ public class AkubraRepositoryImpl implements AkubraRepository {
         RepositoryObject object = coreRepository.getObject(pid);
         RepositoryDatastream stream = object.getStream(dsId);
         return new DatastreamMetadataImpl(stream);
+    }
+
+    @Override
+    public DatastreamMetadata getDatastreamMetadata(String pid, KnownDatastreams dsId) {
+        return getDatastreamMetadata(pid, dsId.toString());
     }
 
     @Override
@@ -188,12 +228,22 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     }
 
     @Override
+    public InputStream getDatastreamContent(String pid, KnownDatastreams dsId) {
+        return getDatastreamContent(pid, dsId.toString());
+    }
+
+    @Override
     public void deleteDatastream(String pid, String dsId) {
         RepositoryObject repositoryObject = coreRepository.getObject(pid);
         if (repositoryObject == null) {
             return;
         }
         repositoryObject.deleteStream(dsId);
+    }
+
+    @Override
+    public void deleteDatastream(String pid, KnownDatastreams dsId) {
+        deleteDatastream(pid, dsId.toString());
     }
 
     @Override

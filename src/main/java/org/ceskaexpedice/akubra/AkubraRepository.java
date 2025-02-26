@@ -19,6 +19,7 @@ package org.ceskaexpedice.akubra;
 
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
+import org.ceskaexpedice.akubra.core.repository.KnownDatastreams;
 import org.ceskaexpedice.akubra.core.repository.ProcessingIndex;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 
@@ -123,7 +124,11 @@ public interface AkubraRepository {
      */
     void createXMLDatastream(String pid, String dsId, String mimeType, InputStream xmlContent);
 
+    void createXMLDatastream(String pid, KnownDatastreams dsId, String mimeType, InputStream xmlContent);
+
     void updateXMLDatastream(String pid, String dsId, String mimeType, InputStream binaryContent);
+
+    void updateXMLDatastream(String pid, KnownDatastreams dsId, String mimeType, InputStream binaryContent);
 
     /**
      * Creates a managed datastream for a digital object.
@@ -135,7 +140,11 @@ public interface AkubraRepository {
      */
     void createManagedDatastream(String pid, String dsId, String mimeType, InputStream binaryContent);
 
+    void createManagedDatastream(String pid, KnownDatastreams dsId, String mimeType, InputStream binaryContent);
+
     void updateManagedDatastream(String pid, String dsId, String mimeType, InputStream binaryContent);
+
+    void updateManagedDatastream(String pid, KnownDatastreams dsId, String mimeType, InputStream binaryContent);
 
     /**
      * Creates a redirected datastream linking to an external resource.
@@ -147,7 +156,11 @@ public interface AkubraRepository {
      */
     void createRedirectedDatastream(String pid, String dsId, String url, String mimeType);
 
+    void createRedirectedDatastream(String pid, KnownDatastreams dsId, String url, String mimeType);
+
     void updateRedirectedDatastream(String pid, String dsId, String url, String mimeType);
+
+    void updateRedirectedDatastream(String pid, KnownDatastreams dsId, String url, String mimeType);
 
     /**
      * Checks if a datastream exists for a given object.
@@ -158,6 +171,8 @@ public interface AkubraRepository {
      */
     boolean datastreamExists(String pid, String dsId);
 
+    boolean datastreamExists(String pid, KnownDatastreams dsId);
+
     /**
      * Retrieves metadata of a specific datastream.
      *
@@ -166,6 +181,8 @@ public interface AkubraRepository {
      * @return Metadata of the datastream.
      */
     DatastreamMetadata getDatastreamMetadata(String pid, String dsId);
+
+    DatastreamMetadata getDatastreamMetadata(String pid, KnownDatastreams dsId);
 
     /**
      * Retrieves the content of a datastream.
@@ -176,6 +193,8 @@ public interface AkubraRepository {
      */
     InputStream getDatastreamContent(String pid, String dsId);
 
+    InputStream getDatastreamContent(String pid, KnownDatastreams dsId);
+
     /**
      * Deletes a datastream from an object.
      *
@@ -183,6 +202,8 @@ public interface AkubraRepository {
      * @param dsId The datastream identifier.
      */
     void deleteDatastream(String pid, String dsId);
+
+    void deleteDatastream(String pid, KnownDatastreams dsId);
 
     //-------------------- Relations Management ---------------------------
 
