@@ -47,7 +47,7 @@ public class ExtractStructureHelper {
         parents.put("foster", fosterParents);
         structure.put("parents", parents);
         
-        Document relsExt = Dom4jUtils.streamToDocument(akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT.toString()), false);
+        Document relsExt = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT).asDom4j(false);
 
         JSONObject children = new JSONObject();
         Pair<List<ProcessingIndexRelation>, List<ProcessingIndexRelation>> childrenTpls = ProcessingIndexUtils.getChildren(pid, akubraRepository);

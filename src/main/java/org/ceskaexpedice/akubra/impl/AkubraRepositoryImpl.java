@@ -218,17 +218,17 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     }
 
     @Override
-    public InputStream getDatastreamContent(String pid, String dsId) {
+    public DatastreamContentWrapper getDatastreamContent(String pid, String dsId) {
         RepositoryObject repositoryObject = coreRepository.getObject(pid);
         if (repositoryObject == null || repositoryObject.getStream(dsId) == null) {
-            return null;
+            return new DatastreamContentWrapperImpl(null);
         }
         InputStream lastVersionContent = repositoryObject.getStream(dsId).getLastVersionContent();
-        return lastVersionContent;
+        return new DatastreamContentWrapperImpl(lastVersionContent);
     }
 
     @Override
-    public InputStream getDatastreamContent(String pid, KnownDatastreams dsId) {
+    public DatastreamContentWrapper getDatastreamContent(String pid, KnownDatastreams dsId) {
         return getDatastreamContent(pid, dsId.toString());
     }
 

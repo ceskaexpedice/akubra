@@ -191,9 +191,9 @@ public interface AkubraRepository {
      * @param dsId The datastream identifier.
      * @return An input stream containing the datastream content.
      */
-    InputStream getDatastreamContent(String pid, String dsId);
+    DatastreamContentWrapper getDatastreamContent(String pid, String dsId);
 
-    InputStream getDatastreamContent(String pid, KnownDatastreams dsId);
+    DatastreamContentWrapper getDatastreamContent(String pid, KnownDatastreams dsId);
 
     /**
      * Deletes a datastream from an object.

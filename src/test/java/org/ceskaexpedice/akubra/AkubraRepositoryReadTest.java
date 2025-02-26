@@ -140,27 +140,27 @@ public class AkubraRepositoryReadTest {
 
     @Test
     void testGetDatastreamContent_asStream() {
-        InputStream imgThumb = akubraRepository.getDatastreamContent(PID_TITLE_PAGE, "IMG_THUMB");
+        InputStream imgThumb = akubraRepository.getDatastreamContent(PID_TITLE_PAGE, "IMG_THUMB").asInputStream();
         assertNotNull(imgThumb);
     }
 
     @Test
     void testGetDatastreamContent_asXmlDom() {
-        org.w3c.dom.Document xmlDom = DomUtils.streamToDocument(akubraRepository.getDatastreamContent(PID_TITLE_PAGE, "DC"));
+        org.w3c.dom.Document xmlDom = akubraRepository.getDatastreamContent(PID_TITLE_PAGE, "DC").asDom(false);
         assertNotNull(xmlDom);
         TestUtilities.debugPrint(DomUtils.toString(xmlDom.getDocumentElement(), true), testsProperties);
     }
 
     @Test
     void testGetDatastreamContent_asXmlDom4j() {
-        Document xmlDom4j = Dom4jUtils.streamToDocument(akubraRepository.getDatastreamContent(PID_TITLE_PAGE, "DC"), true);
+        Document xmlDom4j = akubraRepository.getDatastreamContent(PID_TITLE_PAGE, "DC").asDom4j(true);
         assertNotNull(xmlDom4j);
         TestUtilities.debugPrint(xmlDom4j.asXML(), testsProperties);
     }
 
     @Test
     void testGetDatastreamContent_asString() {
-        String dc = StringUtils.streamToString(akubraRepository.getDatastreamContent(PID_TITLE_PAGE, "DC"));
+        String dc = akubraRepository.getDatastreamContent(PID_TITLE_PAGE, "DC").asString();
         assertNotNull(dc);
         TestUtilities.debugPrint(dc, testsProperties);
     }

@@ -70,8 +70,8 @@ public final class RelsExtUtils {
     }
 
     public static String getModelName(String pid, AkubraRepository akubraRepository) {
-        InputStream inputStream = akubraRepository.getDatastreamContent(KnownDatastreams.RELS_EXT.toString(), pid);
-        return getModelName(DomUtils.streamToDocument(inputStream));
+        Document document = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT).asDom(false);
+        return getModelName(document);
     }
 
     public static String getModelName(Document relsExt) {
@@ -117,8 +117,8 @@ public final class RelsExtUtils {
     }
 
     public static String getFirstVolumePid(String pid, AkubraRepository akubraRepository) throws IOException {
-        InputStream inputStream = akubraRepository.getDatastreamContent(KnownDatastreams.RELS_EXT.toString(), pid);
-        return getFirstVolumePid(DomUtils.streamToDocument(inputStream));
+        Document doc = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT).asDom(false);
+        return getFirstVolumePid(doc);
     }
 
     public static String getFirstItemPid(Document relsExt) throws IOException {
@@ -143,8 +143,8 @@ public final class RelsExtUtils {
     }
 
     public static String getFirstItemPid(String pid, AkubraRepository akubraRepository) throws IOException {
-        InputStream inputStream = akubraRepository.getDatastreamContent(KnownDatastreams.RELS_EXT.toString(), pid);
-        return getFirstItemPid(DomUtils.streamToDocument(inputStream));
+        Document doc = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT).asDom(false);
+        return getFirstItemPid(doc);
     }
 
     public static Element getRDFDescriptionElement(Element relsExt){
@@ -154,8 +154,7 @@ public final class RelsExtUtils {
 
     /** Returns replicatedFrom url from given  RELS-EXT element*/
     public static String getReplicatedFromUrl(String uuid, AkubraRepository akubraRepository) {
-        InputStream inputStream = akubraRepository.getDatastreamContent(uuid, KnownDatastreams.RELS_EXT.toString());
-        Document relsExt = DomUtils.streamToDocument(inputStream);
+        Document relsExt = akubraRepository.getDatastreamContent(uuid, KnownDatastreams.RELS_EXT).asDom(false);
         return getReplicatedFromUrl(relsExt);
     }
 
@@ -176,8 +175,7 @@ public final class RelsExtUtils {
 
     /** Returns replicatedFrom url from given  RELS-EXT element */
     public static String getRelsExtTilesUrl(String uuid, AkubraRepository akubraRepository) {
-        InputStream inputStream = akubraRepository.getDatastreamContent(uuid, KnownDatastreams.RELS_EXT.toString());
-        Document relsExt = DomUtils.streamToDocument(inputStream);
+        Document relsExt = akubraRepository.getDatastreamContent(uuid, KnownDatastreams.RELS_EXT).asDom(false);
         return getRelsExtTilesUrl(relsExt.getDocumentElement());
     }
 
@@ -307,8 +305,7 @@ public final class RelsExtUtils {
             try {
                 // should be from
                 if (akubraRepository.datastreamExists(pid, KnownDatastreams.RELS_EXT.toString())) {
-                    InputStream inputStream = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT.toString());
-                    relsExt = DomUtils.streamToDocument(inputStream);
+                    relsExt = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT).asDom(false);
                 } else {
                     LOGGER.warning("could not read root RELS-EXT, skipping object  (" + pid + ")");
                 }
@@ -365,8 +362,7 @@ public final class RelsExtUtils {
                                 Document iterationgRelsExt = null;
 
                                 try {
-                                    InputStream inputStream = akubraRepository.getDatastreamContent(objectId, KnownDatastreams.RELS_EXT.toString());
-                                    iterationgRelsExt = DomUtils.streamToDocument(inputStream);
+                                    iterationgRelsExt = akubraRepository.getDatastreamContent(objectId, KnownDatastreams.RELS_EXT).asDom(false);
                                 } catch (Exception ex) {
                                     LOGGER.warning("could not read RELS-EXT, skipping branch [" + (level + 1)
                                             + "] and pid (" + objectId + "):" + ex);
