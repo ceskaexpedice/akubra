@@ -34,9 +34,11 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     private static final Logger LOGGER = Logger.getLogger(AkubraRepositoryImpl.class.getName());
 
     private CoreRepository coreRepository;
+    private RelsExtHandler relsExtHandler;
 
     public AkubraRepositoryImpl(CoreRepository coreRepository) {
         this.coreRepository = coreRepository;
+        this.relsExtHandler = new RelsExtHandlerImpl(coreRepository);
     }
 
 
@@ -247,78 +249,6 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     }
 
     @Override
-    public RelsExtWrapper relsExtGet(String pid) {
-        RepositoryObject repositoryObject = coreRepository.getObject(pid);
-        if (repositoryObject == null) {
-            return null;
-        }
-        return new RelsExtWrapperImpl(repositoryObject);
-    }
-
-    @Override
-    public boolean relsExtRelationExists(String pid, String relation, String namespace) {
-        RepositoryObject repositoryObject = coreRepository.getObject(pid);
-        if (repositoryObject == null) {
-            return false;
-        }
-        return repositoryObject.relsExtRelationsExists(relation, namespace);
-    }
-
-    @Override
-    public void relsExtAddRelation(String pid, String relation, String namespace, String targetRelation) {
-        RepositoryObject repositoryObject = coreRepository.getObject(pid);
-        if (repositoryObject == null) {
-            return;
-        }
-        repositoryObject.relsExtAddRelation(relation, namespace, targetRelation);
-    }
-
-    @Override
-    public void relsExtRemoveRelation(String pid, String relation, String namespace, String targetRelation) {
-        RepositoryObject repositoryObject = coreRepository.getObject(pid);
-        if (repositoryObject == null) {
-            return;
-        }
-        repositoryObject.relsExtRemoveRelation(relation, namespace, targetRelation);
-    }
-
-    @Override
-    public void relsExtRemoveRelationsByNameAndNamespace(String pid, String relation, String namespace) {
-        RepositoryObject repositoryObject = coreRepository.getObject(pid);
-        if (repositoryObject == null) {
-            return;
-        }
-        repositoryObject.relsExtRemoveRelationsByNameAndNamespace(relation, namespace);
-    }
-
-    @Override
-    public void relsExtRemoveRelationsByNamespace(String pid, String namespace) {
-        RepositoryObject repositoryObject = coreRepository.getObject(pid);
-        if (repositoryObject == null) {
-            return;
-        }
-        repositoryObject.relsExtRemoveRelationsByNamespace(namespace);
-    }
-
-    @Override
-    public void relsExtAddLiteral(String pid, String relation, String namespace, String value) {
-        RepositoryObject repositoryObject = coreRepository.getObject(pid);
-        if (repositoryObject == null) {
-            return;
-        }
-        repositoryObject.relsExtAddLiteral(relation, namespace, value);
-    }
-
-    @Override
-    public void relsExtRemoveLiteral(String pid, String relation, String namespace, String value) {
-        RepositoryObject repositoryObject = coreRepository.getObject(pid);
-        if (repositoryObject == null) {
-            return;
-        }
-        repositoryObject.relsExtRemoveLiteral(relation, namespace, value);
-    }
-
-    @Override
     public List<String> getDatastreamNames(String pid) {
         RepositoryObject object = coreRepository.getObject(pid);
         List<RepositoryDatastream> streams = object.getStreams();
@@ -335,6 +265,11 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     @Override
     public ProcessingIndex getProcessingIndex() {
         return coreRepository.getProcessingIndex();
+    }
+
+    @Override
+    public RelsExtHandler getRelsExtHandler() {
+        return relsExtHandler;
     }
 
     @Override

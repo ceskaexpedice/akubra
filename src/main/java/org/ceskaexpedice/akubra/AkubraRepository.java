@@ -17,15 +17,12 @@
 
 package org.ceskaexpedice.akubra;
 
-import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
-import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
 import org.ceskaexpedice.akubra.core.repository.KnownDatastreams;
 import org.ceskaexpedice.akubra.core.repository.ProcessingIndex;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 
 import java.io.InputStream;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Main repository access point for managing digital objects and datastreams.
@@ -205,87 +202,7 @@ public interface AkubraRepository {
 
     void deleteDatastream(String pid, KnownDatastreams dsId);
 
-    //-------------------- Relations Management ---------------------------
-
-    /**
-     *
-     * @param pid
-     * @param relation
-     * @param namespace
-     * @return
-     */
-    boolean relsExtRelationExists(String pid, String relation, String namespace);
-
-    /**
-     * Adds a new relationship to the RELS-EXT datastream of a digital object.
-     *
-     * @param pid           The persistent identifier of the object.
-     * @param relation      The relationship type (e.g., "isPartOf").
-     * @param namespace     The namespace URI for the relationship.
-     * @param targetRelation The target object of the relationship.
-     */
-    void relsExtAddRelation(String pid, String relation, String namespace, String targetRelation);
-
-    /**
-     * Removes a specific relationship from the RELS-EXT datastream of a digital object.
-     *
-     * @param pid           The persistent identifier of the object.
-     * @param relation      The relationship type.
-     * @param namespace     The namespace URI of the relationship.
-     * @param targetRelation The target object of the relationship.
-     */
-    void relsExtRemoveRelation(String pid, String relation, String namespace, String targetRelation);
-
-    /**
-     *
-     * @param pid
-     * @param relation
-     * @param namespace
-     */
-    void relsExtRemoveRelationsByNameAndNamespace(String pid, String relation, String namespace);
-
-    /**
-     *
-     * @param pid
-     * @param namespace
-     */
-    void relsExtRemoveRelationsByNamespace(String pid, String namespace);
-
-    /**
-     * Adds a literal value to the RELS-EXT datastream of a digital object.
-     *
-     * @param pid       The persistent identifier of the object.
-     * @param relation  The property name.
-     * @param namespace The namespace URI for the property.
-     * @param value     The literal value to be stored.
-     */
-    void relsExtAddLiteral(String pid, String relation, String namespace, String value);
-
-    /**
-     * Removes a specific literal value from the RELS-EXT datastream of a digital object.
-     *
-     * @param pid       The persistent identifier of the object.
-     * @param relation  The property name.
-     * @param namespace The namespace URI of the property.
-     * @param value     The literal value to be removed.
-     */
-    void relsExtRemoveLiteral(String pid, String relation, String namespace, String value);
-
-    /**
-     * Retrieves the RELS-EXT datastream content of a digital object.
-     *
-     * @param pid The persistent identifier of the object.
-     * @return A {@link RelsExtWrapper} containing the RELS-EXT datastream content.
-     */
-    RelsExtWrapper relsExtGet(String pid);
-
-    /**
-     * Retrieves all datastream names for a given object.
-     *
-     * @param pid The persistent identifier of the object.
-     * @return A list of datastream names.
-     */
-    List<String> getDatastreamNames(String pid);
+    public List<String> getDatastreamNames(String pid);
 
     //-------------------- processing index -----------------------
 
@@ -297,6 +214,8 @@ public interface AkubraRepository {
     ProcessingIndex getProcessingIndex();
 
     //-------------------- Miscellaneous ---------------------------
+
+    RelsExtHandler getRelsExtHandler();
 
     /**
      * Shuts down the repository, releasing resources.

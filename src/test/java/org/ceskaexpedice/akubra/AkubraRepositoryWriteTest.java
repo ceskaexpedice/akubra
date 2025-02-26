@@ -174,13 +174,13 @@ public class AkubraRepositoryWriteTest {
 
     @Test
     void testRelsExtAddRelation() {
-        RelsExtWrapper relsExtWrapper = akubraRepository.relsExtGet(PID_TITLE_PAGE);
+        RelsExtWrapper relsExtWrapper = akubraRepository.getRelsExtHandler().get(PID_TITLE_PAGE);
         List<RelsExtRelation> relations = relsExtWrapper.getRelations(null);
         Assertions.assertEquals(1, relations.size());
 
-        akubraRepository.relsExtAddRelation(PID_TITLE_PAGE, "kramerius:hasPage",
+        akubraRepository.getRelsExtHandler().addRelation(PID_TITLE_PAGE, "kramerius:hasPage",
                 "http://www.nsdl.org/ontologies/relationships#", "info:fedora/uuid:12993b4a-71b4-4f19-8953-0701243cc25d");
-        relsExtWrapper = akubraRepository.relsExtGet(PID_TITLE_PAGE);
+        relsExtWrapper = akubraRepository.getRelsExtHandler().get(PID_TITLE_PAGE);
         relations = relsExtWrapper.getRelations(null);
         Assertions.assertEquals(2, relations.size());
 
@@ -191,26 +191,26 @@ public class AkubraRepositoryWriteTest {
 
     @Test
     void testRelsExtRemoveRelation() {
-        RelsExtWrapper relsExtWrapper = akubraRepository.relsExtGet(PID_TITLE_PAGE);
+        RelsExtWrapper relsExtWrapper = akubraRepository.getRelsExtHandler().get(PID_TITLE_PAGE);
         List<RelsExtRelation> relations = relsExtWrapper.getRelations(null);
         Assertions.assertEquals(1, relations.size());
 
-        akubraRepository.relsExtRemoveRelation(PID_TITLE_PAGE, "hasModel",
+        akubraRepository.getRelsExtHandler().removeRelation(PID_TITLE_PAGE, "hasModel",
                 "info:fedora/fedora-system:def/model#", "model:page");
-        relsExtWrapper = akubraRepository.relsExtGet(PID_TITLE_PAGE);
+        relsExtWrapper = akubraRepository.getRelsExtHandler().get(PID_TITLE_PAGE);
         relations = relsExtWrapper.getRelations(null);
         Assertions.assertEquals(0, relations.size());
     }
 
     @Test
     void testRelsExtAddLiteral() {
-        RelsExtWrapper relsExtWrapper = akubraRepository.relsExtGet(PID_TITLE_PAGE);
+        RelsExtWrapper relsExtWrapper = akubraRepository.getRelsExtHandler().get(PID_TITLE_PAGE);
         List<RelsExtLiteral> literals = relsExtWrapper.getLiterals(null);
         Assertions.assertEquals(4, literals.size());
 
-        akubraRepository.relsExtAddLiteral(PID_TITLE_PAGE, "pepoItemID",
+        akubraRepository.getRelsExtHandler().addLiteral(PID_TITLE_PAGE, "pepoItemID",
                 "http://www.openarchives.org/OAI/2.0/", "uuid:12993b4a-71b4-4f19-8953-0701243cc25d");
-        relsExtWrapper = akubraRepository.relsExtGet(PID_TITLE_PAGE);
+        relsExtWrapper = akubraRepository.getRelsExtHandler().get(PID_TITLE_PAGE);
         literals = relsExtWrapper.getLiterals(null);
         Assertions.assertEquals(5, literals.size());
 
@@ -221,13 +221,13 @@ public class AkubraRepositoryWriteTest {
 
     @Test
     void testRelsExtRemoveLiteral() {
-        RelsExtWrapper relsExtWrapper = akubraRepository.relsExtGet(PID_TITLE_PAGE);
+        RelsExtWrapper relsExtWrapper = akubraRepository.getRelsExtHandler().get(PID_TITLE_PAGE);
         List<RelsExtLiteral> literals = relsExtWrapper.getLiterals(null);
         Assertions.assertEquals(4, literals.size());
 
-        akubraRepository.relsExtRemoveLiteral(PID_TITLE_PAGE, "itemID",
+        akubraRepository.getRelsExtHandler().removeLiteral(PID_TITLE_PAGE, "itemID",
                 "http://www.openarchives.org/OAI/2.0/", "uuid:12993b4a-71b4-4f19-8953-0701243cc25d");
-        relsExtWrapper = akubraRepository.relsExtGet(PID_TITLE_PAGE);
+        relsExtWrapper = akubraRepository.getRelsExtHandler().get(PID_TITLE_PAGE);
         literals = relsExtWrapper.getLiterals(null);
         Assertions.assertEquals(3, literals.size());
     }
