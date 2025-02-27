@@ -14,11 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.core.repository;
+package org.ceskaexpedice.akubra.processingindex;
 
-import org.apache.solr.client.solrj.response.UpdateResponse;
-import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
-import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
+import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 
 import java.io.InputStream;
 import java.util.function.Consumer;

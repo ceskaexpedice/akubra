@@ -16,7 +16,7 @@
  */
 package org.ceskaexpedice.akubra.core.processingindex;
 
-import org.ceskaexpedice.akubra.core.repository.RepositoryException;
+import org.ceskaexpedice.akubra.RepositoryException;
 
 /**
  * Listener is able to receive information about processing RELS-EXT

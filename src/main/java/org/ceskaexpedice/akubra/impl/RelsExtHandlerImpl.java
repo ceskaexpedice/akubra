@@ -16,16 +16,11 @@
  */
 package org.ceskaexpedice.akubra.impl;
 
-import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.core.repository.*;
-import org.ceskaexpedice.fedoramodel.DigitalObject;
+import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
+import org.ceskaexpedice.akubra.relsext.RelsExtWrapper;
 
-import java.io.InputStream;
-import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * AkubraRepositoryImpl

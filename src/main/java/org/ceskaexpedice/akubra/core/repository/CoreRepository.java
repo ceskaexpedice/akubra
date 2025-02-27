@@ -16,6 +16,7 @@
  */
 package org.ceskaexpedice.akubra.core.repository;
 
+import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 
 import java.io.InputStream;

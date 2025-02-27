@@ -18,9 +18,9 @@ package org.ceskaexpedice.akubra.core.repository.impl;
 
 import org.akubraproject.map.IdMapper;
 import org.apache.commons.io.IOUtils;
-import org.ceskaexpedice.akubra.core.repository.KnownDatastreams;
-import org.ceskaexpedice.akubra.core.repository.KnownXmlFormatUris;
-import org.ceskaexpedice.akubra.core.repository.RepositoryException;
+import org.ceskaexpedice.akubra.KnownDatastreams;
+import org.ceskaexpedice.akubra.KnownXmlFormatUris;
+import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.akubra.utils.SafeSimpleDateFormat;
 import org.ceskaexpedice.fedoramodel.*;

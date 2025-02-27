@@ -14,9 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra;
-
-import org.ceskaexpedice.akubra.core.lock.hazelcast.HazelcastConfiguration;
+package org.ceskaexpedice.akubra.config;
 
 /**
  * Represents the configuration for a repository, containing various paths, patterns,

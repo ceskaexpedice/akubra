@@ -16,8 +16,8 @@
  */
 package org.ceskaexpedice.akubra.testutils;
 
-import org.ceskaexpedice.akubra.RepositoryConfiguration;
-import org.ceskaexpedice.akubra.core.lock.hazelcast.HazelcastConfiguration;
+import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
+import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 
 import java.io.IOException;
 import java.util.Properties;

@@ -17,9 +17,10 @@
 package org.ceskaexpedice.akubra.core.repository;
 
 import org.apache.commons.io.FileUtils;
-import org.ceskaexpedice.akubra.RepositoryConfiguration;
+import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
+import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
-import org.ceskaexpedice.akubra.core.lock.hazelcast.HazelcastConfiguration;
+import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.core.lock.hazelcast.ServerNode;
 import org.ceskaexpedice.akubra.testutils.TestUtilities;
 import org.ceskaexpedice.fedoramodel.DigitalObject;

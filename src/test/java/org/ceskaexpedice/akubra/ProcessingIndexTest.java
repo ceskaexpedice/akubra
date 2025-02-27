@@ -17,11 +17,13 @@
 package org.ceskaexpedice.akubra;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.ceskaexpedice.akubra.core.lock.hazelcast.HazelcastConfiguration;
+import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
+import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.lock.hazelcast.ServerNode;
-import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
-import org.ceskaexpedice.akubra.core.repository.KnownRelations;
-import org.ceskaexpedice.akubra.core.repository.ProcessingIndex;
+import org.ceskaexpedice.akubra.relsext.KnownRelations;
+import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
+import org.ceskaexpedice.akubra.processingindex.ProcessingIndexQueryParameters;
+import org.ceskaexpedice.akubra.processingindex.ProcessingIndexRelation;
 import org.ceskaexpedice.akubra.testutils.TestUtilities;
 import org.ceskaexpedice.akubra.utils.ProcessingIndexUtils;
 import org.junit.jupiter.api.AfterAll;

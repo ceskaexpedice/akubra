@@ -23,6 +23,7 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
+import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 
 import java.io.File;
 import java.io.FileInputStream;

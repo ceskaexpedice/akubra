@@ -17,14 +17,13 @@
 package org.ceskaexpedice.akubra.utils;
 
 import org.ceskaexpedice.akubra.AkubraRepository;
-import org.ceskaexpedice.akubra.core.repository.RepositoryException;
+import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.dom4j.*;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;

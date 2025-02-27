@@ -22,23 +22,18 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.params.CursorMarkParams;
 import org.ceskaexpedice.akubra.AkubraRepository;
-import org.ceskaexpedice.akubra.ProcessingIndexRelation;
-import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexItem;
-import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexQueryParameters;
-import org.ceskaexpedice.akubra.core.repository.KnownRelations;
-import org.ceskaexpedice.akubra.core.repository.RepositoryException;
+import org.ceskaexpedice.akubra.processingindex.ProcessingIndexRelation;
+import org.ceskaexpedice.akubra.processingindex.ProcessingIndexItem;
+import org.ceskaexpedice.akubra.processingindex.ProcessingIndexQueryParameters;
+import org.ceskaexpedice.akubra.relsext.KnownRelations;
+import org.ceskaexpedice.akubra.RepositoryException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 /**

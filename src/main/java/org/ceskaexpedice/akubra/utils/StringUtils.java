@@ -19,7 +19,7 @@ package org.ceskaexpedice.akubra.utils;
 import com.google.common.io.CharStreams;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.ceskaexpedice.akubra.core.repository.RepositoryException;
+import org.ceskaexpedice.akubra.RepositoryException;
 
 import java.io.*;
 import java.util.Arrays;

@@ -14,42 +14,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.core.repository;
+package org.ceskaexpedice.akubra.processingindex;
 
-public enum KnownDatastreams {
-    RELS_EXT("RELS-EXT"),
+/**
+ * ProcessingIndexRelation
+ */
+public class ProcessingIndexRelation {
+    private final String source;
+    private final String relation;
+    private final String target;
 
-    BIBLIO_MODS("BIBLIO_MODS"),
-    BIBLIO_DC("DC"),
-
-    OCR_ALTO("ALTO"),
-    OCR_TEXT("TEXT_OCR"),
-
-    IMG_FULL("IMG_FULL"),
-    IMG_THUMB("IMG_THUMB"),
-    IMG_PREVIEW("IMG_PREVIEW"),
-
-    AUDIO_MP3("MP3"),
-    AUDIO_OGG("OGG"),
-    AUDIO_WAV("WAV"),
-
-    // known but not used datastreams
-    POLICY("POLICY"),
-    MIGRATION("MIGRATION"),
-    IMG_FULL_ADM("IMG_FULL_ADM"),
-    AUDIT("AUDIT"),
-    TEXT_OCR_ADM("TEXT_OCR_ADM"),
-
-    COLLECTION_CLIPPINGS("COLLECTION_CLIPPINGS");
-
-
-    private final String value;
-
-    KnownDatastreams(String value) {
-        this.value = value;
+    public ProcessingIndexRelation(String source, String relation, String target) {
+        this.source = source;
+        this.relation = relation;
+        this.target = target;
     }
 
+    public String getSource() {
+        return source;
+    }
+
+    public String getRelation() {
+        return relation;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    @Override
     public String toString() {
-        return value;
+        return String.format("%s -%s-> %s", source, relation, target);
     }
 }

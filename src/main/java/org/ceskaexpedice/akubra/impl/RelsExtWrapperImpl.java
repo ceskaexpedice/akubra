@@ -17,9 +17,9 @@
 package org.ceskaexpedice.akubra.impl;
 
 import org.apache.commons.lang3.tuple.Triple;
-import org.ceskaexpedice.akubra.RelsExtLiteral;
-import org.ceskaexpedice.akubra.RelsExtRelation;
-import org.ceskaexpedice.akubra.RelsExtWrapper;
+import org.ceskaexpedice.akubra.relsext.RelsExtLiteral;
+import org.ceskaexpedice.akubra.relsext.RelsExtRelation;
+import org.ceskaexpedice.akubra.relsext.RelsExtWrapper;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 
 import java.util.ArrayList;

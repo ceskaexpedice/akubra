@@ -17,8 +17,8 @@
 package org.ceskaexpedice.akubra.core.repository.impl;
 
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
-import org.ceskaexpedice.akubra.core.repository.ProcessingIndex;
-import org.ceskaexpedice.akubra.core.repository.RepositoryException;
+import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
+import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 

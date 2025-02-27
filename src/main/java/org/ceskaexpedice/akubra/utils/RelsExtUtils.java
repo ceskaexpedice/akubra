@@ -17,15 +17,14 @@
 package org.ceskaexpedice.akubra.utils;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.ceskaexpedice.akubra.AkubraRepository;
-import org.ceskaexpedice.akubra.core.repository.*;
+import org.ceskaexpedice.akubra.*;
+import org.ceskaexpedice.akubra.relsext.KnownRelations;
 import org.ceskaexpedice.akubra.utils.pid.LexerException;
 import org.ceskaexpedice.akubra.utils.pid.PIDParser;
 import org.w3c.dom.*;
 
 import javax.xml.xpath.*;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

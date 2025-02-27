@@ -17,8 +17,8 @@
 
 package org.ceskaexpedice.akubra;
 
-import org.ceskaexpedice.akubra.core.repository.KnownDatastreams;
-import org.ceskaexpedice.akubra.core.repository.ProcessingIndex;
+import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
+import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 
 import java.io.InputStream;

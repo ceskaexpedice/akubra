@@ -16,14 +16,16 @@
  */
 package org.ceskaexpedice.akubra;
 
-import org.ceskaexpedice.akubra.core.lock.hazelcast.HazelcastConfiguration;
+import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
+import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.lock.hazelcast.ServerNode;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
+import org.ceskaexpedice.akubra.relsext.RelsExtLiteral;
+import org.ceskaexpedice.akubra.relsext.RelsExtRelation;
+import org.ceskaexpedice.akubra.relsext.RelsExtWrapper;
 import org.ceskaexpedice.akubra.testutils.TestUtilities;
-import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.akubra.utils.StringUtils;
-import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.dom4j.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,7 +33,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;

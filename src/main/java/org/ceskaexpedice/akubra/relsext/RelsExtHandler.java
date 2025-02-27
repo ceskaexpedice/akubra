@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ceskaexpedice.akubra;
+package org.ceskaexpedice.akubra.relsext;
 
 /**
  * Main repository access point for managing digital objects and datastreams.

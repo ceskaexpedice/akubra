@@ -17,6 +17,7 @@
 
 package org.ceskaexpedice.akubra;
 
+import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.impl.AkubraRepositoryImpl;

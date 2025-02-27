@@ -17,33 +17,10 @@
 package org.ceskaexpedice.akubra;
 
 /**
- * ProcessingIndexRelation
+ * KnownXmlFormatUris
  */
-public class ProcessingIndexRelation {
-    private final String source;
-    private final String relation;
-    private final String target;
-
-    public ProcessingIndexRelation(String source, String relation, String target) {
-        this.source = source;
-        this.relation = relation;
-        this.target = target;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public String getRelation() {
-        return relation;
-    }
-
-    public String getTarget() {
-        return target;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("%s -%s-> %s", source, relation, target);
-    }
+public class KnownXmlFormatUris {
+    public static final String RELS_EXT = "info:fedora/fedora-system:FedoraRELSExt-1.0";
+    public static final String BIBLIO_MODS = "http://www.loc.gov/mods/v3";
+    public static final String BIBLIO_DC = "http://www.openarchives.org/OAI/2.0/oai_dc/";
 }
