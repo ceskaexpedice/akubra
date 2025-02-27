@@ -80,15 +80,6 @@ public interface ProcessingIndex {
     void deleteDescriptionByPid(String pid);
 
     /**
-     * Rebuilds the processing index for a given repository object.
-     * This method is typically used when the repository object is being updated or ingested.
-     *
-     * @param repositoryObject The repository object whose index entries need to be rebuilt.
-     * @param input The input stream representing the updated object.
-     */
-    void rebuildProcessingIndex(RepositoryObject repositoryObject, InputStream input);
-
-    /**
      * Iterates over processing index items based on the provided query parameters.
      * For each item found, the provided action is executed.
      *

@@ -38,13 +38,13 @@ public final class CoreRepositoryFactory {
     }
 
     public static CoreRepository createRepository(RepositoryConfiguration configuration) {
-        ProcessingIndex processingIndex = createProcessingIndexFeeder(configuration);
+        ProcessingIndexSolr processingIndex = createProcessingIndexFeeder(configuration);
         AkubraDOManager akubraDOManager = new AkubraDOManager(createCacheManager(), configuration);
         return new CoreRepositoryImpl(processingIndex, akubraDOManager);
     }
 
-    public static ProcessingIndex createProcessingIndexFeeder(RepositoryConfiguration configuration) {
-        ProcessingIndex processingIndex = new ProcessingIndexSolr(createProcessingUpdateClient(configuration));
+    public static ProcessingIndexSolr createProcessingIndexFeeder(RepositoryConfiguration configuration) {
+        ProcessingIndexSolr processingIndex = new ProcessingIndexSolr(createProcessingUpdateClient(configuration));
         return processingIndex;
     }
 

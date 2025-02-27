@@ -20,7 +20,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import org.ceskaexpedice.akubra.KnownDatastreams;
-import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
+import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
 import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.core.repository.*;
@@ -56,9 +56,9 @@ class RepositoryObjectImpl implements RepositoryObject {
     private static final String RDF_ELEMENT = "RDF";
     private AkubraDOManager manager;
     private DigitalObject digitalObject;
-    private ProcessingIndex feeder;
+    private ProcessingIndexSolr feeder;
 
-    RepositoryObjectImpl(DigitalObject digitalObject, AkubraDOManager manager, ProcessingIndex feeder) {
+    RepositoryObjectImpl(DigitalObject digitalObject, AkubraDOManager manager, ProcessingIndexSolr feeder) {
         super();
         this.manager = manager;
         this.feeder = feeder;

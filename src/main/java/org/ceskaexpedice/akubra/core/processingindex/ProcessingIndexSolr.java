@@ -205,7 +205,6 @@ public class ProcessingIndexSolr implements ProcessingIndex {
         }
     }
 
-    @Override
     public void rebuildProcessingIndex(RepositoryObject repositoryObject, InputStream content) {
         try {
             String s = IOUtils.toString(content, "UTF-8");

@@ -17,7 +17,7 @@
 package org.ceskaexpedice.akubra.core.repository;
 
 import org.apache.commons.io.FileUtils;
-import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
+import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
@@ -45,7 +45,7 @@ public class CoreRepositoryWriteTest {
 
     private static Properties testsProperties;
     private static HazelcastConfiguration hazelcastConfig;
-    private static ProcessingIndex mockFeeder;
+    private static ProcessingIndexSolr mockFeeder;
     private static CoreRepository coreRepository;
 
     @BeforeAll
@@ -54,7 +54,7 @@ public class CoreRepositoryWriteTest {
         hazelcastConfig = TestUtilities.createHazelcastConfig(testsProperties);
         ServerNode.ensureHazelcastNode(hazelcastConfig);
         // configure repository
-        mockFeeder = mock(ProcessingIndex.class);
+        mockFeeder = mock(ProcessingIndexSolr.class);
         try (MockedStatic<CoreRepositoryFactory> mockedStatic = mockStatic(CoreRepositoryFactory.class, Mockito.CALLS_REAL_METHODS)) {
             mockedStatic.when(() -> CoreRepositoryFactory.createProcessingIndexFeeder(any())).thenReturn(mockFeeder);
             mockedStatic.when(() -> CoreRepositoryFactory.createCacheManager()).thenReturn(null);

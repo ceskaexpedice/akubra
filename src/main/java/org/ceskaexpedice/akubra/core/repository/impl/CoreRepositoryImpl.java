@@ -16,6 +16,7 @@
  */
 package org.ceskaexpedice.akubra.core.repository.impl;
 
+import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.akubra.RepositoryException;
@@ -38,9 +39,9 @@ public class CoreRepositoryImpl implements CoreRepository {
     private static final Logger LOGGER = Logger.getLogger(CoreRepositoryImpl.class.getName());
 
     private AkubraDOManager manager;
-    private ProcessingIndex feeder;
+    private ProcessingIndexSolr feeder;
 
-    public CoreRepositoryImpl(ProcessingIndex feeder, AkubraDOManager manager) {
+    public CoreRepositoryImpl(ProcessingIndexSolr feeder, AkubraDOManager manager) {
         super();
         this.feeder = feeder;
         this.manager = manager;
