@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2010 Pavel Stastny
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -24,7 +24,6 @@ import org.ceskaexpedice.akubra.utils.pid.PIDParser;
 import org.w3c.dom.*;
 
 import javax.xml.xpath.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,50 +32,35 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+/**
+ * Utility class to handle various RELS EXT related tasks
+ */
 public final class RelsExtUtils {
-
     public static final Logger LOGGER = Logger.getLogger(RelsExtUtils.class.getName());
+    public static final String CACHE_RELS_EXT_LITERAL = "kramerius4://deepZoomCache";
 
+    private RelsExtUtils() {
+    }
 
-    private RelsExtUtils() {}
-    
-    
     public static Element getRELSEXTFromGivenFOXML(Element foxmlElement) {
-        List<Element> elms = DomUtils.getElementsRecursive(foxmlElement, (elm)->{
+        List<Element> elms = DomUtils.getElementsRecursive(foxmlElement, (elm) -> {
             if (elm.getLocalName().equals("datastream")) {
                 String id = elm.getAttribute("ID");
                 return id.equals(KnownDatastreams.RELS_EXT.toString());
-            } return false;
+            }
+            return false;
         });
         if (elms.size() == 1) {
             return elms.get(0);
         } else return null;
     }
 
-    /** Get model 
+    /** Get model
      * @throws LexerException */
-    public static String getModel(Element relsExt) throws LexerException {
+    public static String getModel(Element relsExt) {
         //<hasModel xmlns="
-        Element foundElement = DomUtils.findElement(relsExt, "hasModel", RepositoryNamespaces.FEDORA_MODELS_URI);
-        if (foundElement != null) {
-            String sform = foundElement.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
-            PIDParser pidParser = new PIDParser(sform);
-            pidParser.disseminationURI();
-            return pidParser.getObjectId();
-        } else {
-            throw new IllegalArgumentException("cannot find model of given document");
-        }
-    }
-
-    public static String getModelName(String pid, AkubraRepository akubraRepository) {
-        Document document = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT).asDom(false);
-        return getModelName(document);
-    }
-
-    public static String getModelName(Document relsExt) {
         try {
-            //TODO: Duplicate code in RelsExt helper -> mn
-            Element foundElement = DomUtils.findElement(relsExt.getDocumentElement(), "hasModel", RepositoryNamespaces.FEDORA_MODELS_URI);
+            Element foundElement = DomUtils.findElement(relsExt, "hasModel", RepositoryNamespaces.FEDORA_MODELS_URI);
             if (foundElement != null) {
                 String sform = foundElement.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
                 PIDParser pidParser = new PIDParser(sform);
@@ -85,16 +69,17 @@ public final class RelsExtUtils {
             } else {
                 throw new IllegalArgumentException("cannot find model of given document");
             }
-        } catch (DOMException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            throw new IllegalArgumentException(e);
         } catch (LexerException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            throw new IllegalArgumentException(e);
+            throw new RepositoryException(e);
         }
     }
 
-    public static String getFirstVolumePid(Document relsExt) throws IOException {
+    public static String getModelName(String pid, AkubraRepository akubraRepository) {
+        Document document = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT).asDom(false);
+        return getModel(document.getDocumentElement());
+    }
+
+    public static String getFirstVolumePid(Document relsExt) {
         try {
             Element foundElement = DomUtils.findElement(relsExt.getDocumentElement(), "hasVolume", RepositoryNamespaces.KRAMERIUS_URI);
             if (foundElement != null) {
@@ -106,21 +91,18 @@ public final class RelsExtUtils {
             } else {
                 return "";
             }
-        } catch (DOMException e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            throw new IllegalArgumentException(e);
-        } catch (LexerException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            throw new IllegalArgumentException(e);
+            throw new RepositoryException(e);
         }
     }
 
-    public static String getFirstVolumePid(String pid, AkubraRepository akubraRepository) throws IOException {
+    public static String getFirstVolumePid(String pid, AkubraRepository akubraRepository) {
         Document doc = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT).asDom(false);
         return getFirstVolumePid(doc);
     }
 
-    public static String getFirstItemPid(Document relsExt) throws IOException {
+    public static String getFirstItemPid(Document relsExt) {
         try {
             Element foundElement = DomUtils.findElement(relsExt.getDocumentElement(), "hasItem", RepositoryNamespaces.KRAMERIUS_URI);
             if (foundElement != null) {
@@ -132,21 +114,17 @@ public final class RelsExtUtils {
             } else {
                 return "";
             }
-        } catch (DOMException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            throw new IllegalArgumentException(e);
-        } catch (LexerException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            throw new IllegalArgumentException(e);
+        } catch (Exception e) {
+            throw new RepositoryException(e);
         }
     }
 
-    public static String getFirstItemPid(String pid, AkubraRepository akubraRepository) throws IOException {
+    public static String getFirstItemPid(String pid, AkubraRepository akubraRepository) {
         Document doc = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT).asDom(false);
         return getFirstItemPid(doc);
     }
 
-    public static Element getRDFDescriptionElement(Element relsExt){
+    public static Element getRDFDescriptionElement(Element relsExt) {
         Element foundElement = DomUtils.findElement(relsExt, "Description", RepositoryNamespaces.RDF_NAMESPACE_URI);
         return foundElement;
     }
@@ -189,8 +167,7 @@ public final class RelsExtUtils {
             if (tiles != null) {
                 String data = ((Text) tiles).getData();
                 return data != null ? data.trim() : null;
-            }
-            else return null;
+            } else return null;
         } catch (XPathExpressionException e) {
             throw new RepositoryException(e);
         }
@@ -203,7 +180,7 @@ public final class RelsExtUtils {
     public static String getDonator(Document reslExtDoc) {
         return getDonator(reslExtDoc.getDocumentElement());
     }
-    
+
     /** Returns donator label  from given RELS-EXT element */
     public static String getDonator(Element reslExtDoc) {
         try {
@@ -213,7 +190,7 @@ public final class RelsExtUtils {
             XPathExpression expr = xpath.compile("//kramerius:hasDonator");
             Object donator = expr.evaluate(reslExtDoc, XPathConstants.NODE);
             if (donator != null) {
-                Element elm =  (Element) donator;
+                Element elm = (Element) donator;
                 Attr ref = elm.getAttributeNodeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
                 if (ref != null) {
                     try {
@@ -221,7 +198,7 @@ public final class RelsExtUtils {
                         pidParser.disseminationURI();
                         return pidParser.getObjectPid();
                     } catch (LexerException e) {
-                        LOGGER.log(Level.SEVERE,e.getMessage(),e);
+                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
                         return null;
                     }
                 } else return null;
@@ -231,30 +208,26 @@ public final class RelsExtUtils {
         }
     }
 
-    public static final String CACHE_RELS_EXT_LITERAL = "kramerius4://deepZoomCache";
-    
-    
     public static List<String> getLicenses(Element relsExt) {
-        List<Element> elms = DomUtils.getElementsRecursive(relsExt, (elm)->{
+        List<Element> elms = DomUtils.getElementsRecursive(relsExt, (elm) -> {
             return (elm.getLocalName().equals("license"));
         });
         List<String> collect = elms.stream().map(Element::getTextContent).collect(Collectors.toList());
         return collect;
-    }    
+    }
 
     public static List<String> getContainsLicenses(Element relsExt) {
-        List<Element> elms = DomUtils.getElementsRecursive(relsExt, (elm)->{
+        List<Element> elms = DomUtils.getElementsRecursive(relsExt, (elm) -> {
             return (elm.getLocalName().equals("containsLicense"));
         });
         List<String> collect = elms.stream().map(Element::getTextContent).collect(Collectors.toList());
         return collect;
-    }    
+    }
 
-    
-    public static List<Pair<String,String>> getRelations(Element relsExt) {
-        List<Pair<String,String>> pairs = new ArrayList<>();
+    public static List<Pair<String, String>> getRelations(Element relsExt) {
+        List<Pair<String, String>> pairs = new ArrayList<>();
         List<String> names = Arrays.stream(KnownRelations.values()).map(KnownRelations::toString).collect(Collectors.toList());
-        List<Element> elms = DomUtils.getElementsRecursive(relsExt,  new DomUtils.ElementsFilter() {
+        List<Element> elms = DomUtils.getElementsRecursive(relsExt, new DomUtils.ElementsFilter() {
 
             @Override
             public boolean acceptElement(Element element) {
@@ -265,29 +238,25 @@ public final class RelsExtUtils {
                 }
                 return false;
             }
-            
+
         });
-        
-        
-        elms.stream().forEach(elm-> {
-          try {
-            String attrVal = elm.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
-              PIDParser pidParser = new PIDParser(attrVal);
-              pidParser.disseminationURI();
-              String objectPid = pidParser.getObjectPid();
-              pairs.add(Pair.of(elm.getLocalName(), objectPid));
+
+        elms.stream().forEach(elm -> {
+            try {
+                String attrVal = elm.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
+                PIDParser pidParser = new PIDParser(attrVal);
+                pidParser.disseminationURI();
+                String objectPid = pidParser.getObjectPid();
+                pairs.add(Pair.of(elm.getLocalName(), objectPid));
             } catch (DOMException | LexerException e) {
-                LOGGER.log(Level.SEVERE,e.getMessage(),e);
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
         });
-        
+
         return pairs;
     }
-    
-    
 
-    public synchronized static void addRDFLiteral(Element relsExt, String license, String elmName)
-            throws XPathExpressionException, LexerException {
+    public synchronized static void addRDFLiteral(Element relsExt, String license, String elmName){
         Element rdfDescriptionElement = getRDFDescriptionElement(relsExt);
         if (rdfDescriptionElement != null) {
             Document document = rdfDescriptionElement.getOwnerDocument();
@@ -297,13 +266,13 @@ public final class RelsExtUtils {
         }
     }
 
-    public static void processSubtree(String pid, TreeNodeProcessor processor, AkubraRepository akubraRepository) throws ProcessSubtreeException, IOException {
+    public static void processSubtree(String pid, TreeNodeProcessor processor, AkubraRepository akubraRepository) throws ProcessSubtreeException {
         try {
-            XPathFactory factory = XPathFactory.newInstance(); // TODO AK_NEW is it ok to create
+            XPathFactory factory = XPathFactory.newInstance();
             Document relsExt = null;
             try {
                 // should be from
-                if (akubraRepository.datastreamExists(pid, KnownDatastreams.RELS_EXT.toString())) {
+                if (akubraRepository.datastreamExists(pid, KnownDatastreams.RELS_EXT)) {
                     relsExt = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT).asDom(false);
                 } else {
                     LOGGER.warning("could not read root RELS-EXT, skipping object  (" + pid + ")");
@@ -314,17 +283,14 @@ public final class RelsExtUtils {
             if (!processor.skipBranch(pid, 0)) {
                 processSubtreeInternal(pid, relsExt, processor, 0, new Stack<String>(), akubraRepository, factory);
             }
-        } catch (LexerException e) {
-            LOGGER.warning("Error in pid: " + pid);
-            throw new ProcessSubtreeException(e);
-        } catch (XPathExpressionException e) {
+        } catch (Exception e) {
             throw new ProcessSubtreeException(e);
         }
     }
 
     private static boolean processSubtreeInternal(String pid, Document relsExt, TreeNodeProcessor processor, int level,
-                                             Stack<String> pidStack, AkubraRepository akubraRepository, XPathFactory xPathFactory)
-            throws XPathExpressionException, LexerException, IOException, ProcessSubtreeException {
+                                                  Stack<String> pidStack, AkubraRepository akubraRepository, XPathFactory xPathFactory)
+            throws XPathExpressionException, LexerException, ProcessSubtreeException {
         processor.process(pid, level);
         boolean breakProcessing = processor.breakProcessing(pid, level);
         if (breakProcessing) {
@@ -393,7 +359,7 @@ public final class RelsExtUtils {
         }
     }
 
-    public static List<String> getPids(String pid, AkubraRepository akubraRepository) throws IOException {
+    public static List<String> getPids(String pid, AkubraRepository akubraRepository) {
         final List<String> retval = new ArrayList<>();
         try {
             processSubtree(pid, new TreeNodeProcessor() {
@@ -413,12 +379,12 @@ public final class RelsExtUtils {
                 }
             }, akubraRepository);
         } catch (ProcessSubtreeException e) {
-            throw new IOException(e);
+            throw new RepositoryException(e);
         }
         return retval;
     }
 
-    public static String findFirstViewablePid(String pid, AkubraRepository akubraRepository) throws IOException {
+    public static String findFirstViewablePid(String pid, AkubraRepository akubraRepository) {
         final List<String> foundPids = new ArrayList<String>();
         try {
             processSubtree(pid, new TreeNodeProcessor() {
@@ -455,7 +421,7 @@ public final class RelsExtUtils {
                 }
             }, akubraRepository);
         } catch (ProcessSubtreeException e) {
-            throw new IOException(e);
+            throw new RepositoryException(e);
         }
 
         return foundPids.isEmpty() ? null : foundPids.get(0);

@@ -20,7 +20,6 @@ import org.apache.commons.io.FileUtils;
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
-import org.ceskaexpedice.akubra.core.lock.hazelcast.ServerNode;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
 import org.ceskaexpedice.akubra.relsext.RelsExtLiteral;
 import org.ceskaexpedice.akubra.relsext.RelsExtRelation;
@@ -58,7 +57,7 @@ public class AkubraRepositoryWriteTest {
     static void beforeAll() {
         testsProperties = TestUtilities.loadProperties();
         hazelcastConfig = TestUtilities.createHazelcastConfig(testsProperties);
-        ServerNode.ensureHazelcastNode(hazelcastConfig);
+        HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
         // configure akubraRepository
         mockFeeder = mock(ProcessingIndexSolr.class);
         try (MockedStatic<CoreRepositoryFactory> mockedStatic = mockStatic(CoreRepositoryFactory.class, Mockito.CALLS_REAL_METHODS)) {
@@ -72,7 +71,7 @@ public class AkubraRepositoryWriteTest {
     @AfterAll
     static void afterAll() {
         akubraRepository.shutdown();
-        ServerNode.shutdown();
+        HazelcastServerNode.shutdown();
     }
 
     @BeforeEach

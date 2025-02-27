@@ -25,9 +25,9 @@ import org.akubraproject.fs.FSBlobStore;
 import org.akubraproject.map.IdMapper;
 import org.akubraproject.map.IdMappingBlobStore;
 import org.apache.commons.io.IOUtils;
-import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
-import org.ceskaexpedice.akubra.core.lock.hazelcast.ClientNode;
 import org.ceskaexpedice.akubra.RepositoryException;
+import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
+import org.ceskaexpedice.akubra.core.repository.HazelcastClientNode;
 import org.ceskaexpedice.fedoramodel.*;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
@@ -72,7 +72,7 @@ public class AkubraDOManager {
 
     private DistributedLockService lockService;
     private ITopic<String> cacheInvalidator;
-    private ClientNode clientNode;
+    private HazelcastClientNode hazelcastClientNode;
 
     private Cache<String, DigitalObject> objectCache;
 
@@ -90,10 +90,10 @@ public class AkubraDOManager {
             LOGGER.log(Level.SEVERE, "Cannot init JAXB", e);
             throw new RepositoryException(e);
         }
-        clientNode = new ClientNode();
-        clientNode.ensureHazelcastNode(configuration.getHazelcastConfiguration());
-        lockService = DistributedLockService.newHazelcastLockService(clientNode.getHzInstance());
-        cacheInvalidator = clientNode.getHzInstance().getTopic("cacheInvalidator");
+        hazelcastClientNode = new HazelcastClientNode();
+        hazelcastClientNode.ensureHazelcastNode(configuration.getHazelcastConfiguration());
+        lockService = DistributedLockService.newHazelcastLockService(hazelcastClientNode.getHzInstance());
+        cacheInvalidator = hazelcastClientNode.getHzInstance().getTopic("cacheInvalidator");
         cacheInvalidator.addMessageListener(new MessageListener<String>() {
             @Override
             public void onMessage(Message<String> message) {
@@ -475,6 +475,6 @@ public class AkubraDOManager {
         if(lockService != null) {
             lockService.shutdown();
         }
-        clientNode.shutdown();
+        hazelcastClientNode.shutdown();
     }
 }

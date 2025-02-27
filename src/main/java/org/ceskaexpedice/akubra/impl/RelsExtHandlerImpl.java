@@ -16,7 +16,8 @@
  */
 package org.ceskaexpedice.akubra.impl;
 
-import org.ceskaexpedice.akubra.core.repository.*;
+import org.ceskaexpedice.akubra.core.repository.CoreRepository;
+import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
 import org.ceskaexpedice.akubra.relsext.RelsExtWrapper;
 

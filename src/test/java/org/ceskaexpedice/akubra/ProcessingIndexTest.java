@@ -19,11 +19,10 @@ package org.ceskaexpedice.akubra;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
-import org.ceskaexpedice.akubra.core.lock.hazelcast.ServerNode;
-import org.ceskaexpedice.akubra.relsext.KnownRelations;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexQueryParameters;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexRelation;
+import org.ceskaexpedice.akubra.relsext.KnownRelations;
 import org.ceskaexpedice.akubra.testutils.TestUtilities;
 import org.ceskaexpedice.akubra.utils.ProcessingIndexUtils;
 import org.junit.jupiter.api.AfterAll;
@@ -32,7 +31,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
 
 import static org.ceskaexpedice.akubra.testutils.TestUtilities.debugPrint;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -53,7 +54,7 @@ public class ProcessingIndexTest {
     static void beforeAll() {
         testsProperties = TestUtilities.loadProperties();
         HazelcastConfiguration hazelcastConfig = TestUtilities.createHazelcastConfig(testsProperties);
-        ServerNode.ensureHazelcastNode(hazelcastConfig);
+        HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
 
         URL resource = TestUtilities.class.getClassLoader().getResource("data");
         RepositoryConfiguration config = TestUtilities.createRepositoryConfig(resource.getFile(), testsProperties, hazelcastConfig);
@@ -70,7 +71,7 @@ public class ProcessingIndexTest {
         if(akubraRepository != null) {
             akubraRepository.shutdown();
         }
-        ServerNode.shutdown();
+        HazelcastServerNode.shutdown();
     }
 
     @Test

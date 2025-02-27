@@ -3,8 +3,8 @@ package org.ceskaexpedice.akubra.utils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.ceskaexpedice.akubra.AkubraRepository;
-import org.ceskaexpedice.akubra.processingindex.ProcessingIndexRelation;
 import org.ceskaexpedice.akubra.KnownDatastreams;
+import org.ceskaexpedice.akubra.processingindex.ProcessingIndexRelation;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -18,11 +18,11 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 // helper utility used for extracting structure information 
-public class ExtractStructureHelper {
+public final class RelsExtStructureInfoUtils {
     
-    public static final Logger LOGGER = Logger.getLogger(ExtractStructureHelper.class.getName());
+    public static final Logger LOGGER = Logger.getLogger(RelsExtStructureInfoUtils.class.getName());
     
-    private ExtractStructureHelper() {}
+    private RelsExtStructureInfoUtils() {}
 
     public static JSONObject pidAndRelationToJson(String pid, String relation) {
         JSONObject json = new JSONObject();
@@ -57,8 +57,7 @@ public class ExtractStructureHelper {
         for (ProcessingIndexRelation ownChildTpl : childrenTpls.getLeft()) {
             mapping.put(ownChildTpl.getTarget(), pidAndRelationToJson(ownChildTpl.getTarget(), ownChildTpl.getRelation()));
         }        
-        
-        
+
         exploreRelsExt(relsExt, (child)-> {
             Element ch = child;
             Namespace namespace = new Namespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");

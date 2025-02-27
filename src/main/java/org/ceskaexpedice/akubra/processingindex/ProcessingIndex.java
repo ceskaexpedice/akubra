@@ -16,9 +16,6 @@
  */
 package org.ceskaexpedice.akubra.processingindex;
 
-import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
-
-import java.io.InputStream;
 import java.util.function.Consumer;
 
 /**

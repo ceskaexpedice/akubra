@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.core.lock.hazelcast;
+package org.ceskaexpedice.akubra;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.config.GroupConfig;
@@ -45,9 +45,9 @@ import java.io.IOException;
  *
  * @author pavels
  */
-public class ServerNode {
+public class HazelcastServerNode {
 
-    private static final ILogger LOGGER = Logger.getLogger(ServerNode.class);
+    private static final ILogger LOGGER = Logger.getLogger(HazelcastServerNode.class);
     private static HazelcastInstance hzInstance;
 
     /**

@@ -20,7 +20,6 @@ import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
 import org.ceskaexpedice.fedoramodel.DatastreamVersionType;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 
-import java.util.Date;
 import java.util.logging.Logger;
 
 /**
@@ -28,18 +27,12 @@ import java.util.logging.Logger;
  */
 public class DigitalObjectUtils {
     private static final Logger LOGGER = Logger.getLogger(DigitalObjectUtils.class.getName());
-    private static final SafeSimpleDateFormat DATE_FORMAT = new SafeSimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSS'Z'");
-    private static final String LOCAL_REF_PREFIX = "http://local.fedora.server/fedora/get/";
 
     private DigitalObjectUtils() {
     }
 
     public static DatastreamVersionType getLastStreamVersion(DigitalObject object, String streamID) {
         return RepositoryUtils.getLastStreamVersion(object, streamID);
-    }
-
-    public static Date getLastModified(DigitalObject object) {
-        return RepositoryUtils.getLastModified(object);
     }
 
 }

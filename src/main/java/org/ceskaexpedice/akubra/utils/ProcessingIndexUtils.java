@@ -24,22 +24,25 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.ceskaexpedice.akubra.AkubraRepository;
-import org.ceskaexpedice.akubra.processingindex.ProcessingIndexRelation;
+import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexQueryParameters;
+import org.ceskaexpedice.akubra.processingindex.ProcessingIndexRelation;
 import org.ceskaexpedice.akubra.relsext.KnownRelations;
-import org.ceskaexpedice.akubra.RepositoryException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
- * ProcessingIndexUtils
+ * Utils for various Processing Index related tasks
  */
 public final class ProcessingIndexUtils {
+    public static final Logger LOGGER = Logger.getLogger(RelsExtUtils.class.getName());
 
     private static List<KnownRelations> OWN_RELATIONS = Arrays.asList(new KnownRelations[]{
             KnownRelations.HAS_PAGE, KnownRelations.HAS_UNIT, KnownRelations.HAS_VOLUME, KnownRelations.HAS_ITEM,
@@ -357,33 +360,15 @@ public final class ProcessingIndexUtils {
     }
 
     private static JsonObject getStructure(String pid, AkubraRepository akubraRepository) {
-        // TODO AK_NEW caching?
-        /*
-        if (cachingEndabled) {
-            if (pidOfCachedStructure != null && pidOfCachedStructure.equals(pid)) {
-                return cachedStructure;
-            } else {
-                JsonObject structure = fetchStructure(pid);
-                if (structure != null) {
-                    pidOfCachedStructure = pid;
-                    cachedStructure = structure;
-                    return structure;
-                } else return null;
-            }
-        } else {
-            return fetchStructure(pid);
-        }
-
-         */
         return fetchStructure(pid, akubraRepository);
     }
 
     private static JsonObject fetchStructure(String pid, AkubraRepository akubraRepository) {
         try {
-            JSONObject extractStructureInfo = ExtractStructureHelper.extractStructureInfo(akubraRepository, pid);
+            JSONObject extractStructureInfo = RelsExtStructureInfoUtils.extractStructureInfo(akubraRepository, pid);
             return StringUtils.stringToJsonObject(extractStructureInfo.toString());
         } catch (RepositoryException  | SolrServerException | IOException e) {
-            // TODO AK_NEW LOGGER.log(Level.SEVERE,e.getMessage(),e);
+            LOGGER.log(Level.SEVERE,e.getMessage(),e);
             return null;
         }
     }

@@ -17,12 +17,12 @@
 package org.ceskaexpedice.akubra.core.repository;
 
 import org.ceskaexpedice.akubra.KnownDatastreams;
-import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
-import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.RepositoryException;
-import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
-import org.ceskaexpedice.akubra.core.lock.hazelcast.ServerNode;
+import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
+import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
+import org.ceskaexpedice.akubra.HazelcastServerNode;
+import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.akubra.testutils.TestUtilities;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.junit.jupiter.api.AfterAll;
@@ -47,7 +47,7 @@ public class CoreRepositoryReadTest {
     static void beforeAll() {
         testsProperties = TestUtilities.loadProperties();
         HazelcastConfiguration hazelcastConfig = TestUtilities.createHazelcastConfig(testsProperties);
-        ServerNode.ensureHazelcastNode(hazelcastConfig);
+        HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
 
         URL resource = TestUtilities.class.getClassLoader().getResource("data");
         RepositoryConfiguration config = TestUtilities.createRepositoryConfig(resource.getFile(), testsProperties, hazelcastConfig);
@@ -57,7 +57,7 @@ public class CoreRepositoryReadTest {
     @AfterAll
     static void afterAll() {
         coreRepository.shutdown();
-        ServerNode.shutdown();
+        HazelcastServerNode.shutdown();
     }
 
     @Test

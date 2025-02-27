@@ -18,11 +18,13 @@ package org.ceskaexpedice.akubra.utils;
 
 
 import org.ceskaexpedice.akubra.AkubraRepository;
+import org.ceskaexpedice.akubra.KnownDatastreams;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.StringTokenizer;
 
 /**
  * RepositoryURLConnection
@@ -41,7 +43,6 @@ public class RepositoryURLConnection extends URLConnection {
 
     @Override
     public InputStream getInputStream() throws IOException {
-        /* TODO
         String path = getURL().getPath();
         String pid = null;
         String stream = null;
@@ -53,13 +54,12 @@ public class RepositoryURLConnection extends URLConnection {
             stream = tokenizer.nextToken();
         }
         if (stream.equals(IMG_FULL)) {
-            return this.fedoraAccess.getImageFULL(pid);
+            return this.akubraRepository.getDatastreamContent(pid, KnownDatastreams.IMG_FULL).asInputStream();
         } else if (stream.equals(IMG_THUMB)) {
-            return this.fedoraAccess.getSmallThumbnail(pid);
+            return this.akubraRepository.getDatastreamContent(pid, KnownDatastreams.IMG_PREVIEW).asInputStream();
         } else {
-            return this.fedoraAccess.getDataStream(pid, stream);
-        }*/
-        return null;
+            return this.akubraRepository.getDatastreamContent(pid, stream).asInputStream();
+        }
     }
 
     @Override

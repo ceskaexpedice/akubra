@@ -22,7 +22,6 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,7 +31,10 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.*;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -58,15 +60,16 @@ public final class DomUtils {
      *
      * @param reader Reader
      * @return DOM
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     * @throws IOException
      */
-    public static Document streamToDocument(Reader reader) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory newInstance = DocumentBuilderFactory.newInstance();
-        LOGGER.log(Level.FINE, "builder factory instance :" + newInstance.getClass().getResource(newInstance.getClass().getSimpleName() + ".class"));
-        DocumentBuilder builder = newInstance.newDocumentBuilder();
-        return builder.parse(new InputSource(reader));
+    public static Document streamToDocument(Reader reader) {
+        try {
+            DocumentBuilderFactory newInstance = DocumentBuilderFactory.newInstance();
+            LOGGER.log(Level.FINE, "builder factory instance :" + newInstance.getClass().getResource(newInstance.getClass().getSimpleName() + ".class"));
+            DocumentBuilder builder = newInstance.newDocumentBuilder();
+            return builder.parse(new InputSource(reader));
+        } catch (Exception e) {
+            throw new RepositoryException();
+        }
     }
 
     /**
@@ -75,16 +78,17 @@ public final class DomUtils {
      * @param reader         Reader
      * @param namespaceaware namespace aware flag
      * @return DOM
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     * @throws IOException
      */
-    public static Document streamToDocument(Reader reader, boolean namespaceaware) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        LOGGER.log(Level.FINE, "builder factory instance :" + factory.getClass().getResource(factory.getClass().getSimpleName() + ".class"));
-        factory.setNamespaceAware(namespaceaware);
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        return builder.parse(new InputSource(reader));
+    public static Document streamToDocument(Reader reader, boolean namespaceaware) {
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            LOGGER.log(Level.FINE, "builder factory instance :" + factory.getClass().getResource(factory.getClass().getSimpleName() + ".class"));
+            factory.setNamespaceAware(namespaceaware);
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            return builder.parse(new InputSource(reader));
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
     }
 
     /**
@@ -92,9 +96,6 @@ public final class DomUtils {
      *
      * @param is InputStream
      * @return DOM
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     * @throws IOException
      */
     public static Document streamToDocument(InputStream is) {
         try {
@@ -113,9 +114,6 @@ public final class DomUtils {
      * @param is             Inputstream
      * @param namespaceaware namespace aware flag
      * @return
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     * @throws IOException
      */
     public static Document streamToDocument(InputStream is, boolean namespaceaware) {
         try {
@@ -248,7 +246,6 @@ public final class DomUtils {
      * Finds element in DOM tree
      *
      * @param topElm   Top element
-     * @param nodeName Node name
      * @return returns found node
      */
     public static List<Node> findNodesByType(Element topElm, int type) {

@@ -66,29 +66,35 @@ public final class Dom4jUtils {
         //NAMESPACE_URIS.put("", "");
     }
 
-    public static Document parseXmlFromFile(File xmlFile) throws DocumentException {
-        SAXReader reader = new SAXReader();
-        Document document = reader.read(xmlFile);
-        return document;
+    public static Document parseXmlFromFile(File xmlFile) {
+        try {
+            SAXReader reader = new SAXReader();
+            Document document = reader.read(xmlFile);
+            return document;
+        } catch (DocumentException e) {
+            throw new RepositoryException(e);
+        }
     }
 
-    public static Document parseXmlFromW3cDoc(org.w3c.dom.Document doc) throws DocumentException, IOException {
+    public static Document parseXmlFromW3cDoc(org.w3c.dom.Document doc) {
         return parseXmlFromString(w3cDocumentToString(doc));
     }
 
-    public static Document parseXmlFromString(String xmlString) throws DocumentException {
+    public static Document parseXmlFromString(String xmlString) {
         InputStream stream = null;
         try {
             SAXReader reader = new SAXReader();
             stream = new ByteArrayInputStream(xmlString.getBytes(StandardCharsets.UTF_8));
             Document document = reader.read(stream);
             return document;
+        } catch (DocumentException e) {
+            throw new RepositoryException(e);
         } finally {
             if (stream != null) {
                 try {
                     stream.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    throw new RepositoryException(e);
                 }
             }
         }
@@ -206,7 +212,7 @@ public final class Dom4jUtils {
         }
     }
 
-    private static String w3cDocumentToString(org.w3c.dom.Document doc) throws IOException {
+    private static String w3cDocumentToString(org.w3c.dom.Document doc) {
         try {
             DOMSource domSource = new DOMSource(doc);
             StringWriter writer = new StringWriter();
@@ -216,7 +222,7 @@ public final class Dom4jUtils {
             transformer.transform(domSource, result);
             return writer.toString();
         } catch (TransformerException e) {
-            throw new IOException(e);
+            throw new RepositoryException(e);
         }
     }
 

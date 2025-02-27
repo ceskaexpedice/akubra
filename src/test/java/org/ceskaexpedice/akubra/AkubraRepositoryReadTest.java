@@ -18,7 +18,6 @@ package org.ceskaexpedice.akubra;
 
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
-import org.ceskaexpedice.akubra.core.lock.hazelcast.ServerNode;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.relsext.RelsExtLiteral;
 import org.ceskaexpedice.akubra.relsext.RelsExtRelation;
@@ -53,7 +52,7 @@ public class AkubraRepositoryReadTest {
     static void beforeAll() {
         testsProperties = TestUtilities.loadProperties();
         HazelcastConfiguration hazelcastConfig = TestUtilities.createHazelcastConfig(testsProperties);
-        ServerNode.ensureHazelcastNode(hazelcastConfig);
+        HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
 
         URL resource = TestUtilities.class.getClassLoader().getResource("data");
         RepositoryConfiguration config = TestUtilities.createRepositoryConfig(resource.getFile(), testsProperties, hazelcastConfig);
@@ -63,7 +62,7 @@ public class AkubraRepositoryReadTest {
     @AfterAll
     static void afterAll() {
         akubraRepository.shutdown();
-        ServerNode.shutdown();
+        HazelcastServerNode.shutdown();
     }
 
     @Test

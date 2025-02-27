@@ -17,11 +17,11 @@
 package org.ceskaexpedice.akubra.core.repository;
 
 import org.apache.commons.io.FileUtils;
-import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
+import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
-import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
-import org.ceskaexpedice.akubra.core.lock.hazelcast.ServerNode;
+import org.ceskaexpedice.akubra.HazelcastServerNode;
+import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
 import org.ceskaexpedice.akubra.testutils.TestUtilities;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.junit.jupiter.api.*;
@@ -52,7 +52,7 @@ public class CoreRepositoryWriteTest {
     static void beforeAll() {
         testsProperties = TestUtilities.loadProperties();
         hazelcastConfig = TestUtilities.createHazelcastConfig(testsProperties);
-        ServerNode.ensureHazelcastNode(hazelcastConfig);
+        HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
         // configure repository
         mockFeeder = mock(ProcessingIndexSolr.class);
         try (MockedStatic<CoreRepositoryFactory> mockedStatic = mockStatic(CoreRepositoryFactory.class, Mockito.CALLS_REAL_METHODS)) {
@@ -66,7 +66,7 @@ public class CoreRepositoryWriteTest {
     @AfterAll
     static void afterAll() {
         coreRepository.shutdown();
-        ServerNode.shutdown();
+        HazelcastServerNode.shutdown();
     }
 
     @BeforeEach
