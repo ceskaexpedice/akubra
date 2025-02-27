@@ -20,13 +20,59 @@ import org.w3c.dom.Document;
 
 import java.io.InputStream;
 
+/**
+ * A wrapper interface for handling various Akubra Fedora digital object datastream content formats.
+ * <p>
+ * This utility provides multiple representations of a Fedora datastream's content,
+ * allowing it to be accessed as an {@link InputStream}, a DOM {@link Document},
+ * a Dom4j {@link org.dom4j.Document}, or a {@link String}.
+ * </p>
+ */
 public interface DatastreamContentWrapper {
 
+    /**
+     * Returns the datastream content as an {@link InputStream}.
+     * <p>
+     * This stream can be used to read the raw binary or textual content
+     * of the Fedora datastream.
+     * </p>
+     *
+     * @return an {@link InputStream} representing the datastream content
+     */
     InputStream asInputStream();
 
+    /**
+     * Returns the datastream content as a W3C DOM {@link Document}.
+     * <p>
+     * This method allows parsing the content into a standard DOM document,
+     * with optional namespace awareness.
+     * </p>
+     *
+     * @param nsAware whether the parser should be namespace-aware
+     * @return a {@link Document} representing the datastream content
+     */
     Document asDom(boolean nsAware);
 
+    /**
+     * Returns the datastream content as a Dom4j {@link org.dom4j.Document}.
+     * <p>
+     * This method provides a Dom4j representation of the datastream content,
+     * supporting optional namespace awareness.
+     * </p>
+     *
+     * @param nsAware whether the parser should be namespace-aware
+     * @return a {@link org.dom4j.Document} representing the datastream content
+     */
     org.dom4j.Document asDom4j(boolean nsAware);
 
+    /**
+     * Returns the datastream content as a {@link String}.
+     * <p>
+     * This method retrieves the content as a UTF-8 encoded string,
+     * which is useful for processing text-based datastreams.
+     * </p>
+     *
+     * @return the datastream content as a {@link String}
+     */
     String asString();
 }

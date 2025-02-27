@@ -18,22 +18,19 @@
 package org.ceskaexpedice.akubra.relsext;
 
 /**
- * Main repository access point for managing digital objects and datastreams.
- * Provides methods for object lifecycle management, metadata retrieval,
- * and processing index iteration.
- *
- * <p>Implementations of this interface interact with the Akubra storage backend.</p>
+ * Main repository access point for managing RELS EXT datastream relations.
  *
  * @author pavels, petrp
  */
 public interface RelsExtHandler {
 
     /**
+     * Checks if a relation exists for a given object.
      *
-     * @param pid
-     * @param relation
-     * @param namespace
-     * @return
+     * @param pid           The persistent identifier of the object.
+     * @param relation      The relationship type (e.g., "isPartOf").
+     * @param namespace     The namespace URI for the relationship.
+     * @return {@code true} if the relation exists, {@code false} otherwise.
      */
     boolean relationExists(String pid, String relation, String namespace);
 
@@ -58,17 +55,19 @@ public interface RelsExtHandler {
     void removeRelation(String pid, String relation, String namespace, String targetRelation);
 
     /**
+     * Removes a specific relationship from the RELS-EXT datastream of a digital object.
      *
-     * @param pid
-     * @param relation
-     * @param namespace
+     * @param pid           The persistent identifier of the object.
+     * @param relation      The relationship type.
+     * @param namespace     The namespace URI of the relationship.
      */
     void removeRelationsByNameAndNamespace(String pid, String relation, String namespace);
 
     /**
+     * Removes a specific relationship from the RELS-EXT datastream of a digital object.
      *
-     * @param pid
-     * @param namespace
+     * @param pid           The persistent identifier of the object.
+     * @param namespace     The namespace URI of the relationship.
      */
     void removeRelationsByNamespace(String pid, String namespace);
 

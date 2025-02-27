@@ -17,10 +17,26 @@
 package org.ceskaexpedice.akubra;
 
 /**
- * KnownXmlFormatUris
+ * Defines known XML format URIs used in Fedora digital objects.
+ * <p>
+ * This class provides constants for commonly used XML format namespaces
+ * in Fedora, such as RELS-EXT, MODS, and Dublin Core (DC).
+ * </p>
  */
 public class KnownXmlFormatUris {
+
+    /**
+     * URI for the Fedora RELS-EXT (Relationships) XML format.
+     */
     public static final String RELS_EXT = "info:fedora/fedora-system:FedoraRELSExt-1.0";
+
+    /**
+     * URI for the MODS (Metadata Object Description Schema) XML format.
+     */
     public static final String BIBLIO_MODS = "http://www.loc.gov/mods/v3";
+
+    /**
+     * URI for the Dublin Core (DC) XML format used in OAI-PMH.
+     */
     public static final String BIBLIO_DC = "http://www.openarchives.org/OAI/2.0/oai_dc/";
 }

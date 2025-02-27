@@ -16,6 +16,13 @@
  */
 package org.ceskaexpedice.akubra.relsext;
 
+/**
+ * Enum mapping object types to their corresponding {@link KnownRelations}.
+ * <p>
+ * This enumeration defines how specific digital object types, such as pages
+ * and units, are mapped to their respective relationships within a Fedora repository.
+ * </p>
+ */
 public enum OwnRelationsMapping {
 
     page{

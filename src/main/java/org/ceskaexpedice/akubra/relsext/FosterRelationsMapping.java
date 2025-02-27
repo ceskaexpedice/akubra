@@ -19,8 +19,16 @@ package org.ceskaexpedice.akubra.relsext;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Enum mapping digital objects to their foster relationships based on the parent model.
+ * <p>
+ * This enumeration defines dynamic relationship mappings where the relation
+ * depends on the type of the parent object. For example, a page may have a different
+ * relationship depending on whether its parent is an article or an internal part.
+ * </p>
+ */
 public enum FosterRelationsMapping {
-    page{
+    page {
         @Override
         public KnownRelations relation(String parentModel) {
             List<String> parent = Arrays.asList("article", "internalpart");

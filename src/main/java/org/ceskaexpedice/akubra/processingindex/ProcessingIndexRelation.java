@@ -17,31 +17,65 @@
 package org.ceskaexpedice.akubra.processingindex;
 
 /**
- * ProcessingIndexRelation
+ * Represents a relationship between entities in a processing index.
+ * <p>
+ * This class encapsulates a directed relationship between a source, a relation type,
+ * and a target. It is used to model connections between digital objects or entities
+ * in an indexing or processing system.
+ * </p>
  */
 public class ProcessingIndexRelation {
+
     private final String source;
     private final String relation;
     private final String target;
 
+    /**
+     * Creates a new {@code ProcessingIndexRelation} with the specified source, relation, and target.
+     *
+     * @param source   the source entity in the relationship
+     * @param relation the type of relationship between source and target
+     * @param target   the target entity in the relationship
+     */
     public ProcessingIndexRelation(String source, String relation, String target) {
         this.source = source;
         this.relation = relation;
         this.target = target;
     }
 
+    /**
+     * Returns the source entity of this relationship.
+     *
+     * @return the source entity as a {@link String}
+     */
     public String getSource() {
         return source;
     }
 
+    /**
+     * Returns the relation type of this relationship.
+     *
+     * @return the relation type as a {@link String}
+     */
     public String getRelation() {
         return relation;
     }
 
+    /**
+     * Returns the target entity of this relationship.
+     *
+     * @return the target entity as a {@link String}
+     */
     public String getTarget() {
         return target;
     }
 
+    /**
+     * Returns a string representation of this relationship in the format:
+     * {@code source -relation-> target}.
+     *
+     * @return a formatted string representing the relationship
+     */
     @Override
     public String toString() {
         return String.format("%s -%s-> %s", source, relation, target);

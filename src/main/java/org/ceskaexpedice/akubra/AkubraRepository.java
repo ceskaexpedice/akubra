@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Main repository access point for managing digital objects and datastreams.
  * Provides methods for object lifecycle management, metadata retrieval,
- * and processing index iteration.
+ * and processing index manipulation.
  *
  * <p>Implementations of this interface interact with the Akubra storage backend.</p>
  *
@@ -121,11 +121,35 @@ public interface AkubraRepository {
      */
     void createXMLDatastream(String pid, String dsId, String mimeType, InputStream xmlContent);
 
+    /**
+     * Creates an XML datastream for a digital object.
+     *
+     * @param pid        The persistent identifier of the object.
+     * @param dsId       The datastream identifier as enum.
+     * @param mimeType   The MIME type of the datastream.
+     * @param xmlContent The XML content as an input stream.
+     */
     void createXMLDatastream(String pid, KnownDatastreams dsId, String mimeType, InputStream xmlContent);
 
-    void updateXMLDatastream(String pid, String dsId, String mimeType, InputStream binaryContent);
+    /**
+     * Updates an XML datastream for a digital object.
+     *
+     * @param pid        The persistent identifier of the object.
+     * @param dsId       The datastream identifier.
+     * @param mimeType   The MIME type of the datastream.
+     * @param xmlContent The XML content as an input stream.
+     */
+    void updateXMLDatastream(String pid, String dsId, String mimeType, InputStream xmlContent);
 
-    void updateXMLDatastream(String pid, KnownDatastreams dsId, String mimeType, InputStream binaryContent);
+    /**
+     * Updates an XML datastream for a digital object.
+     *
+     * @param pid        The persistent identifier of the object.
+     * @param dsId       The datastream identifier as enum.
+     * @param mimeType   The MIME type of the datastream.
+     * @param xmlContent The XML content as an input stream.
+     */
+    void updateXMLDatastream(String pid, KnownDatastreams dsId, String mimeType, InputStream xmlContent);
 
     /**
      * Creates a managed datastream for a digital object.
@@ -137,10 +161,34 @@ public interface AkubraRepository {
      */
     void createManagedDatastream(String pid, String dsId, String mimeType, InputStream binaryContent);
 
+    /**
+     * Creates a managed datastream for a digital object.
+     *
+     * @param pid           The persistent identifier of the object.
+     * @param dsId          The datastream identifier as enum.
+     * @param mimeType      The MIME type of the datastream.
+     * @param binaryContent The binary content as an input stream.
+     */
     void createManagedDatastream(String pid, KnownDatastreams dsId, String mimeType, InputStream binaryContent);
 
+    /**
+     * Updates a managed datastream for a digital object.
+     *
+     * @param pid           The persistent identifier of the object.
+     * @param dsId          The datastream identifier.
+     * @param mimeType      The MIME type of the datastream.
+     * @param binaryContent The binary content as an input stream.
+     */
     void updateManagedDatastream(String pid, String dsId, String mimeType, InputStream binaryContent);
 
+    /**
+     * Updates a managed datastream for a digital object.
+     *
+     * @param pid           The persistent identifier of the object.
+     * @param dsId          The datastream identifier as enum.
+     * @param mimeType      The MIME type of the datastream.
+     * @param binaryContent The binary content as an input stream.
+     */
     void updateManagedDatastream(String pid, KnownDatastreams dsId, String mimeType, InputStream binaryContent);
 
     /**
@@ -153,10 +201,34 @@ public interface AkubraRepository {
      */
     void createRedirectedDatastream(String pid, String dsId, String url, String mimeType);
 
+    /**
+     * Creates a redirected datastream linking to an external resource.
+     *
+     * @param pid      The persistent identifier of the object.
+     * @param dsId     The datastream identifier as enum.
+     * @param url      The external URL.
+     * @param mimeType The MIME type of the datastream.
+     */
     void createRedirectedDatastream(String pid, KnownDatastreams dsId, String url, String mimeType);
 
+    /**
+     * Updates a redirected datastream linking to an external resource.
+     *
+     * @param pid      The persistent identifier of the object.
+     * @param dsId     The datastream identifier.
+     * @param url      The external URL.
+     * @param mimeType The MIME type of the datastream.
+     */
     void updateRedirectedDatastream(String pid, String dsId, String url, String mimeType);
 
+    /**
+     * Updates a redirected datastream linking to an external resource.
+     *
+     * @param pid      The persistent identifier of the object.
+     * @param dsId     The datastream identifier as enum.
+     * @param url      The external URL.
+     * @param mimeType The MIME type of the datastream.
+     */
     void updateRedirectedDatastream(String pid, KnownDatastreams dsId, String url, String mimeType);
 
     /**
@@ -168,6 +240,13 @@ public interface AkubraRepository {
      */
     boolean datastreamExists(String pid, String dsId);
 
+    /**
+     * Checks if a datastream exists for a given object.
+     *
+     * @param pid  The persistent identifier of the object.
+     * @param dsId The datastream identifier as enum.
+     * @return {@code true} if the datastream exists, {@code false} otherwise.
+     */
     boolean datastreamExists(String pid, KnownDatastreams dsId);
 
     /**
@@ -179,6 +258,13 @@ public interface AkubraRepository {
      */
     DatastreamMetadata getDatastreamMetadata(String pid, String dsId);
 
+    /**
+     * Retrieves metadata of a specific datastream.
+     *
+     * @param pid  The persistent identifier of the object.
+     * @param dsId The datastream identifier as enum.
+     * @return Metadata of the datastream.
+     */
     DatastreamMetadata getDatastreamMetadata(String pid, KnownDatastreams dsId);
 
     /**
@@ -186,10 +272,17 @@ public interface AkubraRepository {
      *
      * @param pid  The persistent identifier of the object.
      * @param dsId The datastream identifier.
-     * @return An input stream containing the datastream content.
+     * @return A wrapper object containing various formats of datastream content.
      */
     DatastreamContentWrapper getDatastreamContent(String pid, String dsId);
 
+    /**
+     * Retrieves the content of a datastream.
+     *
+     * @param pid  The persistent identifier of the object.
+     * @param dsId The datastream identifier as enum.
+     * @return A wrapper object containing various formats of datastream content.
+     */
     DatastreamContentWrapper getDatastreamContent(String pid, KnownDatastreams dsId);
 
     /**
@@ -200,14 +293,31 @@ public interface AkubraRepository {
      */
     void deleteDatastream(String pid, String dsId);
 
+    /**
+     * Deletes a datastream from an object.
+     *
+     * @param pid  The persistent identifier of the object as enum.
+     * @param dsId The datastream identifier.
+     */
     void deleteDatastream(String pid, KnownDatastreams dsId);
 
-    public List<String> getDatastreamNames(String pid);
+    /**
+     * Retrieves a list of datastream names associated with the specified Fedora object.
+     * <p>
+     * This method queries the Fedora repository and returns the names of all datastreams
+     * linked to the given persistent identifier (PID). The returned list may include
+     * system-generated and user-defined datastreams.
+     * </p>
+     *
+     * @param pid the persistent identifier (PID) of the Fedora object
+     * @return a list of datastream names associated with the specified PID
+     */
+    List<String> getDatastreamNames(String pid);
 
     //-------------------- processing index -----------------------
 
     /**
-     * Returns a processing index  for the repository.
+     * Returns a processing index interface for the repository.
      *
      * @return A ProcessingIndex instance for processing index feeding and reading.
      */
@@ -215,6 +325,11 @@ public interface AkubraRepository {
 
     //-------------------- RelsExt -----------------------
 
+    /**
+     * Returns a handler interface for the RELS EXT stream type manipulation.
+     *
+     * @return A RELS EXT handler.
+     */
     RelsExtHandler getRelsExtHandler();
 
     //-------------------- Locks ---------------------------

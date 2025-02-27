@@ -16,6 +16,14 @@
  */
 package org.ceskaexpedice.akubra.relsext;
 
+/**
+ * Enum representing known relationships between Fedora digital objects.
+ * <p>
+ * This enumeration defines relationships used to structure digital objects
+ * within a Fedora repository, such as hierarchical links between pages,
+ * units, and volumes.
+ * </p>
+ */
 public enum KnownRelations {
     //own relations (define object tree)
     HAS_PAGE("hasPage"),

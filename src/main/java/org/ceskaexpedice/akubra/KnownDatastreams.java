@@ -16,6 +16,14 @@
  */
 package org.ceskaexpedice.akubra;
 
+/**
+ * Enum representing known Fedora datastream types.
+ * <p>
+ * This enumeration defines a set of recognized datastreams used within Fedora,
+ * including bibliographic metadata, OCR results, images, audio formats, and
+ * administrative datastreams.
+ * </p>
+ */
 public enum KnownDatastreams {
     RELS_EXT("RELS-EXT"),
 
@@ -39,16 +47,24 @@ public enum KnownDatastreams {
     IMG_FULL_ADM("IMG_FULL_ADM"),
     AUDIT("AUDIT"),
     TEXT_OCR_ADM("TEXT_OCR_ADM"),
-
     COLLECTION_CLIPPINGS("COLLECTION_CLIPPINGS");
-
 
     private final String value;
 
+    /**
+     * Constructs a {@code KnownDatastreams} enum with the specified datastream name.
+     *
+     * @param value the string representation of the datastream name
+     */
     KnownDatastreams(String value) {
         this.value = value;
     }
 
+    /**
+     * Returns the string representation of the datastream name.
+     *
+     * @return the datastream name as a {@link String}
+     */
     public String toString() {
         return value;
     }

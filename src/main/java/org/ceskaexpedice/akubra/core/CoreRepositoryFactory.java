@@ -18,6 +18,7 @@ package org.ceskaexpedice.akubra.core;
 
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.ConcurrentUpdateSolrClient;
+import org.ceskaexpedice.akubra.AkubraRepository;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
@@ -28,7 +29,9 @@ import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheManagerBuilder;
 
 /**
- * CoreRepositoryFactory
+ * Factory for creating instances of {@link CoreRepository}.
+ *
+ * <p>This class cannot be instantiated.</p>
  *
  * @author ppodsednik
  */
@@ -64,6 +67,5 @@ public final class CoreRepositoryFactory {
         String processingSolrHost = configuration.getProcessingIndexHost();
         return new ConcurrentUpdateSolrClient.Builder(processingSolrHost).withQueueSize(100).build();
     }
-
 
 }

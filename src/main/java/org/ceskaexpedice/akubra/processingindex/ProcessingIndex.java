@@ -53,7 +53,7 @@ public interface ProcessingIndex {
     void deleteByRelationsForPid(String pid);
 
     /**
-     *
+     * Deletes all items in the processing index
      * @return
      */
     void deleteProcessingIndex();

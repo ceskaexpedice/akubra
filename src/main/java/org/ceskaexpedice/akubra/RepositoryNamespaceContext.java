@@ -22,8 +22,11 @@ import java.util.*;
 import static org.ceskaexpedice.akubra.RepositoryNamespaces.*;
 
 /**
- * Fedora XML namespaces
- * @author pavels
+ * A {@link NamespaceContext} implementation for managing XML namespaces in a Fedora repository.
+ * <p>
+ * This class provides mappings between namespace prefixes and their corresponding URIs,
+ * facilitating namespace resolution in XML processing.
+ * </p>
  */
 public class RepositoryNamespaceContext implements NamespaceContext {
 
@@ -84,7 +87,6 @@ public class RepositoryNamespaceContext implements NamespaceContext {
             return Collections.emptyList().iterator();
         }
     }
-
 
     public List<String> getNamespaceURIs() {
         return new ArrayList<>(MAP_URI2PREFIX.keySet());

@@ -21,15 +21,71 @@ import org.w3c.dom.Document;
 
 import java.io.InputStream;
 
+/**
+ * A wrapper interface for handling Fedora digital objects.
+ * <p>
+ * This utility provides multiple representations of a Fedora digital object,
+ * allowing it to be accessed as a {@link DigitalObject}, an {@link InputStream},
+ * a DOM {@link Document}, a Dom4j {@link org.dom4j.Document}, or a {@link String}.
+ * </p>
+ */
 public interface DigitalObjectWrapper {
 
+    /**
+     * Returns the digital object in its native {@link DigitalObject} representation.
+     * <p>
+     * This method provides access to the full Fedora digital object,
+     * allowing further operations on its metadata and datastreams.
+     * </p>
+     *
+     * @return the digital object as a {@link DigitalObject}
+     */
     DigitalObject asDigitalObject();
 
+    /**
+     * Returns the digital object's content as an {@link InputStream}.
+     * <p>
+     * This stream can be used to read the raw binary or textual content
+     * of the Fedora digital object.
+     * </p>
+     *
+     * @return an {@link InputStream} representing the digital object's content
+     */
     InputStream asInputStream();
 
+    /**
+     * Returns the digital object's content as a W3C DOM {@link Document}.
+     * <p>
+     * This method allows parsing the content into a standard DOM document,
+     * with optional namespace awareness.
+     * </p>
+     *
+     * @param nsAware whether the parser should be namespace-aware
+     * @return a {@link Document} representing the digital object's content
+     */
     Document asDom(boolean nsAware);
 
+    /**
+     * Returns the digital object's content as a Dom4j {@link org.dom4j.Document}.
+     * <p>
+     * This method provides a Dom4j representation of the digital object's content,
+     * supporting optional namespace awareness.
+     * </p>
+     *
+     * @param nsAware whether the parser should be namespace-aware
+     * @return a {@link org.dom4j.Document} representing the digital object's content
+     */
     org.dom4j.Document asDom4j(boolean nsAware);
 
+    /**
+     * Returns the digital object's content as a {@link String}.
+     * <p>
+     * This method retrieves the content as a UTF-8 encoded string,
+     * which is useful for processing text-based digital objects.
+     * </p>
+     *
+     * @return the digital object's content as a {@link String}
+     */
     String asString();
 }
+
