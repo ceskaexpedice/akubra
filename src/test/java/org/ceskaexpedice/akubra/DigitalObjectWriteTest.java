@@ -14,13 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.core.repository;
+package org.ceskaexpedice.akubra;
 
 import org.apache.commons.io.FileUtils;
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
-import org.ceskaexpedice.akubra.HazelcastServerNode;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
 import org.ceskaexpedice.akubra.testutils.TestUtilities;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
@@ -37,29 +36,29 @@ import java.util.Properties;
 import static org.ceskaexpedice.akubra.testutils.TestUtilities.*;
 import static org.mockito.Mockito.*;
 
-public class CoreRepositoryWriteTest {
+public class DigitalObjectWriteTest {
     private static Properties testsProperties;
     private static ProcessingIndexSolr mockFeeder;
-    private static CoreRepository coreRepository;
+    private static AkubraRepository akubraRepository;
 
     @BeforeAll
     static void beforeAll() {
         testsProperties = TestUtilities.loadProperties();
         HazelcastConfiguration hazelcastConfig = TestUtilities.createHazelcastConfig(testsProperties);
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
-        // configure repository
+        // configure akubraRepository
         mockFeeder = mock(ProcessingIndexSolr.class);
         try (MockedStatic<CoreRepositoryFactory> mockedStatic = mockStatic(CoreRepositoryFactory.class, Mockito.CALLS_REAL_METHODS)) {
             mockedStatic.when(() -> CoreRepositoryFactory.createProcessingIndexFeeder(any())).thenReturn(mockFeeder);
             mockedStatic.when(() -> CoreRepositoryFactory.createCacheManager()).thenReturn(null);
             RepositoryConfiguration config = TestUtilities.createRepositoryConfig(TEST_OUTPUT_REPOSITORY.toFile().getAbsolutePath(), testsProperties, hazelcastConfig);
-            coreRepository = CoreRepositoryFactory.createRepository(config);
+            akubraRepository = AkubraRepositoryFactory.createRepository(config);
         }
     }
 
     @AfterAll
     static void afterAll() {
-        coreRepository.shutdown();
+        akubraRepository.shutdown();
         HazelcastServerNode.shutdown();
     }
 
@@ -79,38 +78,28 @@ public class CoreRepositoryWriteTest {
     @Test
     void testIngest() throws IOException {
         // prepare import document
-        RepositoryObject digitalObjectImported = coreRepository.getObject(PID_IMPORTED);
+        DigitalObject digitalObjectImported = akubraRepository.getObject(PID_IMPORTED).asDigitalObject();
         Assertions.assertNull(digitalObjectImported);
         Path importFile = Path.of("src/test/resources/titlePageImport.xml");
         InputStream inputStream = Files.newInputStream(importFile);
-        DigitalObject digitalObject = coreRepository.unmarshallObject(inputStream);
+        DigitalObject digitalObject = akubraRepository.unmarshallObject(inputStream);
         // ingest document
         reset(mockFeeder);
-        coreRepository.ingestObject(digitalObject);
+        akubraRepository.ingest(digitalObject);
         // test ingest result
-        digitalObjectImported = coreRepository.getObject(PID_IMPORTED);
+        digitalObjectImported = akubraRepository.getObject(PID_IMPORTED).asDigitalObject();
         Assertions.assertNotNull(digitalObjectImported);
         verify(mockFeeder, times(1)).rebuildProcessingIndex(any(), any());
-    }
-
-    @Test
-    void testCreateOrGetObject() {
-        RepositoryObject repositoryObject = coreRepository.createOrGetObject(PID_MONOGRAPH);
-        Assertions.assertNotNull(repositoryObject);
-        repositoryObject = coreRepository.getObject(PID_IMPORTED);
-        Assertions.assertNull(repositoryObject);
-        repositoryObject = coreRepository.createOrGetObject(PID_IMPORTED);
-        Assertions.assertNotNull(repositoryObject);
-        verify(mockFeeder, times(1)).deleteByPid(eq(PID_IMPORTED));
+        verify(mockFeeder, times(1)).commit();
     }
 
     @Test
     void testDeleteObject() {
-        RepositoryObject repositoryObject = coreRepository.getObject(PID_TITLE_PAGE);
+        DigitalObject repositoryObject = akubraRepository.getObject(PID_TITLE_PAGE).asDigitalObject();
         Assertions.assertNotNull(repositoryObject);
         reset(mockFeeder);
-        coreRepository.deleteObject(PID_TITLE_PAGE);
-        repositoryObject = coreRepository.getObject(PID_TITLE_PAGE);
+        akubraRepository.deleteObject(PID_TITLE_PAGE);
+        repositoryObject = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed).asDigitalObject();
         Assertions.assertNull(repositoryObject);
         verify(mockFeeder, times(1)).deleteByRelationsForPid(eq(PID_TITLE_PAGE));
         verify(mockFeeder, times(1)).deleteByTargetPid(eq(PID_TITLE_PAGE));

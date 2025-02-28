@@ -20,6 +20,7 @@ import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
@@ -30,6 +31,13 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * @author ppodsednik
  */
 public final class TestUtilities {
+    public static final Path TEST_REPOSITORY = Path.of("src/test/resources/data");
+    public static final Path TEST_OUTPUT_REPOSITORY = Path.of("testoutput/data");
+    public static final String PID_TITLE_PAGE = "uuid:12993b4a-71b4-4f19-8953-0701243cc25d";
+    public static final String PID_NOT_EXISTS = "uuid:92993b4a-71b4-4f19-8953-0701243cc25d";
+    public static final String PID_MONOGRAPH = "uuid:5035a48a-5e2e-486c-8127-2fa650842e46";
+    public static final String PID_IMPORTED = "uuid:32993b4a-71b4-4f19-8953-0701243cc25d";
+
     private static final String PROPERTIES = "tests.properties";
     private static final String SKIP_FUNCTIONAL_TESTS_PROPERTY = "skipFunctionalTests";
     private static final String DEBUG_PRINT_PROPERTY = "debugPrint";

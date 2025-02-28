@@ -35,18 +35,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.ceskaexpedice.akubra.testutils.TestUtilities.debugPrint;
+import static org.ceskaexpedice.akubra.testutils.TestUtilities.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 // TODO make decision about Solr test instance and test data, mapping, etc
 /**
  * ProcessingIndexTest
- * !!! It requires Solr instance running with processing index containing appropriate testing data to pass tests
+ * !!! It requires Solr instance running with processing index containing appropriate testing data to pass the tests
  */
-public class ProcessingIndexTest {
-    private static final String PID_MONOGRAPH = "uuid:5035a48a-5e2e-486c-8127-2fa650842e46";
-    private static final String PID_TITLE_PAGE = "uuid:12993b4a-71b4-4f19-8953-0701243cc25d";
-    private static final String PID_IMPORTED = "uuid:32993b4a-71b4-4f19-8953-0701243cc25d";
-
+public class ProcessingIndexTest_functional {
     private static Properties testsProperties;
     private static AkubraRepository akubraRepository;
 

@@ -18,10 +18,6 @@ package org.ceskaexpedice.akubra;
 
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
-import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
-import org.ceskaexpedice.akubra.relsext.RelsExtLiteral;
-import org.ceskaexpedice.akubra.relsext.RelsExtRelation;
-import org.ceskaexpedice.akubra.relsext.RelsExtWrapper;
 import org.ceskaexpedice.akubra.testutils.TestUtilities;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.akubra.utils.StringUtils;
@@ -33,18 +29,13 @@ import org.junit.jupiter.api.Test;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
-import java.util.List;
 import java.util.Properties;
 
+import static org.ceskaexpedice.akubra.testutils.TestUtilities.PID_MONOGRAPH;
+import static org.ceskaexpedice.akubra.testutils.TestUtilities.PID_TITLE_PAGE;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * AkubraRepositoryReadTest
- */
-public class AkubraRepositoryReadTest {
-    private static final String PID_MONOGRAPH = "uuid:5035a48a-5e2e-486c-8127-2fa650842e46";
-    private static final String PID_TITLE_PAGE = "uuid:12993b4a-71b4-4f19-8953-0701243cc25d";
-
+public class DigitalObjectReadTest {
     private static AkubraRepository akubraRepository;
     private static Properties testsProperties;
 
@@ -73,28 +64,28 @@ public class AkubraRepositoryReadTest {
 
     @Test
     void testGetObject_asStream() {
-        InputStream digitalObject = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed).asInputStream();
+        InputStream digitalObject = akubraRepository.getObject(PID_TITLE_PAGE).asInputStream();
         assertNotNull(digitalObject);
         TestUtilities.debugPrint(StringUtils.streamToString(digitalObject), testsProperties);
     }
 
     @Test
     void testGetObject_asXmlDom4j() {
-        Document asXmlDom4j = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed).asDom4j(true);
+        Document asXmlDom4j = akubraRepository.getObject(PID_TITLE_PAGE).asDom4j(true);
         assertNotNull(asXmlDom4j);
         TestUtilities.debugPrint(asXmlDom4j.asXML(), testsProperties);
     }
 
     @Test
     void testGetObject_asXmlDom() {
-        org.w3c.dom.Document asXmlDom = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed).asDom(false);
+        org.w3c.dom.Document asXmlDom = akubraRepository.getObject(PID_TITLE_PAGE).asDom(false);
         assertNotNull(asXmlDom);
         TestUtilities.debugPrint(DomUtils.toString(asXmlDom.getDocumentElement(), true), testsProperties);
     }
 
     @Test
     void testGetObject_asString() {
-        String asString = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed).asString();
+        String asString = akubraRepository.getObject(PID_TITLE_PAGE).asString();
         assertNotNull(asString);
         TestUtilities.debugPrint(asString, testsProperties);
     }
@@ -116,71 +107,6 @@ public class AkubraRepositoryReadTest {
         assertEquals("- none -", propertyLabel);
         Date propertyLastModified = akubraRepository.getObjectProperties(PID_TITLE_PAGE).getPropertyLastModified();
         // TODO AK_NEW assertEquals("2024-05-20T13:03:27.151", propertyLastModified.toString());
-    }
-
-    @Test
-    void testDatastreamExists() {
-        boolean exists = akubraRepository.datastreamExists(PID_TITLE_PAGE, "DC");
-        assertTrue(exists);
-    }
-
-    @Test
-    void testGetDatastreamMetadata() {
-        DatastreamMetadata datastreamMetadata = akubraRepository.getDatastreamMetadata(PID_TITLE_PAGE, "DC");
-        assertNotNull(datastreamMetadata);
-
-        assertEquals("DC", datastreamMetadata.getId());
-        assertEquals("text/xml", datastreamMetadata.getMimetype());
-        assertEquals(RepositoryDatastream.Type.DIRECT, datastreamMetadata.getType());
-        assertEquals("X", datastreamMetadata.getControlGroup());
-        assertEquals(0, datastreamMetadata.getSize());
-        assertNull(datastreamMetadata.getLocation());
-        // TODO assertEquals("Mon Feb 26 15:40:29 CET 2018", datastreamMetadata.getLastModified().toString());
-        // TODO assertEquals("Mon Feb 26 15:40:29 CET 2018", datastreamMetadata.getCreateDate().toString());
-    }
-
-    @Test
-    void testGetDatastreamContent_asStream() {
-        InputStream imgThumb = akubraRepository.getDatastreamContent(PID_TITLE_PAGE, "IMG_THUMB").asInputStream();
-        assertNotNull(imgThumb);
-    }
-
-    @Test
-    void testGetDatastreamContent_asXmlDom() {
-        org.w3c.dom.Document xmlDom = akubraRepository.getDatastreamContent(PID_TITLE_PAGE, "DC").asDom(false);
-        assertNotNull(xmlDom);
-        TestUtilities.debugPrint(DomUtils.toString(xmlDom.getDocumentElement(), true), testsProperties);
-    }
-
-    @Test
-    void testGetDatastreamContent_asXmlDom4j() {
-        Document xmlDom4j = akubraRepository.getDatastreamContent(PID_TITLE_PAGE, "DC").asDom4j(true);
-        assertNotNull(xmlDom4j);
-        TestUtilities.debugPrint(xmlDom4j.asXML(), testsProperties);
-    }
-
-    @Test
-    void testGetDatastreamContent_asString() {
-        String dc = akubraRepository.getDatastreamContent(PID_TITLE_PAGE, "DC").asString();
-        assertNotNull(dc);
-        TestUtilities.debugPrint(dc, testsProperties);
-    }
-
-    @Test
-    void testRelsExtGet() {
-        RelsExtWrapper relsExtWrapper = akubraRepository.getRelsExtHandler().get(PID_MONOGRAPH);
-        assertNotNull(relsExtWrapper);
-        List<RelsExtRelation> relations = relsExtWrapper.getRelations(null);
-        assertEquals(37, relations.size());
-        List<RelsExtLiteral> literals = relsExtWrapper.getLiterals(null);
-        assertEquals(5, literals.size());
-    }
-
-    @Test
-    void testGetDatastreamNames() {
-        List<String> datastreamNames = akubraRepository.getDatastreamNames(PID_TITLE_PAGE);
-        assertEquals(9, datastreamNames.size());
-        TestUtilities.debugPrint(String.join(", ", datastreamNames), testsProperties);
     }
 
     @Test

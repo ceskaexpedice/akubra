@@ -33,30 +33,22 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Properties;
 
+import static org.ceskaexpedice.akubra.testutils.TestUtilities.*;
 import static org.mockito.Mockito.*;
 
-public class AkubraRepositoryWriteTest {
-    private static final Path TEST_REPOSITORY = Path.of("src/test/resources/data");
-    private static final Path TEST_OUTPUT_REPOSITORY = Path.of("testoutput/data");
-    private static final String PID_MONOGRAPH = "uuid:5035a48a-5e2e-486c-8127-2fa650842e46";
-    private static final String PID_TITLE_PAGE = "uuid:12993b4a-71b4-4f19-8953-0701243cc25d";
-    private static final String PID_IMPORTED = "uuid:32993b4a-71b4-4f19-8953-0701243cc25d";
-
+public class RelsExtWriteTest {
     private static Properties testsProperties;
-    private static HazelcastConfiguration hazelcastConfig;
     private static ProcessingIndexSolr mockFeeder;
     private static AkubraRepository akubraRepository;
 
     @BeforeAll
     static void beforeAll() {
         testsProperties = TestUtilities.loadProperties();
-        hazelcastConfig = TestUtilities.createHazelcastConfig(testsProperties);
+        HazelcastConfiguration hazelcastConfig = TestUtilities.createHazelcastConfig(testsProperties);
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
         // configure akubraRepository
         mockFeeder = mock(ProcessingIndexSolr.class);
@@ -85,93 +77,6 @@ public class AkubraRepositoryWriteTest {
 
     @AfterEach
     void afterEach() {
-    }
-
-    @Test
-    void testIngest() throws IOException {
-        // prepare import document
-        DigitalObject digitalObjectImported = akubraRepository.getObject(PID_IMPORTED, FoxmlType.managed).asDigitalObject();
-        Assertions.assertNull(digitalObjectImported);
-        Path importFile = Path.of("src/test/resources/titlePageImport.xml");
-        InputStream inputStream = Files.newInputStream(importFile);
-        DigitalObject digitalObject = akubraRepository.unmarshallObject(inputStream);
-        // ingest document
-        reset(mockFeeder);
-        akubraRepository.ingest(digitalObject);
-        // test ingest result
-        digitalObjectImported = akubraRepository.getObject(PID_IMPORTED, FoxmlType.managed).asDigitalObject();
-        Assertions.assertNotNull(digitalObjectImported);
-        verify(mockFeeder, times(1)).rebuildProcessingIndex(any(), any());
-        verify(mockFeeder, times(1)).commit();
-    }
-
-    @Test
-    void testDeleteObject() {
-        DigitalObject repositoryObject = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed).asDigitalObject();
-        Assertions.assertNotNull(repositoryObject);
-        reset(mockFeeder);
-        akubraRepository.deleteObject(PID_TITLE_PAGE);
-        repositoryObject = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed).asDigitalObject();
-        Assertions.assertNull(repositoryObject);
-        verify(mockFeeder, times(1)).deleteByRelationsForPid(eq(PID_TITLE_PAGE));
-        verify(mockFeeder, times(1)).deleteByTargetPid(eq(PID_TITLE_PAGE));
-        verify(mockFeeder, times(1)).deleteDescriptionByPid(eq(PID_TITLE_PAGE));
-    }
-
-    @Test
-    void testCreateXMLDatastream() throws IOException {
-        boolean datastreamExists = akubraRepository.datastreamExists(PID_MONOGRAPH, "pepo");
-        Assertions.assertFalse(datastreamExists);
-
-        Path importFile = Path.of("src/test/resources/xmlStream.xml");
-        InputStream inputStream = Files.newInputStream(importFile);
-        akubraRepository.createXMLDatastream(PID_MONOGRAPH, "pepo", "text/xml", inputStream);
-        datastreamExists = akubraRepository.datastreamExists(PID_MONOGRAPH, "pepo");
-        Assertions.assertTrue(datastreamExists);
-
-        DigitalObject digitalObject = akubraRepository.getObject(PID_MONOGRAPH).asDigitalObject();
-        Document document = Dom4jUtils.streamToDocument(akubraRepository.marshallObject(digitalObject), true);
-        TestUtilities.debugPrint(document.asXML(),testsProperties);
-    }
-
-    @Test
-    void testCreateManagedDatastream() throws IOException {
-        boolean datastreamExists = akubraRepository.datastreamExists(PID_MONOGRAPH, "pepo");
-        Assertions.assertFalse(datastreamExists);
-
-        Path importFile = Path.of("src/test/resources/thumbnail.jpg");
-        InputStream inputStream = Files.newInputStream(importFile);
-        akubraRepository.createManagedDatastream(PID_MONOGRAPH, "pepo", "image/jpeg", inputStream);
-        datastreamExists = akubraRepository.datastreamExists(PID_MONOGRAPH, "pepo");
-        Assertions.assertTrue(datastreamExists);
-
-        DigitalObject digitalObject = akubraRepository.getObject(PID_MONOGRAPH).asDigitalObject();
-        Document document = Dom4jUtils.streamToDocument(akubraRepository.marshallObject(digitalObject), true);
-        TestUtilities.debugPrint(document.asXML(),testsProperties);
-    }
-
-    @Test
-    void testCreateRedirectedDatastream() {
-        boolean datastreamExists = akubraRepository.datastreamExists(PID_MONOGRAPH, "pepo");
-        Assertions.assertFalse(datastreamExists);
-
-        akubraRepository.createRedirectedDatastream(PID_MONOGRAPH, "pepo", "http://www.pepo.cz", "image/jpeg");
-        datastreamExists = akubraRepository.datastreamExists(PID_MONOGRAPH, "pepo");
-        Assertions.assertTrue(datastreamExists);
-
-        DigitalObject digitalObject = akubraRepository.getObject(PID_MONOGRAPH).asDigitalObject();
-        Document document = Dom4jUtils.streamToDocument(akubraRepository.marshallObject(digitalObject), true);
-        TestUtilities.debugPrint(document.asXML(),testsProperties);
-    }
-
-    @Test
-    void testDeleteDatastream() {
-        boolean datastreamExists = akubraRepository.datastreamExists(PID_MONOGRAPH, KnownDatastreams.RELS_EXT.toString());
-        Assertions.assertTrue(datastreamExists);
-
-        akubraRepository.deleteDatastream(PID_MONOGRAPH, KnownDatastreams.RELS_EXT.toString());
-        datastreamExists = akubraRepository.datastreamExists(PID_MONOGRAPH, KnownDatastreams.RELS_EXT.toString());
-        Assertions.assertFalse(datastreamExists);
     }
 
     @Test

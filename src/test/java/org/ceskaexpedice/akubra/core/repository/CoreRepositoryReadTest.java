@@ -34,12 +34,11 @@ import java.net.URL;
 import java.util.Properties;
 import java.util.concurrent.locks.Lock;
 
+import static org.ceskaexpedice.akubra.testutils.TestUtilities.PID_NOT_EXISTS;
+import static org.ceskaexpedice.akubra.testutils.TestUtilities.PID_TITLE_PAGE;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CoreRepositoryReadTest {
-    private static final String PID_TITLE_PAGE = "uuid:12993b4a-71b4-4f19-8953-0701243cc25d";
-    private static final String PID_NOT_EXISTS = "uuid:92993b4a-71b4-4f19-8953-0701243cc25d";
-
     private static CoreRepository coreRepository;
     private static Properties testsProperties;
 
@@ -96,7 +95,6 @@ public class CoreRepositoryReadTest {
         assertEquals(repositoryObject.getDigitalObject().getDatastream().size(), digitalObject.getDatastream().size());
     }
 
-
     @Test
     void testLocks_simple() {
         Lock readLock = null;
@@ -115,6 +113,5 @@ public class CoreRepositoryReadTest {
         ProcessingIndex processingIndex = coreRepository.getProcessingIndex();
         assertNotNull(processingIndex);
     }
-
 
 }
