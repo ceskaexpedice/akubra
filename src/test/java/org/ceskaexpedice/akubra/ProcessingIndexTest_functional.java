@@ -23,7 +23,7 @@ import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexQueryParameters;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexRelation;
 import org.ceskaexpedice.akubra.relsext.KnownRelations;
-import org.ceskaexpedice.akubra.testutils.TestUtilities;
+import org.ceskaexpedice.test.FunctionalTestsUtils;
 import org.ceskaexpedice.akubra.utils.ProcessingIndexUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -35,7 +35,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.ceskaexpedice.akubra.testutils.TestUtilities.*;
+import static org.ceskaexpedice.akubra.AkubraTestsUtils.PID_MONOGRAPH;
+import static org.ceskaexpedice.akubra.AkubraTestsUtils.PID_TITLE_PAGE;
+import static org.ceskaexpedice.test.FunctionalTestsUtils.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 // TODO make decision about Solr test instance and test data, mapping, etc
 /**
@@ -48,18 +50,18 @@ public class ProcessingIndexTest_functional {
 
     @BeforeAll
     static void beforeAll() {
-        testsProperties = TestUtilities.loadProperties();
-        HazelcastConfiguration hazelcastConfig = TestUtilities.createHazelcastConfig(testsProperties);
+        testsProperties = FunctionalTestsUtils.loadProperties();
+        HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
 
-        URL resource = TestUtilities.class.getClassLoader().getResource("data");
-        RepositoryConfiguration config = TestUtilities.createRepositoryConfig(resource.getFile(), testsProperties, hazelcastConfig);
+        URL resource = FunctionalTestsUtils.class.getClassLoader().getResource("data");
+        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(resource.getFile(), testsProperties, hazelcastConfig);
         akubraRepository = AkubraRepositoryFactory.createRepository(config);
     }
 
     @BeforeEach
     void beforeEach() {
-        TestUtilities.checkFunctionalTestsIgnored(testsProperties);
+        FunctionalTestsUtils.checkFunctionalTestsIgnored(testsProperties);
     }
 
     @AfterAll

@@ -21,7 +21,7 @@ import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
-import org.ceskaexpedice.akubra.testutils.TestUtilities;
+import org.ceskaexpedice.test.FunctionalTestsUtils;
 import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.dom4j.Document;
@@ -35,7 +35,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
-import static org.ceskaexpedice.akubra.testutils.TestUtilities.*;
+import static org.ceskaexpedice.akubra.AkubraTestsUtils.*;
+import static org.ceskaexpedice.test.FunctionalTestsUtils.*;
 import static org.mockito.Mockito.*;
 
 public class DatastreamWriteTest {
@@ -45,15 +46,15 @@ public class DatastreamWriteTest {
 
     @BeforeAll
     static void beforeAll() {
-        testsProperties = TestUtilities.loadProperties();
-        HazelcastConfiguration hazelcastConfig = TestUtilities.createHazelcastConfig(testsProperties);
+        testsProperties = FunctionalTestsUtils.loadProperties();
+        HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
         // configure akubraRepository
         mockFeeder = mock(ProcessingIndexSolr.class);
         try (MockedStatic<CoreRepositoryFactory> mockedStatic = mockStatic(CoreRepositoryFactory.class, Mockito.CALLS_REAL_METHODS)) {
             mockedStatic.when(() -> CoreRepositoryFactory.createProcessingIndexFeeder(any())).thenReturn(mockFeeder);
             mockedStatic.when(() -> CoreRepositoryFactory.createCacheManager()).thenReturn(null);
-            RepositoryConfiguration config = TestUtilities.createRepositoryConfig(TEST_OUTPUT_REPOSITORY.toFile().getAbsolutePath(), testsProperties, hazelcastConfig);
+            RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_OUTPUT_REPOSITORY.toFile().getAbsolutePath(), testsProperties, hazelcastConfig);
             akubraRepository = AkubraRepositoryFactory.createRepository(config);
         }
     }
@@ -90,7 +91,7 @@ public class DatastreamWriteTest {
 
         DigitalObject digitalObject = akubraRepository.getObject(PID_MONOGRAPH).asDigitalObject();
         Document document = Dom4jUtils.streamToDocument(akubraRepository.marshallObject(digitalObject), true);
-        TestUtilities.debugPrint(document.asXML(),testsProperties);
+        FunctionalTestsUtils.debugPrint(document.asXML(),testsProperties);
     }
 
     @Test
@@ -106,7 +107,7 @@ public class DatastreamWriteTest {
 
         DigitalObject digitalObject = akubraRepository.getObject(PID_MONOGRAPH).asDigitalObject();
         Document document = Dom4jUtils.streamToDocument(akubraRepository.marshallObject(digitalObject), true);
-        TestUtilities.debugPrint(document.asXML(),testsProperties);
+        FunctionalTestsUtils.debugPrint(document.asXML(),testsProperties);
     }
 
     @Test
@@ -120,7 +121,7 @@ public class DatastreamWriteTest {
 
         DigitalObject digitalObject = akubraRepository.getObject(PID_MONOGRAPH).asDigitalObject();
         Document document = Dom4jUtils.streamToDocument(akubraRepository.marshallObject(digitalObject), true);
-        TestUtilities.debugPrint(document.asXML(),testsProperties);
+        FunctionalTestsUtils.debugPrint(document.asXML(),testsProperties);
     }
 
     @Test

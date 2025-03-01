@@ -18,12 +18,15 @@ package org.ceskaexpedice.akubra;
 
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
-import org.ceskaexpedice.akubra.testutils.TestUtilities;
+import org.ceskaexpedice.test.ConcurrencyUtils;
+import org.ceskaexpedice.test.FunctionalTestsUtils;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.akubra.utils.StringUtils;
+import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.dom4j.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
@@ -31,8 +34,8 @@ import java.net.URL;
 import java.util.Date;
 import java.util.Properties;
 
-import static org.ceskaexpedice.akubra.testutils.TestUtilities.PID_MONOGRAPH;
-import static org.ceskaexpedice.akubra.testutils.TestUtilities.PID_TITLE_PAGE;
+import static org.ceskaexpedice.akubra.AkubraTestsUtils.PID_MONOGRAPH;
+import static org.ceskaexpedice.akubra.AkubraTestsUtils.PID_TITLE_PAGE;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DigitalObjectReadTest {
@@ -41,12 +44,12 @@ public class DigitalObjectReadTest {
 
     @BeforeAll
     static void beforeAll() {
-        testsProperties = TestUtilities.loadProperties();
-        HazelcastConfiguration hazelcastConfig = TestUtilities.createHazelcastConfig(testsProperties);
+        testsProperties = FunctionalTestsUtils.loadProperties();
+        HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
 
-        URL resource = TestUtilities.class.getClassLoader().getResource("data");
-        RepositoryConfiguration config = TestUtilities.createRepositoryConfig(resource.getFile(), testsProperties, hazelcastConfig);
+        URL resource = FunctionalTestsUtils.class.getClassLoader().getResource("data");
+        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(resource.getFile(), testsProperties, hazelcastConfig);
         akubraRepository = AkubraRepositoryFactory.createRepository(config);
     }
 
@@ -66,35 +69,35 @@ public class DigitalObjectReadTest {
     void testGetObject_asStream() {
         InputStream digitalObject = akubraRepository.getObject(PID_TITLE_PAGE).asInputStream();
         assertNotNull(digitalObject);
-        TestUtilities.debugPrint(StringUtils.streamToString(digitalObject), testsProperties);
+        FunctionalTestsUtils.debugPrint(StringUtils.streamToString(digitalObject), testsProperties);
     }
 
     @Test
     void testGetObject_asXmlDom4j() {
         Document asXmlDom4j = akubraRepository.getObject(PID_TITLE_PAGE).asDom4j(true);
         assertNotNull(asXmlDom4j);
-        TestUtilities.debugPrint(asXmlDom4j.asXML(), testsProperties);
+        FunctionalTestsUtils.debugPrint(asXmlDom4j.asXML(), testsProperties);
     }
 
     @Test
     void testGetObject_asXmlDom() {
         org.w3c.dom.Document asXmlDom = akubraRepository.getObject(PID_TITLE_PAGE).asDom(false);
         assertNotNull(asXmlDom);
-        TestUtilities.debugPrint(DomUtils.toString(asXmlDom.getDocumentElement(), true), testsProperties);
+        FunctionalTestsUtils.debugPrint(DomUtils.toString(asXmlDom.getDocumentElement(), true), testsProperties);
     }
 
     @Test
     void testGetObject_asString() {
         String asString = akubraRepository.getObject(PID_TITLE_PAGE).asString();
         assertNotNull(asString);
-        TestUtilities.debugPrint(asString, testsProperties);
+        FunctionalTestsUtils.debugPrint(asString, testsProperties);
     }
 
     @Test
     void testGetObjectArchive_asStream() {
         InputStream objectStream = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.archive).asInputStream();
         assertNotNull(objectStream);
-        TestUtilities.debugPrint(StringUtils.streamToString(objectStream), testsProperties);
+        FunctionalTestsUtils.debugPrint(StringUtils.streamToString(objectStream), testsProperties);
     }
 
     @Test
@@ -122,6 +125,28 @@ public class DigitalObjectReadTest {
             return result1;
         });
         assertTrue(result);
+    }
+
+    /**
+     * This test is by default dsisabled. Enable it if you want some multithreaded and performance testing
+     */
+    @Disabled
+    @Test
+    void testGetObjectConcurrent() {
+        long startTime = System.currentTimeMillis();
+        ConcurrencyUtils.runTask(1000, new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(Thread.currentThread().getName());
+                for (int i = 0; i < 1000; i++) {
+                    DigitalObject digitalObject = akubraRepository.getObject(PID_TITLE_PAGE).asDigitalObject();
+                    if(i%20 == 0){
+                        System.out.println(Thread.currentThread().getName() + ": " + i);
+                    }
+                }
+            }
+        });
+        System.out.println("Time taken: " + (System.currentTimeMillis() - startTime));
     }
 
 }

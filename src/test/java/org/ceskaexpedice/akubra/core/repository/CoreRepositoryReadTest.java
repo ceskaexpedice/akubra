@@ -16,6 +16,7 @@
  */
 package org.ceskaexpedice.akubra.core.repository;
 
+import org.ceskaexpedice.akubra.AkubraTestsUtils;
 import org.ceskaexpedice.akubra.KnownDatastreams;
 import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
@@ -23,7 +24,7 @@ import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
 import org.ceskaexpedice.akubra.HazelcastServerNode;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
-import org.ceskaexpedice.akubra.testutils.TestUtilities;
+import org.ceskaexpedice.test.FunctionalTestsUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -34,8 +35,8 @@ import java.net.URL;
 import java.util.Properties;
 import java.util.concurrent.locks.Lock;
 
-import static org.ceskaexpedice.akubra.testutils.TestUtilities.PID_NOT_EXISTS;
-import static org.ceskaexpedice.akubra.testutils.TestUtilities.PID_TITLE_PAGE;
+import static org.ceskaexpedice.akubra.AkubraTestsUtils.PID_NOT_EXISTS;
+import static org.ceskaexpedice.akubra.AkubraTestsUtils.PID_TITLE_PAGE;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CoreRepositoryReadTest {
@@ -44,12 +45,12 @@ public class CoreRepositoryReadTest {
 
     @BeforeAll
     static void beforeAll() {
-        testsProperties = TestUtilities.loadProperties();
-        HazelcastConfiguration hazelcastConfig = TestUtilities.createHazelcastConfig(testsProperties);
+        testsProperties = FunctionalTestsUtils.loadProperties();
+        HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
 
-        URL resource = TestUtilities.class.getClassLoader().getResource("data");
-        RepositoryConfiguration config = TestUtilities.createRepositoryConfig(resource.getFile(), testsProperties, hazelcastConfig);
+        URL resource = FunctionalTestsUtils.class.getClassLoader().getResource("data");
+        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(resource.getFile(), testsProperties, hazelcastConfig);
         coreRepository = CoreRepositoryFactory.createRepository(config);
     }
 

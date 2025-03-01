@@ -21,7 +21,7 @@ import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.relsext.RelsExtLiteral;
 import org.ceskaexpedice.akubra.relsext.RelsExtRelation;
 import org.ceskaexpedice.akubra.relsext.RelsExtWrapper;
-import org.ceskaexpedice.akubra.testutils.TestUtilities;
+import org.ceskaexpedice.test.FunctionalTestsUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 
-import static org.ceskaexpedice.akubra.testutils.TestUtilities.PID_MONOGRAPH;
+import static org.ceskaexpedice.akubra.AkubraTestsUtils.PID_MONOGRAPH;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RelsExtReadTest {
@@ -39,12 +39,12 @@ public class RelsExtReadTest {
 
     @BeforeAll
     static void beforeAll() {
-        testsProperties = TestUtilities.loadProperties();
-        HazelcastConfiguration hazelcastConfig = TestUtilities.createHazelcastConfig(testsProperties);
+        testsProperties = FunctionalTestsUtils.loadProperties();
+        HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
 
-        URL resource = TestUtilities.class.getClassLoader().getResource("data");
-        RepositoryConfiguration config = TestUtilities.createRepositoryConfig(resource.getFile(), testsProperties, hazelcastConfig);
+        URL resource = FunctionalTestsUtils.class.getClassLoader().getResource("data");
+        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(resource.getFile(), testsProperties, hazelcastConfig);
         akubraRepository = AkubraRepositoryFactory.createRepository(config);
     }
 

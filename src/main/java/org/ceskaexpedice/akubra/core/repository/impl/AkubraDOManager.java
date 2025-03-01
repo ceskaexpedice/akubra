@@ -64,7 +64,7 @@ import java.util.logging.Logger;
  */
 public class AkubraDOManager {
     private static final String DIGITALOBJECT_CACHE_ALIAS = "DigitalObjectCache";
-    private static final int UNMARSHALLER_POOL_CAPACITY = 50;
+    private static final int UNMARSHALLER_POOL_CAPACITY = 50; // TODO make it configurable
     private static final Logger LOGGER = Logger.getLogger(AkubraDOManager.class.getName());
 
     private RepositoryConfiguration configuration;
