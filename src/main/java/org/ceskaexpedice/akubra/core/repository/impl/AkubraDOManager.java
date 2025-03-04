@@ -205,6 +205,19 @@ public class AkubraDOManager {
         }
     }
 
+    byte[] retrieveObjectBytes(String objectKey) {
+       // Lock lock = getReadLock(objectKey);
+        try (InputStream io = storage.retrieveObject(objectKey)) {
+            return IOUtils.toByteArray(io);
+        } catch (ObjectNotInLowlevelStorageException e) {
+            return null;
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        } finally {
+         //   lock.unlock();
+        }
+    }
+
     void deleteObject(String pid, boolean includingManagedDatastreams) {
         Lock lock = getWriteLock(pid);
         try {
@@ -472,7 +485,7 @@ public class AkubraDOManager {
     }
 
     void shutdown() {
-        if(lockService != null) {
+        if (lockService != null) {
             lockService.shutdown();
         }
         hazelcastClientNode.shutdown();

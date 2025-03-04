@@ -62,7 +62,7 @@ public class CoreRepositoryReadTest {
 
     @Test
     void testObjectExists() {
-        boolean objectExists = coreRepository.objectExists(PID_TITLE_PAGE);
+        boolean objectExists = coreRepository.exists(PID_TITLE_PAGE);
         assertTrue(objectExists);
     }
 
@@ -70,17 +70,17 @@ public class CoreRepositoryReadTest {
     void testGetObject() {
         final RepositoryObject[] repositoryObject = {null};
         assertThrows(RepositoryException.class, () -> {
-            repositoryObject[0] = coreRepository.getObject("WrongPidFormat", true);
+            repositoryObject[0] = coreRepository.get("WrongPidFormat", true);
         });
-        repositoryObject[0] = coreRepository.getObject(PID_NOT_EXISTS, true);
+        repositoryObject[0] = coreRepository.get(PID_NOT_EXISTS, true);
         assertNull(repositoryObject[0]);
-        repositoryObject[0] = coreRepository.getObject(PID_TITLE_PAGE, true);
+        repositoryObject[0] = coreRepository.get(PID_TITLE_PAGE, true);
         assertNotNull(repositoryObject[0]);
     }
 
     @Test
     void testResolveArchivedDatastreams() {
-        RepositoryObject repositoryObject = coreRepository.getObject(PID_TITLE_PAGE);
+        RepositoryObject repositoryObject = coreRepository.get(PID_TITLE_PAGE);
         RepositoryDatastream thumbStream = repositoryObject.getStream(KnownDatastreams.IMG_THUMB.name());
         assertNull(thumbStream.getDatastream().getDatastreamVersion().get(0).getBinaryContent());
         coreRepository.resolveArchivedDatastreams(repositoryObject.getDigitalObject());
@@ -89,10 +89,10 @@ public class CoreRepositoryReadTest {
 
     @Test
     void testMarshalling() {
-        RepositoryObject repositoryObject = coreRepository.getObject(PID_TITLE_PAGE);
-        InputStream inputStream = coreRepository.marshallObject(repositoryObject.getDigitalObject());
+        RepositoryObject repositoryObject = coreRepository.get(PID_TITLE_PAGE);
+        InputStream inputStream = coreRepository.marshall(repositoryObject.getDigitalObject());
         assertNotNull(inputStream);
-        DigitalObject digitalObject = coreRepository.unmarshallObject(inputStream);
+        DigitalObject digitalObject = coreRepository.unmarshall(inputStream);
         assertEquals(repositoryObject.getDigitalObject().getDatastream().size(), digitalObject.getDatastream().size());
     }
 

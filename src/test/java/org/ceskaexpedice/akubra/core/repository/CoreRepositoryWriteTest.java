@@ -81,38 +81,38 @@ public class CoreRepositoryWriteTest {
     @Test
     void testIngest() throws IOException {
         // prepare import document
-        RepositoryObject digitalObjectImported = coreRepository.getObject(PID_IMPORTED);
+        RepositoryObject digitalObjectImported = coreRepository.get(PID_IMPORTED);
         Assertions.assertNull(digitalObjectImported);
         Path importFile = Path.of("src/test/resources/titlePageImport.xml");
         InputStream inputStream = Files.newInputStream(importFile);
-        DigitalObject digitalObject = coreRepository.unmarshallObject(inputStream);
+        DigitalObject digitalObject = coreRepository.unmarshall(inputStream);
         // ingest document
         reset(mockFeeder);
-        coreRepository.ingestObject(digitalObject);
+        coreRepository.ingest(digitalObject);
         // test ingest result
-        digitalObjectImported = coreRepository.getObject(PID_IMPORTED);
+        digitalObjectImported = coreRepository.get(PID_IMPORTED);
         Assertions.assertNotNull(digitalObjectImported);
         verify(mockFeeder, times(1)).rebuildProcessingIndex(any(), any());
     }
 
     @Test
     void testCreateOrGetObject() {
-        RepositoryObject repositoryObject = coreRepository.createOrGetObject(PID_MONOGRAPH);
+        RepositoryObject repositoryObject = coreRepository.createOrGet(PID_MONOGRAPH);
         Assertions.assertNotNull(repositoryObject);
-        repositoryObject = coreRepository.getObject(PID_IMPORTED);
+        repositoryObject = coreRepository.get(PID_IMPORTED);
         Assertions.assertNull(repositoryObject);
-        repositoryObject = coreRepository.createOrGetObject(PID_IMPORTED);
+        repositoryObject = coreRepository.createOrGet(PID_IMPORTED);
         Assertions.assertNotNull(repositoryObject);
         verify(mockFeeder, times(1)).deleteByPid(eq(PID_IMPORTED));
     }
 
     @Test
     void testDeleteObject() {
-        RepositoryObject repositoryObject = coreRepository.getObject(PID_TITLE_PAGE);
+        RepositoryObject repositoryObject = coreRepository.get(PID_TITLE_PAGE);
         Assertions.assertNotNull(repositoryObject);
         reset(mockFeeder);
-        coreRepository.deleteObject(PID_TITLE_PAGE);
-        repositoryObject = coreRepository.getObject(PID_TITLE_PAGE);
+        coreRepository.delete(PID_TITLE_PAGE);
+        repositoryObject = coreRepository.get(PID_TITLE_PAGE);
         Assertions.assertNull(repositoryObject);
         verify(mockFeeder, times(1)).deleteByRelationsForPid(eq(PID_TITLE_PAGE));
         verify(mockFeeder, times(1)).deleteByTargetPid(eq(PID_TITLE_PAGE));

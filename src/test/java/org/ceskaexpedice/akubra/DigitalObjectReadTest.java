@@ -16,6 +16,7 @@
  */
 package org.ceskaexpedice.akubra;
 
+import org.apache.commons.io.IOUtils;
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.test.ConcurrencyUtils;
@@ -24,15 +25,19 @@ import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.akubra.utils.StringUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.dom4j.Document;
+import org.fcrepo.server.errors.ObjectNotInLowlevelStorageException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import javax.xml.bind.Unmarshaller;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
 import java.util.Properties;
+import java.util.function.Function;
 
 import static org.ceskaexpedice.akubra.AkubraTestsUtils.PID_MONOGRAPH;
 import static org.ceskaexpedice.akubra.AkubraTestsUtils.PID_TITLE_PAGE;
@@ -60,55 +65,55 @@ public class DigitalObjectReadTest {
     }
 
     @Test
-    void testObjectExists() {
-        boolean objectExists = akubraRepository.objectExists(PID_TITLE_PAGE);
+    void testExists() {
+        boolean objectExists = akubraRepository.exists(PID_TITLE_PAGE);
         assertTrue(objectExists);
     }
 
     @Test
-    void testGetObject_asStream() {
-        InputStream digitalObject = akubraRepository.getObject(PID_TITLE_PAGE).asInputStream();
+    void testGet_asStream() {
+        InputStream digitalObject = akubraRepository.get(PID_TITLE_PAGE).asInputStream();
         assertNotNull(digitalObject);
         FunctionalTestsUtils.debugPrint(StringUtils.streamToString(digitalObject), testsProperties);
     }
 
     @Test
-    void testGetObject_asXmlDom4j() {
-        Document asXmlDom4j = akubraRepository.getObject(PID_TITLE_PAGE).asDom4j(true);
+    void testGet_asXmlDom4j() {
+        Document asXmlDom4j = akubraRepository.get(PID_TITLE_PAGE).asDom4j(true);
         assertNotNull(asXmlDom4j);
         FunctionalTestsUtils.debugPrint(asXmlDom4j.asXML(), testsProperties);
     }
 
     @Test
-    void testGetObject_asXmlDom() {
-        org.w3c.dom.Document asXmlDom = akubraRepository.getObject(PID_TITLE_PAGE).asDom(false);
+    void testGet_asXmlDom() {
+        org.w3c.dom.Document asXmlDom = akubraRepository.get(PID_TITLE_PAGE).asDom(false);
         assertNotNull(asXmlDom);
         FunctionalTestsUtils.debugPrint(DomUtils.toString(asXmlDom.getDocumentElement(), true), testsProperties);
     }
 
     @Test
-    void testGetObject_asString() {
-        String asString = akubraRepository.getObject(PID_TITLE_PAGE).asString();
+    void testGet_asString() {
+        String asString = akubraRepository.get(PID_TITLE_PAGE).asString();
         assertNotNull(asString);
         FunctionalTestsUtils.debugPrint(asString, testsProperties);
     }
 
     @Test
-    void testGetObjectArchive_asStream() {
-        InputStream objectStream = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.archive).asInputStream();
+    void testExport_asStream() {
+        InputStream objectStream = akubraRepository.export(PID_TITLE_PAGE).asInputStream();
         assertNotNull(objectStream);
         FunctionalTestsUtils.debugPrint(StringUtils.streamToString(objectStream), testsProperties);
     }
 
     @Test
-    void testGetObjectProperty() {
-        String propertyOwnerId = akubraRepository.getObjectProperties(PID_TITLE_PAGE).getProperty("info:fedora/fedora-system:def/model#ownerId");
+    void testGetProperty() {
+        String propertyOwnerId = akubraRepository.getProperties(PID_TITLE_PAGE).getProperty("info:fedora/fedora-system:def/model#ownerId");
         assertEquals("fedoraAdmin", propertyOwnerId);
-        Date propertyCreated = akubraRepository.getObjectProperties(PID_TITLE_PAGE).getPropertyCreated();
+        Date propertyCreated = akubraRepository.getProperties(PID_TITLE_PAGE).getPropertyCreated();
         assertNull(propertyCreated); // no milliseconds in test data
-        String propertyLabel = akubraRepository.getObjectProperties(PID_TITLE_PAGE).getPropertyLabel();
+        String propertyLabel = akubraRepository.getProperties(PID_TITLE_PAGE).getPropertyLabel();
         assertEquals("- none -", propertyLabel);
-        Date propertyLastModified = akubraRepository.getObjectProperties(PID_TITLE_PAGE).getPropertyLastModified();
+        Date propertyLastModified = akubraRepository.getProperties(PID_TITLE_PAGE).getPropertyLastModified();
         // TODO AK_NEW assertEquals("2024-05-20T13:03:27.151", propertyLastModified.toString());
     }
 
@@ -117,9 +122,9 @@ public class DigitalObjectReadTest {
         String pid = PID_MONOGRAPH;
         String pid1 = PID_TITLE_PAGE;
         Boolean result = akubraRepository.doWithWriteLock(pid, () -> {
-            akubraRepository.getObject(pid, FoxmlType.managed);
+            akubraRepository.get(pid);
             Boolean result1 = akubraRepository.doWithReadLock(pid1, () -> {
-                akubraRepository.getObject(pid1, FoxmlType.managed);
+                akubraRepository.get(pid1);
                 return true;
             });
             return result1;
@@ -132,20 +137,88 @@ public class DigitalObjectReadTest {
      */
     @Disabled
     @Test
-    void testGetObjectConcurrent() {
+    void testGetConcurrent() {
         long startTime = System.currentTimeMillis();
+
+        for (int i = 0; i < 100; i++) {
+            long start = System.currentTimeMillis();
+            DigitalObject digitalObject = akubraRepository.get(PID_TITLE_PAGE).asDigitalObject();
+            //if (i % 50 == 0) {
+                System.out.println(Thread.currentThread().getName() + ": " + i + ",Time: " + (System.currentTimeMillis() - start));
+            //}
+        }
+
+/*
+        ConcurrencyUtils.runTask(1, new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(Thread.currentThread().getName());
+                for (int i = 0; i < 5; i++) {
+                    long start = System.currentTimeMillis();
+                    DigitalObject digitalObject = akubraRepository.getObject(PID_TITLE_PAGE).asDigitalObject();
+                    if (i % 50 == 0) {
+                        System.out.println(Thread.currentThread().getName() + ": " + i + ",Time: " + (System.currentTimeMillis() - start));
+                    }
+                }
+            }
+        });
+
+ */
+        System.out.println("Time taken: " + (System.currentTimeMillis() - startTime));
+    }
+
+    @Disabled
+    @Test
+    void testGetConcurrent1() {
+        long startTime = System.currentTimeMillis();
+        /*
+        ConcurrencyUtils.runFactoryTasks(1000, new Function<Integer, ConcurrencyUtils.TestTask>() {
+            @Override
+            public ConcurrencyUtils.TestTask apply(Integer integer) {
+                return new ConcurrencyUtils.TestTask("" + integer) {
+                    @Override
+                    public void run() {
+                        super.run();
+                        System.out.println(Thread.currentThread().getName());
+                        for (int i = 0; i < 1000; i++) {
+                            byte[] bytes = akubraRepository.retrieveBytes(PID_TITLE_PAGE);
+                            if (i % 20 == 0) {
+                                System.out.println(Thread.currentThread().getName() + ": " + i + "," + bytes.length);
+                            }
+                        }
+                    }
+                };
+            }
+        });
+**/
+       // byte[] bytes = akubraRepository.retrieveBytes(PID_TITLE_PAGE);
+
+/*
+        for (int i = 0; i < 100; i++) {
+            long start = System.currentTimeMillis();
+            byte[] bytes = akubraRepository.retrieveBytes(PID_TITLE_PAGE);
+
+            //if (i % 50 == 0) {
+                System.out.println(Thread.currentThread().getName() + ": " + i + ",Time: " + (System.currentTimeMillis() - start));
+           // }
+        }
+
+ */
+
         ConcurrencyUtils.runTask(1000, new Runnable() {
             @Override
             public void run() {
                 System.out.println(Thread.currentThread().getName());
                 for (int i = 0; i < 1000; i++) {
-                    DigitalObject digitalObject = akubraRepository.getObject(PID_TITLE_PAGE).asDigitalObject();
-                    if(i%20 == 0){
-                        System.out.println(Thread.currentThread().getName() + ": " + i);
+                    long start = System.currentTimeMillis();
+                    byte[] bytes = akubraRepository.get(PID_TITLE_PAGE).asBytes();
+                    if (i % 50 == 0) {
+                        System.out.println(Thread.currentThread().getName() + ": " + i + ",Time: " + (System.currentTimeMillis() - start));
                     }
                 }
             }
         });
+
         System.out.println("Time taken: " + (System.currentTimeMillis() - startTime));
     }
 

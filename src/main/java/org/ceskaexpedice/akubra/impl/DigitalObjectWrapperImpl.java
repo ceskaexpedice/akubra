@@ -24,36 +24,42 @@ import org.ceskaexpedice.akubra.utils.StringUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.w3c.dom.Document;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 public class DigitalObjectWrapperImpl implements DigitalObjectWrapper {
     private AkubraRepository akubraRepository;
-    private DigitalObject digitalObject;
+    private byte[] digitalObjectBytes;
 
-    public DigitalObjectWrapperImpl(DigitalObject digitalObject, AkubraRepository akubraRepository) {
-        this.digitalObject = digitalObject;
+    public DigitalObjectWrapperImpl(byte[] digitalObjectBytes, AkubraRepository akubraRepository) {
+        this.digitalObjectBytes = digitalObjectBytes;
         this.akubraRepository = akubraRepository;
     }
 
     @Override
     public DigitalObject asDigitalObject() {
-        if(digitalObject == null) {
+        if(digitalObjectBytes == null || digitalObjectBytes.length == 0) {
             return null;
         }
-        return digitalObject;
+        return akubraRepository.unmarshall(new ByteArrayInputStream(digitalObjectBytes));
     }
 
     @Override
     public InputStream asInputStream() {
-        if(digitalObject == null) {
+        if(digitalObjectBytes == null || digitalObjectBytes.length == 0) {
             return null;
         }
-        return akubraRepository.marshallObject(digitalObject);
+        return new ByteArrayInputStream(digitalObjectBytes);
+    }
+
+    @Override
+    public byte[] asBytes() {
+        return digitalObjectBytes;
     }
 
     @Override
     public Document asDom(boolean nsAware) {
-        if(digitalObject == null) {
+        if(digitalObjectBytes == null || digitalObjectBytes.length == 0) {
             return null;
         }
         return DomUtils.streamToDocument(asInputStream(), nsAware);
@@ -61,7 +67,7 @@ public class DigitalObjectWrapperImpl implements DigitalObjectWrapper {
 
     @Override
     public org.dom4j.Document asDom4j(boolean nsAware) {
-        if(digitalObject == null) {
+        if(digitalObjectBytes == null || digitalObjectBytes.length == 0) {
             return null;
         }
         return Dom4jUtils.streamToDocument(asInputStream(), nsAware);
@@ -69,7 +75,7 @@ public class DigitalObjectWrapperImpl implements DigitalObjectWrapper {
 
     @Override
     public String asString() {
-        if(digitalObject == null) {
+        if(digitalObjectBytes == null || digitalObjectBytes.length == 0) {
             return null;
         }
         return StringUtils.streamToString(asInputStream());

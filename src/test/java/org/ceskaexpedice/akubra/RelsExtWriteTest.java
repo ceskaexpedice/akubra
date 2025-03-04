@@ -92,8 +92,8 @@ public class RelsExtWriteTest {
         relations = relsExtWrapper.getRelations(null);
         Assertions.assertEquals(2, relations.size());
 
-        DigitalObject digitalObject = akubraRepository.getObject(PID_TITLE_PAGE).asDigitalObject();
-        Document document = Dom4jUtils.streamToDocument(akubraRepository.marshallObject(digitalObject), true);
+        DigitalObject digitalObject = akubraRepository.get(PID_TITLE_PAGE).asDigitalObject();
+        Document document = Dom4jUtils.streamToDocument(akubraRepository.marshall(digitalObject), true);
         FunctionalTestsUtils.debugPrint(document.asXML(),testsProperties);
     }
 
@@ -122,8 +122,8 @@ public class RelsExtWriteTest {
         literals = relsExtWrapper.getLiterals(null);
         Assertions.assertEquals(5, literals.size());
 
-        DigitalObject digitalObject = akubraRepository.getObject(PID_TITLE_PAGE).asDigitalObject();
-        Document document = Dom4jUtils.streamToDocument(akubraRepository.marshallObject(digitalObject), true);
+        DigitalObject digitalObject = akubraRepository.get(PID_TITLE_PAGE).asDigitalObject();
+        Document document = Dom4jUtils.streamToDocument(akubraRepository.marshall(digitalObject), true);
         FunctionalTestsUtils.debugPrint(document.asXML(),testsProperties);
     }
 

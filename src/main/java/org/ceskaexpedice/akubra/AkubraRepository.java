@@ -43,7 +43,7 @@ public interface AkubraRepository {
      * @param pid The persistent identifier of the object.
      * @return {@code true} if the object exists, {@code false} otherwise.
      */
-    boolean objectExists(String pid);
+    boolean exists(String pid);
 
     /**
      * Ingests a new digital object into the repository.
@@ -58,16 +58,15 @@ public interface AkubraRepository {
      * @param pid The persistent identifier of the object.
      * @return The digital object, or {@code null} if not found.
      */
-    DigitalObjectWrapper getObject(String pid);
+    DigitalObjectWrapper get(String pid);
 
     /**
      * Retrieves a digital object in a specific FOXML format.
      *
      * @param pid       The persistent identifier of the object.
-     * @param foxmlType The FOXML type format.
      * @return The digital object in the specified format, or {@code null} if not found.
      */
-    DigitalObjectWrapper getObject(String pid, FoxmlType foxmlType);
+    DigitalObjectWrapper export(String pid);
 
     /**
      * Retrieves metadata properties of a digital object.
@@ -75,14 +74,14 @@ public interface AkubraRepository {
      * @param pid The persistent identifier of the object.
      * @return The object properties containing metadata.
      */
-    ObjectProperties getObjectProperties(String pid);
+    ObjectProperties getProperties(String pid);
 
     /**
      * Deletes a digital object from the repository.
      *
      * @param pid The persistent identifier of the object to delete.
      */
-    void deleteObject(String pid);
+    void delete(String pid);
 
     /**
      * Deletes an object from the repository with optional removal of related data.
@@ -91,7 +90,7 @@ public interface AkubraRepository {
      * @param deleteDataOfManagedDatastreams  If {@code true}, deletes associated managed datastreams.
      * @param deleteRelationsWithThisAsTarget If {@code true}, removes relations where this object is the target.
      */
-    void deleteObject(String pid, boolean deleteDataOfManagedDatastreams, boolean deleteRelationsWithThisAsTarget);
+    void delete(String pid, boolean deleteDataOfManagedDatastreams, boolean deleteRelationsWithThisAsTarget);
 
     /**
      * Marshalls a digital object into an XML representation.
@@ -99,7 +98,7 @@ public interface AkubraRepository {
      * @param obj The digital object to serialize.
      * @return An {@link InputStream} containing the serialized XML representation.
      */
-    InputStream marshallObject(DigitalObject obj);
+    InputStream marshall(DigitalObject obj);
 
     /**
      * Unmarshalls a digital object from an XML input stream.
@@ -107,7 +106,7 @@ public interface AkubraRepository {
      * @param inputStream The input stream containing the XML representation.
      * @return The deserialized digital object.
      */
-    DigitalObject unmarshallObject(InputStream inputStream);
+    DigitalObject unmarshall(InputStream inputStream);
 
     //-------------------- Datastream Management ---------------------------
 

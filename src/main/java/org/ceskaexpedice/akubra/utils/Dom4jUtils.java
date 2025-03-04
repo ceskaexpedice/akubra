@@ -300,7 +300,7 @@ public final class Dom4jUtils {
     }
 
     public static DigitalObject foxmlDocToDigitalObject(Document foxml, AkubraRepository akubraRepository) {
-        DigitalObject digitalObject = akubraRepository.unmarshallObject(new ByteArrayInputStream(foxml.asXML().getBytes(StandardCharsets.UTF_8)));
+        DigitalObject digitalObject = akubraRepository.unmarshall(new ByteArrayInputStream(foxml.asXML().getBytes(StandardCharsets.UTF_8)));
         return digitalObject;
     }
 

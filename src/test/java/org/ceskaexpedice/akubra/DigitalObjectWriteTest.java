@@ -79,28 +79,28 @@ public class DigitalObjectWriteTest {
     @Test
     void testIngest() throws IOException {
         // prepare import document
-        DigitalObject digitalObjectImported = akubraRepository.getObject(PID_IMPORTED).asDigitalObject();
+        DigitalObject digitalObjectImported = akubraRepository.get(PID_IMPORTED).asDigitalObject();
         Assertions.assertNull(digitalObjectImported);
         Path importFile = Path.of("src/test/resources/titlePageImport.xml");
         InputStream inputStream = Files.newInputStream(importFile);
-        DigitalObject digitalObject = akubraRepository.unmarshallObject(inputStream);
+        DigitalObject digitalObject = akubraRepository.unmarshall(inputStream);
         // ingest document
         reset(mockFeeder);
         akubraRepository.ingest(digitalObject);
         // test ingest result
-        digitalObjectImported = akubraRepository.getObject(PID_IMPORTED).asDigitalObject();
+        digitalObjectImported = akubraRepository.get(PID_IMPORTED).asDigitalObject();
         Assertions.assertNotNull(digitalObjectImported);
         verify(mockFeeder, times(1)).rebuildProcessingIndex(any(), any());
         verify(mockFeeder, times(1)).commit();
     }
 
     @Test
-    void testDeleteObject() {
-        DigitalObject repositoryObject = akubraRepository.getObject(PID_TITLE_PAGE).asDigitalObject();
+    void testDelete() {
+        DigitalObject repositoryObject = akubraRepository.get(PID_TITLE_PAGE).asDigitalObject();
         Assertions.assertNotNull(repositoryObject);
         reset(mockFeeder);
-        akubraRepository.deleteObject(PID_TITLE_PAGE);
-        repositoryObject = akubraRepository.getObject(PID_TITLE_PAGE, FoxmlType.managed).asDigitalObject();
+        akubraRepository.delete(PID_TITLE_PAGE);
+        repositoryObject = akubraRepository.get(PID_TITLE_PAGE).asDigitalObject();
         Assertions.assertNull(repositoryObject);
         verify(mockFeeder, times(1)).deleteByRelationsForPid(eq(PID_TITLE_PAGE));
         verify(mockFeeder, times(1)).deleteByTargetPid(eq(PID_TITLE_PAGE));

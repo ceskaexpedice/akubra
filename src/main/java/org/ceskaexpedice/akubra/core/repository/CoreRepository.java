@@ -36,7 +36,7 @@ public interface CoreRepository {
      * @param pid The unique identifier of the object.
      * @return true if the object exists and is a raw object, false otherwise.
      */
-    boolean objectExists(String pid);
+    boolean exists(String pid);
 
     /**
      * Ingests a new digital object into the repository from the provided object representation.
@@ -44,7 +44,7 @@ public interface CoreRepository {
      * @param digitalObject The digital object to be ingested.
      * @return The ingested RepositoryObject.
      */
-    RepositoryObject ingestObject(DigitalObject digitalObject);
+    RepositoryObject ingest(DigitalObject digitalObject);
 
     /**
      * Creates a new object or retrieves an existing one from the repository.
@@ -52,7 +52,7 @@ public interface CoreRepository {
      * @param pid The unique identifier of the object.
      * @return The RepositoryObject, either newly created or fetched from the repository.
      */
-    RepositoryObject createOrGetObject(String pid);
+    RepositoryObject createOrGet(String pid);
 
     /**
      * Retrieves an object from the repository.
@@ -60,7 +60,7 @@ public interface CoreRepository {
      * @param pid The unique identifier of the object.
      * @return The RepositoryObject corresponding to the given pid.
      */
-    RepositoryObject getObject(String pid);
+    RepositoryObject get(String pid);
 
     /**
      * Retrieves an object from the repository with the option to use cache.
@@ -69,7 +69,7 @@ public interface CoreRepository {
      * @param useCache If true, the cache will be used to fetch the object; otherwise, the repository is queried directly.
      * @return The RepositoryObject corresponding to the given pid.
      */
-    RepositoryObject getObject(String pid, boolean useCache);
+    RepositoryObject get(String pid, boolean useCache);
 
     /**
      * Resolves archived datastreams for the provided digital object.
@@ -84,7 +84,7 @@ public interface CoreRepository {
      * @param obj The digital object to be marshaled.
      * @return An InputStream representation of the digital object.
      */
-    InputStream marshallObject(DigitalObject obj);
+    InputStream marshall(DigitalObject obj);
 
     /**
      * Unmarshals an InputStream into a digital object.
@@ -92,14 +92,16 @@ public interface CoreRepository {
      * @param inputStream The InputStream to be unmarshaled.
      * @return The unmarshaled digital object.
      */
-    DigitalObject unmarshallObject(InputStream inputStream);
+    DigitalObject unmarshall(InputStream inputStream);
+
+    byte[] getBytes(String objectKey);
 
     /**
      * Deletes a digital object from the repository.
      *
      * @param pid The unique identifier of the object to be deleted.
      */
-    void deleteObject(String pid);
+    void delete(String pid);
 
     /**
      * Deletes a digital object from the repository, with options for handling related data and relations.
@@ -108,7 +110,7 @@ public interface CoreRepository {
      * @param deleteDataOfManagedDatastreams If true, the managed datastreams of the object will also be removed.
      * @param deleteRelationsWithThisAsTarget If true, relations where this object is the target will be removed from the resource index.
      */
-    void deleteObject(String pid, boolean deleteDataOfManagedDatastreams, boolean deleteRelationsWithThisAsTarget);
+    void delete(String pid, boolean deleteDataOfManagedDatastreams, boolean deleteRelationsWithThisAsTarget);
 
     /**
      * Retrieves a read lock for a digital object.

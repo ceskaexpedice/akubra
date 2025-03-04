@@ -48,17 +48,17 @@ public class CoreRepositoryImpl implements CoreRepository {
     }
 
     @Override
-    public boolean objectExists(String ident) {
+    public boolean exists(String ident) {
         return manager.readObjectFromStorage(ident) != null;
     }
 
     @Override
-    public RepositoryObject getObject(String ident) {
-        return getObject(ident, true);
+    public RepositoryObject get(String ident) {
+        return get(ident, false);
     }
 
     @Override
-    public RepositoryObject getObject(String ident, boolean useCache) {
+    public RepositoryObject get(String ident, boolean useCache) {
         DigitalObject digitalObject = this.manager.readObjectFromStorageOrCache(ident, useCache);
         if (digitalObject == null) {
             return null;
@@ -68,9 +68,9 @@ public class CoreRepositoryImpl implements CoreRepository {
     }
 
     @Override
-    public RepositoryObject createOrGetObject(String ident) {
-        if (objectExists(ident)) {
-            RepositoryObject obj = getObject(ident, true);
+    public RepositoryObject createOrGet(String ident) {
+        if (exists(ident)) {
+            RepositoryObject obj = get(ident, true);
             return obj;
         } else {
             DigitalObject emptyDigitalObject = createEmptyDigitalObject(ident);
@@ -86,8 +86,8 @@ public class CoreRepositoryImpl implements CoreRepository {
     }
 
     @Override
-    public RepositoryObject ingestObject(DigitalObject digitalObject) {
-        if (objectExists(digitalObject.getPID())) {
+    public RepositoryObject ingest(DigitalObject digitalObject) {
+        if (exists(digitalObject.getPID())) {
             throw new RepositoryException("Ingested object exists:" + digitalObject.getPID());
         } else {
             RepositoryObjectImpl obj = new RepositoryObjectImpl(digitalObject, this.manager, this.feeder);
@@ -99,7 +99,7 @@ public class CoreRepositoryImpl implements CoreRepository {
     }
 
     @Override
-    public void deleteObject(String pid, boolean deleteDataOfManagedDatastreams, boolean deleteRelationsWithThisAsTarget) {
+    public void delete(String pid, boolean deleteDataOfManagedDatastreams, boolean deleteRelationsWithThisAsTarget) {
         try {
             this.manager.deleteObject(pid, deleteDataOfManagedDatastreams);
             try {
@@ -127,8 +127,13 @@ public class CoreRepositoryImpl implements CoreRepository {
     }
 
     @Override
-    public void deleteObject(String pid) {
-        deleteObject(pid, true, true);
+    public byte[] getBytes(String objectKey) {
+        return this.manager.retrieveObjectBytes(objectKey);
+    }
+
+    @Override
+    public void delete(String pid) {
+        delete(pid, true, true);
     }
 
     @Override
@@ -142,12 +147,12 @@ public class CoreRepositoryImpl implements CoreRepository {
     }
 
     @Override
-    public InputStream marshallObject(DigitalObject obj) {
+    public InputStream marshall(DigitalObject obj) {
         return manager.marshallObject(obj);
     }
 
     @Override
-    public DigitalObject unmarshallObject(InputStream inputStream) {
+    public DigitalObject unmarshall(InputStream inputStream) {
         return manager.unmarshallObject(inputStream);
     }
 

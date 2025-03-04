@@ -89,8 +89,8 @@ public class DatastreamWriteTest {
         datastreamExists = akubraRepository.datastreamExists(PID_MONOGRAPH, "pepo");
         Assertions.assertTrue(datastreamExists);
 
-        DigitalObject digitalObject = akubraRepository.getObject(PID_MONOGRAPH).asDigitalObject();
-        Document document = Dom4jUtils.streamToDocument(akubraRepository.marshallObject(digitalObject), true);
+        DigitalObject digitalObject = akubraRepository.get(PID_MONOGRAPH).asDigitalObject();
+        Document document = Dom4jUtils.streamToDocument(akubraRepository.marshall(digitalObject), true);
         FunctionalTestsUtils.debugPrint(document.asXML(),testsProperties);
     }
 
@@ -105,8 +105,8 @@ public class DatastreamWriteTest {
         datastreamExists = akubraRepository.datastreamExists(PID_MONOGRAPH, "pepo");
         Assertions.assertTrue(datastreamExists);
 
-        DigitalObject digitalObject = akubraRepository.getObject(PID_MONOGRAPH).asDigitalObject();
-        Document document = Dom4jUtils.streamToDocument(akubraRepository.marshallObject(digitalObject), true);
+        DigitalObject digitalObject = akubraRepository.get(PID_MONOGRAPH).asDigitalObject();
+        Document document = Dom4jUtils.streamToDocument(akubraRepository.marshall(digitalObject), true);
         FunctionalTestsUtils.debugPrint(document.asXML(),testsProperties);
     }
 
@@ -119,8 +119,8 @@ public class DatastreamWriteTest {
         datastreamExists = akubraRepository.datastreamExists(PID_MONOGRAPH, "pepo");
         Assertions.assertTrue(datastreamExists);
 
-        DigitalObject digitalObject = akubraRepository.getObject(PID_MONOGRAPH).asDigitalObject();
-        Document document = Dom4jUtils.streamToDocument(akubraRepository.marshallObject(digitalObject), true);
+        DigitalObject digitalObject = akubraRepository.get(PID_MONOGRAPH).asDigitalObject();
+        Document document = Dom4jUtils.streamToDocument(akubraRepository.marshall(digitalObject), true);
         FunctionalTestsUtils.debugPrint(document.asXML(),testsProperties);
     }
 

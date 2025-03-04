@@ -53,6 +53,8 @@ public interface DigitalObjectWrapper {
      */
     InputStream asInputStream();
 
+    byte[] asBytes();
+
     /**
      * Returns the digital object's content as a W3C DOM {@link Document}.
      * <p>
