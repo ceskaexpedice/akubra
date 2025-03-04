@@ -47,14 +47,6 @@ public interface CoreRepository {
     RepositoryObject ingest(DigitalObject digitalObject);
 
     /**
-     * Creates a new object or retrieves an existing one from the repository.
-     *
-     * @param pid The unique identifier of the object.
-     * @return The RepositoryObject, either newly created or fetched from the repository.
-     */
-    RepositoryObject createOrGet(String pid);
-
-    /**
      * Retrieves an object from the repository.
      *
      * @param pid The unique identifier of the object.
@@ -63,13 +55,22 @@ public interface CoreRepository {
     RepositoryObject get(String pid);
 
     /**
-     * Retrieves an object from the repository with the option to use cache.
+     * Creates a new object or retrieves an existing one from the repository.
      *
      * @param pid The unique identifier of the object.
-     * @param useCache If true, the cache will be used to fetch the object; otherwise, the repository is queried directly.
-     * @return The RepositoryObject corresponding to the given pid.
+     * @return The RepositoryObject, either newly created or fetched from the repository.
      */
-    RepositoryObject get(String pid, boolean useCache);
+    RepositoryObject createOrGet(String pid);
+//
+//    // TODO AK_NEW
+//    /**
+//     * Retrieves an object from the repository with the option to use cache.
+//     *
+//     * @param pid The unique identifier of the object.
+//     * @param useCache If true, the cache will be used to fetch the object; otherwise, the repository is queried directly.
+//     * @return The RepositoryObject corresponding to the given pid.
+//     */
+//    RepositoryObject get(String pid, boolean useCache);
 
     /**
      * Resolves archived datastreams for the provided digital object.

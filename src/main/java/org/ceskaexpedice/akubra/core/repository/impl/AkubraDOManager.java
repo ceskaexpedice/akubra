@@ -74,7 +74,7 @@ public class AkubraDOManager {
     private ITopic<String> cacheInvalidator;
     private HazelcastClientNode hazelcastClientNode;
 
-    private Cache<String, DigitalObject> objectCache;
+    private Cache<String, byte[]> objectCache;
 
     private final BlockingQueue<Unmarshaller> unmarshallerPool = new LinkedBlockingQueue<>(UNMARSHALLER_POOL_CAPACITY);
     private Marshaller marshaller;
@@ -110,10 +110,10 @@ public class AkubraDOManager {
             this.configuration = configuration;
             this.storage = initLowLevelStorage();
             if (cacheManager != null) {
-                objectCache = cacheManager.getCache(DIGITALOBJECT_CACHE_ALIAS, String.class, DigitalObject.class);
+                objectCache = cacheManager.getCache(DIGITALOBJECT_CACHE_ALIAS, String.class, byte[].class);
                 if (objectCache == null) {
                     objectCache = cacheManager.createCache(DIGITALOBJECT_CACHE_ALIAS,
-                            CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, DigitalObject.class,
+                            CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, byte[].class,
                                             ResourcePoolsBuilder.heap(3000))
                                     .withExpiry(Expirations.timeToLiveExpiration(
                                             Duration.of(configuration.getCacheTimeToLiveExpiration(), TimeUnit.SECONDS))).build());
@@ -146,7 +146,7 @@ public class AkubraDOManager {
      * @return
      * @throws IOException
      */
-    DigitalObject readObjectFromStorage(String pid) {
+    private DigitalObject readObjectFromStorage(String pid) {
         return readObjectFromStorageOrCache(pid, true);
     }
 
@@ -158,12 +158,17 @@ public class AkubraDOManager {
      * @return
      * @throws IOException
      */
+    /* TODO AK_NEW
     DigitalObject readObjectCloneFromStorage(String pid) {
         return readObjectFromStorageOrCache(pid, false);
     }
 
+     */
+
     DigitalObject readObjectFromStorageOrCache(String pid, boolean useCache) {
-        DigitalObject retval = (useCache && objectCache != null) ? objectCache.get(pid) : null;
+        // TODO AK_NEW
+        //DigitalObject retval = (useCache && objectCache != null) ? objectCache.get(pid) : null;
+        DigitalObject retval = null;
         if (retval == null) {
             Object obj;
             Lock lock = getReadLock(pid);
@@ -180,7 +185,7 @@ public class AkubraDOManager {
             }
             retval = (DigitalObject) obj;
             if (useCache && objectCache != null) {
-                objectCache.put(pid, retval);
+                // TODO AK_NEW objectCache.put(pid, retval);
             }
         }
         return retval;
@@ -205,17 +210,26 @@ public class AkubraDOManager {
         }
     }
 
-    byte[] retrieveObjectBytes(String objectKey) {
-       // Lock lock = getReadLock(objectKey);
-        try (InputStream io = storage.retrieveObject(objectKey)) {
-            return IOUtils.toByteArray(io);
-        } catch (ObjectNotInLowlevelStorageException e) {
-            return null;
-        } catch (Exception e) {
-            throw new RepositoryException(e);
-        } finally {
-         //   lock.unlock();
+    byte[] retrieveObjectBytes(String pid, boolean useCache) {
+        byte[] retval = (useCache && objectCache != null) ? objectCache.get(pid) : null;
+        if (retval == null) {
+            Object obj;
+            // Lock lock = getReadLock(objectKey);
+            try (InputStream io = storage.retrieveObject(pid)) {
+                obj = IOUtils.toByteArray(io);
+            } catch (ObjectNotInLowlevelStorageException e) {
+                return null;
+            } catch (Exception e) {
+                throw new RepositoryException(e);
+            } finally {
+                //   lock.unlock();
+            }
+            retval = (byte[]) obj;
+            if (useCache && objectCache != null) {
+                objectCache.put(pid, retval);
+            }
         }
+        return retval;
     }
 
     void deleteObject(String pid, boolean includingManagedDatastreams) {
@@ -421,7 +435,6 @@ public class AkubraDOManager {
         for (DatastreamType datastreamType : object.getDatastream()) {
             resolveArchiveManagedStream(datastreamType);
         }
-
     }
 
     private void resolveArchiveManagedStream(DatastreamType datastream) {
@@ -489,5 +502,9 @@ public class AkubraDOManager {
             lockService.shutdown();
         }
         hazelcastClientNode.shutdown();
+    }
+
+    RepositoryConfiguration getConfiguration() {
+        return configuration;
     }
 }

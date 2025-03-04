@@ -16,19 +16,34 @@
  */
 package org.ceskaexpedice.akubra.core.repository.impl;
 
+import org.akubraproject.UnsupportedIdException;
+import org.akubraproject.map.IdMapper;
 import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
+import org.fcrepo.common.Constants;
+import org.fcrepo.common.FaultException;
+import org.fcrepo.common.PID;
+import org.fcrepo.server.errors.MalformedPidException;
+import org.fcrepo.server.storage.lowlevel.akubra.HashPathIdMapper;
 
+import java.io.File;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.createEmptyDigitalObject;
+import static org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.*;
 
 /**
  * CoreRepositoryImpl
@@ -37,6 +52,7 @@ import static org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.crea
 public class CoreRepositoryImpl implements CoreRepository {
 
     private static final Logger LOGGER = Logger.getLogger(CoreRepositoryImpl.class.getName());
+    private final IdMapper idMapper;
 
     private AkubraDOManager manager;
     private ProcessingIndexSolr feeder;
@@ -45,11 +61,23 @@ public class CoreRepositoryImpl implements CoreRepository {
         super();
         this.feeder = feeder;
         this.manager = manager;
+        idMapper = new HashPathIdMapper(manager.getConfiguration().getDatastreamStorePattern());
     }
 
     @Override
     public boolean exists(String ident) {
-        return manager.readObjectFromStorage(ident) != null;
+        try {
+            URI blobId = getBlobId(ident);
+            URI internalId = idMapper.getInternalId(blobId);
+            URI canonicalId = validateId(internalId);
+            File file = new File(manager.getConfiguration().getObjectStorePath(), canonicalId.getRawSchemeSpecificPart());
+            return file.exists();
+        } catch (UnsupportedIdException e) {
+            return false;
+        } catch (Exception e) {
+            LOGGER.warning("Exception while checking if object exists: " + e.getMessage());
+            return false;
+        }
     }
 
     @Override
@@ -57,8 +85,7 @@ public class CoreRepositoryImpl implements CoreRepository {
         return get(ident, false);
     }
 
-    @Override
-    public RepositoryObject get(String ident, boolean useCache) {
+    private RepositoryObject get(String ident, boolean useCache) {
         DigitalObject digitalObject = this.manager.readObjectFromStorageOrCache(ident, useCache);
         if (digitalObject == null) {
             return null;
@@ -128,7 +155,7 @@ public class CoreRepositoryImpl implements CoreRepository {
 
     @Override
     public byte[] getBytes(String objectKey) {
-        return this.manager.retrieveObjectBytes(objectKey);
+        return this.manager.retrieveObjectBytes(objectKey, false);
     }
 
     @Override

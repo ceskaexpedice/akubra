@@ -70,11 +70,11 @@ public class CoreRepositoryReadTest {
     void testGetObject() {
         final RepositoryObject[] repositoryObject = {null};
         assertThrows(RepositoryException.class, () -> {
-            repositoryObject[0] = coreRepository.get("WrongPidFormat", true);
+            repositoryObject[0] = coreRepository.get("WrongPidFormat");
         });
-        repositoryObject[0] = coreRepository.get(PID_NOT_EXISTS, true);
+        repositoryObject[0] = coreRepository.get(PID_NOT_EXISTS);
         assertNull(repositoryObject[0]);
-        repositoryObject[0] = coreRepository.get(PID_TITLE_PAGE, true);
+        repositoryObject[0] = coreRepository.get(PID_TITLE_PAGE);
         assertNotNull(repositoryObject[0]);
     }
 

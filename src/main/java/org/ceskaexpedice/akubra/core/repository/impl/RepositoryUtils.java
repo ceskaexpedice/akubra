@@ -16,6 +16,7 @@
  */
 package org.ceskaexpedice.akubra.core.repository.impl;
 
+import org.akubraproject.UnsupportedIdException;
 import org.akubraproject.map.IdMapper;
 import org.apache.commons.io.IOUtils;
 import org.ceskaexpedice.akubra.KnownDatastreams;
@@ -24,21 +25,18 @@ import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.akubra.utils.SafeSimpleDateFormat;
 import org.ceskaexpedice.fedoramodel.*;
+import org.fcrepo.common.Constants;
+import org.fcrepo.common.FaultException;
 import org.fcrepo.common.PID;
+import org.fcrepo.server.errors.MalformedPidException;
 import org.fcrepo.server.storage.lowlevel.akubra.HashPathIdMapper;
 import org.w3c.dom.Element;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.*;
+import java.net.*;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.Date;
@@ -46,7 +44,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 /**
  * RepositoryUtils
  */
@@ -226,4 +229,96 @@ public class RepositoryUtils {
         }
         return null;
     }
+
+    static URI validateId(URI blobId) throws UnsupportedIdException {
+        if (blobId == null) {
+            throw new NullPointerException("Id cannot be null");
+        } else if (!blobId.getScheme().equalsIgnoreCase("file")) {
+            throw new UnsupportedIdException(blobId, "Id must be in file scheme");
+        } else {
+            String path = blobId.getRawSchemeSpecificPart();
+            if (path.startsWith("/")) {
+                throw new UnsupportedIdException(blobId, "Id must specify a relative path");
+            } else {
+                try {
+                    URI tmp = new URI("file:/" + path);
+                    String nPath = tmp.normalize().getRawSchemeSpecificPart().substring(1);
+                    if (!nPath.equals("..") && !nPath.startsWith("../")) {
+                        if (nPath.endsWith("/")) {
+                            throw new UnsupportedIdException(blobId, "Id cannot specify a directory");
+                        } else {
+                            return new URI("file:" + nPath);
+                        }
+                    } else {
+                        throw new UnsupportedIdException(blobId, "Id cannot be outside top-level directory");
+                    }
+                } catch (URISyntaxException wontHappen) {
+                    throw new Error(wontHappen);
+                }
+            }
+        }
+    }
+
+    static URI getBlobId(String token) {
+        try {
+            int i = token.indexOf('+');
+            if (i == -1) {
+                return new URI(new PID(token).toURI());
+            } else {
+                String[] dsParts = token.substring(i + 1).split("\\+");
+                if (dsParts.length != 2) {
+                    throw new IllegalArgumentException(
+                            "Malformed datastream token: " + token);
+                }
+                return new URI(Constants.FEDORA.uri
+                        + token.substring(0, i) + "/"
+                        + uriEncode(dsParts[0]) + "/"
+                        + uriEncode(dsParts[1]));
+            }
+        } catch (MalformedPidException e) {
+            throw new IllegalArgumentException(
+                    "Malformed object token: " + token, e);
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(
+                    "Malformed object or datastream token: " + token, e);
+        }
+    }
+
+    private static String uriEncode(String s) {
+        try {
+            return URLEncoder.encode(s, "UTF-8");
+        } catch (UnsupportedEncodingException wontHappen) {
+            throw new FaultException(wontHappen);
+        }
+    }
+
+    public static boolean containsDatastream(InputStream foxml, String datastreamId) {
+        try {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser saxParser = factory.newSAXParser();
+            DatastreamHandler handler = new DatastreamHandler(datastreamId);
+            saxParser.parse(foxml, handler);
+        } catch (SAXException e) {
+            return "Found".equals(e.getMessage()); // Catches the forced stop
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
+        return false; // If parsing completes, datastream was not found
+    }
+
+    private static class DatastreamHandler extends DefaultHandler {
+        private final String targetId;
+
+        public DatastreamHandler(String targetId) {
+            this.targetId = targetId;
+        }
+
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+            if ("datastream".equals(qName) && targetId.equals(attributes.getValue("ID"))) {
+                throw new SAXException("Found"); // Stop parsing early
+            }
+        }
+    }
+
 }

@@ -34,10 +34,9 @@ import java.nio.file.Path;
 import java.util.Properties;
 
 import static org.ceskaexpedice.akubra.AkubraTestsUtils.*;
-import static org.ceskaexpedice.test.FunctionalTestsUtils.*;
 import static org.mockito.Mockito.*;
 
-public class DigitalObjectWriteTest {
+public class FoxmlWriteTest {
     private static Properties testsProperties;
     private static ProcessingIndexSolr mockFeeder;
     private static AkubraRepository akubraRepository;

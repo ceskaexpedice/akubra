@@ -21,6 +21,7 @@ import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
+import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
@@ -211,8 +212,13 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public boolean datastreamExists(String pid, String dsId) {
+        boolean exists = RepositoryUtils.containsDatastream(get(pid).asInputStream(), dsId);
+        return exists;
+        /*
         RepositoryObject repositoryObject = coreRepository.get(pid);
         return repositoryObject.streamExists(dsId);
+
+         */
     }
 
     @Override

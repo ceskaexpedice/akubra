@@ -16,34 +16,25 @@
  */
 package org.ceskaexpedice.akubra;
 
-import org.apache.commons.io.IOUtils;
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
-import org.ceskaexpedice.test.ConcurrencyUtils;
 import org.ceskaexpedice.test.FunctionalTestsUtils;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.akubra.utils.StringUtils;
-import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.dom4j.Document;
-import org.fcrepo.server.errors.ObjectNotInLowlevelStorageException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import javax.xml.bind.Unmarshaller;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
 import java.util.Properties;
-import java.util.function.Function;
 
-import static org.ceskaexpedice.akubra.AkubraTestsUtils.PID_MONOGRAPH;
-import static org.ceskaexpedice.akubra.AkubraTestsUtils.PID_TITLE_PAGE;
+import static org.ceskaexpedice.akubra.AkubraTestsUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DigitalObjectReadTest {
+public class FoxmlReadTest {
     private static AkubraRepository akubraRepository;
     private static Properties testsProperties;
 
@@ -68,6 +59,10 @@ public class DigitalObjectReadTest {
     void testExists() {
         boolean objectExists = akubraRepository.exists(PID_TITLE_PAGE);
         assertTrue(objectExists);
+        objectExists = akubraRepository.exists(PID_NOT_EXISTS);
+        assertFalse(objectExists);
+        objectExists = akubraRepository.exists("Wrong_PID_Format");
+        assertFalse(objectExists);
     }
 
     @Test
@@ -131,95 +126,4 @@ public class DigitalObjectReadTest {
         });
         assertTrue(result);
     }
-
-    /**
-     * This test is by default dsisabled. Enable it if you want some multithreaded and performance testing
-     */
-    @Disabled
-    @Test
-    void testGetConcurrent() {
-        long startTime = System.currentTimeMillis();
-
-        for (int i = 0; i < 100; i++) {
-            long start = System.currentTimeMillis();
-            DigitalObject digitalObject = akubraRepository.get(PID_TITLE_PAGE).asDigitalObject();
-            //if (i % 50 == 0) {
-                System.out.println(Thread.currentThread().getName() + ": " + i + ",Time: " + (System.currentTimeMillis() - start));
-            //}
-        }
-
-/*
-        ConcurrencyUtils.runTask(1, new Runnable() {
-            @Override
-            public void run() {
-                System.out.println(Thread.currentThread().getName());
-                for (int i = 0; i < 5; i++) {
-                    long start = System.currentTimeMillis();
-                    DigitalObject digitalObject = akubraRepository.getObject(PID_TITLE_PAGE).asDigitalObject();
-                    if (i % 50 == 0) {
-                        System.out.println(Thread.currentThread().getName() + ": " + i + ",Time: " + (System.currentTimeMillis() - start));
-                    }
-                }
-            }
-        });
-
- */
-        System.out.println("Time taken: " + (System.currentTimeMillis() - startTime));
-    }
-
-    @Disabled
-    @Test
-    void testGetConcurrent1() {
-        long startTime = System.currentTimeMillis();
-        /*
-        ConcurrencyUtils.runFactoryTasks(1000, new Function<Integer, ConcurrencyUtils.TestTask>() {
-            @Override
-            public ConcurrencyUtils.TestTask apply(Integer integer) {
-                return new ConcurrencyUtils.TestTask("" + integer) {
-                    @Override
-                    public void run() {
-                        super.run();
-                        System.out.println(Thread.currentThread().getName());
-                        for (int i = 0; i < 1000; i++) {
-                            byte[] bytes = akubraRepository.retrieveBytes(PID_TITLE_PAGE);
-                            if (i % 20 == 0) {
-                                System.out.println(Thread.currentThread().getName() + ": " + i + "," + bytes.length);
-                            }
-                        }
-                    }
-                };
-            }
-        });
-**/
-       // byte[] bytes = akubraRepository.retrieveBytes(PID_TITLE_PAGE);
-
-/*
-        for (int i = 0; i < 100; i++) {
-            long start = System.currentTimeMillis();
-            byte[] bytes = akubraRepository.retrieveBytes(PID_TITLE_PAGE);
-
-            //if (i % 50 == 0) {
-                System.out.println(Thread.currentThread().getName() + ": " + i + ",Time: " + (System.currentTimeMillis() - start));
-           // }
-        }
-
- */
-
-        ConcurrencyUtils.runTask(1000, new Runnable() {
-            @Override
-            public void run() {
-                System.out.println(Thread.currentThread().getName());
-                for (int i = 0; i < 1000; i++) {
-                    long start = System.currentTimeMillis();
-                    byte[] bytes = akubraRepository.get(PID_TITLE_PAGE).asBytes();
-                    if (i % 50 == 0) {
-                        System.out.println(Thread.currentThread().getName() + ": " + i + ",Time: " + (System.currentTimeMillis() - start));
-                    }
-                }
-            }
-        });
-
-        System.out.println("Time taken: " + (System.currentTimeMillis() - startTime));
-    }
-
 }
