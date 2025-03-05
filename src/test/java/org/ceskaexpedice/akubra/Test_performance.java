@@ -55,12 +55,15 @@ public class Test_performance {
 
     @Disabled
     @Test
-    void testGet_concurrency() {
+    void testGet() {
         long startTime = System.currentTimeMillis();
         ConcurrencyUtils.runTask(1000, () -> {
             System.out.println(Thread.currentThread().getName());
             for (int i = 0; i < 1000; i++) {
                 long start = System.currentTimeMillis();
+                // old: marshall + locks - 40 min, no locks - 17,5 min
+                DigitalObjectWrapper digitalObjectWrapper = akubraRepository.get(PID_TITLE_PAGE);
+                // new: bytes no locks:
                 //byte[] bytes = akubraRepository.get(PID_TITLE_PAGE).asBytes(); - 3,6 min
                 // DigitalObject digitalObject = akubraRepository.get(PID_TITLE_PAGE).asDigitalObject(); - 15,6 min
                 // Document dom = akubraRepository.get(PID_TITLE_PAGE).asDom(true); - 6,8 min
@@ -77,13 +80,35 @@ public class Test_performance {
 
     @Disabled
     @Test
-    void testExists_concurrency() {
+    void testExists() {
         long startTime = System.currentTimeMillis();
         ConcurrencyUtils.runTask(1000, () -> {
             System.out.println(Thread.currentThread().getName());
             for (int i = 0; i < 1000; i++) {
                 long start = System.currentTimeMillis();
                 boolean exists = akubraRepository.exists(PID_TITLE_PAGE);
+                // old: 16 min
+                // new: 1,4 min
+                if (i % 50 == 0) {
+                    System.out.println(Thread.currentThread().getName() + ": " + i + ",Time: " + (System.currentTimeMillis() - start));
+                }
+            }
+        });
+        System.out.println("Time taken: " + (System.currentTimeMillis() - startTime));
+    }
+
+    @Disabled
+    @Test
+    void testDatastreamExists() {
+        long startTime = System.currentTimeMillis();
+        ConcurrencyUtils.runTask(1000, () -> {
+            System.out.println(Thread.currentThread().getName());
+            for (int i = 0; i < 1000; i++) {
+                long start = System.currentTimeMillis();
+                boolean exists = akubraRepository.datastreamExists(PID_TITLE_PAGE, KnownDatastreams.IMG_FULL);
+                // new 6,3 min (bytes + sax)
+                // old 45,7 (marshall + DigitalObject test) + lock; 16,5 no locks
+                // TODO zamek pry nemusi byt ...
                 if (i % 50 == 0) {
                     System.out.println(Thread.currentThread().getName() + ": " + i + ",Time: " + (System.currentTimeMillis() - start));
                 }

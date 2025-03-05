@@ -68,7 +68,6 @@ dependencies {
         exclude group: 'com.google.guava', module: 'guava-primitives'
         exclude group: 'com.google.guava', module: 'guava-base'
     }
-    implementation 'org.ehcache:ehcache:3.3.0'
 
     //JAXB
     implementation "javax.xml.bind:jaxb-api:2.3.1"

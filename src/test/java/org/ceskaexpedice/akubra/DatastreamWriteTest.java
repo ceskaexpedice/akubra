@@ -53,7 +53,6 @@ public class DatastreamWriteTest {
         mockFeeder = mock(ProcessingIndexSolr.class);
         try (MockedStatic<CoreRepositoryFactory> mockedStatic = mockStatic(CoreRepositoryFactory.class, Mockito.CALLS_REAL_METHODS)) {
             mockedStatic.when(() -> CoreRepositoryFactory.createProcessingIndexFeeder(any())).thenReturn(mockFeeder);
-            mockedStatic.when(() -> CoreRepositoryFactory.createCacheManager()).thenReturn(null);
             RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_OUTPUT_REPOSITORY.toFile().getAbsolutePath(), testsProperties, hazelcastConfig);
             akubraRepository = AkubraRepositoryFactory.createRepository(config);
         }

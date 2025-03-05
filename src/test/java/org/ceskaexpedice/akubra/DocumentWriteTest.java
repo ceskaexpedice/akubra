@@ -36,7 +36,7 @@ import java.util.Properties;
 import static org.ceskaexpedice.akubra.AkubraTestsUtils.*;
 import static org.mockito.Mockito.*;
 
-public class FoxmlWriteTest {
+public class DocumentWriteTest {
     private static Properties testsProperties;
     private static ProcessingIndexSolr mockFeeder;
     private static AkubraRepository akubraRepository;
@@ -50,7 +50,6 @@ public class FoxmlWriteTest {
         mockFeeder = mock(ProcessingIndexSolr.class);
         try (MockedStatic<CoreRepositoryFactory> mockedStatic = mockStatic(CoreRepositoryFactory.class, Mockito.CALLS_REAL_METHODS)) {
             mockedStatic.when(() -> CoreRepositoryFactory.createProcessingIndexFeeder(any())).thenReturn(mockFeeder);
-            mockedStatic.when(() -> CoreRepositoryFactory.createCacheManager()).thenReturn(null);
             RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_OUTPUT_REPOSITORY.toFile().getAbsolutePath(), testsProperties, hazelcastConfig);
             akubraRepository = AkubraRepositoryFactory.createRepository(config);
         }
@@ -78,8 +77,7 @@ public class FoxmlWriteTest {
     @Test
     void testIngest() throws IOException {
         // prepare import document
-        DigitalObject digitalObjectImported = akubraRepository.get(PID_IMPORTED).asDigitalObject();
-        Assertions.assertNull(digitalObjectImported);
+        Assertions.assertNull(akubraRepository.get(PID_IMPORTED));
         Path importFile = Path.of("src/test/resources/titlePageImport.xml");
         InputStream inputStream = Files.newInputStream(importFile);
         DigitalObject digitalObject = akubraRepository.unmarshall(inputStream);
@@ -87,7 +85,7 @@ public class FoxmlWriteTest {
         reset(mockFeeder);
         akubraRepository.ingest(digitalObject);
         // test ingest result
-        digitalObjectImported = akubraRepository.get(PID_IMPORTED).asDigitalObject();
+        DigitalObject digitalObjectImported = akubraRepository.get(PID_IMPORTED).asDigitalObject();
         Assertions.assertNotNull(digitalObjectImported);
         verify(mockFeeder, times(1)).rebuildProcessingIndex(any(), any());
         verify(mockFeeder, times(1)).commit();
@@ -99,8 +97,7 @@ public class FoxmlWriteTest {
         Assertions.assertNotNull(repositoryObject);
         reset(mockFeeder);
         akubraRepository.delete(PID_TITLE_PAGE);
-        repositoryObject = akubraRepository.get(PID_TITLE_PAGE).asDigitalObject();
-        Assertions.assertNull(repositoryObject);
+        Assertions.assertNull(akubraRepository.get(PID_TITLE_PAGE));
         verify(mockFeeder, times(1)).deleteByRelationsForPid(eq(PID_TITLE_PAGE));
         verify(mockFeeder, times(1)).deleteByTargetPid(eq(PID_TITLE_PAGE));
         verify(mockFeeder, times(1)).deleteDescriptionByPid(eq(PID_TITLE_PAGE));

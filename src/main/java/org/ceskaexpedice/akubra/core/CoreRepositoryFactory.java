@@ -40,19 +40,13 @@ public final class CoreRepositoryFactory {
 
     public static CoreRepository createRepository(RepositoryConfiguration configuration) {
         ProcessingIndexSolr processingIndex = createProcessingIndexFeeder(configuration);
-        AkubraDOManager akubraDOManager = new AkubraDOManager(createCacheManager(), configuration);
+        AkubraDOManager akubraDOManager = new AkubraDOManager(configuration);
         return new CoreRepositoryImpl(processingIndex, akubraDOManager);
     }
 
     public static ProcessingIndexSolr createProcessingIndexFeeder(RepositoryConfiguration configuration) {
         ProcessingIndexSolr processingIndex = new ProcessingIndexSolr(createProcessingUpdateClient(configuration));
         return processingIndex;
-    }
-
-    public static CacheManager createCacheManager() {
-        CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder().build();
-        cacheManager.init();
-        return cacheManager;
     }
 
   /* TODO

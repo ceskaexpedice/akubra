@@ -52,7 +52,15 @@ public interface CoreRepository {
      * @param pid The unique identifier of the object.
      * @return The RepositoryObject corresponding to the given pid.
      */
-    RepositoryObject get(String pid);
+    RepositoryObject getAsRepositoryObject(String pid);
+
+    /**
+     * Retrieves an object bytes from the repository.
+     *
+     * @param pid The unique identifier of the object.
+     * @return The bytes corresponding to the given pid.
+     */
+    byte[] getAsBytes(String pid);
 
     /**
      * Creates a new object or retrieves an existing one from the repository.
@@ -94,8 +102,6 @@ public interface CoreRepository {
      * @return The unmarshaled digital object.
      */
     DigitalObject unmarshall(InputStream inputStream);
-
-    byte[] getBytes(String objectKey);
 
     /**
      * Deletes a digital object from the repository.

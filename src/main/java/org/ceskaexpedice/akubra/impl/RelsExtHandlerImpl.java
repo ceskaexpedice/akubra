@@ -38,7 +38,7 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
 
     @Override
     public RelsExtWrapper get(String pid) {
-        RepositoryObject repositoryObject = coreRepository.get(pid);
+        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
         if (repositoryObject == null) {
             return null;
         }
@@ -47,7 +47,7 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
 
     @Override
     public boolean relationExists(String pid, String relation, String namespace) {
-        RepositoryObject repositoryObject = coreRepository.get(pid);
+        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
         if (repositoryObject == null) {
             return false;
         }
@@ -56,7 +56,7 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
 
     @Override
     public void addRelation(String pid, String relation, String namespace, String targetRelation) {
-        RepositoryObject repositoryObject = coreRepository.get(pid);
+        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
         if (repositoryObject == null) {
             return;
         }
@@ -65,7 +65,7 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
 
     @Override
     public void removeRelation(String pid, String relation, String namespace, String targetRelation) {
-        RepositoryObject repositoryObject = coreRepository.get(pid);
+        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
         if (repositoryObject == null) {
             return;
         }
@@ -74,7 +74,7 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
 
     @Override
     public void removeRelationsByNameAndNamespace(String pid, String relation, String namespace) {
-        RepositoryObject repositoryObject = coreRepository.get(pid);
+        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
         if (repositoryObject == null) {
             return;
         }
@@ -83,7 +83,7 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
 
     @Override
     public void removeRelationsByNamespace(String pid, String namespace) {
-        RepositoryObject repositoryObject = coreRepository.get(pid);
+        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
         if (repositoryObject == null) {
             return;
         }
@@ -92,7 +92,7 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
 
     @Override
     public void addLiteral(String pid, String relation, String namespace, String value) {
-        RepositoryObject repositoryObject = coreRepository.get(pid);
+        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
         if (repositoryObject == null) {
             return;
         }
@@ -101,7 +101,7 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
 
     @Override
     public void removeLiteral(String pid, String relation, String namespace, String value) {
-        RepositoryObject repositoryObject = coreRepository.get(pid);
+        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
         if (repositoryObject == null) {
             return;
         }

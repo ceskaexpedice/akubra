@@ -38,17 +38,11 @@ public class DigitalObjectWrapperImpl implements DigitalObjectWrapper {
 
     @Override
     public DigitalObject asDigitalObject() {
-        if(digitalObjectBytes == null || digitalObjectBytes.length == 0) {
-            return null;
-        }
         return akubraRepository.unmarshall(new ByteArrayInputStream(digitalObjectBytes));
     }
 
     @Override
     public InputStream asInputStream() {
-        if(digitalObjectBytes == null || digitalObjectBytes.length == 0) {
-            return null;
-        }
         return new ByteArrayInputStream(digitalObjectBytes);
     }
 
@@ -59,25 +53,16 @@ public class DigitalObjectWrapperImpl implements DigitalObjectWrapper {
 
     @Override
     public Document asDom(boolean nsAware) {
-        if(digitalObjectBytes == null || digitalObjectBytes.length == 0) {
-            return null;
-        }
         return DomUtils.streamToDocument(asInputStream(), nsAware);
     }
 
     @Override
     public org.dom4j.Document asDom4j(boolean nsAware) {
-        if(digitalObjectBytes == null || digitalObjectBytes.length == 0) {
-            return null;
-        }
         return Dom4jUtils.streamToDocument(asInputStream(), nsAware);
     }
 
     @Override
     public String asString() {
-        if(digitalObjectBytes == null || digitalObjectBytes.length == 0) {
-            return null;
-        }
         return StringUtils.streamToString(asInputStream());
     }
 }

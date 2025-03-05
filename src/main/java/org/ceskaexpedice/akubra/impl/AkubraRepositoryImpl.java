@@ -62,14 +62,17 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public DigitalObjectWrapper get(String pid) {
-        byte[] objectBytes = coreRepository.getBytes(pid);
+        byte[] objectBytes = coreRepository.getAsBytes(pid);
+        if(objectBytes == null || objectBytes.length == 0) {
+            return null;
+        }
         return new DigitalObjectWrapperImpl(objectBytes, this);
     }
 
     @Override
     public DigitalObjectWrapper export(String pid) {
         // TODO AK_NEW make it more efficient
-        RepositoryObject repositoryObject = coreRepository.get(pid);
+        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
         if (repositoryObject == null) {
             return new DigitalObjectWrapperImpl(null, this);
         }
@@ -87,7 +90,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public ObjectProperties getProperties(String pid) {
-        RepositoryObject repositoryObject = coreRepository.get(pid);
+        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
         if (repositoryObject == null) {
             return null;
         }
@@ -116,7 +119,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public void createXMLDatastream(String pid, String dsId, String mimeType, InputStream xmlContent) {
-        RepositoryObject repositoryObject = coreRepository.get(pid);
+        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
         if (repositoryObject == null) {
             return;
         }
@@ -131,7 +134,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     @Override
     public void updateXMLDatastream(String pid, String dsId, String mimeType, InputStream binaryContent) {
         doWithWriteLock(pid, () -> {
-            RepositoryObject repositoryObject = coreRepository.get(pid);
+            RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
             if (repositoryObject == null) {
                 return null;
             }
@@ -148,7 +151,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public void createManagedDatastream(String pid, String dsId, String mimeType, InputStream binaryContent) {
-        RepositoryObject repositoryObject = coreRepository.get(pid);
+        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
         if (repositoryObject == null) {
             return;
         }
@@ -163,7 +166,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     @Override
     public void updateManagedDatastream(String pid, String dsId, String mimeType, InputStream binaryContent) {
         doWithWriteLock(pid, () -> {
-            RepositoryObject repositoryObject = coreRepository.get(pid);
+            RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
             if (repositoryObject == null) {
                 return null;
             }
@@ -180,7 +183,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public void createRedirectedDatastream(String pid, String dsId, String url, String mimeType) {
-        RepositoryObject repositoryObject = coreRepository.get(pid);
+        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
         if (repositoryObject == null) {
             return;
         }
@@ -195,7 +198,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     @Override
     public void updateRedirectedDatastream(String pid, String dsId, String url, String mimeType) {
         doWithWriteLock(pid, () -> {
-            RepositoryObject repositoryObject = coreRepository.get(pid);
+            RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
             if (repositoryObject == null) {
                 return null;
             }
@@ -212,13 +215,10 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public boolean datastreamExists(String pid, String dsId) {
-        boolean exists = RepositoryUtils.containsDatastream(get(pid).asInputStream(), dsId);
-        return exists;
-        /*
-        RepositoryObject repositoryObject = coreRepository.get(pid);
+        //boolean exists = RepositoryUtils.containsDatastream(get(pid).asInputStream(), dsId);
+        //return exists;
+        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
         return repositoryObject.streamExists(dsId);
-
-         */
     }
 
     @Override
@@ -228,7 +228,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public DatastreamMetadata getDatastreamMetadata(String pid, String dsId) {
-        RepositoryObject object = coreRepository.get(pid);
+        RepositoryObject object = coreRepository.getAsRepositoryObject(pid);
         RepositoryDatastream stream = object.getStream(dsId);
         return new DatastreamMetadataImpl(stream);
     }
@@ -240,7 +240,13 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public DatastreamContentWrapper getDatastreamContent(String pid, String dsId) {
-        RepositoryObject repositoryObject = coreRepository.get(pid);
+        DigitalObjectWrapper digitalObjectWrapper = get(pid);
+        if (digitalObjectWrapper == null) {
+            return null;
+        }
+
+
+        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
         if (repositoryObject == null || repositoryObject.getStream(dsId) == null) {
             return new DatastreamContentWrapperImpl(null);
         }
@@ -255,7 +261,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public void deleteDatastream(String pid, String dsId) {
-        RepositoryObject repositoryObject = coreRepository.get(pid);
+        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
         if (repositoryObject == null) {
             return;
         }
@@ -269,7 +275,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public List<String> getDatastreamNames(String pid) {
-        RepositoryObject object = coreRepository.get(pid);
+        RepositoryObject object = coreRepository.getAsRepositoryObject(pid);
         List<RepositoryDatastream> streams = object.getStreams();
         return streams.stream().map(it -> {
             try {

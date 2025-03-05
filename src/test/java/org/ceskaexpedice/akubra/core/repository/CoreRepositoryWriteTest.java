@@ -53,7 +53,6 @@ public class CoreRepositoryWriteTest {
         mockFeeder = mock(ProcessingIndexSolr.class);
         try (MockedStatic<CoreRepositoryFactory> mockedStatic = mockStatic(CoreRepositoryFactory.class, Mockito.CALLS_REAL_METHODS)) {
             mockedStatic.when(() -> CoreRepositoryFactory.createProcessingIndexFeeder(any())).thenReturn(mockFeeder);
-            mockedStatic.when(() -> CoreRepositoryFactory.createCacheManager()).thenReturn(null);
             RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_OUTPUT_REPOSITORY.toFile().getAbsolutePath(), testsProperties, hazelcastConfig);
             coreRepository = CoreRepositoryFactory.createRepository(config);
         }
@@ -81,7 +80,7 @@ public class CoreRepositoryWriteTest {
     @Test
     void testIngest() throws IOException {
         // prepare import document
-        RepositoryObject digitalObjectImported = coreRepository.get(PID_IMPORTED);
+        RepositoryObject digitalObjectImported = coreRepository.getAsRepositoryObject(PID_IMPORTED);
         Assertions.assertNull(digitalObjectImported);
         Path importFile = Path.of("src/test/resources/titlePageImport.xml");
         InputStream inputStream = Files.newInputStream(importFile);
@@ -90,7 +89,7 @@ public class CoreRepositoryWriteTest {
         reset(mockFeeder);
         coreRepository.ingest(digitalObject);
         // test ingest result
-        digitalObjectImported = coreRepository.get(PID_IMPORTED);
+        digitalObjectImported = coreRepository.getAsRepositoryObject(PID_IMPORTED);
         Assertions.assertNotNull(digitalObjectImported);
         verify(mockFeeder, times(1)).rebuildProcessingIndex(any(), any());
     }
@@ -99,7 +98,7 @@ public class CoreRepositoryWriteTest {
     void testCreateOrGetObject() {
         RepositoryObject repositoryObject = coreRepository.createOrGet(PID_MONOGRAPH);
         Assertions.assertNotNull(repositoryObject);
-        repositoryObject = coreRepository.get(PID_IMPORTED);
+        repositoryObject = coreRepository.getAsRepositoryObject(PID_IMPORTED);
         Assertions.assertNull(repositoryObject);
         repositoryObject = coreRepository.createOrGet(PID_IMPORTED);
         Assertions.assertNotNull(repositoryObject);
@@ -108,11 +107,11 @@ public class CoreRepositoryWriteTest {
 
     @Test
     void testDeleteObject() {
-        RepositoryObject repositoryObject = coreRepository.get(PID_TITLE_PAGE);
+        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(PID_TITLE_PAGE);
         Assertions.assertNotNull(repositoryObject);
         reset(mockFeeder);
         coreRepository.delete(PID_TITLE_PAGE);
-        repositoryObject = coreRepository.get(PID_TITLE_PAGE);
+        repositoryObject = coreRepository.getAsRepositoryObject(PID_TITLE_PAGE);
         Assertions.assertNull(repositoryObject);
         verify(mockFeeder, times(1)).deleteByRelationsForPid(eq(PID_TITLE_PAGE));
         verify(mockFeeder, times(1)).deleteByTargetPid(eq(PID_TITLE_PAGE));

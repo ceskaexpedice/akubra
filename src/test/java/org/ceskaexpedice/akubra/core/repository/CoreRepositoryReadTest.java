@@ -67,20 +67,20 @@ public class CoreRepositoryReadTest {
     }
 
     @Test
-    void testGetObject() {
+    void testGetAsRepositoryObject() {
         final RepositoryObject[] repositoryObject = {null};
         assertThrows(RepositoryException.class, () -> {
-            repositoryObject[0] = coreRepository.get("WrongPidFormat");
+            repositoryObject[0] = coreRepository.getAsRepositoryObject("WrongPidFormat");
         });
-        repositoryObject[0] = coreRepository.get(PID_NOT_EXISTS);
+        repositoryObject[0] = coreRepository.getAsRepositoryObject(PID_NOT_EXISTS);
         assertNull(repositoryObject[0]);
-        repositoryObject[0] = coreRepository.get(PID_TITLE_PAGE);
+        repositoryObject[0] = coreRepository.getAsRepositoryObject(PID_TITLE_PAGE);
         assertNotNull(repositoryObject[0]);
     }
 
     @Test
     void testResolveArchivedDatastreams() {
-        RepositoryObject repositoryObject = coreRepository.get(PID_TITLE_PAGE);
+        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(PID_TITLE_PAGE);
         RepositoryDatastream thumbStream = repositoryObject.getStream(KnownDatastreams.IMG_THUMB.name());
         assertNull(thumbStream.getDatastream().getDatastreamVersion().get(0).getBinaryContent());
         coreRepository.resolveArchivedDatastreams(repositoryObject.getDigitalObject());
@@ -89,7 +89,7 @@ public class CoreRepositoryReadTest {
 
     @Test
     void testMarshalling() {
-        RepositoryObject repositoryObject = coreRepository.get(PID_TITLE_PAGE);
+        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(PID_TITLE_PAGE);
         InputStream inputStream = coreRepository.marshall(repositoryObject.getDigitalObject());
         assertNotNull(inputStream);
         DigitalObject digitalObject = coreRepository.unmarshall(inputStream);

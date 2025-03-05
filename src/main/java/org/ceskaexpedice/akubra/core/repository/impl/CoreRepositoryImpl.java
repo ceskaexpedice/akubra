@@ -66,6 +66,7 @@ public class CoreRepositoryImpl implements CoreRepository {
 
     @Override
     public boolean exists(String ident) {
+        // TODO old return manager.readObjectFromStorage(ident) != null;
         try {
             URI blobId = getBlobId(ident);
             URI internalId = idMapper.getInternalId(blobId);
@@ -81,12 +82,8 @@ public class CoreRepositoryImpl implements CoreRepository {
     }
 
     @Override
-    public RepositoryObject get(String ident) {
-        return get(ident, false);
-    }
-
-    private RepositoryObject get(String ident, boolean useCache) {
-        DigitalObject digitalObject = this.manager.readObjectFromStorageOrCache(ident, useCache);
+    public RepositoryObject getAsRepositoryObject(String pid) {
+        DigitalObject digitalObject = this.manager.readObjectFromStorage(pid);
         if (digitalObject == null) {
             return null;
         }
@@ -95,9 +92,14 @@ public class CoreRepositoryImpl implements CoreRepository {
     }
 
     @Override
+    public byte[] getAsBytes(String pid) {
+        return this.manager.retrieveObjectBytes(pid);
+    }
+
+    @Override
     public RepositoryObject createOrGet(String ident) {
         if (exists(ident)) {
-            RepositoryObject obj = get(ident, true);
+            RepositoryObject obj = getAsRepositoryObject(ident);
             return obj;
         } else {
             DigitalObject emptyDigitalObject = createEmptyDigitalObject(ident);
@@ -151,11 +153,6 @@ public class CoreRepositoryImpl implements CoreRepository {
                 throw new RepositoryException(e);
             }
         }
-    }
-
-    @Override
-    public byte[] getBytes(String objectKey) {
-        return this.manager.retrieveObjectBytes(objectKey, false);
     }
 
     @Override

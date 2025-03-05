@@ -17,9 +17,6 @@
 package org.ceskaexpedice.akubra.core.repository.impl;
 
 import ca.thoughtwire.lock.DistributedLockService;
-import com.hazelcast.core.ITopic;
-import com.hazelcast.core.Message;
-import com.hazelcast.core.MessageListener;
 import org.akubraproject.BlobStore;
 import org.akubraproject.fs.FSBlobStore;
 import org.akubraproject.map.IdMapper;
@@ -29,12 +26,6 @@ import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.repository.HazelcastClientNode;
 import org.ceskaexpedice.fedoramodel.*;
-import org.ehcache.Cache;
-import org.ehcache.CacheManager;
-import org.ehcache.config.builders.CacheConfigurationBuilder;
-import org.ehcache.config.builders.ResourcePoolsBuilder;
-import org.ehcache.expiry.Duration;
-import org.ehcache.expiry.Expirations;
 import org.fcrepo.server.errors.LowlevelStorageException;
 import org.fcrepo.server.errors.ObjectAlreadyInLowlevelStorageException;
 import org.fcrepo.server.errors.ObjectNotInLowlevelStorageException;
@@ -47,13 +38,15 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.logging.Level;
@@ -63,7 +56,6 @@ import java.util.logging.Logger;
  * AkubraDOManager
  */
 public class AkubraDOManager {
-    private static final String DIGITALOBJECT_CACHE_ALIAS = "DigitalObjectCache";
     private static final int UNMARSHALLER_POOL_CAPACITY = 50; // TODO make it configurable
     private static final Logger LOGGER = Logger.getLogger(AkubraDOManager.class.getName());
 
@@ -71,13 +63,20 @@ public class AkubraDOManager {
     private ILowlevelStorage storage;
 
     private DistributedLockService lockService;
-    private ITopic<String> cacheInvalidator;
     private HazelcastClientNode hazelcastClientNode;
-
-    private Cache<String, byte[]> objectCache;
 
     private final BlockingQueue<Unmarshaller> unmarshallerPool = new LinkedBlockingQueue<>(UNMARSHALLER_POOL_CAPACITY);
     private Marshaller marshaller;
+
+    public AkubraDOManager(RepositoryConfiguration configuration) {
+        try {
+            this.initialize(configuration);
+            this.configuration = configuration;
+            this.storage = initLowLevelStorage();
+        } catch (Exception ex) {
+            throw new RepositoryException(ex);
+        }
+    }
 
     private void initialize(RepositoryConfiguration configuration) {
         try {
@@ -93,35 +92,6 @@ public class AkubraDOManager {
         hazelcastClientNode = new HazelcastClientNode();
         hazelcastClientNode.ensureHazelcastNode(configuration.getHazelcastConfiguration());
         lockService = DistributedLockService.newHazelcastLockService(hazelcastClientNode.getHzInstance());
-        cacheInvalidator = hazelcastClientNode.getHzInstance().getTopic("cacheInvalidator");
-        cacheInvalidator.addMessageListener(new MessageListener<String>() {
-            @Override
-            public void onMessage(Message<String> message) {
-                if (objectCache != null && message != null) {
-                    objectCache.remove(message.getMessageObject());
-                }
-            }
-        });
-    }
-
-    public AkubraDOManager(CacheManager cacheManager, RepositoryConfiguration configuration) {
-        try {
-            this.initialize(configuration);
-            this.configuration = configuration;
-            this.storage = initLowLevelStorage();
-            if (cacheManager != null) {
-                objectCache = cacheManager.getCache(DIGITALOBJECT_CACHE_ALIAS, String.class, byte[].class);
-                if (objectCache == null) {
-                    objectCache = cacheManager.createCache(DIGITALOBJECT_CACHE_ALIAS,
-                            CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, byte[].class,
-                                            ResourcePoolsBuilder.heap(3000))
-                                    .withExpiry(Expirations.timeToLiveExpiration(
-                                            Duration.of(configuration.getCacheTimeToLiveExpiration(), TimeUnit.SECONDS))).build());
-                }
-            }
-        } catch (Exception ex) {
-            throw new RepositoryException(ex);
-        }
     }
 
     private ILowlevelStorage initLowLevelStorage() throws Exception {
@@ -139,55 +109,23 @@ public class AkubraDOManager {
         return retval;
     }
 
-    /**
-     * Loads and unmarshalls DigitalObject from Akubra storage, using cache if possible
-     *
-     * @param pid
-     * @return
-     * @throws IOException
-     */
-    private DigitalObject readObjectFromStorage(String pid) {
-        return readObjectFromStorageOrCache(pid, true);
-    }
-
-    /**
-     * Loads and unmarshalls fresh copy of DigitalObject from Akubra storage, bypassing the cache
-     * Intended for use in FedoraAccess.getFoxml, which resolves internal managed datastreams to base64 binary content
-     *
-     * @param pid
-     * @return
-     * @throws IOException
-     */
-    /* TODO AK_NEW
-    DigitalObject readObjectCloneFromStorage(String pid) {
-        return readObjectFromStorageOrCache(pid, false);
-    }
-
-     */
-
-    DigitalObject readObjectFromStorageOrCache(String pid, boolean useCache) {
+    DigitalObject readObjectFromStorage(String pid) {
         // TODO AK_NEW
-        //DigitalObject retval = (useCache && objectCache != null) ? objectCache.get(pid) : null;
         DigitalObject retval = null;
-        if (retval == null) {
-            Object obj;
-            Lock lock = getReadLock(pid);
-            try (InputStream inputStream = this.storage.retrieveObject(pid);) {
-                Unmarshaller unmarshaller = unmarshallerPool.take();
-                obj = unmarshaller.unmarshal(inputStream);
-                unmarshallerPool.offer(unmarshaller);
-            } catch (ObjectNotInLowlevelStorageException ex) {
-                return null;
-            } catch (Exception e) {
-                throw new RepositoryException(e);
-            } finally {
-                lock.unlock();
-            }
-            retval = (DigitalObject) obj;
-            if (useCache && objectCache != null) {
-                // TODO AK_NEW objectCache.put(pid, retval);
-            }
+        Object obj;
+        //Lock lock = getReadLock(pid);
+        try (InputStream inputStream = this.storage.retrieveObject(pid);) {
+            Unmarshaller unmarshaller = unmarshallerPool.take();
+            obj = unmarshaller.unmarshal(inputStream);
+            unmarshallerPool.offer(unmarshaller);
+        } catch (ObjectNotInLowlevelStorageException ex) {
+            return null;
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        } finally {
+          //  lock.unlock();
         }
+        retval = (DigitalObject) obj;
         return retval;
     }
 
@@ -200,36 +138,27 @@ public class AkubraDOManager {
     }
 
     InputStream retrieveObject(String objectKey) {
-        Lock lock = getReadLock(objectKey);
+        //Lock lock = getReadLock(objectKey);
         try {
             return storage.retrieveObject(objectKey);
         } catch (LowlevelStorageException e) {
             throw new RepositoryException(e);
         } finally {
-            lock.unlock();
+          //  lock.unlock();
         }
     }
 
-    byte[] retrieveObjectBytes(String pid, boolean useCache) {
-        byte[] retval = (useCache && objectCache != null) ? objectCache.get(pid) : null;
-        if (retval == null) {
-            Object obj;
-            // Lock lock = getReadLock(objectKey);
-            try (InputStream io = storage.retrieveObject(pid)) {
-                obj = IOUtils.toByteArray(io);
-            } catch (ObjectNotInLowlevelStorageException e) {
-                return null;
-            } catch (Exception e) {
-                throw new RepositoryException(e);
-            } finally {
-                //   lock.unlock();
-            }
-            retval = (byte[]) obj;
-            if (useCache && objectCache != null) {
-                objectCache.put(pid, retval);
-            }
+    byte[] retrieveObjectBytes(String pid) {
+        // Lock lock = getReadLock(objectKey);
+        try (InputStream io = storage.retrieveObject(pid)) {
+            return IOUtils.toByteArray(io);
+        } catch (ObjectNotInLowlevelStorageException e) {
+            return null;
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        } finally {
+            //   lock.unlock();
         }
-        return retval;
     }
 
     void deleteObject(String pid, boolean includingManagedDatastreams) {
@@ -247,7 +176,6 @@ public class AkubraDOManager {
                 LOGGER.severe("Could not remove object from Akubra: " + e);
             }
         } finally {
-            invalidateCache(pid);
             lock.unlock();
         }
     }
@@ -278,7 +206,6 @@ public class AkubraDOManager {
                 LOGGER.severe("Could not replace object in Akubra: " + e + ", pid:'" + pid + "'");
             }
         } finally {
-            invalidateCache(pid);
             lock.unlock();
         }
     }
@@ -325,7 +252,6 @@ public class AkubraDOManager {
                 LOGGER.severe("Could not replace object in Akubra: " + e);
             }
         } finally {
-            invalidateCache(object.getPID());
             lock.unlock();
         }
     }
@@ -491,10 +417,6 @@ public class AkubraDOManager {
         ReadWriteLock lock = lockService.getReentrantReadWriteLock(pid);
         lock.readLock().lock();
         return lock.readLock();
-    }
-
-    private void invalidateCache(String pid) {
-        cacheInvalidator.publish(pid);
     }
 
     void shutdown() {

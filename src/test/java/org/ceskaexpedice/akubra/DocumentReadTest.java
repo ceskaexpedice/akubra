@@ -34,7 +34,7 @@ import java.util.Properties;
 import static org.ceskaexpedice.akubra.AkubraTestsUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class FoxmlReadTest {
+public class DocumentReadTest {
     private static AkubraRepository akubraRepository;
     private static Properties testsProperties;
 
