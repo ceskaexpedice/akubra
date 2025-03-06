@@ -45,7 +45,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     public AkubraRepositoryImpl(CoreRepository coreRepository) {
         this.coreRepository = coreRepository;
-        this.relsExtHandler = new RelsExtHandlerImpl(coreRepository);
+        this.relsExtHandler = new RelsExtHandlerImpl(this, coreRepository);
     }
 
 

@@ -16,6 +16,9 @@
  */
 package org.ceskaexpedice.akubra.relsext;
 
+import org.w3c.dom.Document;
+
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -23,6 +26,14 @@ import java.util.List;
  * This interface provides methods to retrieve collections of relations and literals for a given namespace.
  */
 public interface RelsExtWrapper {
+
+    InputStream asInputStream();
+
+    Document asDom(boolean nsAware);
+
+    org.dom4j.Document asDom4j(boolean nsAware);
+
+    String asString();
 
     /**
      * Retrieves a list of {@link RelsExtRelation} objects associated with the specified namespace.

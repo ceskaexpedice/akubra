@@ -17,11 +17,17 @@
 package org.ceskaexpedice.akubra.impl;
 
 import org.apache.commons.lang3.tuple.Triple;
-import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
+import org.ceskaexpedice.akubra.DatastreamContentWrapper;
 import org.ceskaexpedice.akubra.relsext.RelsExtLiteral;
 import org.ceskaexpedice.akubra.relsext.RelsExtRelation;
 import org.ceskaexpedice.akubra.relsext.RelsExtWrapper;
+import org.ceskaexpedice.akubra.utils.Dom4jUtils;
+import org.ceskaexpedice.akubra.utils.DomUtils;
+import org.ceskaexpedice.akubra.utils.RelsExtUtils;
+import org.ceskaexpedice.akubra.utils.StringUtils;
+import org.w3c.dom.Document;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,16 +36,40 @@ import java.util.List;
  */
 class RelsExtWrapperImpl implements RelsExtWrapper {
 
-    private final RepositoryObject repositoryObject;
+    private final DatastreamContentWrapper datastreamContentWrapper;
+    private Document domContent;
 
-    RelsExtWrapperImpl(RepositoryObject repositoryObject) {
-        this.repositoryObject = repositoryObject;
+    RelsExtWrapperImpl(DatastreamContentWrapper datastreamContentWrapper) {
+        this.datastreamContentWrapper = datastreamContentWrapper;
+    }
+
+    @Override
+    public InputStream asInputStream() {
+        return datastreamContentWrapper.asInputStream();
+    }
+
+    @Override
+    public Document asDom(boolean nsAware) {
+        if(domContent == null) {
+            domContent = DomUtils.streamToDocument(asInputStream(), nsAware);
+        }
+        return domContent;
+    }
+
+    @Override
+    public org.dom4j.Document asDom4j(boolean nsAware) {
+        return Dom4jUtils.streamToDocument(asInputStream(), nsAware);
+    }
+
+    @Override
+    public String asString() {
+        return StringUtils.streamToString(asInputStream());
     }
 
     @Override
     public List<RelsExtRelation> getRelations(String namespace) {
         List<RelsExtRelation> rels = new ArrayList<>();
-        List<Triple<String, String, String>> triples = repositoryObject.relsExtGetRelations(namespace);
+        List<Triple<String, String, String>> triples = RelsExtUtils.relsExtGetRelations(asDom(true), namespace);
         for (Triple<String, String, String> triple : triples) {
             RelsExtRelation relsExtRelation = new RelsExtRelation(triple.getLeft(), triple.getMiddle(), triple.getRight());
             rels.add(relsExtRelation);
@@ -50,7 +80,7 @@ class RelsExtWrapperImpl implements RelsExtWrapper {
     @Override
     public List<RelsExtLiteral> getLiterals(String namespace) {
         List<RelsExtLiteral> rels = new ArrayList<>();
-        List<Triple<String, String, String>> triples = repositoryObject.relsExtGetLiterals(namespace);
+        List<Triple<String, String, String>> triples = RelsExtUtils.relsExtGetLiterals(asDom(true), namespace);
         for (Triple<String, String, String> triple : triples) {
             RelsExtLiteral relsExtLiteral = new RelsExtLiteral(triple.getLeft(), triple.getMiddle(), triple.getRight());
             rels.add(relsExtLiteral);

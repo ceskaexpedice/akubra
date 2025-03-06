@@ -16,10 +16,14 @@
  */
 package org.ceskaexpedice.akubra.impl;
 
+import org.ceskaexpedice.akubra.AkubraRepository;
+import org.ceskaexpedice.akubra.DatastreamContentWrapper;
+import org.ceskaexpedice.akubra.KnownDatastreams;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
 import org.ceskaexpedice.akubra.relsext.RelsExtWrapper;
+import org.ceskaexpedice.akubra.utils.RelsExtUtils;
 
 import java.util.logging.Logger;
 
@@ -29,29 +33,24 @@ import java.util.logging.Logger;
 public class RelsExtHandlerImpl implements RelsExtHandler {
     private static final Logger LOGGER = Logger.getLogger(RelsExtHandlerImpl.class.getName());
 
+    private AkubraRepository akubraRepository;
     private CoreRepository coreRepository;
 
-    public RelsExtHandlerImpl(CoreRepository coreRepository) {
+    public RelsExtHandlerImpl(AkubraRepository akubraRepository, CoreRepository coreRepository) {
         this.coreRepository = coreRepository;
+        this.akubraRepository = akubraRepository;
     }
-
 
     @Override
     public RelsExtWrapper get(String pid) {
-        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
-        if (repositoryObject == null) {
-            return null;
-        }
-        return new RelsExtWrapperImpl(repositoryObject);
+        DatastreamContentWrapper datastreamContent = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
+        return new RelsExtWrapperImpl(datastreamContent);
     }
 
     @Override
     public boolean relationExists(String pid, String relation, String namespace) {
-        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
-        if (repositoryObject == null) {
-            return false;
-        }
-        return repositoryObject.relsExtRelationsExists(relation, namespace);
+        DatastreamContentWrapper datastreamContent = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
+        return RelsExtUtils.relsExtRelationsExists(datastreamContent.asDom(true), relation, namespace);
     }
 
     @Override

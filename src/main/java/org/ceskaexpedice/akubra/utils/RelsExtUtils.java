@@ -16,7 +16,9 @@
  */
 package org.ceskaexpedice.akubra.utils;
 
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.relsext.KnownRelations;
 import org.ceskaexpedice.akubra.utils.pid.LexerException;
@@ -24,10 +26,7 @@ import org.ceskaexpedice.akubra.utils.pid.PIDParser;
 import org.w3c.dom.*;
 
 import javax.xml.xpath.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -38,6 +37,8 @@ import java.util.stream.Collectors;
 public final class RelsExtUtils {
     public static final Logger LOGGER = Logger.getLogger(RelsExtUtils.class.getName());
     public static final String CACHE_RELS_EXT_LITERAL = "kramerius4://deepZoomCache";
+    private static final String RDF_DESCRIPTION_ELEMENT = "Description";
+    private static final String RDF_ELEMENT = "RDF";
 
     private RelsExtUtils() {
     }
@@ -425,6 +426,68 @@ public final class RelsExtUtils {
         }
 
         return foundPids.isEmpty() ? null : foundPids.get(0);
+    }
+
+    public static List<Triple<String, String, String>> relsExtGetRelations(Document metadata, String namespace) {
+        try {
+            List<Triple<String, String, String>> retvals = DomUtils.getElementsRecursive(metadata.getDocumentElement(), (element) -> {
+                String elmNamespace = element.getNamespaceURI();
+                if (namespace != null) {
+                    return namespace.equals(elmNamespace) && element.hasAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
+                } else {
+                    return element.hasAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
+                }
+            }).stream().map((elm) -> {
+                String resource = elm.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
+                if (resource.startsWith(PIDParser.INFO_FEDORA_PREFIX)) {
+                    resource = resource.substring(PIDParser.INFO_FEDORA_PREFIX.length());
+                }
+
+                Triple<String, String, String> triple = new ImmutableTriple<>(elm.getNamespaceURI(), elm.getLocalName(), resource);
+                return triple;
+            }).collect(Collectors.toList());
+            Collections.reverse(retvals);
+            return retvals;
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
+    }
+
+    public static List<Triple<String, String, String>> relsExtGetLiterals(Document metadata, String namespace) {
+        try {
+            List<Triple<String, String, String>> retvals = DomUtils.getElementsRecursive(metadata.getDocumentElement(), (element) -> {
+                String elmNamespace = element.getNamespaceURI();
+                if (namespace != null) {
+                    return namespace.equals(elmNamespace) && !element.hasAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource") && StringUtils.isAnyString(element.getTextContent());
+                } else {
+                    return !element.hasAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource") && StringUtils.isAnyString(element.getTextContent());
+                }
+            }).stream().filter((elm) -> {
+                return !elm.getLocalName().equals(RDF_ELEMENT) && !elm.getLocalName().equals(RDF_DESCRIPTION_ELEMENT);
+            }).map((elm) -> {
+                String content = elm.getTextContent();
+                Triple<String, String, String> triple = new ImmutableTriple<>(elm.getNamespaceURI(), elm.getLocalName(), content);
+                return triple;
+            }).collect(Collectors.toList());
+
+            Collections.reverse(retvals);
+            return retvals;
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
+    }
+
+    public static boolean relsExtRelationsExists(Document metadata, String relation, String namespace) {
+        try {
+            Element foundElement = DomUtils.findElement(metadata.getDocumentElement(), (element) -> {
+                String elmNamespace = element.getNamespaceURI();
+                String elmName = element.getLocalName();
+                return (elmName.equals(relation) && namespace.equals(elmNamespace));
+            });
+            return foundElement != null;
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
     }
 
 }
