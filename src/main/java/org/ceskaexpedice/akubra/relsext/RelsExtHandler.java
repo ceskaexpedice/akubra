@@ -17,12 +17,18 @@
 
 package org.ceskaexpedice.akubra.relsext;
 
+import java.io.InputStream;
+
 /**
  * Main repository access point for managing RELS EXT datastream relations.
  *
  * @author pavels, petrp
  */
 public interface RelsExtHandler {
+
+    boolean exists(String pid);
+
+    void update(String pid, InputStream binaryContent);
 
     /**
      * Checks if a relation exists for a given object.

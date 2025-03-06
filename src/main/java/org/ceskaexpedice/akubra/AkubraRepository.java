@@ -320,7 +320,7 @@ public interface AkubraRepository {
      *
      * @return A ProcessingIndex instance for processing index feeding and reading.
      */
-    ProcessingIndex getProcessingIndex();
+    ProcessingIndex pi();
 
     //-------------------- RelsExt -----------------------
 
@@ -329,7 +329,7 @@ public interface AkubraRepository {
      *
      * @return A RELS EXT handler.
      */
-    RelsExtHandler getRelsExtHandler();
+    RelsExtHandler re();
 
     //-------------------- Locks ---------------------------
 

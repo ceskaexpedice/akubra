@@ -25,6 +25,7 @@ import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
 import org.ceskaexpedice.akubra.relsext.RelsExtWrapper;
 import org.ceskaexpedice.akubra.utils.RelsExtUtils;
 
+import java.io.InputStream;
 import java.util.logging.Logger;
 
 /**
@@ -45,6 +46,16 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
     public RelsExtWrapper get(String pid) {
         DatastreamContentWrapper datastreamContent = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
         return new RelsExtWrapperImpl(datastreamContent);
+    }
+
+    @Override
+    public boolean exists(String pid) {
+        return akubraRepository.datastreamExists(pid, KnownDatastreams.RELS_EXT);
+    }
+
+    @Override
+    public void update(String pid, InputStream binaryContent) {
+        akubraRepository.updateXMLDatastream(pid, KnownDatastreams.RELS_EXT, "text/xml", binaryContent);
     }
 
     @Override

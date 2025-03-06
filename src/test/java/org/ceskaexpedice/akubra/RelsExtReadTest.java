@@ -56,7 +56,7 @@ public class RelsExtReadTest {
 
     @Test
     void testRelsExtGet() {
-        RelsExtWrapper relsExtWrapper = akubraRepository.getRelsExtHandler().get(PID_MONOGRAPH);
+        RelsExtWrapper relsExtWrapper = akubraRepository.re().get(PID_MONOGRAPH);
         assertNotNull(relsExtWrapper);
         List<RelsExtRelation> relations = relsExtWrapper.getRelations(null);
         assertEquals(37, relations.size());

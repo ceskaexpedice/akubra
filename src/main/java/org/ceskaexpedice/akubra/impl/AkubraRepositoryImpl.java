@@ -277,12 +277,12 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     }
 
     @Override
-    public ProcessingIndex getProcessingIndex() {
+    public ProcessingIndex pi() {
         return coreRepository.getProcessingIndex();
     }
 
     @Override
-    public RelsExtHandler getRelsExtHandler() {
+    public RelsExtHandler re() {
         return relsExtHandler;
     }
 

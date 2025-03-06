@@ -84,7 +84,7 @@ public class ProcessingIndexTest_functional {
                 .pageIndex(0)
                 .fieldsToFetch(List.of("source", "_version_"))
                 .build();
-        akubraRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
+        akubraRepository.pi().iterate(params, processingIndexItem -> {
             Object source = processingIndexItem.getFieldValue("source");
             assertNotNull(source);
             Optional<Long> version = processingIndexItem.getFieldValueAs("_version_", Long.class);
@@ -104,7 +104,7 @@ public class ProcessingIndexTest_functional {
                 .cursorMark(ProcessingIndex.CURSOR_MARK_START)
                 .fieldsToFetch(List.of("source", "_version_"))
                 .build();
-        akubraRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
+        akubraRepository.pi().iterate(params, processingIndexItem -> {
             Object source = processingIndexItem.getFieldValue("source");
             assertNotNull(source);
             Optional<Long> version = processingIndexItem.getFieldValueAs("_version_", Long.class);
