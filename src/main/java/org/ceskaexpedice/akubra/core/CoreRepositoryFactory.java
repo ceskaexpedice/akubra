@@ -23,8 +23,6 @@ import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.impl.AkubraDOManager;
 import org.ceskaexpedice.akubra.core.repository.impl.CoreRepositoryImpl;
-import org.ehcache.CacheManager;
-import org.ehcache.config.builders.CacheManagerBuilder;
 
 /**
  * Factory for creating instances of {@link CoreRepository}.

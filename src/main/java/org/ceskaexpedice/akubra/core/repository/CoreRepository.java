@@ -62,6 +62,8 @@ public interface CoreRepository {
      */
     byte[] getAsBytes(String pid);
 
+    InputStream retrieveDatastream(String dsKey);
+
     /**
      * Creates a new object or retrieves an existing one from the repository.
      *

@@ -24,21 +24,11 @@ import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
-import org.fcrepo.common.Constants;
-import org.fcrepo.common.FaultException;
-import org.fcrepo.common.PID;
-import org.fcrepo.server.errors.MalformedPidException;
 import org.fcrepo.server.storage.lowlevel.akubra.HashPathIdMapper;
 
 import java.io.File;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -94,6 +84,11 @@ public class CoreRepositoryImpl implements CoreRepository {
     @Override
     public byte[] getAsBytes(String pid) {
         return this.manager.retrieveObjectBytes(pid);
+    }
+
+    @Override
+    public InputStream retrieveDatastream(String dsKey) {
+        return this.manager.retrieveDatastream(dsKey);
     }
 
     @Override

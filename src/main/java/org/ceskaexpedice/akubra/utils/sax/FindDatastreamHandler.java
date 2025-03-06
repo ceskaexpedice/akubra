@@ -14,25 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.utils;
+package org.ceskaexpedice.akubra.utils.sax;
 
-import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
-import org.ceskaexpedice.fedoramodel.DatastreamVersionType;
-import org.ceskaexpedice.fedoramodel.DigitalObject;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
-import java.util.logging.Logger;
-// TODO To be removed
-/**
- * DigitalObjectUtils
- */
-public class DigitalObjectUtils {
-    private static final Logger LOGGER = Logger.getLogger(DigitalObjectUtils.class.getName());
+class FindDatastreamHandler extends DefaultHandler {
+    private final String dsId;
 
-    private DigitalObjectUtils() {
+    FindDatastreamHandler(String dsId) {
+        this.dsId = dsId;
     }
 
-    public static DatastreamVersionType getLastStreamVersion(DigitalObject object, String streamID) {
-        return RepositoryUtils.getLastStreamVersion(object, streamID);
+    @Override
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+        if ("datastream".equals(qName) && dsId.equals(attributes.getValue("ID"))) {
+            throw new SAXException("Found"); // Stop parsing early
+        }
     }
-
 }

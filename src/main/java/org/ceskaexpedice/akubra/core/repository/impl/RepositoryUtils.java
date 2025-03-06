@@ -44,19 +44,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 /**
  * RepositoryUtils
  */
 public class RepositoryUtils {
     private static final Logger LOGGER = Logger.getLogger(RepositoryUtils.class.getName());
     private static final SafeSimpleDateFormat DATE_FORMAT = new SafeSimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSS'Z'");
-    private static final String LOCAL_REF_PREFIX = "http://local.fedora.server/fedora/get/";
+    public static final String LOCAL_REF_PREFIX = "http://local.fedora.server/fedora/get/";
 
     private RepositoryUtils() {
     }
@@ -128,16 +123,20 @@ public class RepositoryUtils {
         }
     }
 
-    private static InputStream readFromURL(String url) throws IOException {
-        URL searchURL = new URL(url);
-        URLConnection conn = searchURL.openConnection();
-        conn.setUseCaches(true);
-        HttpURLConnection.setFollowRedirects(true);
-        conn.connect();
-        if ("gzip".equals(conn.getContentEncoding())) {
-            return new GZIPInputStream(conn.getInputStream());
-        } else {
-            return conn.getInputStream();
+    public static InputStream readFromURL(String url) {
+        try {
+            URL searchURL = new URL(url);
+            URLConnection conn = searchURL.openConnection();
+            conn.setUseCaches(true);
+            HttpURLConnection.setFollowRedirects(true);
+            conn.connect();
+            if ("gzip".equals(conn.getContentEncoding())) {
+                return new GZIPInputStream(conn.getInputStream());
+            } else {
+                return conn.getInputStream();
+            }
+        } catch (IOException e) {
+            throw new RepositoryException(e);
         }
     }
 
@@ -289,35 +288,6 @@ public class RepositoryUtils {
             return URLEncoder.encode(s, "UTF-8");
         } catch (UnsupportedEncodingException wontHappen) {
             throw new FaultException(wontHappen);
-        }
-    }
-
-    public static boolean containsDatastream(InputStream foxml, String datastreamId) {
-        try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
-            DatastreamHandler handler = new DatastreamHandler(datastreamId);
-            saxParser.parse(foxml, handler);
-        } catch (SAXException e) {
-            return "Found".equals(e.getMessage()); // Catches the forced stop
-        } catch (Exception e) {
-            throw new RepositoryException(e);
-        }
-        return false; // If parsing completes, datastream was not found
-    }
-
-    private static class DatastreamHandler extends DefaultHandler {
-        private final String targetId;
-
-        public DatastreamHandler(String targetId) {
-            this.targetId = targetId;
-        }
-
-        @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-            if ("datastream".equals(qName) && targetId.equals(attributes.getValue("ID"))) {
-                throw new SAXException("Found"); // Stop parsing early
-            }
         }
     }
 

@@ -21,9 +21,9 @@ import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
-import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
+import org.ceskaexpedice.akubra.utils.sax.SaxUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 
 import java.io.IOException;
@@ -215,10 +215,8 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public boolean datastreamExists(String pid, String dsId) {
-        //boolean exists = RepositoryUtils.containsDatastream(get(pid).asInputStream(), dsId);
-        //return exists;
-        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
-        return repositoryObject.streamExists(dsId);
+        boolean exists = SaxUtils.containsDatastream(get(pid).asInputStream(), dsId);
+        return exists;
     }
 
     @Override
@@ -240,18 +238,9 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public DatastreamContentWrapper getDatastreamContent(String pid, String dsId) {
-        DigitalObjectWrapper digitalObjectWrapper = get(pid);
-        if (digitalObjectWrapper == null) {
-            return null;
-        }
-
-
-        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
-        if (repositoryObject == null || repositoryObject.getStream(dsId) == null) {
-            return new DatastreamContentWrapperImpl(null);
-        }
-        InputStream lastVersionContent = repositoryObject.getStream(dsId).getLastVersionContent();
-        return new DatastreamContentWrapperImpl(lastVersionContent);
+        // TODO check exists
+        InputStream streamContent = SaxUtils.getStreamContent(get(pid).asInputStream(), dsId, coreRepository);
+        return new DatastreamContentWrapperImpl(streamContent);
     }
 
     @Override
