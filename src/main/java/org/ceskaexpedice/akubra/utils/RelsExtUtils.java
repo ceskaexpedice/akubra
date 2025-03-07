@@ -26,6 +26,7 @@ import org.ceskaexpedice.akubra.utils.pid.PIDParser;
 import org.w3c.dom.*;
 
 import javax.xml.xpath.*;
+import java.io.InputStream;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -56,8 +57,8 @@ public final class RelsExtUtils {
         } else return null;
     }
 
-    public static String getModel(Document doc) {
-        return getModel(doc.getDocumentElement());
+    public static String getModel(InputStream doc) {
+        return getModel(DomUtils.streamToDocument(doc).getDocumentElement());
     }
 
     /** Get model
@@ -79,9 +80,10 @@ public final class RelsExtUtils {
         }
     }
 
-    public static String getFirstVolumePid(Document relsExt) {
+    public static String getFirstVolumePid(InputStream relsExt) {
         try {
-            Element foundElement = DomUtils.findElement(relsExt.getDocumentElement(), "hasVolume", RepositoryNamespaces.KRAMERIUS_URI);
+            Document document = DomUtils.streamToDocument(relsExt);
+            Element foundElement = DomUtils.findElement(document.getDocumentElement(), "hasVolume", RepositoryNamespaces.KRAMERIUS_URI);
             if (foundElement != null) {
                 String sform = foundElement.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
                 PIDParser pidParser = new PIDParser(sform);
@@ -97,9 +99,10 @@ public final class RelsExtUtils {
         }
     }
 
-    public static String getFirstItemPid(Document relsExt) {
+    public static String getFirstItemPid(InputStream relsExt) {
         try {
-            Element foundElement = DomUtils.findElement(relsExt.getDocumentElement(), "hasItem", RepositoryNamespaces.KRAMERIUS_URI);
+            Document document = DomUtils.streamToDocument(relsExt);
+            Element foundElement = DomUtils.findElement(document.getDocumentElement(), "hasItem", RepositoryNamespaces.KRAMERIUS_URI);
             if (foundElement != null) {
                 String sform = foundElement.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
                 PIDParser pidParser = new PIDParser(sform);
@@ -119,22 +122,6 @@ public final class RelsExtUtils {
         return foundElement;
     }
 
-    /** Returns replicatedFrom url from given  RELS-EXT element */
-    private static String getReplicatedFromUrl(Document relsExt) {
-        try {
-            XPathFactory xpfactory = XPathFactory.newInstance();
-            XPath xpath = xpfactory.newXPath();
-            xpath.setNamespaceContext(new RepositoryNamespaceContext());
-            XPathExpression expr = xpath.compile("//kramerius:replicatedFrom/text()");
-            Object tiles = expr.evaluate(relsExt, XPathConstants.NODE);
-            if (tiles != null) return ((Text) tiles).getData();
-            else return null;
-        } catch (XPathExpressionException e) {
-            throw new RepositoryException(e);
-        }
-    }
-
-    /** Returns tiles url  from given RELS-EXT element */
     public static String getRelsExtTilesUrl(Document document) {
         try {
             XPathFactory xpfactory = XPathFactory.newInstance();
@@ -150,32 +137,10 @@ public final class RelsExtUtils {
             throw new RepositoryException(e);
         }
     }
-
-    /** Returns donator label  from given RELS-EXT element */
-    public static String getDonator(Document document) {
-        try {
-            XPathFactory xpfactory = XPathFactory.newInstance();
-            XPath xpath = xpfactory.newXPath();
-            xpath.setNamespaceContext(new RepositoryNamespaceContext());
-            XPathExpression expr = xpath.compile("//kramerius:hasDonator");
-            Object donator = expr.evaluate(document.getDocumentElement(), XPathConstants.NODE);
-            if (donator != null) {
-                Element elm = (Element) donator;
-                Attr ref = elm.getAttributeNodeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
-                if (ref != null) {
-                    try {
-                        PIDParser pidParser = new PIDParser(ref.getValue());
-                        pidParser.disseminationURI();
-                        return pidParser.getObjectPid();
-                    } catch (LexerException e) {
-                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                        return null;
-                    }
-                } else return null;
-            } else return null;
-        } catch (XPathExpressionException e) {
-            throw new RepositoryException(e);
-        }
+        /** Returns tiles url  from given RELS-EXT element */
+    public static String getRelsExtTilesUrl(InputStream documentStream) {
+        Document document = DomUtils.streamToDocument(documentStream);
+        return getRelsExtTilesUrl(document);
     }
 
     public static List<String> getLicenses(Document document) {
@@ -202,7 +167,8 @@ public final class RelsExtUtils {
         return collect;
     }
 
-    public static List<Pair<String, String>> getRelations(Document document) {
+    public static List<Pair<String, String>> getRelations(InputStream documentS) {
+        Document document = DomUtils.streamToDocument(documentS);
         List<Pair<String, String>> pairs = new ArrayList<>();
         List<String> names = Arrays.stream(KnownRelations.values()).map(KnownRelations::toString).collect(Collectors.toList());
         List<Element> elms = DomUtils.getElementsRecursive(document.getDocumentElement(), new DomUtils.ElementsFilter() {

@@ -34,6 +34,7 @@ import java.util.List;
 /**
  * RelsExtWrapperImpl
  */
+// TODO AK_NEW consider rewriting all input stream methods to SAX
 class RelsExtWrapperImpl implements RelsExtWrapper {
 
     private final DatastreamContentWrapper datastreamContentWrapper;
