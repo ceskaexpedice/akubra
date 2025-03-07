@@ -45,9 +45,8 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     public AkubraRepositoryImpl(CoreRepository coreRepository) {
         this.coreRepository = coreRepository;
-        this.relsExtHandler = new RelsExtHandlerImpl(this, coreRepository);
+        this.relsExtHandler = new RelsExtHandlerImpl(this);
     }
-
 
     @Override
     public void ingest(DigitalObject digitalObject) {
@@ -71,10 +70,9 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public DigitalObjectWrapper export(String pid) {
-        // TODO AK_NEW make it more efficient
         RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
         if (repositoryObject == null) {
-            return new DigitalObjectWrapperImpl(null, this);
+            return null;
         }
         DigitalObject digitalObject = repositoryObject.getDigitalObject();
         coreRepository.resolveArchivedDatastreams(digitalObject);
@@ -90,6 +88,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public ObjectProperties getProperties(String pid) {
+        // TODO rewrite using SAX
         RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
         if (repositoryObject == null) {
             return null;
@@ -226,6 +225,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public DatastreamMetadata getDatastreamMetadata(String pid, String dsId) {
+        // TODO use SAX
         RepositoryObject object = coreRepository.getAsRepositoryObject(pid);
         RepositoryDatastream stream = object.getStream(dsId);
         return new DatastreamMetadataImpl(stream);
@@ -238,8 +238,14 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public DatastreamContentWrapper getDatastreamContent(String pid, String dsId) {
-        // TODO check exists
-        InputStream streamContent = SaxUtils.getStreamContent(get(pid).asInputStream(), dsId, coreRepository);
+        DigitalObjectWrapper digitalObjectWrapper = get(pid);
+        if(digitalObjectWrapper == null) {
+            return null;
+        }
+        InputStream streamContent = SaxUtils.getStreamContent(digitalObjectWrapper.asInputStream(), dsId, coreRepository);
+        if(streamContent == null) {
+            return null;
+        }
         return new DatastreamContentWrapperImpl(streamContent);
     }
 
@@ -264,6 +270,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public List<String> getDatastreamNames(String pid) {
+        // TODO use SAX
         RepositoryObject object = coreRepository.getAsRepositoryObject(pid);
         List<RepositoryDatastream> streams = object.getStreams();
         return streams.stream().map(it -> {

@@ -95,17 +95,6 @@ public class CoreRepositoryWriteTest {
     }
 
     @Test
-    void testCreateOrGetObject() {
-        RepositoryObject repositoryObject = coreRepository.createOrGet(PID_MONOGRAPH);
-        Assertions.assertNotNull(repositoryObject);
-        repositoryObject = coreRepository.getAsRepositoryObject(PID_IMPORTED);
-        Assertions.assertNull(repositoryObject);
-        repositoryObject = coreRepository.createOrGet(PID_IMPORTED);
-        Assertions.assertNotNull(repositoryObject);
-        verify(mockFeeder, times(1)).deleteByPid(eq(PID_IMPORTED));
-    }
-
-    @Test
     void testDeleteObject() {
         RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(PID_TITLE_PAGE);
         Assertions.assertNotNull(repositoryObject);

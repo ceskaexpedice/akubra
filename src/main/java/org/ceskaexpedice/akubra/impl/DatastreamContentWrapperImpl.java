@@ -38,25 +38,16 @@ public class DatastreamContentWrapperImpl implements DatastreamContentWrapper {
 
     @Override
     public Document asDom(boolean nsAware) {
-        if(contentStream == null) {
-            return null;
-        }
         return DomUtils.streamToDocument(asInputStream(), nsAware);
     }
 
     @Override
     public org.dom4j.Document asDom4j(boolean nsAware) {
-        if(contentStream == null) {
-            return null;
-        }
         return Dom4jUtils.streamToDocument(asInputStream(), nsAware);
     }
 
     @Override
     public String asString() {
-        if(contentStream == null) {
-            return null;
-        }
         return StringUtils.streamToString(asInputStream());
     }
 }

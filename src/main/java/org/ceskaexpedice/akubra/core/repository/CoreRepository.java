@@ -62,25 +62,12 @@ public interface CoreRepository {
      */
     byte[] getAsBytes(String pid);
 
-    InputStream retrieveDatastream(String dsKey);
-
     /**
-     * Creates a new object or retrieves an existing one from the repository.
      *
-     * @param pid The unique identifier of the object.
-     * @return The RepositoryObject, either newly created or fetched from the repository.
+     * @param dsKey
+     * @return
      */
-    RepositoryObject createOrGet(String pid);
-//
-//    // TODO AK_NEW
-//    /**
-//     * Retrieves an object from the repository with the option to use cache.
-//     *
-//     * @param pid The unique identifier of the object.
-//     * @param useCache If true, the cache will be used to fetch the object; otherwise, the repository is queried directly.
-//     * @return The RepositoryObject corresponding to the given pid.
-//     */
-//    RepositoryObject get(String pid, boolean useCache);
+    InputStream retrieveDatastream(String dsKey);
 
     /**
      * Resolves archived datastreams for the provided digital object.

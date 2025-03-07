@@ -76,7 +76,7 @@ public final class RelsExtUtils {
     }
 
     public static String getModelName(String pid, AkubraRepository akubraRepository) {
-        Document document = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT).asDom(false);
+        Document document = akubraRepository.re().get(pid).asDom(false);
         return getModel(document.getDocumentElement());
     }
 
@@ -99,7 +99,7 @@ public final class RelsExtUtils {
     }
 
     public static String getFirstVolumePid(String pid, AkubraRepository akubraRepository) {
-        Document doc = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT).asDom(false);
+        Document doc = akubraRepository.re().get(pid).asDom(false);
         return getFirstVolumePid(doc);
     }
 
@@ -121,7 +121,7 @@ public final class RelsExtUtils {
     }
 
     public static String getFirstItemPid(String pid, AkubraRepository akubraRepository) {
-        Document doc = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT).asDom(false);
+        Document doc = akubraRepository.re().get(pid).asDom(false);
         return getFirstItemPid(doc);
     }
 
@@ -132,7 +132,7 @@ public final class RelsExtUtils {
 
     /** Returns replicatedFrom url from given  RELS-EXT element*/
     public static String getReplicatedFromUrl(String uuid, AkubraRepository akubraRepository) {
-        Document relsExt = akubraRepository.getDatastreamContent(uuid, KnownDatastreams.RELS_EXT).asDom(false);
+        Document relsExt = akubraRepository.re().get(uuid).asDom(false);
         return getReplicatedFromUrl(relsExt);
     }
 
@@ -153,7 +153,7 @@ public final class RelsExtUtils {
 
     /** Returns replicatedFrom url from given  RELS-EXT element */
     public static String getRelsExtTilesUrl(String uuid, AkubraRepository akubraRepository) {
-        Document relsExt = akubraRepository.getDatastreamContent(uuid, KnownDatastreams.RELS_EXT).asDom(false);
+        Document relsExt = akubraRepository.re().get(uuid).asDom(false);
         return getRelsExtTilesUrl(relsExt.getDocumentElement());
     }
 
@@ -273,8 +273,8 @@ public final class RelsExtUtils {
             Document relsExt = null;
             try {
                 // should be from
-                if (akubraRepository.datastreamExists(pid, KnownDatastreams.RELS_EXT)) {
-                    relsExt = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT).asDom(false);
+                if (akubraRepository.re().exists(pid)) {
+                    relsExt = akubraRepository.re().get(pid).asDom(false);
                 } else {
                     LOGGER.warning("could not read root RELS-EXT, skipping object  (" + pid + ")");
                 }
@@ -406,7 +406,7 @@ public final class RelsExtUtils {
                 public void process(String pid, int level) throws ProcessSubtreeException {
                     try {
                         if (previousLevel < level || level == 0) {
-                            if (akubraRepository.datastreamExists(pid, KnownDatastreams.IMG_FULL.toString())) {
+                            if (akubraRepository.datastreamExists(pid, KnownDatastreams.IMG_FULL)) {
                                 foundPids.add(pid);
                                 breakProcess = true;
                             }

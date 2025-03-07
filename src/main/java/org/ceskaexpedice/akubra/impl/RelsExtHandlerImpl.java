@@ -16,35 +16,43 @@
  */
 package org.ceskaexpedice.akubra.impl;
 
-import org.ceskaexpedice.akubra.AkubraRepository;
-import org.ceskaexpedice.akubra.DatastreamContentWrapper;
-import org.ceskaexpedice.akubra.KnownDatastreams;
-import org.ceskaexpedice.akubra.core.repository.CoreRepository;
-import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
+import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
 import org.ceskaexpedice.akubra.relsext.RelsExtWrapper;
+import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.akubra.utils.RelsExtUtils;
+import org.ceskaexpedice.akubra.utils.pid.PIDParser;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
+import javax.xml.transform.TransformerException;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.StringWriter;
+import java.nio.charset.Charset;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
  * AkubraRepositoryImpl
  */
 public class RelsExtHandlerImpl implements RelsExtHandler {
+    private static final String RDF_DESCRIPTION_ELEMENT = "Description";
+    private static final String RDF_ELEMENT = "RDF";
     private static final Logger LOGGER = Logger.getLogger(RelsExtHandlerImpl.class.getName());
 
     private AkubraRepository akubraRepository;
-    private CoreRepository coreRepository;
 
-    public RelsExtHandlerImpl(AkubraRepository akubraRepository, CoreRepository coreRepository) {
-        this.coreRepository = coreRepository;
+    public RelsExtHandlerImpl(AkubraRepository akubraRepository) {
         this.akubraRepository = akubraRepository;
     }
 
     @Override
     public RelsExtWrapper get(String pid) {
         DatastreamContentWrapper datastreamContent = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
+        if(datastreamContent == null) {
+            return null;
+        }
         return new RelsExtWrapperImpl(datastreamContent);
     }
 
@@ -61,61 +69,166 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
     @Override
     public boolean relationExists(String pid, String relation, String namespace) {
         DatastreamContentWrapper datastreamContent = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
+        if(datastreamContent == null) {
+            return false;
+        }
         return RelsExtUtils.relsExtRelationsExists(datastreamContent.asDom(true), relation, namespace);
     }
 
     @Override
     public void addRelation(String pid, String relation, String namespace, String targetRelation) {
-        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
-        if (repositoryObject == null) {
-            return;
+        try {
+            DatastreamContentWrapper datastreamContent = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
+            if(datastreamContent == null) {
+                // TODO log
+                return;
+            }
+            Document document = datastreamContent.asDom(true);
+            Element rdfDesc = DomUtils.findElement(document.getDocumentElement(), RDF_DESCRIPTION_ELEMENT, RepositoryNamespaces.RDF_NAMESPACE_URI);
+            Element subElm = document.createElementNS(namespace, relation);
+            subElm.setAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "rdf:resource", targetRelation);
+            rdfDesc.appendChild(subElm);
+            changeRelations(pid, document);
+        } catch (Exception e) {
+            throw new RepositoryException(e);
         }
-        repositoryObject.relsExtAddRelation(relation, namespace, targetRelation);
     }
 
     @Override
     public void removeRelation(String pid, String relation, String namespace, String targetRelation) {
-        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
-        if (repositoryObject == null) {
-            return;
+        try {
+            DatastreamContentWrapper datastreamContent = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
+            if(datastreamContent == null) {
+                // TODO log
+                return;
+            }
+            Document document = datastreamContent.asDom(true);
+            final String targetPID = targetRelation.startsWith(PIDParser.INFO_FEDORA_PREFIX) ? targetRelation : PIDParser.INFO_FEDORA_PREFIX + targetRelation;
+            Element relationElement = DomUtils.findElement(document.getDocumentElement(), (element) -> {
+                String elmNamespace = element.getNamespaceURI();
+                String elmLocalname = element.getLocalName();
+                String elmResourceAttribute = element.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
+                return (elmNamespace.equals(namespace)) && (elmLocalname.equals(relation)) && elmResourceAttribute.equals(targetPID);
+            });
+            if (relationElement != null) {
+                relationElement.getParentNode().removeChild(relationElement);
+                changeRelations(pid, document);
+            } else {
+                LOGGER.warning("Cannot find relation '" + namespace + relation);
+            }
+        } catch (Exception e) {
+            throw new RepositoryException(e);
         }
-        repositoryObject.relsExtRemoveRelation(relation, namespace, targetRelation);
     }
 
     @Override
     public void removeRelationsByNameAndNamespace(String pid, String relation, String namespace) {
-        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
-        if (repositoryObject == null) {
-            return;
+        try {
+            DatastreamContentWrapper datastreamContent = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
+            if(datastreamContent == null) {
+                // TODO log
+                return;
+            }
+            Document document = datastreamContent.asDom(true);
+            List<Element> relationElements = DomUtils.getElementsRecursive(document.getDocumentElement(), (element) -> {
+                String elmNamespace = element.getNamespaceURI();
+                String elmLocalname = element.getLocalName();
+                return (elmNamespace.equals(namespace)) && (elmLocalname.equals(relation));
+            });
+            if (!relationElements.isEmpty()) {
+                relationElements.stream().forEach((elm) -> {
+                    elm.getParentNode().removeChild(elm);
+                });
+                changeRelations(pid, document);
+            } else {
+                LOGGER.info("Cannot find relation '" + namespace + relation);
+            }
+        } catch (Exception e) {
+            throw new RepositoryException(e);
         }
-        repositoryObject.relsExtRemoveRelationsByNameAndNamespace(relation, namespace);
     }
 
     @Override
     public void removeRelationsByNamespace(String pid, String namespace) {
-        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
-        if (repositoryObject == null) {
-            return;
+        try {
+            DatastreamContentWrapper datastreamContent = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
+            if(datastreamContent == null) {
+                // TODO log
+                return;
+            }
+            Document document = datastreamContent.asDom(true);
+            List<Element> relationElements = DomUtils.getElementsRecursive(document.getDocumentElement(), (element) -> {
+                String elmNamespace = element.getNamespaceURI();
+                return (elmNamespace.equals(namespace));
+            });
+            // Change RELS-EXT relations
+            if (!relationElements.isEmpty()) {
+                relationElements.stream().forEach((elm) -> {
+                    elm.getParentNode().removeChild(elm);
+                });
+                changeRelations(pid, document);
+            } else {
+                LOGGER.warning("Cannot find relation '" + namespace);
+            }
+        } catch (Exception e) {
+            throw new RepositoryException(e);
         }
-        repositoryObject.relsExtRemoveRelationsByNamespace(namespace);
     }
 
     @Override
     public void addLiteral(String pid, String relation, String namespace, String value) {
-        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
-        if (repositoryObject == null) {
-            return;
+        try {
+            DatastreamContentWrapper datastreamContent = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
+            if(datastreamContent == null) {
+                // TODO log
+                return;
+            }
+            Document document = datastreamContent.asDom(true);
+            Element rdfDesc = DomUtils.findElement(document.getDocumentElement(), RDF_DESCRIPTION_ELEMENT, RepositoryNamespaces.RDF_NAMESPACE_URI);
+            Element subElm = document.createElementNS(namespace, relation);
+            subElm.setTextContent(value);
+            rdfDesc.appendChild(subElm);
+            changeRelations(pid, document);
+        } catch (Exception e) {
+            throw new RepositoryException(e);
         }
-        repositoryObject.relsExtAddLiteral(relation, namespace, value);
+
     }
 
     @Override
     public void removeLiteral(String pid, String relation, String namespace, String value) {
-        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
-        if (repositoryObject == null) {
-            return;
+        try {
+            DatastreamContentWrapper datastreamContent = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
+            if(datastreamContent == null) {
+                // TODO log
+                return;
+            }
+            Document document = datastreamContent.asDom(true);
+            Element rdfDesc = DomUtils.findElement(document.getDocumentElement(), RDF_DESCRIPTION_ELEMENT, RepositoryNamespaces.RDF_NAMESPACE_URI);
+            List<Element> descs = DomUtils.getElementsRecursive(rdfDesc, (element) -> {
+                String elmNamespace = element.getNamespaceURI();
+                String elmName = element.getLocalName();
+                if (elmNamespace != null && elmNamespace.equals(namespace) && elmName.equals(relation)) {
+                    String content = element.getTextContent();
+                    if (content.equals(value)) return true;
+                }
+                return false;
+            });
+            if (!descs.isEmpty()) {
+                descs.stream().forEach(literal -> {
+                    literal.getParentNode().removeChild(literal);
+                });
+                changeRelations(pid, document);
+            }
+        } catch (Exception e) {
+            throw new RepositoryException(e);
         }
-        repositoryObject.relsExtRemoveLiteral(relation, namespace, value);
+    }
+
+    private void changeRelations(String pid, Document document) throws TransformerException {
+        StringWriter stringWriter = new StringWriter();
+        DomUtils.print(document, stringWriter);
+        update(pid, new ByteArrayInputStream(stringWriter.toString().getBytes(Charset.forName("UTF-8"))));
     }
 
 }

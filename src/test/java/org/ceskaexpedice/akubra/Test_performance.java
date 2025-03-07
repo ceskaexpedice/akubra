@@ -21,15 +21,16 @@ import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.test.ConcurrencyUtils;
 import org.ceskaexpedice.test.FunctionalTestsUtils;
-import org.dom4j.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
 import java.util.Properties;
 
 import static org.ceskaexpedice.akubra.AkubraTestsUtils.*;
@@ -57,7 +58,7 @@ public class Test_performance {
 
     @Disabled
     @Test
-    void testGet() {
+    void testDocumentRead() {
         long startTime = System.currentTimeMillis();
         ConcurrencyUtils.runTask(1000, () -> {
             System.out.println(Thread.currentThread().getName());
@@ -84,7 +85,35 @@ public class Test_performance {
 
     @Disabled
     @Test
-    void testExists() {
+    void testDocumentGetProperties() {
+        // TODO
+        long startTime = System.currentTimeMillis();
+        ConcurrencyUtils.runTask(1000, () -> {
+            System.out.println(Thread.currentThread().getName());
+            for (int i = 0; i < 1000; i++) {
+                long start = System.currentTimeMillis();
+                // old: marshall + locks - 40 min, no locks - 17,5 min
+                //DigitalObjectWrapper digitalObjectWrapper = akubraRepository.get(PID_TITLE_PAGE);
+
+                // new: bytes no locks:
+                //byte[] bytes = akubraRepository.get(PID_TITLE_PAGE).asBytes(); - 3,6 min
+                // DigitalObject digitalObject = akubraRepository.get(PID_TITLE_PAGE).asDigitalObject(); - 15,6 min
+                // Document dom = akubraRepository.get(PID_TITLE_PAGE).asDom(true); - 6,8 min
+                // Document dom4j = akubraRepository.get(PID_TITLE_PAGE).asDom4j(true); - 7,2 min
+                // String string = akubraRepository.get(PID_TITLE_PAGE).asString(); - 3,9 min
+                ObjectProperties properties = akubraRepository.getProperties(PID_TITLE_PAGE);
+
+                if (i % 50 == 0) {
+                    System.out.println(Thread.currentThread().getName() + ": " + i + ",Time: " + (System.currentTimeMillis() - start));
+                }
+            }
+        });
+        System.out.println("Time taken: " + (System.currentTimeMillis() - startTime));
+    }
+
+    @Disabled
+    @Test
+    void testDocumentExists() {
         long startTime = System.currentTimeMillis();
         ConcurrencyUtils.runTask(1000, () -> {
             System.out.println(Thread.currentThread().getName());
@@ -136,6 +165,69 @@ public class Test_performance {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+                // new: no locks + stream to bytes - 14,5 min, no reading of is -  8,2 min
+                // old:  no locks + stream to bytes - 76 min, no reading of is - 18 min
+                if (i % 50 == 0) {
+                    System.out.println(Thread.currentThread().getName() + ": " + i + ",Time: " + (System.currentTimeMillis() - start));
+                }
+            }
+        });
+        System.out.println("Time taken: " + (System.currentTimeMillis() - startTime));
+    }
+
+    @Disabled
+    @Test
+    void testGetDataStreamXMLContent() {
+        // TODO
+        long startTime = System.currentTimeMillis();
+        ConcurrencyUtils.runTask(1000, () -> {
+            System.out.println(Thread.currentThread().getName());
+            for (int i = 0; i < 1000; i++) {
+                long start = System.currentTimeMillis();
+                Document dom = akubraRepository.re().get(PID_MONOGRAPH).asDom(true);
+
+                // new: no locks + stream to bytes - 14,5 min, no reading of is -  8,2 min
+                // old:  no locks + stream to bytes - 76 min, no reading of is - 18 min
+                if (i % 50 == 0) {
+                    System.out.println(Thread.currentThread().getName() + ": " + i + ",Time: " + (System.currentTimeMillis() - start));
+                }
+            }
+        });
+        System.out.println("Time taken: " + (System.currentTimeMillis() - startTime));
+    }
+
+    @Disabled
+    @Test
+    void testGetDataStreamMetadata() {
+        // TODO
+        long startTime = System.currentTimeMillis();
+        ConcurrencyUtils.runTask(1000, () -> {
+            System.out.println(Thread.currentThread().getName());
+            for (int i = 0; i < 1000; i++) {
+                long start = System.currentTimeMillis();
+                DatastreamMetadata datastreamMetadata = akubraRepository.getDatastreamMetadata(PID_MONOGRAPH, KnownDatastreams.IMG_FULL);
+
+                // new: no locks + stream to bytes - 14,5 min, no reading of is -  8,2 min
+                // old:  no locks + stream to bytes - 76 min, no reading of is - 18 min
+                if (i % 50 == 0) {
+                    System.out.println(Thread.currentThread().getName() + ": " + i + ",Time: " + (System.currentTimeMillis() - start));
+                }
+            }
+        });
+        System.out.println("Time taken: " + (System.currentTimeMillis() - startTime));
+    }
+
+    @Disabled
+    @Test
+    void testGetDataStreamNames() {
+        // TODO
+        long startTime = System.currentTimeMillis();
+        ConcurrencyUtils.runTask(1000, () -> {
+            System.out.println(Thread.currentThread().getName());
+            for (int i = 0; i < 1000; i++) {
+                long start = System.currentTimeMillis();
+                List<String> datastreamNames = akubraRepository.getDatastreamNames(PID_MONOGRAPH);
+
                 // new: no locks + stream to bytes - 14,5 min, no reading of is -  8,2 min
                 // old:  no locks + stream to bytes - 76 min, no reading of is - 18 min
                 if (i % 50 == 0) {

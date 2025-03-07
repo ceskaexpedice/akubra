@@ -56,7 +56,6 @@ public class CoreRepositoryImpl implements CoreRepository {
 
     @Override
     public boolean exists(String ident) {
-        // TODO old return manager.readObjectFromStorage(ident) != null;
         try {
             URI blobId = getBlobId(ident);
             URI internalId = idMapper.getInternalId(blobId);
@@ -92,24 +91,6 @@ public class CoreRepositoryImpl implements CoreRepository {
     }
 
     @Override
-    public RepositoryObject createOrGet(String ident) {
-        if (exists(ident)) {
-            RepositoryObject obj = getAsRepositoryObject(ident);
-            return obj;
-        } else {
-            DigitalObject emptyDigitalObject = createEmptyDigitalObject(ident);
-            manager.write(emptyDigitalObject, null);
-            try {
-                feeder.deleteByPid(emptyDigitalObject.getPID());
-            } catch (Throwable th) {
-                LOGGER.log(Level.SEVERE, "Cannot update processing index for " + ident + " - reindex manually.", th);
-            }
-            RepositoryObjectImpl obj = new RepositoryObjectImpl(emptyDigitalObject, this.manager, this.feeder);
-            return obj;
-        }
-    }
-
-    @Override
     public RepositoryObject ingest(DigitalObject digitalObject) {
         if (exists(digitalObject.getPID())) {
             throw new RepositoryException("Ingested object exists:" + digitalObject.getPID());
@@ -119,7 +100,6 @@ public class CoreRepositoryImpl implements CoreRepository {
             obj.rebuildProcessingIndex();
             return obj;
         }
-
     }
 
     @Override
