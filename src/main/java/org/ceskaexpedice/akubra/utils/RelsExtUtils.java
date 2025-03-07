@@ -43,8 +43,8 @@ public final class RelsExtUtils {
     private RelsExtUtils() {
     }
 
-    public static Element getRELSEXTFromGivenFOXML(Element foxmlElement) {
-        List<Element> elms = DomUtils.getElementsRecursive(foxmlElement, (elm) -> {
+    public static Element getRELSEXTFromGivenFOXML(Document document) {
+        List<Element> elms = DomUtils.getElementsRecursive(document.getDocumentElement(), (elm) -> {
             if (elm.getLocalName().equals("datastream")) {
                 String id = elm.getAttribute("ID");
                 return id.equals(KnownDatastreams.RELS_EXT.toString());
@@ -56,12 +56,16 @@ public final class RelsExtUtils {
         } else return null;
     }
 
+    public static String getModel(Document doc) {
+        return getModel(doc.getDocumentElement());
+    }
+
     /** Get model
      * @throws LexerException */
-    public static String getModel(Element relsExt) {
+    public static String getModel(Element el) {
         //<hasModel xmlns="
         try {
-            Element foundElement = DomUtils.findElement(relsExt, "hasModel", RepositoryNamespaces.FEDORA_MODELS_URI);
+            Element foundElement = DomUtils.findElement(el, "hasModel", RepositoryNamespaces.FEDORA_MODELS_URI);
             if (foundElement != null) {
                 String sform = foundElement.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
                 PIDParser pidParser = new PIDParser(sform);
@@ -73,11 +77,6 @@ public final class RelsExtUtils {
         } catch (LexerException e) {
             throw new RepositoryException(e);
         }
-    }
-
-    public static String getModelName(String pid, AkubraRepository akubraRepository) {
-        Document document = akubraRepository.re().get(pid).asDom(false);
-        return getModel(document.getDocumentElement());
     }
 
     public static String getFirstVolumePid(Document relsExt) {
@@ -98,11 +97,6 @@ public final class RelsExtUtils {
         }
     }
 
-    public static String getFirstVolumePid(String pid, AkubraRepository akubraRepository) {
-        Document doc = akubraRepository.re().get(pid).asDom(false);
-        return getFirstVolumePid(doc);
-    }
-
     public static String getFirstItemPid(Document relsExt) {
         try {
             Element foundElement = DomUtils.findElement(relsExt.getDocumentElement(), "hasItem", RepositoryNamespaces.KRAMERIUS_URI);
@@ -120,20 +114,9 @@ public final class RelsExtUtils {
         }
     }
 
-    public static String getFirstItemPid(String pid, AkubraRepository akubraRepository) {
-        Document doc = akubraRepository.re().get(pid).asDom(false);
-        return getFirstItemPid(doc);
-    }
-
-    public static Element getRDFDescriptionElement(Element relsExt) {
-        Element foundElement = DomUtils.findElement(relsExt, "Description", RepositoryNamespaces.RDF_NAMESPACE_URI);
+    public static Element getRDFDescriptionElement(Element element) {
+        Element foundElement = DomUtils.findElement(element, "Description", RepositoryNamespaces.RDF_NAMESPACE_URI);
         return foundElement;
-    }
-
-    /** Returns replicatedFrom url from given  RELS-EXT element*/
-    public static String getReplicatedFromUrl(String uuid, AkubraRepository akubraRepository) {
-        Document relsExt = akubraRepository.re().get(uuid).asDom(false);
-        return getReplicatedFromUrl(relsExt);
     }
 
     /** Returns replicatedFrom url from given  RELS-EXT element */
@@ -151,20 +134,14 @@ public final class RelsExtUtils {
         }
     }
 
-    /** Returns replicatedFrom url from given  RELS-EXT element */
-    public static String getRelsExtTilesUrl(String uuid, AkubraRepository akubraRepository) {
-        Document relsExt = akubraRepository.re().get(uuid).asDom(false);
-        return getRelsExtTilesUrl(relsExt.getDocumentElement());
-    }
-
     /** Returns tiles url  from given RELS-EXT element */
-    public static String getRelsExtTilesUrl(Element reslExtDoc) {
+    public static String getRelsExtTilesUrl(Document document) {
         try {
             XPathFactory xpfactory = XPathFactory.newInstance();
             XPath xpath = xpfactory.newXPath();
             xpath.setNamespaceContext(new RepositoryNamespaceContext());
             XPathExpression expr = xpath.compile("//kramerius:tiles-url/text()");
-            Object tiles = expr.evaluate(reslExtDoc, XPathConstants.NODE);
+            Object tiles = expr.evaluate(document.getDocumentElement(), XPathConstants.NODE);
             if (tiles != null) {
                 String data = ((Text) tiles).getData();
                 return data != null ? data.trim() : null;
@@ -174,22 +151,14 @@ public final class RelsExtUtils {
         }
     }
 
-    public static String getRelsExtTilesUrl(Document reslExtDoc) {
-        return getRelsExtTilesUrl(reslExtDoc.getDocumentElement());
-    }
-
-    public static String getDonator(Document reslExtDoc) {
-        return getDonator(reslExtDoc.getDocumentElement());
-    }
-
     /** Returns donator label  from given RELS-EXT element */
-    public static String getDonator(Element reslExtDoc) {
+    public static String getDonator(Document document) {
         try {
             XPathFactory xpfactory = XPathFactory.newInstance();
             XPath xpath = xpfactory.newXPath();
             xpath.setNamespaceContext(new RepositoryNamespaceContext());
             XPathExpression expr = xpath.compile("//kramerius:hasDonator");
-            Object donator = expr.evaluate(reslExtDoc, XPathConstants.NODE);
+            Object donator = expr.evaluate(document.getDocumentElement(), XPathConstants.NODE);
             if (donator != null) {
                 Element elm = (Element) donator;
                 Attr ref = elm.getAttributeNodeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
@@ -209,26 +178,34 @@ public final class RelsExtUtils {
         }
     }
 
-    public static List<String> getLicenses(Element relsExt) {
-        List<Element> elms = DomUtils.getElementsRecursive(relsExt, (elm) -> {
+    public static List<String> getLicenses(Document document) {
+        return getLicenses(document.getDocumentElement());
+    }
+
+    public static List<String> getLicenses(Element document) {
+        List<Element> elms = DomUtils.getElementsRecursive(document, (elm) -> {
             return (elm.getLocalName().equals("license"));
         });
         List<String> collect = elms.stream().map(Element::getTextContent).collect(Collectors.toList());
         return collect;
     }
 
-    public static List<String> getContainsLicenses(Element relsExt) {
-        List<Element> elms = DomUtils.getElementsRecursive(relsExt, (elm) -> {
+    public static List<String> getContainsLicenses(Document document) {
+        return getContainsLicenses(document.getDocumentElement());
+    }
+
+    public static List<String> getContainsLicenses(Element document) {
+        List<Element> elms = DomUtils.getElementsRecursive(document, (elm) -> {
             return (elm.getLocalName().equals("containsLicense"));
         });
         List<String> collect = elms.stream().map(Element::getTextContent).collect(Collectors.toList());
         return collect;
     }
 
-    public static List<Pair<String, String>> getRelations(Element relsExt) {
+    public static List<Pair<String, String>> getRelations(Document document) {
         List<Pair<String, String>> pairs = new ArrayList<>();
         List<String> names = Arrays.stream(KnownRelations.values()).map(KnownRelations::toString).collect(Collectors.toList());
-        List<Element> elms = DomUtils.getElementsRecursive(relsExt, new DomUtils.ElementsFilter() {
+        List<Element> elms = DomUtils.getElementsRecursive(document.getDocumentElement(), new DomUtils.ElementsFilter() {
 
             @Override
             public boolean acceptElement(Element element) {
