@@ -21,6 +21,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.relsext.KnownRelations;
+import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
 import org.ceskaexpedice.akubra.utils.pid.LexerException;
 import org.ceskaexpedice.akubra.utils.pid.PIDParser;
 import org.w3c.dom.*;
@@ -37,9 +38,6 @@ import java.util.stream.Collectors;
  */
 public final class RelsExtUtils {
     public static final Logger LOGGER = Logger.getLogger(RelsExtUtils.class.getName());
-    public static final String CACHE_RELS_EXT_LITERAL = "kramerius4://deepZoomCache";
-    private static final String RDF_DESCRIPTION_ELEMENT = "Description";
-    private static final String RDF_ELEMENT = "RDF";
 
     private RelsExtUtils() {
     }
@@ -55,10 +53,6 @@ public final class RelsExtUtils {
         if (elms.size() == 1) {
             return elms.get(0);
         } else return null;
-    }
-
-    public static String getModel(InputStream doc) {
-        return getModel(DomUtils.streamToDocument(doc).getDocumentElement());
     }
 
     /** Get model
@@ -136,11 +130,6 @@ public final class RelsExtUtils {
         } catch (XPathExpressionException e) {
             throw new RepositoryException(e);
         }
-    }
-        /** Returns tiles url  from given RELS-EXT element */
-    public static String getRelsExtTilesUrl(InputStream documentStream) {
-        Document document = DomUtils.streamToDocument(documentStream);
-        return getRelsExtTilesUrl(document);
     }
 
     public static List<String> getLicenses(Document document) {
@@ -406,7 +395,7 @@ public final class RelsExtUtils {
                     return !element.hasAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource") && StringUtils.isAnyString(element.getTextContent());
                 }
             }).stream().filter((elm) -> {
-                return !elm.getLocalName().equals(RDF_ELEMENT) && !elm.getLocalName().equals(RDF_DESCRIPTION_ELEMENT);
+                return !elm.getLocalName().equals(RelsExtHandler.RDF_ELEMENT) && !elm.getLocalName().equals(RelsExtHandler.RDF_DESCRIPTION_ELEMENT);
             }).map((elm) -> {
                 String content = elm.getTextContent();
                 Triple<String, String, String> triple = new ImmutableTriple<>(elm.getNamespaceURI(), elm.getLocalName(), content);

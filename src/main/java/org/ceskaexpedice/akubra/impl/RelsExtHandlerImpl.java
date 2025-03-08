@@ -20,7 +20,9 @@ import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
 import org.ceskaexpedice.akubra.relsext.RelsExtWrapper;
 import org.ceskaexpedice.akubra.utils.DomUtils;
+import org.ceskaexpedice.akubra.utils.ProcessSubtreeException;
 import org.ceskaexpedice.akubra.utils.RelsExtUtils;
+import org.ceskaexpedice.akubra.utils.TreeNodeProcessor;
 import org.ceskaexpedice.akubra.utils.pid.PIDParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -223,6 +225,50 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
         } catch (Exception e) {
             throw new RepositoryException(e);
         }
+    }
+
+    @Override
+    public String getTilesUrl(String pid) {
+        // TODO use SAX
+        RelsExtWrapper relsExtWrapper = get(pid);
+        Document document = DomUtils.streamToDocument(relsExtWrapper.asInputStream());
+        return RelsExtUtils.getRelsExtTilesUrl(document);
+    }
+
+    @Override
+    public String getModel(String pid) {
+        // TODO use SAX
+        RelsExtWrapper relsExtWrapper = get(pid);
+        return RelsExtUtils.getModel(DomUtils.streamToDocument(relsExtWrapper.asInputStream()).getDocumentElement());
+    }
+
+    @Override
+    public String getFirstViewablePid(String pid) {
+        return RelsExtUtils.findFirstViewablePid(pid, akubraRepository);
+    }
+
+    @Override
+    public void processSubtree(String pid, TreeNodeProcessor processor) throws ProcessSubtreeException {
+        RelsExtUtils.processSubtree(pid, processor, akubraRepository);
+    }
+
+    @Override
+    public List<String> getPids(String pid) {
+        return RelsExtUtils.getPids(pid, akubraRepository);
+    }
+
+    @Override
+    public String getFirstVolumePid(String pid) {
+        // TODO use SAX
+        RelsExtWrapper relsExtWrapper = get(pid);
+        return RelsExtUtils.getFirstVolumePid(relsExtWrapper.asInputStream());
+    }
+
+    @Override
+    public String getFirstItemPid(String pid) {
+        // TODO use SAX
+        RelsExtWrapper relsExtWrapper = get(pid);
+        return RelsExtUtils.getFirstItemPid(relsExtWrapper.asInputStream());
     }
 
     private void changeRelations(String pid, Document document) throws TransformerException {

@@ -17,7 +17,11 @@
 
 package org.ceskaexpedice.akubra.relsext;
 
+import org.ceskaexpedice.akubra.utils.ProcessSubtreeException;
+import org.ceskaexpedice.akubra.utils.TreeNodeProcessor;
+
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * Main repository access point for managing RELS EXT datastream relations.
@@ -25,6 +29,9 @@ import java.io.InputStream;
  * @author pavels, petrp
  */
 public interface RelsExtHandler {
+    String CACHE_RELS_EXT_LITERAL = "kramerius4://deepZoomCache";
+    String RDF_DESCRIPTION_ELEMENT = "Description";
+    String RDF_ELEMENT = "RDF";
 
     boolean exists(String pid);
 
@@ -105,4 +112,17 @@ public interface RelsExtHandler {
      */
     RelsExtWrapper get(String pid);
 
+    String getTilesUrl(String pid);
+
+    String getModel(String pid);
+
+    String getFirstViewablePid(String pid);
+
+    void processSubtree(String pid, TreeNodeProcessor processor) throws ProcessSubtreeException;
+
+    List<String> getPids(String pid);
+
+    String getFirstVolumePid(String pid);
+
+    String getFirstItemPid(String pid);
 }
