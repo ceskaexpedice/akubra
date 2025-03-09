@@ -23,7 +23,7 @@ import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
-import org.ceskaexpedice.akubra.utils.sax.SaxUtils;
+import org.ceskaexpedice.akubra.impl.utils.sax.SaxUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 
 import java.io.IOException;

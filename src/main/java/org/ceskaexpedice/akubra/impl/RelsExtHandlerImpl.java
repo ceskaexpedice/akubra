@@ -16,14 +16,15 @@
  */
 package org.ceskaexpedice.akubra.impl;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.ceskaexpedice.akubra.*;
+import org.ceskaexpedice.akubra.impl.utils.RelsExtUtils;
 import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
-import org.ceskaexpedice.akubra.relsext.RelsExtWrapper;
-import org.ceskaexpedice.akubra.utils.DomUtils;
-import org.ceskaexpedice.akubra.utils.ProcessSubtreeException;
-import org.ceskaexpedice.akubra.utils.RelsExtUtils;
-import org.ceskaexpedice.akubra.utils.TreeNodeProcessor;
-import org.ceskaexpedice.akubra.utils.pid.PIDParser;
+import org.ceskaexpedice.akubra.relsext.RelsExtLiteral;
+import org.ceskaexpedice.akubra.relsext.RelsExtRelation;
+import org.ceskaexpedice.akubra.impl.utils.DomUtils;
+import org.ceskaexpedice.akubra.impl.utils.TreeNodeProcessor;
+import org.ceskaexpedice.akubra.impl.utils.pid.PIDParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -32,6 +33,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -50,31 +52,98 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
     }
 
     @Override
-    public RelsExtWrapper get(String pid) {
-        DatastreamContentWrapper datastreamContent = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
-        if(datastreamContent == null) {
-            return null;
-        }
-        return new RelsExtWrapperImpl(datastreamContent);
-    }
-
-    @Override
     public boolean exists(String pid) {
         return akubraRepository.datastreamExists(pid, KnownDatastreams.RELS_EXT);
     }
 
     @Override
-    public void update(String pid, InputStream binaryContent) {
-        akubraRepository.updateXMLDatastream(pid, KnownDatastreams.RELS_EXT, "text/xml", binaryContent);
+    public DatastreamContentWrapper get(String pid) {
+        return akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
+    }
+
+    @Override
+    public void update(String pid, InputStream xmlContent) {
+        akubraRepository.updateXMLDatastream(pid, KnownDatastreams.RELS_EXT, "text/xml", xmlContent);
     }
 
     @Override
     public boolean relationExists(String pid, String relation, String namespace) {
+        // TODO use SAX
         DatastreamContentWrapper datastreamContent = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
         if(datastreamContent == null) {
             return false;
         }
-        return RelsExtUtils.relsExtRelationsExists(datastreamContent.asDom(true), relation, namespace);
+        return RelsExtUtils.relationsExists(datastreamContent.asDom(true), relation, namespace);
+    }
+
+    @Override
+    public String getElementValue(String pid, String xpathExpression) {
+        // TODO use SAX
+        DatastreamContentWrapper relsExtWrapper = get(pid);
+        return RelsExtUtils.getElementValue(relsExtWrapper.asDom(false),xpathExpression);
+    }
+
+    @Override
+    public String getTilesUrl(String pid) {
+        return getElementValue(pid, "//kramerius:tiles-url/text()");
+    }
+
+    @Override
+    public String getResourcePid(String pid, String localName, String namespace, boolean appendPrefix) {
+        // TODO use SAX
+        DatastreamContentWrapper relsExtWrapper = get(pid);
+        return RelsExtUtils.getResourcePid(relsExtWrapper.asDom(false), localName, namespace, appendPrefix);
+    }
+
+    @Override
+    public String getModel(String pid) {
+        return getResourcePid(pid, "hasModel", RepositoryNamespaces.FEDORA_MODELS_URI, false);
+    }
+
+    @Override
+    public String getFirstVolumePid(String pid) {
+        return getResourcePid(pid, "hasVolume", RepositoryNamespaces.KRAMERIUS_URI, true);
+    }
+
+    @Override
+    public String getFirstItemId(String pid) {
+        return getResourcePid(pid, "hasItem", RepositoryNamespaces.KRAMERIUS_URI, false);
+    }
+
+    @Override
+    public String getFirstViewablePidFromTree(String pid) {
+        return RelsExtUtils.findFirstViewablePidFromTree(pid, akubraRepository);
+    }
+
+    @Override
+    public List<String> getPidsFromTree(String pid) {
+        return RelsExtUtils.getPidsFromTree(pid, akubraRepository);
+    }
+
+    @Override
+    public List<RelsExtRelation> getRelations(String pid, String namespace) {
+        // TODO use SAX
+        DatastreamContentWrapper relsExtWrapper = get(pid);
+        List<RelsExtRelation> rels = new ArrayList<>();
+        List<Triple<String, String, String>> triples = RelsExtUtils.getRelations(relsExtWrapper.asDom(true), namespace);
+        for (Triple<String, String, String> triple : triples) {
+            RelsExtRelation relsExtRelation = new RelsExtRelation(triple.getLeft(), triple.getMiddle(), triple.getRight());
+            rels.add(relsExtRelation);
+        }
+        return rels;
+    }
+
+    @Override
+    public List<RelsExtLiteral> getLiterals(String pid, String namespace) {
+        // TODO use SAX
+        DatastreamContentWrapper relsExtWrapper = get(pid);
+        List<RelsExtLiteral> rels = new ArrayList<>();
+        List<Triple<String, String, String>> triples = RelsExtUtils.getLiterals(relsExtWrapper.asDom(true), namespace);
+        for (Triple<String, String, String> triple : triples) {
+            RelsExtLiteral relsExtLiteral = new RelsExtLiteral(triple.getLeft(), triple.getMiddle(), triple.getRight());
+            rels.add(relsExtLiteral);
+        }
+        return rels;
     }
 
     @Override
@@ -225,50 +294,6 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
         } catch (Exception e) {
             throw new RepositoryException(e);
         }
-    }
-
-    @Override
-    public String getTilesUrl(String pid) {
-        // TODO use SAX
-        RelsExtWrapper relsExtWrapper = get(pid);
-        Document document = DomUtils.streamToDocument(relsExtWrapper.asInputStream());
-        return RelsExtUtils.getRelsExtTilesUrl(document);
-    }
-
-    @Override
-    public String getModel(String pid) {
-        // TODO use SAX
-        RelsExtWrapper relsExtWrapper = get(pid);
-        return RelsExtUtils.getModel(DomUtils.streamToDocument(relsExtWrapper.asInputStream()).getDocumentElement());
-    }
-
-    @Override
-    public String getFirstViewablePid(String pid) {
-        return RelsExtUtils.findFirstViewablePid(pid, akubraRepository);
-    }
-
-    @Override
-    public void processSubtree(String pid, TreeNodeProcessor processor) throws ProcessSubtreeException {
-        RelsExtUtils.processSubtree(pid, processor, akubraRepository);
-    }
-
-    @Override
-    public List<String> getPids(String pid) {
-        return RelsExtUtils.getPids(pid, akubraRepository);
-    }
-
-    @Override
-    public String getFirstVolumePid(String pid) {
-        // TODO use SAX
-        RelsExtWrapper relsExtWrapper = get(pid);
-        return RelsExtUtils.getFirstVolumePid(relsExtWrapper.asInputStream());
-    }
-
-    @Override
-    public String getFirstItemPid(String pid) {
-        // TODO use SAX
-        RelsExtWrapper relsExtWrapper = get(pid);
-        return RelsExtUtils.getFirstItemPid(relsExtWrapper.asInputStream());
     }
 
     private void changeRelations(String pid, Document document) throws TransformerException {

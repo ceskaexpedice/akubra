@@ -14,44 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.utils.sax;
+package org.ceskaexpedice.akubra.impl.utils.sax;
 
-import org.akubraproject.UnsupportedIdException;
-import org.akubraproject.map.IdMapper;
-import org.apache.commons.io.IOUtils;
-import org.ceskaexpedice.akubra.KnownDatastreams;
-import org.ceskaexpedice.akubra.KnownXmlFormatUris;
 import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
-import org.ceskaexpedice.akubra.core.repository.impl.AkubraDOManager;
 import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
-import org.ceskaexpedice.akubra.utils.DomUtils;
-import org.ceskaexpedice.akubra.utils.SafeSimpleDateFormat;
-import org.ceskaexpedice.fedoramodel.*;
-import org.fcrepo.common.Constants;
-import org.fcrepo.common.FaultException;
-import org.fcrepo.common.PID;
-import org.fcrepo.server.errors.MalformedPidException;
-import org.fcrepo.server.storage.lowlevel.akubra.HashPathIdMapper;
-import org.w3c.dom.Element;
-import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.*;
-import java.net.*;
-import java.nio.charset.Charset;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.GZIPInputStream;
 
 import static org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.readFromURL;
 

@@ -14,9 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.utils.pid;
+package org.ceskaexpedice.akubra.impl.utils.pid;
 
-import org.ceskaexpedice.akubra.utils.pid.Token.TokenType;
+import org.ceskaexpedice.akubra.impl.utils.pid.Token.TokenType;
 
 
 /**

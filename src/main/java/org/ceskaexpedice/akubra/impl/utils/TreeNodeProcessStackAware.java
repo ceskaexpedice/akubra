@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Pavel Stastny
+ * Copyright (C) 2012 Pavel Stastny
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,29 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.utils;
+package org.ceskaexpedice.akubra.impl.utils;
+
+import java.util.Stack;
 
 /**
- * Represents error during fedora object's tree processing
+ * Implementation can follow changes in the processing stack
  * @author pavels
  */
-public class ProcessSubtreeException extends Exception {
-
-    public ProcessSubtreeException() {
-        super();
-    }
-
-    public ProcessSubtreeException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public ProcessSubtreeException(String message) {
-        super(message);
-    }
-
-    public ProcessSubtreeException(Throwable cause) {
-        super(cause);
-    }
-
+public interface TreeNodeProcessStackAware {
     
+    /**
+     * Information about current stack 
+     * @param pidStack Current processing stack
+     */
+    public void changeProcessingStack(Stack<String> pidStack);
 }

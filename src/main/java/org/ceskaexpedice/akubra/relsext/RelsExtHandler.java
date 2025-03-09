@@ -17,8 +17,8 @@
 
 package org.ceskaexpedice.akubra.relsext;
 
-import org.ceskaexpedice.akubra.utils.ProcessSubtreeException;
-import org.ceskaexpedice.akubra.utils.TreeNodeProcessor;
+import org.ceskaexpedice.akubra.DatastreamContentWrapper;
+import org.ceskaexpedice.akubra.impl.utils.TreeNodeProcessor;
 
 import java.io.InputStream;
 import java.util.List;
@@ -33,9 +33,21 @@ public interface RelsExtHandler {
     String RDF_DESCRIPTION_ELEMENT = "Description";
     String RDF_ELEMENT = "RDF";
 
+    // ------ CRUD for the whole RELS EXT stream ------------------------------------------
+
     boolean exists(String pid);
 
-    void update(String pid, InputStream binaryContent);
+    /**
+     * Retrieves the RELS-EXT datastream content of a digital object.
+     *
+     * @param pid The persistent identifier of the object.
+     * @return A {@link DatastreamContentWrapper} containing the RELS-EXT datastream content.
+     */
+    DatastreamContentWrapper get(String pid);
+
+    void update(String pid, InputStream xmlContent);
+
+    // ------ Detailed information from RELS EXT ------------------------------------------
 
     /**
      * Checks if a relation exists for a given object.
@@ -46,6 +58,28 @@ public interface RelsExtHandler {
      * @return {@code true} if the relation exists, {@code false} otherwise.
      */
     boolean relationExists(String pid, String relation, String namespace);
+
+    String getElementValue(String pid, String xpathExpression);
+
+    String getTilesUrl(String pid);
+
+    String getResourcePid(String pid, String localName, String namespace, boolean appendPrefix);
+
+    String getModel(String pid);
+
+    String getFirstVolumePid(String pid);
+
+    String getFirstItemId(String pid);
+
+    String getFirstViewablePidFromTree(String pid);
+
+    List<String> getPidsFromTree(String pid);
+
+    List<RelsExtRelation> getRelations(String pid, String namespace);
+
+    List<RelsExtLiteral> getLiterals(String pid, String namespace);
+
+    // ------ CDU of individula relatio or literal ------------------------------------------
 
     /**
      * Adds a new relationship to the RELS-EXT datastream of a digital object.
@@ -104,25 +138,4 @@ public interface RelsExtHandler {
      */
     void removeLiteral(String pid, String relation, String namespace, String value);
 
-    /**
-     * Retrieves the RELS-EXT datastream content of a digital object.
-     *
-     * @param pid The persistent identifier of the object.
-     * @return A {@link RelsExtWrapper} containing the RELS-EXT datastream content.
-     */
-    RelsExtWrapper get(String pid);
-
-    String getTilesUrl(String pid);
-
-    String getModel(String pid);
-
-    String getFirstViewablePid(String pid);
-
-    void processSubtree(String pid, TreeNodeProcessor processor) throws ProcessSubtreeException;
-
-    List<String> getPids(String pid);
-
-    String getFirstVolumePid(String pid);
-
-    String getFirstItemPid(String pid);
 }

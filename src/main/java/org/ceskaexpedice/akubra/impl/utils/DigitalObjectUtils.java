@@ -14,30 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.utils;
+package org.ceskaexpedice.akubra.impl.utils;
 
-import java.text.FieldPosition;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
+import org.ceskaexpedice.fedoramodel.DatastreamVersionType;
+import org.ceskaexpedice.fedoramodel.DigitalObject;
 
+import java.util.logging.Logger;
+// TODO To be removed
 /**
- * SafeSimpleDateFormat
+ * DigitalObjectUtils
  */
-public class SafeSimpleDateFormat extends SimpleDateFormat {
+public class DigitalObjectUtils {
+    private static final Logger LOGGER = Logger.getLogger(DigitalObjectUtils.class.getName());
 
-    public SafeSimpleDateFormat(String pattern) {
-        super(pattern);
+    private DigitalObjectUtils() {
     }
 
-    @Override
-    public synchronized Date parse(String source) throws ParseException {
-        return super.parse(source);
+    public static DatastreamVersionType getLastStreamVersion(DigitalObject object, String streamID) {
+        return RepositoryUtils.getLastStreamVersion(object, streamID);
     }
 
-    @Override
-    public synchronized StringBuffer format(Date date, StringBuffer toAppendTo,
-            FieldPosition fieldPosition) {
-        return super.format(date, toAppendTo, fieldPosition);
-    }
 }

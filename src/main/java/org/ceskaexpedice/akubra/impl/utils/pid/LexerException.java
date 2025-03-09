@@ -1,32 +1,56 @@
 /*
- * Copyright (C) 2012 Pavel Stastny
- * 
+ * Copyright (C) 2025 Inovatika
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.utils;
-
-import java.util.Stack;
+package org.ceskaexpedice.akubra.impl.utils.pid;
 
 /**
- * Implementation can follow changes in the processing stack
  * @author pavels
+ *
+ 
+ * Window - Preferences - Java - Code Style - Code Templates
  */
-public interface TreeNodeProcessStackAware {
-    
-    /**
-     * Information about current stack 
-     * @param pidStack Current processing stack
-     */
-    public void changeProcessingStack(Stack<String> pidStack);
+public class LexerException extends Exception {
+
+	/**
+	 * 
+	 */
+	LexerException() {
+		super();
+		
+	}
+	/**
+	 * @param message
+	 */
+	LexerException(String message) {
+		super(message);
+		
+	}
+	/**
+	 * @param message
+	 * @param cause
+	 */
+	LexerException(String message, Throwable cause) {
+		super(message, cause);
+		
+	}
+	/**
+	 * @param cause
+	 */
+	LexerException(Throwable cause) {
+		super(cause);
+		
+	}
 }

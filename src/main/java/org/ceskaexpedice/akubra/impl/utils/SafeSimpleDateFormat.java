@@ -14,43 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.utils.pid;
+package org.ceskaexpedice.akubra.impl.utils;
+
+import java.text.FieldPosition;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
- * @author pavels
- *
- 
- * Window - Preferences - Java - Code Style - Code Templates
+ * SafeSimpleDateFormat
  */
-public class LexerException extends Exception {
+public class SafeSimpleDateFormat extends SimpleDateFormat {
 
-	/**
-	 * 
-	 */
-	LexerException() {
-		super();
-		
-	}
-	/**
-	 * @param message
-	 */
-	LexerException(String message) {
-		super(message);
-		
-	}
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	LexerException(String message, Throwable cause) {
-		super(message, cause);
-		
-	}
-	/**
-	 * @param cause
-	 */
-	LexerException(Throwable cause) {
-		super(cause);
-		
-	}
+    public SafeSimpleDateFormat(String pattern) {
+        super(pattern);
+    }
+
+    @Override
+    public synchronized Date parse(String source) throws ParseException {
+        return super.parse(source);
+    }
+
+    @Override
+    public synchronized StringBuffer format(Date date, StringBuffer toAppendTo,
+            FieldPosition fieldPosition) {
+        return super.format(date, toAppendTo, fieldPosition);
+    }
 }

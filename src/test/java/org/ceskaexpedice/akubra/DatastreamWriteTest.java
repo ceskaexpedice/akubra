@@ -22,7 +22,7 @@ import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
 import org.ceskaexpedice.test.FunctionalTestsUtils;
-import org.ceskaexpedice.akubra.utils.Dom4jUtils;
+import org.ceskaexpedice.akubra.impl.utils.Dom4jUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.dom4j.Document;
 import org.junit.jupiter.api.*;
@@ -36,7 +36,6 @@ import java.nio.file.Path;
 import java.util.Properties;
 
 import static org.ceskaexpedice.akubra.AkubraTestsUtils.*;
-import static org.ceskaexpedice.test.FunctionalTestsUtils.*;
 import static org.mockito.Mockito.*;
 
 public class DatastreamWriteTest {

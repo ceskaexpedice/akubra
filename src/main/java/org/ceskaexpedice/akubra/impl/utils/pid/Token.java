@@ -14,23 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.utils.sax;
+package org.ceskaexpedice.akubra.impl.utils.pid;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
+class Token {
 
-class FindDatastreamHandler extends DefaultHandler {
-    private final String dsId;
+	private TokenType type;
+	private String value;
 
-    FindDatastreamHandler(String dsId) {
-        this.dsId = dsId;
-    }
+	Token(TokenType type, String value) {
+		super();
+		this.type = type;
+		this.value = value;
+	}
 
-    @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        if ("datastream".equals(qName) && dsId.equals(attributes.getValue("ID"))) {
-            throw new SAXException("Found"); // Stop parsing early
-        }
-    }
+	TokenType getType() {
+		return type;
+	}
+
+	String getValue() {
+		return value;
+	}
+
+	enum TokenType {
+		ALPHA, DIGIT, HEXDIGIT, PERCENT, DOT, DOUBLEDOT, MINUS, TILDA, EOI, UNDERSCOPE,LPAREN,RPAREN, SPACE, TAB, NEWLINE, AT, DIV
+	}
 }

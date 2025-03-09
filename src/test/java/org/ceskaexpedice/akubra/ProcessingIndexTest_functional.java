@@ -24,7 +24,7 @@ import org.ceskaexpedice.akubra.processingindex.ProcessingIndexQueryParameters;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexRelation;
 import org.ceskaexpedice.akubra.relsext.KnownRelations;
 import org.ceskaexpedice.test.FunctionalTestsUtils;
-import org.ceskaexpedice.akubra.utils.ProcessingIndexUtils;
+import org.ceskaexpedice.akubra.impl.utils.ProcessingIndexUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

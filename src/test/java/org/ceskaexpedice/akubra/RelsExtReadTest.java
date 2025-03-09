@@ -20,7 +20,6 @@ import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.relsext.RelsExtLiteral;
 import org.ceskaexpedice.akubra.relsext.RelsExtRelation;
-import org.ceskaexpedice.akubra.relsext.RelsExtWrapper;
 import org.ceskaexpedice.test.FunctionalTestsUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -55,12 +54,20 @@ public class RelsExtReadTest {
     }
 
     @Test
-    void testRelsExtGet() {
-        RelsExtWrapper relsExtWrapper = akubraRepository.re().get(PID_MONOGRAPH);
+    void testGet() {
+        DatastreamContentWrapper relsExtWrapper = akubraRepository.re().get(PID_MONOGRAPH);
         assertNotNull(relsExtWrapper);
-        List<RelsExtRelation> relations = relsExtWrapper.getRelations(null);
+    }
+
+    @Test
+    void testGetRelations() {
+        List<RelsExtRelation> relations = akubraRepository.re().getRelations(PID_MONOGRAPH, null);
         assertEquals(37, relations.size());
-        List<RelsExtLiteral> literals = relsExtWrapper.getLiterals(null);
+    }
+
+    @Test
+    void testGetLiterals() {
+        List<RelsExtLiteral> literals = akubraRepository.re().getLiterals(PID_MONOGRAPH, null);
         assertEquals(5, literals.size());
     }
 

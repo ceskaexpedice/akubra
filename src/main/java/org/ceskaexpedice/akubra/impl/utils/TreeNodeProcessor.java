@@ -1,4 +1,4 @@
-package org.ceskaexpedice.akubra.utils;
+package org.ceskaexpedice.akubra.impl.utils;
 
 /**
  * Callbacks about subtree processing 
@@ -9,9 +9,8 @@ public interface TreeNodeProcessor {
      * Process one object 
      * @param pid  PID of object
      * @param level Level of processing
-     * @throws ProcessSubtreeException 
      */
-    public void process(String pid, int level) throws ProcessSubtreeException;
+    public void process(String pid, int level);
 
     /**
      * Returns true if the processing algorithm should skip current branch 

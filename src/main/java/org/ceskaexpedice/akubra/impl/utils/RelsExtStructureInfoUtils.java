@@ -1,4 +1,4 @@
-package org.ceskaexpedice.akubra.utils;
+package org.ceskaexpedice.akubra.impl.utils;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.client.solrj.SolrServerException;
