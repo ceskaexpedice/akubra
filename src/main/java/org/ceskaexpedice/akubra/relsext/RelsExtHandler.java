@@ -18,7 +18,6 @@
 package org.ceskaexpedice.akubra.relsext;
 
 import org.ceskaexpedice.akubra.DatastreamContentWrapper;
-import org.ceskaexpedice.akubra.impl.utils.TreeNodeProcessor;
 
 import java.io.InputStream;
 import java.util.List;
@@ -71,15 +70,15 @@ public interface RelsExtHandler {
 
     String getFirstItemId(String pid);
 
-    String getFirstViewablePidFromTree(String pid);
+    String getFirstViewablePidInTree(String pid);
 
-    List<String> getPidsFromTree(String pid);
+    List<String> getPidsInTree(String pid);
 
     List<RelsExtRelation> getRelations(String pid, String namespace);
 
     List<RelsExtLiteral> getLiterals(String pid, String namespace);
 
-    // ------ CDU of individula relatio or literal ------------------------------------------
+    // ------ CDU of individual relation or literal ------------------------------------------
 
     /**
      * Adds a new relationship to the RELS-EXT datastream of a digital object.

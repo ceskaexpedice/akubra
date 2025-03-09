@@ -111,12 +111,12 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
     }
 
     @Override
-    public String getFirstViewablePidFromTree(String pid) {
+    public String getFirstViewablePidInTree(String pid) {
         return RelsExtUtils.findFirstViewablePidFromTree(pid, akubraRepository);
     }
 
     @Override
-    public List<String> getPidsFromTree(String pid) {
+    public List<String> getPidsInTree(String pid) {
         return RelsExtUtils.getPidsFromTree(pid, akubraRepository);
     }
 
