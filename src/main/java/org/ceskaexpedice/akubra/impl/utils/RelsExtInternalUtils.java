@@ -358,7 +358,7 @@ public final class RelsExtInternalUtils {
                             if (!processor.skipBranch(objectId, level + 1)) {
                                 Document iterationgRelsExt = null;
                                 try {
-                                    iterationgRelsExt = akubraRepository.getDatastreamContent(objectId, KnownDatastreams.RELS_EXT).asDom(false);
+                                    iterationgRelsExt = akubraRepository.re().get(objectId).asDom(false);
                                 } catch (Exception ex) {
                                     LOGGER.warning("could not read RELS-EXT, skipping branch [" + (level + 1)
                                             + "] and pid (" + objectId + "):" + ex);

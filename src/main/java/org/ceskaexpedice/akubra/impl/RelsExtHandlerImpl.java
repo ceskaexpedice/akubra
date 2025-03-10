@@ -104,16 +104,6 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
     }
 
     @Override
-    public String getFirstVolumePid(String pid) {
-        return getResourcePid(pid, "hasVolume", RepositoryNamespaces.KRAMERIUS_URI, true);
-    }
-
-    @Override
-    public String getFirstItemPid(String pid) {
-        return getResourcePid(pid, "hasItem", RepositoryNamespaces.KRAMERIUS_URI, false);
-    }
-
-    @Override
     public void processInTree(String pid, TreeNodeProcessor processor) {
         RelsExtInternalUtils.processInTree(pid, processor, akubraRepository);
     }

@@ -66,10 +66,6 @@ public interface RelsExtHandler {
 
     String getModel(String pid);
 
-    String getFirstVolumePid(String pid);
-
-    String getFirstItemPid(String pid);
-
     void processInTree(String pid, TreeNodeProcessor processor);
 
     String getFirstViewablePidInTree(String pid);

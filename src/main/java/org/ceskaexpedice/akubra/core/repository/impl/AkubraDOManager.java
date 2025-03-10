@@ -110,10 +110,8 @@ public class AkubraDOManager {
     }
 
     DigitalObject readObjectFromStorage(String pid) {
-        // TODO AK_NEW
         DigitalObject retval = null;
         Object obj;
-        //Lock lock = getReadLock(pid);
         try (InputStream inputStream = this.storage.retrieveObject(pid);) {
             Unmarshaller unmarshaller = unmarshallerPool.take();
             obj = unmarshaller.unmarshal(inputStream);
@@ -122,8 +120,6 @@ public class AkubraDOManager {
             return null;
         } catch (Exception e) {
             throw new RepositoryException(e);
-        } finally {
-          //  lock.unlock();
         }
         retval = (DigitalObject) obj;
         return retval;
@@ -138,26 +134,20 @@ public class AkubraDOManager {
     }
 
     InputStream retrieveObject(String objectKey) {
-        //Lock lock = getReadLock(objectKey);
         try {
             return storage.retrieveObject(objectKey);
         } catch (LowlevelStorageException e) {
             throw new RepositoryException(e);
-        } finally {
-          //  lock.unlock();
         }
     }
 
     byte[] retrieveObjectBytes(String pid) {
-        // Lock lock = getReadLock(objectKey);
         try (InputStream io = storage.retrieveObject(pid)) {
             return IOUtils.toByteArray(io);
         } catch (ObjectNotInLowlevelStorageException e) {
             return null;
         } catch (Exception e) {
             throw new RepositoryException(e);
-        } finally {
-            //   lock.unlock();
         }
     }
 
