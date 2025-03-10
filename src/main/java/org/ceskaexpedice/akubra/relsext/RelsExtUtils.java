@@ -39,8 +39,8 @@ public final class RelsExtUtils {
     private RelsExtUtils() {
     }
 
-    public static Element getRELSEXTFromGivenFOXML(Document document) {
-        List<Element> elms = DomUtils.getElementsRecursive(document.getDocumentElement(), (elm) -> {
+    public static Element getRELSEXTFromGivenFOXML(Element relsExt) {
+        List<Element> elms = DomUtils.getElementsRecursive(relsExt, (elm) -> {
             if (elm.getLocalName().equals("datastream")) {
                 String id = elm.getAttribute("ID");
                 return id.equals(KnownDatastreams.RELS_EXT.toString());
@@ -52,10 +52,10 @@ public final class RelsExtUtils {
         } else return null;
     }
 
-    public static String getModel(Element el) {
+    public static String getModel(Element relsExt) {
         //<hasModel xmlns="
         try {
-            Element foundElement = DomUtils.findElement(el, "hasModel", RepositoryNamespaces.FEDORA_MODELS_URI);
+            Element foundElement = DomUtils.findElement(relsExt, "hasModel", RepositoryNamespaces.FEDORA_MODELS_URI);
             if (foundElement != null) {
                 String sform = foundElement.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
                 PIDParser pidParser = new PIDParser(sform);
@@ -85,21 +85,21 @@ public final class RelsExtUtils {
         }
     }
 
-    static Element getRDFDescriptionElement(Element element) {
-        Element foundElement = DomUtils.findElement(element, "Description", RepositoryNamespaces.RDF_NAMESPACE_URI);
+    static Element getRDFDescriptionElement(Element relsExt) {
+        Element foundElement = DomUtils.findElement(relsExt, "Description", RepositoryNamespaces.RDF_NAMESPACE_URI);
         return foundElement;
     }
 
-    public static List<String> getLicenses(Element document) {
-        List<Element> elms = DomUtils.getElementsRecursive(document, (elm) -> {
+    public static List<String> getLicenses(Element relsExt) {
+        List<Element> elms = DomUtils.getElementsRecursive(relsExt, (elm) -> {
             return (elm.getLocalName().equals("license"));
         });
         List<String> collect = elms.stream().map(Element::getTextContent).collect(Collectors.toList());
         return collect;
     }
 
-    public static List<String> getContainsLicenses(Element document) {
-        List<Element> elms = DomUtils.getElementsRecursive(document, (elm) -> {
+    public static List<String> getContainsLicenses(Element relsExt) {
+        List<Element> elms = DomUtils.getElementsRecursive(relsExt, (elm) -> {
             return (elm.getLocalName().equals("containsLicense"));
         });
         List<String> collect = elms.stream().map(Element::getTextContent).collect(Collectors.toList());

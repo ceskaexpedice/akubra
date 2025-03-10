@@ -29,7 +29,6 @@ import java.util.List;
  * @author pavels, petrp
  */
 public interface RelsExtHandler {
-    String CACHE_RELS_EXT_LITERAL = "kramerius4://deepZoomCache";
     String RDF_DESCRIPTION_ELEMENT = "Description";
     String RDF_ELEMENT = "RDF";
 
