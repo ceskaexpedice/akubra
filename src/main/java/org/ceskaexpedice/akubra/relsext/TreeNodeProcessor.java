@@ -1,4 +1,4 @@
-package org.ceskaexpedice.akubra.impl.utils;
+package org.ceskaexpedice.akubra.relsext;
 
 /**
  * Callbacks about subtree processing 

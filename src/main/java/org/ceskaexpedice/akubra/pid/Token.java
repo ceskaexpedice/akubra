@@ -14,43 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.impl.utils.pid;
+package org.ceskaexpedice.akubra.pid;
 
-/**
- * @author pavels
- *
- 
- * Window - Preferences - Java - Code Style - Code Templates
- */
-public class LexerException extends Exception {
+class Token {
 
-	/**
-	 * 
-	 */
-	LexerException() {
+	private TokenType type;
+	private String value;
+
+	Token(TokenType type, String value) {
 		super();
-		
+		this.type = type;
+		this.value = value;
 	}
-	/**
-	 * @param message
-	 */
-	LexerException(String message) {
-		super(message);
-		
+
+	TokenType getType() {
+		return type;
 	}
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	LexerException(String message, Throwable cause) {
-		super(message, cause);
-		
+
+	String getValue() {
+		return value;
 	}
-	/**
-	 * @param cause
-	 */
-	LexerException(Throwable cause) {
-		super(cause);
-		
+
+	enum TokenType {
+		ALPHA, DIGIT, HEXDIGIT, PERCENT, DOT, DOUBLEDOT, MINUS, TILDA, EOI, UNDERSCOPE,LPAREN,RPAREN, SPACE, TAB, NEWLINE, AT, DIV
 	}
 }

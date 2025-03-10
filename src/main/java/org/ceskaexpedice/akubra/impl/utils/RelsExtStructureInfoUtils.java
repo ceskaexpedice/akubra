@@ -5,6 +5,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.ceskaexpedice.akubra.AkubraRepository;
 import org.ceskaexpedice.akubra.KnownDatastreams;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexRelation;
+import org.ceskaexpedice.akubra.processingindex.ProcessingIndexUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -24,14 +25,14 @@ public final class RelsExtStructureInfoUtils {
     
     private RelsExtStructureInfoUtils() {}
 
-    public static JSONObject pidAndRelationToJson(String pid, String relation) {
+    private static JSONObject pidAndRelationToJson(String pid, String relation) {
         JSONObject json = new JSONObject();
         json.put("pid", pid);
         json.put("relation", relation);
         return json;
     }
 
-    public static JSONObject extractStructureInfo(AkubraRepository akubraRepository, String pid) throws SolrServerException, IOException {
+    public static JSONObject extractStructureInfo(AkubraRepository akubraRepository, String pid) {
         JSONObject structure = new JSONObject();
         //parents
         JSONObject parents = new JSONObject();

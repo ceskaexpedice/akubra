@@ -22,12 +22,14 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.relsext.KnownRelations;
 import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
-import org.ceskaexpedice.akubra.impl.utils.pid.LexerException;
-import org.ceskaexpedice.akubra.impl.utils.pid.PIDParser;
+import org.ceskaexpedice.akubra.pid.LexerException;
+import org.ceskaexpedice.akubra.pid.PIDParser;
+import org.ceskaexpedice.akubra.relsext.TreeNodeProcessStackAware;
+import org.ceskaexpedice.akubra.relsext.TreeNodeProcessor;
+import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.w3c.dom.*;
 
 import javax.xml.xpath.*;
-import java.io.InputStream;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,10 +38,10 @@ import java.util.stream.Collectors;
 /**
  * Utility class to handle various RELS EXT related tasks
  */
-public final class RelsExtUtils {
-    static final Logger LOGGER = Logger.getLogger(RelsExtUtils.class.getName());
+public final class RelsExtInternalUtils {
+    static final Logger LOGGER = Logger.getLogger(RelsExtInternalUtils.class.getName());
 
-    private RelsExtUtils() {
+    private RelsExtInternalUtils() {
     }
 
     public static boolean relationsExists(Document relsExt, String relation, String namespace) {
@@ -91,24 +93,6 @@ public final class RelsExtUtils {
             throw new RepositoryException(e);
         }
     }
-
-    /* TODO
-    public static String getTilesUrl(Document relsExt) {
-        try {
-            XPathFactory xpfactory = XPathFactory.newInstance();
-            XPath xpath = xpfactory.newXPath();
-            xpath.setNamespaceContext(new RepositoryNamespaceContext());
-            XPathExpression expr = xpath.compile("//kramerius:tiles-url/text()");
-            Object tiles = expr.evaluate(relsExt.getDocumentElement(), XPathConstants.NODE);
-            if (tiles != null) {
-                String data = ((Text) tiles).getData();
-                return data != null ? data.trim() : null;
-            } else return null;
-        } catch (XPathExpressionException e) {
-            throw new RepositoryException(e);
-        }
-    }*/
-
 
     /* TODO
     public static String getModel(Element el) {
@@ -175,7 +159,7 @@ public final class RelsExtUtils {
 
     public static List<String> getPidsFromTree(String pid, AkubraRepository akubraRepository) {
         final List<String> retval = new ArrayList<>();
-        processSubtree(pid, new TreeNodeProcessor() {
+        processInTree(pid, new TreeNodeProcessor() {
             @Override
             public void process(String pid, int level) {
                 retval.add(pid);
@@ -196,7 +180,7 @@ public final class RelsExtUtils {
 
     public static String findFirstViewablePidFromTree(String pid, AkubraRepository akubraRepository) {
         final List<String> foundPids = new ArrayList<String>();
-        processSubtree(pid, new TreeNodeProcessor() {
+        processInTree(pid, new TreeNodeProcessor() {
             boolean breakProcess = false;
             int previousLevel = 0;
 
@@ -233,7 +217,7 @@ public final class RelsExtUtils {
         return foundPids.isEmpty() ? null : foundPids.get(0);
     }
 
-    static void processSubtree(String pid, TreeNodeProcessor processor, AkubraRepository akubraRepository) {
+    public static void processInTree(String pid, TreeNodeProcessor processor, AkubraRepository akubraRepository) {
         try {
             XPathFactory factory = XPathFactory.newInstance();
             Document relsExt = null;
@@ -248,19 +232,17 @@ public final class RelsExtUtils {
                 LOGGER.warning("could not read root RELS-EXT, skipping object  (" + pid + "):" + ex);
             }
             if (!processor.skipBranch(pid, 0)) {
-                processSubtreeInternal(pid, relsExt, processor, 0, new Stack<String>(), akubraRepository, factory);
+                processInTreeInternal(pid, relsExt, processor, 0, new Stack<String>(), akubraRepository, factory);
             }
         } catch (Exception e) {
             throw new RepositoryException(e);
         }
     }
 
-    /* TODO
-    static List<Pair<String, String>> getRelations(InputStream documentS) {
-        Document document = DomUtils.streamToDocument(documentS);
+    public static List<Pair<String, String>> getRelations(Document relsExt) {
         List<Pair<String, String>> pairs = new ArrayList<>();
         List<String> names = Arrays.stream(KnownRelations.values()).map(KnownRelations::toString).collect(Collectors.toList());
-        List<Element> elms = DomUtils.getElementsRecursive(document.getDocumentElement(), new DomUtils.ElementsFilter() {
+        List<Element> elms = DomUtils.getElementsRecursive(relsExt.getDocumentElement(), new DomUtils.ElementsFilter() {
 
             @Override
             public boolean acceptElement(Element element) {
@@ -288,8 +270,6 @@ public final class RelsExtUtils {
 
         return pairs;
     }
-
-     */
 
     public static List<Triple<String, String, String>> getRelations(Document relsExt, String namespace) {
         try {
@@ -340,8 +320,8 @@ public final class RelsExtUtils {
         }
     }
 
-    private static boolean processSubtreeInternal(String pid, Document relsExt, TreeNodeProcessor processor, int level,
-                                                  Stack<String> pidStack, AkubraRepository akubraRepository, XPathFactory xPathFactory)
+    private static boolean processInTreeInternal(String pid, Document relsExt, TreeNodeProcessor processor, int level,
+                                                 Stack<String> pidStack, AkubraRepository akubraRepository, XPathFactory xPathFactory)
             throws XPathExpressionException, LexerException {
         processor.process(pid, level);
         boolean breakProcessing = processor.breakProcessing(pid, level);
@@ -383,7 +363,7 @@ public final class RelsExtUtils {
                                     LOGGER.warning("could not read RELS-EXT, skipping branch [" + (level + 1)
                                             + "] and pid (" + objectId + "):" + ex);
                                 }
-                                breakProcessing = processSubtreeInternal(pidParser.getObjectPid(), iterationgRelsExt,
+                                breakProcessing = processInTreeInternal(pidParser.getObjectPid(), iterationgRelsExt,
                                         processor, level + 1, pidStack, akubraRepository, xPathFactory);
 
                                 if (breakProcessing) {
@@ -406,60 +386,6 @@ public final class RelsExtUtils {
         if (processor instanceof TreeNodeProcessStackAware) {
             TreeNodeProcessStackAware stackAware = (TreeNodeProcessStackAware) processor;
             stackAware.changeProcessingStack(pidStack);
-        }
-    }
-
-    // ------- TODO NOT USED
-    static Element getRELSEXTFromGivenFOXML(Document document) {
-        List<Element> elms = DomUtils.getElementsRecursive(document.getDocumentElement(), (elm) -> {
-            if (elm.getLocalName().equals("datastream")) {
-                String id = elm.getAttribute("ID");
-                return id.equals(KnownDatastreams.RELS_EXT.toString());
-            }
-            return false;
-        });
-        if (elms.size() == 1) {
-            return elms.get(0);
-        } else return null;
-    }
-
-
-    static Element getRDFDescriptionElement(Element element) {
-        Element foundElement = DomUtils.findElement(element, "Description", RepositoryNamespaces.RDF_NAMESPACE_URI);
-        return foundElement;
-    }
-
-    static List<String> getLicenses(Document document) {
-        return getLicenses(document.getDocumentElement());
-    }
-
-    static List<String> getLicenses(Element document) {
-        List<Element> elms = DomUtils.getElementsRecursive(document, (elm) -> {
-            return (elm.getLocalName().equals("license"));
-        });
-        List<String> collect = elms.stream().map(Element::getTextContent).collect(Collectors.toList());
-        return collect;
-    }
-
-    static List<String> getContainsLicenses(Document document) {
-        return getContainsLicenses(document.getDocumentElement());
-    }
-
-    static List<String> getContainsLicenses(Element document) {
-        List<Element> elms = DomUtils.getElementsRecursive(document, (elm) -> {
-            return (elm.getLocalName().equals("containsLicense"));
-        });
-        List<String> collect = elms.stream().map(Element::getTextContent).collect(Collectors.toList());
-        return collect;
-    }
-
-    static void addRDFLiteral(Element relsExt, String license, String elmName) {
-        Element rdfDescriptionElement = getRDFDescriptionElement(relsExt);
-        if (rdfDescriptionElement != null) {
-            Document document = rdfDescriptionElement.getOwnerDocument();
-            Element containsLicense = document.createElementNS(RepositoryNamespaces.ONTOLOGY_RELATIONSHIP_NAMESPACE_URI, elmName);
-            containsLicense.setTextContent(license);
-            rdfDescriptionElement.appendChild(containsLicense);
         }
     }
 

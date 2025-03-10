@@ -19,7 +19,7 @@ package org.ceskaexpedice.akubra;
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.test.FunctionalTestsUtils;
-import org.ceskaexpedice.akubra.impl.utils.DomUtils;
+import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.akubra.impl.utils.StringUtils;
 import org.dom4j.Document;
 import org.junit.jupiter.api.AfterAll;

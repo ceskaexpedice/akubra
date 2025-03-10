@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.impl.utils;
+package org.ceskaexpedice.akubra.processingindex;
 
 
 import com.google.gson.JsonArray;
@@ -25,9 +25,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.ceskaexpedice.akubra.AkubraRepository;
 import org.ceskaexpedice.akubra.RepositoryException;
-import org.ceskaexpedice.akubra.processingindex.ProcessingIndexItem;
-import org.ceskaexpedice.akubra.processingindex.ProcessingIndexQueryParameters;
-import org.ceskaexpedice.akubra.processingindex.ProcessingIndexRelation;
+import org.ceskaexpedice.akubra.impl.utils.RelsExtStructureInfoUtils;
+import org.ceskaexpedice.akubra.impl.utils.RelsExtInternalUtils;
+import org.ceskaexpedice.akubra.impl.utils.StringUtils;
 import org.ceskaexpedice.akubra.relsext.KnownRelations;
 import org.json.JSONObject;
 
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
  * Utils for various Processing Index related tasks
  */
 public final class ProcessingIndexUtils {
-    public static final Logger LOGGER = Logger.getLogger(RelsExtUtils.class.getName());
+    public static final Logger LOGGER = Logger.getLogger(RelsExtInternalUtils.class.getName());
 
     private static List<KnownRelations> OWN_RELATIONS = Arrays.asList(new KnownRelations[]{
             KnownRelations.HAS_PAGE, KnownRelations.HAS_UNIT, KnownRelations.HAS_VOLUME, KnownRelations.HAS_ITEM,
@@ -367,7 +367,7 @@ public final class ProcessingIndexUtils {
         try {
             JSONObject extractStructureInfo = RelsExtStructureInfoUtils.extractStructureInfo(akubraRepository, pid);
             return StringUtils.stringToJsonObject(extractStructureInfo.toString());
-        } catch (RepositoryException  | SolrServerException | IOException e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE,e.getMessage(),e);
             return null;
         }

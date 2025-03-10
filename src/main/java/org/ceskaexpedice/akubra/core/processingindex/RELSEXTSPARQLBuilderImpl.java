@@ -24,9 +24,9 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.RepositoryNamespaceContext;
 import org.ceskaexpedice.akubra.RepositoryNamespaces;
-import org.ceskaexpedice.akubra.impl.utils.DomUtils;
+import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.akubra.impl.utils.StringUtils;
-import org.ceskaexpedice.akubra.impl.utils.pid.PIDParser;
+import org.ceskaexpedice.akubra.pid.PIDParser;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 

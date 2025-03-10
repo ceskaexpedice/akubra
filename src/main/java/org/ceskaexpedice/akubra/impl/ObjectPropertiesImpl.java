@@ -20,7 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ceskaexpedice.akubra.ObjectProperties;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
-import org.ceskaexpedice.akubra.impl.utils.Dom4jUtils;
+import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -28,7 +28,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.logging.Logger;
 
-import static org.ceskaexpedice.akubra.impl.utils.Dom4jUtils.extractProperty;
+import static org.ceskaexpedice.akubra.utils.Dom4jUtils.extractProperty;
 
 /**
  * ObjectPropertiesImpl

@@ -18,8 +18,8 @@ package org.ceskaexpedice.akubra.impl;
 
 import org.ceskaexpedice.akubra.AkubraRepository;
 import org.ceskaexpedice.akubra.DigitalObjectWrapper;
-import org.ceskaexpedice.akubra.impl.utils.Dom4jUtils;
-import org.ceskaexpedice.akubra.impl.utils.DomUtils;
+import org.ceskaexpedice.akubra.utils.Dom4jUtils;
+import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.akubra.impl.utils.StringUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.w3c.dom.Document;
