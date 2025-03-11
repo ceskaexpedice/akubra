@@ -21,9 +21,10 @@ import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
+import org.ceskaexpedice.akubra.misc.MiscHandler;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
-import org.ceskaexpedice.akubra.impl.utils.sax.SaxUtils;
+import org.ceskaexpedice.akubra.impl.utils.InternalSaxUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 
 import java.io.IOException;
@@ -42,10 +43,12 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     private CoreRepository coreRepository;
     private RelsExtHandler relsExtHandler;
+    private MiscHandler miscHandler;
 
     public AkubraRepositoryImpl(CoreRepository coreRepository) {
         this.coreRepository = coreRepository;
         this.relsExtHandler = new RelsExtHandlerImpl(this);
+        this.miscHandler = new MiscHandlerImpl(this);
     }
 
     @Override
@@ -214,7 +217,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public boolean datastreamExists(String pid, String dsId) {
-        boolean exists = SaxUtils.containsDatastream(get(pid).asInputStream(), dsId);
+        boolean exists = InternalSaxUtils.datastreamExists(get(pid).asInputStream(), dsId);
         return exists;
     }
 
@@ -242,7 +245,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
         if(digitalObjectWrapper == null) {
             return null;
         }
-        InputStream streamContent = SaxUtils.getStreamContent(digitalObjectWrapper.asInputStream(), dsId, coreRepository);
+        InputStream streamContent = InternalSaxUtils.getDatastreamContent(digitalObjectWrapper.asInputStream(), dsId, coreRepository);
         if(streamContent == null) {
             return null;
         }
@@ -291,6 +294,11 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     @Override
     public RelsExtHandler re() {
         return relsExtHandler;
+    }
+
+    @Override
+    public MiscHandler mi() {
+        return miscHandler;
     }
 
     @Override

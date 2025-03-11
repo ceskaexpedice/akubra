@@ -14,9 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.impl.utils.sax;
+package org.ceskaexpedice.akubra.impl.utils.saxhandlers;
 
 import org.apache.commons.io.IOUtils;
+import org.ceskaexpedice.akubra.impl.utils.InternalSaxUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -25,7 +26,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 
-class StreamContentHandler extends DefaultHandler {
+public class GetDatastreamContentSaxHandler extends DefaultHandler {
     private final String targetId;
 
     private boolean insideTargetDatastream;
@@ -37,7 +38,7 @@ class StreamContentHandler extends DefaultHandler {
     private String contentLocationType;
     private StringWriter xmlContentWriter;
 
-    StreamContentHandler(String targetId) {
+    public GetDatastreamContentSaxHandler(String targetId) {
         this.targetId = targetId;
     }
 
@@ -53,7 +54,7 @@ class StreamContentHandler extends DefaultHandler {
             contentLocationRef = attributes.getValue("REF");
             contentLocationType = attributes.getValue("TYPE");
             // Stop parsing early if contentLocation is found
-            throw new SAXException("STOP_PARSING");
+            throw new SAXException(InternalSaxUtils.FOUND);
         }
         // Start capturing <xmlContent> but **skip writing the root xmlContent tag**
         if (insideDatastreamVersion && "xmlContent".equals(qName)) {
@@ -104,11 +105,11 @@ class StreamContentHandler extends DefaultHandler {
         }
     }
 
-    String getContentLocationRef() {
+    public String getContentLocationRef() {
         return contentLocationRef;
     }
 
-    String getContentLocationType() {
+    public String getContentLocationType() {
         return contentLocationType;
     }
 

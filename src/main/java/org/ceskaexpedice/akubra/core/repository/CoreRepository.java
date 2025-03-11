@@ -29,6 +29,7 @@ import java.util.concurrent.locks.Lock;
  * It also handles repository object locks and data marshaling operations.
  */
 public interface CoreRepository {
+    String LOCAL_REF_PREFIX = "http://local.fedora.server/fedora/get/";
 
     /**
      * Checks if a digital object exists in the repository and whether it is a raw object.

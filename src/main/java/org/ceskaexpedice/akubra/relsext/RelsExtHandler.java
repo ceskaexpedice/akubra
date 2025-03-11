@@ -62,6 +62,10 @@ public interface RelsExtHandler {
 
     String getTilesUrl(String pid);
 
+    String getPidOfFirstChild(String pid);
+
+    String getFirstReplicatedFrom(String pid);
+
     String getResourcePid(String pid, String localName, String namespace, boolean appendPrefix);
 
     String getModel(String pid);
@@ -81,7 +85,6 @@ public interface RelsExtHandler {
     JSONObject extractStructureInfo(String pid);
 
     // ------ CDU of individual relation or literal ------------------------------------------
-
 
     /**
      * Adds a new relationship to the RELS-EXT datastream of a digital object.

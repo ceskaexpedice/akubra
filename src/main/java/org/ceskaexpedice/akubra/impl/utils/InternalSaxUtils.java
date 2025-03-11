@@ -14,11 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.impl.utils.sax;
+package org.ceskaexpedice.akubra.impl.utils;
 
 import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
-import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
+import org.ceskaexpedice.akubra.impl.utils.saxhandlers.DatastreamExistsSaxHandler;
+import org.ceskaexpedice.akubra.impl.utils.saxhandlers.GetDatastreamContentSaxHandler;
+import org.ceskaexpedice.akubra.impl.utils.saxhandlers.GetModsPartTypeSaxHandler;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.SAXParser;
@@ -26,23 +28,26 @@ import javax.xml.parsers.SAXParserFactory;
 import java.io.*;
 import java.util.logging.Logger;
 
+import static org.ceskaexpedice.akubra.core.repository.CoreRepository.LOCAL_REF_PREFIX;
 import static org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.readFromURL;
 
-public final class SaxUtils {
-    private static final Logger LOGGER = Logger.getLogger(SaxUtils.class.getName());
+public final class InternalSaxUtils {
+    private static final Logger LOGGER = Logger.getLogger(InternalSaxUtils.class.getName());
 
-    private SaxUtils() {
+    public static final String FOUND = "FOUND";
+
+    private InternalSaxUtils() {
     }
 
-    public static InputStream getStreamContent(InputStream foxml, String dsId, CoreRepository coreRepository) {
+    public static InputStream getDatastreamContent(InputStream foxml, String dsId, CoreRepository coreRepository) {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser saxParser = factory.newSAXParser();
-            StreamContentHandler handler = new StreamContentHandler(dsId);
+            GetDatastreamContentSaxHandler handler = new GetDatastreamContentSaxHandler(dsId);
             try {
                 saxParser.parse(foxml, handler);
             } catch (SAXException e) {
-                if (!"STOP_PARSING".equals(e.getMessage())) {
+                if (!FOUND.equals(e.getMessage())) {
                     throw e; // Only propagate real errors
                 }
             }
@@ -51,8 +56,8 @@ public final class SaxUtils {
                 String ref = handler.getContentLocationRef();
                 String type = handler.getContentLocationType();
                 if ("URL".equals(type)) {
-                    if (ref.startsWith(RepositoryUtils.LOCAL_REF_PREFIX)) {
-                        String[] refArray = ref.replace(RepositoryUtils.LOCAL_REF_PREFIX, "").split("/");
+                    if (ref.startsWith(LOCAL_REF_PREFIX)) {
+                        String[] refArray = ref.replace(LOCAL_REF_PREFIX, "").split("/");
                         if (refArray.length == 2) {
                             return coreRepository.retrieveDatastream(refArray[0] + "+" + refArray[1] + "+" + refArray[1] + ".0");
                         } else {
@@ -75,18 +80,36 @@ public final class SaxUtils {
         }
     }
 
-    public static boolean containsDatastream(InputStream foxml, String datastreamId) {
+    public static boolean datastreamExists(InputStream foxml, String datastreamId) {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser saxParser = factory.newSAXParser();
-            FindDatastreamHandler handler = new FindDatastreamHandler(datastreamId);
+            DatastreamExistsSaxHandler handler = new DatastreamExistsSaxHandler(datastreamId);
             saxParser.parse(foxml, handler);
         } catch (SAXException e) {
-            return "Found".equals(e.getMessage()); // Catches the forced stop
+            return FOUND.equals(e.getMessage());
         } catch (Exception e) {
             throw new RepositoryException(e);
         }
-        return false; // If parsing completes, datastream was not found
+        return false;
+    }
+
+    public static String getModsPartType(InputStream foxml) {
+        try {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser saxParser = factory.newSAXParser();
+            GetModsPartTypeSaxHandler handler = new GetModsPartTypeSaxHandler();
+            try {
+                saxParser.parse(foxml, handler);
+            } catch (SAXException e) {
+                if (!FOUND.equals(e.getMessage())) {
+                    throw e;
+                }
+            }
+            return handler.getPartType();
+        } catch (Exception e) {
+            throw new RepositoryException("Error processing MODS XML: " + e.getMessage(), e);
+        }
     }
 
 }

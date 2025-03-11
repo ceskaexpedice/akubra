@@ -19,8 +19,10 @@ package org.ceskaexpedice.akubra.impl;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.ceskaexpedice.akubra.*;
-import org.ceskaexpedice.akubra.impl.utils.RelsExtInternalUtils;
-import org.ceskaexpedice.akubra.impl.utils.RelsExtStructureInfoUtils;
+import org.ceskaexpedice.akubra.impl.utils.relsext.RelsExtInternalDomUtils;
+import org.ceskaexpedice.akubra.impl.utils.relsext.RelsExtInternalSaxUtils;
+import org.ceskaexpedice.akubra.impl.utils.relsext.RelsExtProcessTreeDomUtils;
+import org.ceskaexpedice.akubra.impl.utils.relsext.StructureInfoDom4jUtils;
 import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
 import org.ceskaexpedice.akubra.relsext.RelsExtLiteral;
 import org.ceskaexpedice.akubra.relsext.RelsExtRelation;
@@ -76,14 +78,14 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
         if(datastreamContent == null) {
             return false;
         }
-        return RelsExtInternalUtils.relationsExists(datastreamContent.asDom(true), relation, namespace);
+        return RelsExtInternalDomUtils.relationsExists(datastreamContent.asDom(true), relation, namespace);
     }
 
     @Override
     public String getElementValue(String pid, String xpathExpression) {
         // TODO use SAX
         DatastreamContentWrapper relsExtWrapper = get(pid);
-        return RelsExtInternalUtils.getElementValue(relsExtWrapper.asDom(false),xpathExpression);
+        return RelsExtInternalDomUtils.getElementValue(relsExtWrapper.asDom(false),xpathExpression);
     }
 
     @Override
@@ -92,10 +94,28 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
     }
 
     @Override
+    public String getPidOfFirstChild(String pid) {
+        DigitalObjectWrapper digitalObjectWrapper = akubraRepository.get(pid);
+        if(digitalObjectWrapper == null) {
+            return null;
+        }
+        return RelsExtInternalSaxUtils.getPidOfFirstChild(digitalObjectWrapper.asInputStream());
+    }
+
+    @Override
+    public String getFirstReplicatedFrom(String pid) {
+        DigitalObjectWrapper digitalObjectWrapper = akubraRepository.get(pid);
+        if(digitalObjectWrapper == null) {
+            return null;
+        }
+        return RelsExtInternalSaxUtils.getFirstReplicatedFrom(digitalObjectWrapper.asInputStream());
+    }
+
+    @Override
     public String getResourcePid(String pid, String localName, String namespace, boolean appendPrefix) {
         // TODO use SAX
         DatastreamContentWrapper relsExtWrapper = get(pid);
-        return RelsExtInternalUtils.getResourcePid(relsExtWrapper.asDom(false), localName, namespace, appendPrefix);
+        return RelsExtInternalDomUtils.getResourcePid(relsExtWrapper.asDom(false), localName, namespace, appendPrefix);
     }
 
     @Override
@@ -105,17 +125,17 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
 
     @Override
     public void processInTree(String pid, TreeNodeProcessor processor) {
-        RelsExtInternalUtils.processInTree(pid, processor, akubraRepository);
+        RelsExtProcessTreeDomUtils.processInTree(pid, processor, akubraRepository);
     }
 
     @Override
     public String getFirstViewablePidInTree(String pid) {
-        return RelsExtInternalUtils.findFirstViewablePidFromTree(pid, akubraRepository);
+        return RelsExtProcessTreeDomUtils.findFirstViewablePidFromTree(pid, akubraRepository);
     }
 
     @Override
     public List<String> getPidsInTree(String pid) {
-        return RelsExtInternalUtils.getPidsFromTree(pid, akubraRepository);
+        return RelsExtProcessTreeDomUtils.getPidsFromTree(pid, akubraRepository);
     }
 
     @Override
@@ -123,7 +143,7 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
         // TODO use SAX
         DatastreamContentWrapper relsExtWrapper = get(pid);
         List<RelsExtRelation> rels = new ArrayList<>();
-        List<Pair<String, String>> relations = RelsExtInternalUtils.getRelations(relsExtWrapper.asDom(true));
+        List<Pair<String, String>> relations = RelsExtInternalDomUtils.getRelations(relsExtWrapper.asDom(true));
         for (Pair<String, String> pair : relations) {
             RelsExtRelation relsExtRelation = new RelsExtRelation(null, pair.getLeft(), pair.getRight());
             rels.add(relsExtRelation);
@@ -136,7 +156,7 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
         // TODO use SAX
         DatastreamContentWrapper relsExtWrapper = get(pid);
         List<RelsExtRelation> rels = new ArrayList<>();
-        List<Triple<String, String, String>> triples = RelsExtInternalUtils.getRelations(relsExtWrapper.asDom(true), namespace);
+        List<Triple<String, String, String>> triples = RelsExtInternalDomUtils.getRelations(relsExtWrapper.asDom(true), namespace);
         for (Triple<String, String, String> triple : triples) {
             RelsExtRelation relsExtRelation = new RelsExtRelation(triple.getLeft(), triple.getMiddle(), triple.getRight());
             rels.add(relsExtRelation);
@@ -149,7 +169,7 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
         // TODO use SAX
         DatastreamContentWrapper relsExtWrapper = get(pid);
         List<RelsExtLiteral> rels = new ArrayList<>();
-        List<Triple<String, String, String>> triples = RelsExtInternalUtils.getLiterals(relsExtWrapper.asDom(true), namespace);
+        List<Triple<String, String, String>> triples = RelsExtInternalDomUtils.getLiterals(relsExtWrapper.asDom(true), namespace);
         for (Triple<String, String, String> triple : triples) {
             RelsExtLiteral relsExtLiteral = new RelsExtLiteral(triple.getLeft(), triple.getMiddle(), triple.getRight());
             rels.add(relsExtLiteral);
@@ -159,7 +179,7 @@ public class RelsExtHandlerImpl implements RelsExtHandler {
 
     @Override
     public JSONObject extractStructureInfo(String pid) {
-        return RelsExtStructureInfoUtils.extractStructureInfo(akubraRepository, pid);
+        return StructureInfoDom4jUtils.extractStructureInfo(akubraRepository, pid);
     }
 
     @Override

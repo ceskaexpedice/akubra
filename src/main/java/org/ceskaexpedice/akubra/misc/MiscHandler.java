@@ -14,23 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.impl.utils.sax;
+package org.ceskaexpedice.akubra.misc;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
+public interface MiscHandler {
 
-class FindDatastreamHandler extends DefaultHandler {
-    private final String dsId;
-
-    FindDatastreamHandler(String dsId) {
-        this.dsId = dsId;
-    }
-
-    @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        if ("datastream".equals(qName) && dsId.equals(attributes.getValue("ID"))) {
-            throw new SAXException("Found"); // Stop parsing early
-        }
-    }
+    String getModsPartType(String pid);
 }

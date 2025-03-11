@@ -17,6 +17,7 @@
 
 package org.ceskaexpedice.akubra;
 
+import org.ceskaexpedice.akubra.misc.MiscHandler;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
@@ -330,6 +331,15 @@ public interface AkubraRepository {
      * @return A RELS EXT handler.
      */
     RelsExtHandler re();
+
+    //-------------------- Misc -----------------------
+
+    /**
+     * Returns a handler interface for the misc manipulation.
+     *
+     * @return A misc handler.
+     */
+    MiscHandler mi();
 
     //-------------------- Locks ---------------------------
 

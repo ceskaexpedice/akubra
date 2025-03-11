@@ -1,7 +1,6 @@
-package org.ceskaexpedice.akubra.impl.utils;
+package org.ceskaexpedice.akubra.impl.utils.relsext;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.ceskaexpedice.akubra.AkubraRepository;
 import org.ceskaexpedice.akubra.KnownDatastreams;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexRelation;
@@ -13,17 +12,16 @@ import org.dom4j.Namespace;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 // helper utility used for extracting structure information 
-public final class RelsExtStructureInfoUtils {
+public final class StructureInfoDom4jUtils {
     
-    public static final Logger LOGGER = Logger.getLogger(RelsExtStructureInfoUtils.class.getName());
+    public static final Logger LOGGER = Logger.getLogger(StructureInfoDom4jUtils.class.getName());
     
-    private RelsExtStructureInfoUtils() {}
+    private StructureInfoDom4jUtils() {}
 
     private static JSONObject pidAndRelationToJson(String pid, String relation) {
         JSONObject json = new JSONObject();

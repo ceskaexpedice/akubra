@@ -23,7 +23,6 @@ import org.ceskaexpedice.akubra.KnownDatastreams;
 import org.ceskaexpedice.akubra.KnownXmlFormatUris;
 import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.utils.DomUtils;
-import org.ceskaexpedice.akubra.impl.utils.SafeSimpleDateFormat;
 import org.ceskaexpedice.fedoramodel.*;
 import org.fcrepo.common.Constants;
 import org.fcrepo.common.FaultException;
@@ -45,13 +44,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
+import static org.ceskaexpedice.akubra.core.repository.CoreRepository.LOCAL_REF_PREFIX;
+
 /**
  * RepositoryUtils
  */
 public class RepositoryUtils {
     private static final Logger LOGGER = Logger.getLogger(RepositoryUtils.class.getName());
     private static final SafeSimpleDateFormat DATE_FORMAT = new SafeSimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSS'Z'");
-    public static final String LOCAL_REF_PREFIX = "http://local.fedora.server/fedora/get/";
 
     private RepositoryUtils() {
     }

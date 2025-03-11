@@ -22,16 +22,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.ceskaexpedice.akubra.AkubraRepository;
 import org.ceskaexpedice.akubra.RepositoryException;
-import org.ceskaexpedice.akubra.impl.utils.RelsExtStructureInfoUtils;
-import org.ceskaexpedice.akubra.impl.utils.RelsExtInternalUtils;
-import org.ceskaexpedice.akubra.impl.utils.StringUtils;
+import org.ceskaexpedice.akubra.impl.utils.relsext.StructureInfoDom4jUtils;
+import org.ceskaexpedice.akubra.impl.utils.relsext.RelsExtInternalDomUtils;
+import org.ceskaexpedice.akubra.utils.StringUtils;
 import org.ceskaexpedice.akubra.relsext.KnownRelations;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -42,7 +40,7 @@ import java.util.stream.Collectors;
  * Utils for various Processing Index related tasks
  */
 public final class ProcessingIndexUtils {
-    public static final Logger LOGGER = Logger.getLogger(RelsExtInternalUtils.class.getName());
+    public static final Logger LOGGER = Logger.getLogger(RelsExtInternalDomUtils.class.getName());
 
     private static List<KnownRelations> OWN_RELATIONS = Arrays.asList(new KnownRelations[]{
             KnownRelations.HAS_PAGE, KnownRelations.HAS_UNIT, KnownRelations.HAS_VOLUME, KnownRelations.HAS_ITEM,
@@ -365,7 +363,7 @@ public final class ProcessingIndexUtils {
 
     private static JsonObject fetchStructure(String pid, AkubraRepository akubraRepository) {
         try {
-            JSONObject extractStructureInfo = RelsExtStructureInfoUtils.extractStructureInfo(akubraRepository, pid);
+            JSONObject extractStructureInfo = StructureInfoDom4jUtils.extractStructureInfo(akubraRepository, pid);
             return StringUtils.stringToJsonObject(extractStructureInfo.toString());
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE,e.getMessage(),e);
