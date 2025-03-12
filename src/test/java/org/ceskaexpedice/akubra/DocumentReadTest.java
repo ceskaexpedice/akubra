@@ -21,11 +21,11 @@ import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.misc.MiscHelper;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.akubra.relsext.RelsExtHelper;
+import org.ceskaexpedice.akubra.utils.DomUtils;
+import org.ceskaexpedice.akubra.utils.StringUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.ceskaexpedice.test.AkubraTestsUtils;
 import org.ceskaexpedice.test.FunctionalTestsUtils;
-import org.ceskaexpedice.akubra.utils.DomUtils;
-import org.ceskaexpedice.akubra.utils.StringUtils;
 import org.dom4j.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Date;
 import java.util.Properties;
 
 import static org.ceskaexpedice.test.AkubraTestsUtils.*;
@@ -106,7 +107,6 @@ public class DocumentReadTest {
 
     @Test
     void testGetProperty() {
-        /* TODO
         String propertyOwnerId = akubraRepository.getProperties(PID_TITLE_PAGE).getProperty("info:fedora/fedora-system:def/model#ownerId");
         assertEquals("fedoraAdmin", propertyOwnerId);
         Date propertyCreated = akubraRepository.getProperties(PID_TITLE_PAGE).getPropertyCreated();
@@ -114,9 +114,7 @@ public class DocumentReadTest {
         String propertyLabel = akubraRepository.getProperties(PID_TITLE_PAGE).getPropertyLabel();
         assertEquals("- none -", propertyLabel);
         Date propertyLastModified = akubraRepository.getProperties(PID_TITLE_PAGE).getPropertyLastModified();
-        // TODO AK_NEW assertEquals("2024-05-20T13:03:27.151", propertyLastModified.toString());
-
-         */
+        assertEquals("Mon May 20 13:03:27 CEST 2024", propertyLastModified.toString());
     }
 
     @Test

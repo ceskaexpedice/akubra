@@ -16,11 +16,8 @@
  */
 package org.ceskaexpedice.akubra.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.ceskaexpedice.akubra.ObjectProperties;
-import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
-import org.ceskaexpedice.akubra.utils.Dom4jUtils;
+import org.ceskaexpedice.akubra.impl.utils.ObjectPropertiesSaxParser;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -28,27 +25,22 @@ import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.logging.Logger;
 
-import static org.ceskaexpedice.akubra.utils.Dom4jUtils.extractProperty;
-
 /**
  * ObjectPropertiesImpl
  */
 class ObjectPropertiesImpl implements ObjectProperties {
     private static final Logger LOGGER = Logger.getLogger(ObjectPropertiesImpl.class.getName());
-    private static final Log log = LogFactory.getLog(ObjectPropertiesImpl.class);
-    private RepositoryObject repositoryObject;
+    private ObjectPropertiesSaxParser objectPropertiesSaxParser;
+    private String pid;
 
-    ObjectPropertiesImpl(RepositoryObject repositoryObject) {
-        this.repositoryObject = repositoryObject;
+    ObjectPropertiesImpl(ObjectPropertiesSaxParser objectPropertiesSaxParser, String pid) {
+        this.objectPropertiesSaxParser = objectPropertiesSaxParser;
+        this.pid = pid;
     }
 
     @Override
     public String getProperty(String propertyName) {
-        /* TODO AK_NEW
-        org.dom4j.Document objectFoxml = Dom4jUtils.streamToDocument(repositoryObject.getFoxml(), true);
-        return objectFoxml == null ? null : extractProperty(objectFoxml, propertyName);
-
-         */return null;
+        return objectPropertiesSaxParser.getProperty(propertyName);
     }
 
     @Override
@@ -65,7 +57,7 @@ class ObjectPropertiesImpl implements ObjectProperties {
                         .atZone(ZoneId.systemDefault())
                         .toInstant());
             } catch (DateTimeParseException e) {
-                LOGGER.warning(String.format("cannot parse createdDate %s from object %s", propertyValue, repositoryObject.getPid()));
+                LOGGER.warning(String.format("cannot parse createdDate %s from object %s", propertyValue, pid));
             }
         }
         return null;
@@ -80,7 +72,7 @@ class ObjectPropertiesImpl implements ObjectProperties {
                         .atZone(ZoneId.systemDefault())
                         .toInstant());
             } catch (DateTimeParseException e) {
-                LOGGER.warning(String.format("cannot parse lastModifiedDate %s from object %s", propertyValue, repositoryObject.getPid()));
+                LOGGER.warning(String.format("cannot parse lastModifiedDate %s from object %s", propertyValue, pid));
             }
         }
         return null;

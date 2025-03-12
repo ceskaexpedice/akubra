@@ -19,7 +19,6 @@ package org.ceskaexpedice.akubra.core.repository.impl;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.fedoramodel.DatastreamType;
 
-import java.io.InputStream;
 import java.util.Date;
 import java.util.logging.Logger;
 

@@ -21,6 +21,7 @@ import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
+import org.ceskaexpedice.akubra.impl.utils.ObjectPropertiesSaxParser;
 import org.ceskaexpedice.akubra.misc.MiscHelper;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.akubra.relsext.RelsExtHelper;
@@ -90,12 +91,11 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public ObjectProperties getProperties(String pid) {
-        // TODO rewrite using SAX
-        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
-        if (repositoryObject == null) {
+        DigitalObjectWrapper digitalObjectWrapper = get(pid);
+        if (digitalObjectWrapper == null) {
             return null;
         }
-        return new ObjectPropertiesImpl(repositoryObject);
+        return new ObjectPropertiesImpl(new ObjectPropertiesSaxParser(digitalObjectWrapper.asInputStream()),pid);
     }
 
     @Override

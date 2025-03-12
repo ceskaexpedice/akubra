@@ -16,7 +16,8 @@
  */
 package org.ceskaexpedice.akubra.core.repository;
 
-import org.ceskaexpedice.akubra.*;
+import org.ceskaexpedice.akubra.HazelcastServerNode;
+import org.ceskaexpedice.akubra.KnownDatastreams;
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;

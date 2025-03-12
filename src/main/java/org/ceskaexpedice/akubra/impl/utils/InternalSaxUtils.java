@@ -21,7 +21,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.io.*;
+import java.io.InputStream;
 import java.util.logging.Logger;
 
 public final class InternalSaxUtils {

@@ -34,7 +34,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 
-import static org.ceskaexpedice.test.AkubraTestsUtils.*;
+import static org.ceskaexpedice.test.AkubraTestsUtils.PID_MONOGRAPH;
+import static org.ceskaexpedice.test.AkubraTestsUtils.PID_TITLE_PAGE;
 
 public class Test_performance {
     // all time results mentioned in tests are for 100 x 1000

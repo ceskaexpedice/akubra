@@ -16,16 +16,16 @@
  */
 package org.ceskaexpedice.akubra.core.repository;
 
-import org.ceskaexpedice.test.AkubraTestsUtils;
+import org.ceskaexpedice.akubra.HazelcastServerNode;
 import org.ceskaexpedice.akubra.KnownDatastreams;
 import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
-import org.ceskaexpedice.akubra.HazelcastServerNode;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
-import org.ceskaexpedice.test.FunctionalTestsUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
+import org.ceskaexpedice.test.AkubraTestsUtils;
+import org.ceskaexpedice.test.FunctionalTestsUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

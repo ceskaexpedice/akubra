@@ -24,10 +24,10 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ceskaexpedice.akubra.AkubraRepository;
 import org.ceskaexpedice.akubra.RepositoryException;
-import org.ceskaexpedice.akubra.impl.utils.relsext.StructureInfoDom4jUtils;
 import org.ceskaexpedice.akubra.impl.utils.relsext.RelsExtInternalDomUtils;
-import org.ceskaexpedice.akubra.utils.StringUtils;
+import org.ceskaexpedice.akubra.impl.utils.relsext.StructureInfoDom4jUtils;
 import org.ceskaexpedice.akubra.relsext.KnownRelations;
+import org.ceskaexpedice.akubra.utils.StringUtils;
 import org.json.JSONObject;
 
 import java.util.*;

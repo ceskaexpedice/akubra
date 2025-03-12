@@ -17,7 +17,6 @@
 package org.ceskaexpedice.akubra.core.repository.impl;
 
 import org.apache.commons.io.IOUtils;
-import org.ceskaexpedice.akubra.impl.utils.InternalSaxUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;

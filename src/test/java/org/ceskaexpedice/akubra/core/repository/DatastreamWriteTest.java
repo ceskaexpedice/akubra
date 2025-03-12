@@ -17,7 +17,6 @@
 package org.ceskaexpedice.akubra.core.repository;
 
 import org.apache.commons.io.FileUtils;
-import org.ceskaexpedice.test.AkubraTestsUtils;
 import org.ceskaexpedice.akubra.HazelcastServerNode;
 import org.ceskaexpedice.akubra.KnownDatastreams;
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
@@ -27,6 +26,7 @@ import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
 import org.ceskaexpedice.akubra.core.repository.impl.CoreRepositoryImpl;
 import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
+import org.ceskaexpedice.test.AkubraTestsUtils;
 import org.ceskaexpedice.test.FunctionalTestsUtils;
 import org.dom4j.Document;
 import org.junit.jupiter.api.*;
@@ -38,7 +38,7 @@ import java.nio.file.Path;
 import java.util.Properties;
 
 import static org.ceskaexpedice.test.AkubraTestsUtils.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 public class DatastreamWriteTest {
     private static Properties testsProperties;

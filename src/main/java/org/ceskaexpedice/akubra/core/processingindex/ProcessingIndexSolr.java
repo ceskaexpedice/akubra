@@ -31,7 +31,6 @@ import org.ceskaexpedice.akubra.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
-import org.ceskaexpedice.akubra.impl.utils.InternalSaxUtils;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexQueryParameters;
@@ -40,7 +39,6 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;

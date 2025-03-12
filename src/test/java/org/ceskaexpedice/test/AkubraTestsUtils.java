@@ -22,8 +22,6 @@ import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import java.nio.file.Path;
 import java.util.Properties;
 
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
 public final class AkubraTestsUtils {
     public static final Path TEST_REPOSITORY = Path.of("src/test/resources/data");
     public static final Path TEST_OUTPUT_REPOSITORY = Path.of("testoutput/data");

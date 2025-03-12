@@ -21,10 +21,15 @@ import org.ceskaexpedice.akubra.pid.LexerException;
 import org.ceskaexpedice.akubra.pid.PIDParser;
 import org.ceskaexpedice.akubra.relsext.TreeNodeProcessStackAware;
 import org.ceskaexpedice.akubra.relsext.TreeNodeProcessor;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.xml.xpath.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

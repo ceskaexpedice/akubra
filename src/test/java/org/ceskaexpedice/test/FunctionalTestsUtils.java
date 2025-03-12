@@ -16,11 +16,7 @@
  */
 package org.ceskaexpedice.test;
 
-import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
-import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
-
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assumptions.assumeTrue;

@@ -16,11 +16,16 @@
  */
 package org.ceskaexpedice.akubra.relsext;
 
-import org.ceskaexpedice.akubra.*;
+import org.ceskaexpedice.akubra.KnownDatastreams;
+import org.ceskaexpedice.akubra.RepositoryException;
+import org.ceskaexpedice.akubra.RepositoryNamespaceContext;
+import org.ceskaexpedice.akubra.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.pid.LexerException;
 import org.ceskaexpedice.akubra.pid.PIDParser;
 import org.ceskaexpedice.akubra.utils.DomUtils;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;

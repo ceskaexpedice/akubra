@@ -31,7 +31,8 @@ import java.util.List;
 import java.util.Properties;
 
 import static org.ceskaexpedice.test.AkubraTestsUtils.PID_MONOGRAPH;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class RelsExtReadTest {
     private static AkubraRepository akubraRepository;

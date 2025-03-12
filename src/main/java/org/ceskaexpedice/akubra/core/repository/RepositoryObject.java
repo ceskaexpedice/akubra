@@ -16,10 +16,8 @@
  */
 package org.ceskaexpedice.akubra.core.repository;
 
-import org.apache.commons.lang3.tuple.Triple;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 
-import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 

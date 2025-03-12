@@ -22,10 +22,10 @@ import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexQueryParameters;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexRelation;
+import org.ceskaexpedice.akubra.processingindex.ProcessingIndexUtils;
 import org.ceskaexpedice.akubra.relsext.KnownRelations;
 import org.ceskaexpedice.test.AkubraTestsUtils;
 import org.ceskaexpedice.test.FunctionalTestsUtils;
-import org.ceskaexpedice.akubra.processingindex.ProcessingIndexUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +38,7 @@ import java.util.Properties;
 
 import static org.ceskaexpedice.test.AkubraTestsUtils.PID_MONOGRAPH;
 import static org.ceskaexpedice.test.AkubraTestsUtils.PID_TITLE_PAGE;
-import static org.ceskaexpedice.test.FunctionalTestsUtils.*;
+import static org.ceskaexpedice.test.FunctionalTestsUtils.debugPrint;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 // TODO make decision about Solr test instance and test data, mapping, etc
 /**

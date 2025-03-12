@@ -22,7 +22,6 @@ import org.apache.commons.io.IOUtils;
 import org.ceskaexpedice.akubra.KnownDatastreams;
 import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
-import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
@@ -45,7 +44,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.*;
+import static org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.getBlobId;
+import static org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.validateId;
 
 /**
  * CoreRepositoryImpl

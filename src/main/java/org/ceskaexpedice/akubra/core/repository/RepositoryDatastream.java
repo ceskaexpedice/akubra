@@ -18,7 +18,6 @@ package org.ceskaexpedice.akubra.core.repository;
 
 import org.ceskaexpedice.fedoramodel.DatastreamType;
 
-import java.io.InputStream;
 import java.util.Date;
 
 /**
