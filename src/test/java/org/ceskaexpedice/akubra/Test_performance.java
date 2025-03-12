@@ -19,6 +19,7 @@ package org.ceskaexpedice.akubra;
 import org.apache.commons.io.IOUtils;
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
+import org.ceskaexpedice.test.AkubraTestsUtils;
 import org.ceskaexpedice.test.ConcurrencyUtils;
 import org.ceskaexpedice.test.FunctionalTestsUtils;
 import org.junit.jupiter.api.AfterAll;
@@ -33,7 +34,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 
-import static org.ceskaexpedice.akubra.AkubraTestsUtils.*;
+import static org.ceskaexpedice.test.AkubraTestsUtils.*;
 
 public class Test_performance {
     // all time results mentioned in tests are for 100 x 1000

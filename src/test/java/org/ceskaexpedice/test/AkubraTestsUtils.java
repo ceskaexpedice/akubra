@@ -14,13 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra;
+package org.ceskaexpedice.test;
 
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
-import org.ceskaexpedice.test.FunctionalTestsUtils;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Properties;
 

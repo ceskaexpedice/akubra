@@ -22,6 +22,7 @@ import org.ceskaexpedice.akubra.misc.MiscHelper;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.akubra.relsext.RelsExtHelper;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
+import org.ceskaexpedice.test.AkubraTestsUtils;
 import org.ceskaexpedice.test.FunctionalTestsUtils;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.akubra.utils.StringUtils;
@@ -34,7 +35,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 
-import static org.ceskaexpedice.akubra.AkubraTestsUtils.*;
+import static org.ceskaexpedice.test.AkubraTestsUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DocumentReadTest {

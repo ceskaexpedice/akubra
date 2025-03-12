@@ -16,7 +16,7 @@
  */
 package org.ceskaexpedice.akubra.core.repository;
 
-import org.ceskaexpedice.akubra.AkubraTestsUtils;
+import org.ceskaexpedice.test.AkubraTestsUtils;
 import org.ceskaexpedice.akubra.KnownDatastreams;
 import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
@@ -35,8 +35,8 @@ import java.net.URL;
 import java.util.Properties;
 import java.util.concurrent.locks.Lock;
 
-import static org.ceskaexpedice.akubra.AkubraTestsUtils.PID_NOT_EXISTS;
-import static org.ceskaexpedice.akubra.AkubraTestsUtils.PID_TITLE_PAGE;
+import static org.ceskaexpedice.test.AkubraTestsUtils.PID_NOT_EXISTS;
+import static org.ceskaexpedice.test.AkubraTestsUtils.PID_TITLE_PAGE;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DocumentReadTest {
