@@ -14,18 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.impl.utils.saxhandlers;
+package org.ceskaexpedice.akubra.core.repository.impl;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import static org.ceskaexpedice.akubra.impl.utils.InternalSaxUtils.FOUND;
+import static org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.FOUND;
 
-public class DatastreamExistsSaxHandler extends DefaultHandler {
+class DatastreamExistsSaxHandler extends DefaultHandler {
     private final String dsId;
 
-    public DatastreamExistsSaxHandler(String dsId) {
+    DatastreamExistsSaxHandler(String dsId) {
         this.dsId = dsId;
     }
 

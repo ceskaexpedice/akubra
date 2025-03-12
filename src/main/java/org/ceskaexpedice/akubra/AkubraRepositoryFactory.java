@@ -73,4 +73,16 @@ public final class AkubraRepositoryFactory {
             return existingInstance;
         });
     }
+
+    public static AkubraRepository createRepository(CoreRepository coreRepository) {
+        return INSTANCE.updateAndGet(existingInstance -> {
+            if (existingInstance == null) {
+                AkubraRepository baseAccess = new AkubraRepositoryImpl(coreRepository);
+                // TODO: Consider adding decorators in the future.
+                return baseAccess;
+            }
+            return existingInstance;
+        });
+    }
+
 }

@@ -84,11 +84,4 @@ public interface RepositoryDatastream {
      */
     Type getStreamType();
 
-    /**
-     * Returns the content of the last version of the datastream.
-     *
-     * @return An InputStream containing the content of the last version.
-     * @throws IllegalStateException If the content cannot be retrieved.
-     */
-    InputStream getLastVersionContent();
 }

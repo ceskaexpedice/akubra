@@ -39,7 +39,7 @@ import static org.ceskaexpedice.akubra.AkubraTestsUtils.PID_NOT_EXISTS;
 import static org.ceskaexpedice.akubra.AkubraTestsUtils.PID_TITLE_PAGE;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CoreRepositoryReadTest {
+public class DocumentReadTest {
     private static CoreRepository coreRepository;
     private static Properties testsProperties;
 
@@ -61,9 +61,13 @@ public class CoreRepositoryReadTest {
     }
 
     @Test
-    void testObjectExists() {
+    void testExists() {
         boolean objectExists = coreRepository.exists(PID_TITLE_PAGE);
         assertTrue(objectExists);
+        objectExists = coreRepository.exists(PID_NOT_EXISTS);
+        assertFalse(objectExists);
+        objectExists = coreRepository.exists("nonsensePid");
+        assertFalse(objectExists);
     }
 
     @Test
@@ -76,6 +80,14 @@ public class CoreRepositoryReadTest {
         assertNull(repositoryObject[0]);
         repositoryObject[0] = coreRepository.getAsRepositoryObject(PID_TITLE_PAGE);
         assertNotNull(repositoryObject[0]);
+    }
+
+    @Test
+    void testGetAsBytes() {
+        byte[] asBytes = coreRepository.getAsBytes(PID_TITLE_PAGE);
+        assertNotNull(asBytes);
+        asBytes = coreRepository.getAsBytes(PID_NOT_EXISTS);
+        assertNull(asBytes);
     }
 
     @Test

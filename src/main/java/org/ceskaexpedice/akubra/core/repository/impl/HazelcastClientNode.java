@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.core.repository;
+package org.ceskaexpedice.akubra.core.repository.impl;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
@@ -45,7 +45,7 @@ import java.io.IOException;
  *
  * @author pavels
  */
-public class HazelcastClientNode {
+class HazelcastClientNode {
 
     private static final ILogger LOGGER = Logger.getLogger(HazelcastClientNode.class);
     private HazelcastInstance hzInstance;
@@ -59,7 +59,7 @@ public class HazelcastClientNode {
      *
      * @param configuration The configuration containing details such as the Hazelcast client config file and user credentials.
      */
-    public void ensureHazelcastNode(HazelcastConfiguration configuration) {
+    void ensureHazelcastNode(HazelcastConfiguration configuration) {
         if (hzInstance != null) {
             return;
         }
@@ -100,7 +100,7 @@ public class HazelcastClientNode {
      *
      * @return The Hazelcast client instance.
      */
-    public HazelcastInstance getHzInstance() {
+    HazelcastInstance getHzInstance() {
         return hzInstance;
     }
 
@@ -110,7 +110,7 @@ public class HazelcastClientNode {
      * This method ensures that the Hazelcast client instance is properly shut down and its resources are released.
      * </p>
      */
-    public void shutdown() {
+    void shutdown() {
         if (hzInstance != null) {
             hzInstance.shutdown();
         }

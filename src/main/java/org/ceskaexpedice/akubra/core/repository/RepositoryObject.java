@@ -54,13 +54,6 @@ public interface RepositoryObject {
     Date getPropertyLastModified();
 
     /**
-     * Returns the FOXML (Fedora Object XML) representation of the repository object.
-     *
-     * @return An InputStream containing the FOXML of the repository object.
-     */
-    InputStream getFoxml();
-
-    /**
      * Retrieves a list of all streams associated with the repository object.
      *
      * @return A List of RepositoryDatastream objects associated with this repository object.
@@ -75,54 +68,4 @@ public interface RepositoryObject {
      */
     RepositoryDatastream getStream(String streamId);
 
-    /**
-     * Checks whether a stream with the specified ID exists for the repository object.
-     *
-     * @param streamId The ID of the stream to check.
-     * @return True if the stream exists, false otherwise.
-     */
-    boolean streamExists(String streamId);
-
-    /**
-     * Creates a new XML stream for the repository object.
-     *
-     * @param streamId The ID of the new stream.
-     * @param mimeType The MIME type of the stream.
-     * @param input    The InputStream containing the content to be stored in the stream.
-     * @return The created RepositoryDatastream object.
-     */
-    RepositoryDatastream createXMLStream(String streamId, String mimeType, InputStream input);
-
-    /**
-     * Creates a new managed stream for the repository object.
-     *
-     * @param streamId The ID of the new stream.
-     * @param mimeType The MIME type of the stream.
-     * @param input    The InputStream containing the content to be stored in the stream.
-     * @return The created RepositoryDatastream object.
-     */
-    RepositoryDatastream createManagedStream(String streamId, String mimeType, InputStream input);
-
-    /**
-     * Creates a new redirected stream for the repository object.
-     *
-     * @param streamId The ID of the new stream.
-     * @param url      The URL to which the stream is redirected.
-     * @param mimeType The MIME type of the stream.
-     * @return The created RepositoryDatastream object.
-     */
-    RepositoryDatastream createRedirectedStream(String streamId, String url, String mimeType);
-
-    /**
-     * Deletes the stream with the specified stream ID.
-     *
-     * @param streamId The ID of the stream to delete.
-     */
-    void deleteStream(String streamId);
-
-    /**
-     * Rebuilds the processing index for the current repository object, ensuring that all
-     * relations and streams are properly indexed.
-     */
-    void rebuildProcessingIndex();
-}
+ }

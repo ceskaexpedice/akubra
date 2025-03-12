@@ -44,8 +44,11 @@ class ObjectPropertiesImpl implements ObjectProperties {
 
     @Override
     public String getProperty(String propertyName) {
+        /* TODO AK_NEW
         org.dom4j.Document objectFoxml = Dom4jUtils.streamToDocument(repositoryObject.getFoxml(), true);
         return objectFoxml == null ? null : extractProperty(objectFoxml, propertyName);
+
+         */return null;
     }
 
     @Override

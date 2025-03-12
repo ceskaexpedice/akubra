@@ -24,7 +24,6 @@ import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import org.ceskaexpedice.akubra.misc.MiscHandler;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
-import org.ceskaexpedice.akubra.impl.utils.InternalSaxUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 
 import java.io.IOException;
@@ -123,9 +122,8 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     public void createXMLDatastream(String pid, String dsId, String mimeType, InputStream xmlContent) {
         RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
         if (repositoryObject == null) {
-            return;
         }
-        repositoryObject.createXMLStream(dsId, mimeType, xmlContent);
+        coreRepository.createXMLDatastream(repositoryObject, dsId, mimeType, xmlContent);
     }
 
     @Override
@@ -140,8 +138,8 @@ public class AkubraRepositoryImpl implements AkubraRepository {
             if (repositoryObject == null) {
                 return null;
             }
-            repositoryObject.deleteStream(dsId);
-            repositoryObject.createXMLStream(dsId, mimeType, binaryContent);
+            coreRepository.deleteDatastream(pid, dsId);
+            coreRepository.createXMLDatastream(repositoryObject, dsId, mimeType, binaryContent);
             return null;
         });
     }
@@ -157,7 +155,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
         if (repositoryObject == null) {
             return;
         }
-        repositoryObject.createManagedStream(dsId, mimeType, binaryContent);
+        coreRepository.createManagedDatastream(repositoryObject, dsId, mimeType, binaryContent);
     }
 
     @Override
@@ -172,8 +170,8 @@ public class AkubraRepositoryImpl implements AkubraRepository {
             if (repositoryObject == null) {
                 return null;
             }
-            repositoryObject.deleteStream(dsId);
-            repositoryObject.createManagedStream(dsId, mimeType, binaryContent);
+            coreRepository.deleteDatastream(pid, dsId);
+            coreRepository.createManagedDatastream(repositoryObject, dsId, mimeType, binaryContent);
             return null;
         });
     }
@@ -189,7 +187,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
         if (repositoryObject == null) {
             return;
         }
-        repositoryObject.createRedirectedStream(dsId, url, mimeType);
+        coreRepository.createRedirectedDatastream(repositoryObject, dsId, url, mimeType);
     }
 
     @Override
@@ -204,8 +202,8 @@ public class AkubraRepositoryImpl implements AkubraRepository {
             if (repositoryObject == null) {
                 return null;
             }
-            repositoryObject.deleteStream(dsId);
-            repositoryObject.createRedirectedStream(dsId, url, mimeType);
+            coreRepository.deleteDatastream(pid, dsId);
+            coreRepository.createRedirectedDatastream(repositoryObject, dsId, url, mimeType);
             return null;
         });
     }
@@ -217,8 +215,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public boolean datastreamExists(String pid, String dsId) {
-        boolean exists = InternalSaxUtils.datastreamExists(get(pid).asInputStream(), dsId);
-        return exists;
+        return coreRepository.datastreamExists(pid, dsId);
     }
 
     @Override
@@ -241,15 +238,11 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public DatastreamContentWrapper getDatastreamContent(String pid, String dsId) {
-        DigitalObjectWrapper digitalObjectWrapper = get(pid);
-        if(digitalObjectWrapper == null) {
+        InputStream inputStream = coreRepository.getDatastreamContent(pid, dsId);
+        if(inputStream == null) {
             return null;
         }
-        InputStream streamContent = InternalSaxUtils.getDatastreamContent(digitalObjectWrapper.asInputStream(), dsId, coreRepository);
-        if(streamContent == null) {
-            return null;
-        }
-        return new DatastreamContentWrapperImpl(streamContent);
+        return new DatastreamContentWrapperImpl(inputStream);
     }
 
     @Override
@@ -259,11 +252,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public void deleteDatastream(String pid, String dsId) {
-        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
-        if (repositoryObject == null) {
-            return;
-        }
-        repositoryObject.deleteStream(dsId);
+        coreRepository.deleteDatastream(pid, dsId);
     }
 
     @Override

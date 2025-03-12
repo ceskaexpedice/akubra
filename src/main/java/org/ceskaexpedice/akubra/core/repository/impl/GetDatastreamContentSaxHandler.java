@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.impl.utils.saxhandlers;
+package org.ceskaexpedice.akubra.core.repository.impl;
 
 import org.apache.commons.io.IOUtils;
 import org.ceskaexpedice.akubra.impl.utils.InternalSaxUtils;
@@ -26,7 +26,9 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 
-public class GetDatastreamContentSaxHandler extends DefaultHandler {
+import static org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.FOUND;
+
+class GetDatastreamContentSaxHandler extends DefaultHandler {
     private final String targetId;
 
     private boolean insideTargetDatastream;
@@ -38,7 +40,7 @@ public class GetDatastreamContentSaxHandler extends DefaultHandler {
     private String contentLocationType;
     private StringWriter xmlContentWriter;
 
-    public GetDatastreamContentSaxHandler(String targetId) {
+    GetDatastreamContentSaxHandler(String targetId) {
         this.targetId = targetId;
     }
 
@@ -54,7 +56,7 @@ public class GetDatastreamContentSaxHandler extends DefaultHandler {
             contentLocationRef = attributes.getValue("REF");
             contentLocationType = attributes.getValue("TYPE");
             // Stop parsing early if contentLocation is found
-            throw new SAXException(InternalSaxUtils.FOUND);
+            throw new SAXException(FOUND);
         }
         // Start capturing <xmlContent> but **skip writing the root xmlContent tag**
         if (insideDatastreamVersion && "xmlContent".equals(qName)) {
@@ -105,15 +107,15 @@ public class GetDatastreamContentSaxHandler extends DefaultHandler {
         }
     }
 
-    public String getContentLocationRef() {
+    String getContentLocationRef() {
         return contentLocationRef;
     }
 
-    public String getContentLocationType() {
+    String getContentLocationType() {
         return contentLocationType;
     }
 
-    public InputStream getXmlContentStream() {
+    InputStream getXmlContentStream() {
         return xmlContentWriter != null ? IOUtils.toInputStream(xmlContentWriter.toString(), StandardCharsets.UTF_8) : null;
     }
 }

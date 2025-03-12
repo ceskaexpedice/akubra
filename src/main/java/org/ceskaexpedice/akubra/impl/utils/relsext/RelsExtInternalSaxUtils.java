@@ -17,8 +17,7 @@
 package org.ceskaexpedice.akubra.impl.utils.relsext;
 
 import org.ceskaexpedice.akubra.RepositoryException;
-import org.ceskaexpedice.akubra.impl.utils.saxhandlers.GetFirstReplicatedFromSaxHandler;
-import org.ceskaexpedice.akubra.impl.utils.saxhandlers.GetPidOfFirstChildSaxHandler;
+import org.ceskaexpedice.akubra.impl.utils.InternalSaxUtils;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.SAXParser;
@@ -43,7 +42,7 @@ public final class RelsExtInternalSaxUtils {
             try {
                 saxParser.parse(foxml, handler);
             } catch (SAXException e) {
-                if (!FOUND.equals(e.getMessage())) {
+                if (!InternalSaxUtils.FOUND.equals(e.getMessage())) {
                     throw e;
                 }
             }

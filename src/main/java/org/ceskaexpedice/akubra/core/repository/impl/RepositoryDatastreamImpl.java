@@ -31,15 +31,13 @@ class RepositoryDatastreamImpl implements RepositoryDatastream {
 
     private static final Logger LOGGER = Logger.getLogger(RepositoryDatastreamImpl.class.getName());
 
-    private final AkubraDOManager manager;
     private final DatastreamType datastream;
 
     private final String name;
     private final Type type;
 
-    RepositoryDatastreamImpl(DatastreamType datastream, String name, Type type, AkubraDOManager manager) {
+    RepositoryDatastreamImpl(DatastreamType datastream, String name, Type type) {
         super();
-        this.manager = manager;
         this.datastream = datastream;
         this.name = name;
         this.type = type;
@@ -58,11 +56,6 @@ class RepositoryDatastreamImpl implements RepositoryDatastream {
     @Override
     public String getLastVersionMimeType() {
         return RepositoryUtils.getLastStreamVersion(datastream).getMIMETYPE();
-    }
-
-    @Override
-    public InputStream getLastVersionContent() {
-        return RepositoryUtils.getStreamContent(RepositoryUtils.getLastStreamVersion(datastream), manager);
     }
 
     @Override

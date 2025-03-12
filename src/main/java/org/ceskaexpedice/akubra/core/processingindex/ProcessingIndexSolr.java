@@ -20,6 +20,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.ConcurrentUpdateSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
@@ -27,8 +28,10 @@ import org.apache.solr.common.params.CursorMarkParams;
 import org.ceskaexpedice.akubra.KnownDatastreams;
 import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.RepositoryNamespaces;
-import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
+import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
+import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
+import org.ceskaexpedice.akubra.impl.utils.InternalSaxUtils;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexQueryParameters;
@@ -37,6 +40,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -58,10 +62,23 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     private static final Logger LOGGER = Logger.getLogger(ProcessingIndexSolr.class.getName());
 
     private SolrClient solrClient;
+    private CoreRepository coreRepository;
 
-    public ProcessingIndexSolr(SolrClient solrClient) {
+    public ProcessingIndexSolr(RepositoryConfiguration configuration, CoreRepository coreRepository) {
         super();
-        this.solrClient = solrClient;
+        this.solrClient =  createProcessingUpdateClient(configuration);
+        this.coreRepository = coreRepository;
+    }
+
+  /* TODO
+  private SolrClient processingQueryClient() {
+    String processingSolrHost = KConfiguration.getInstance().getSolrProcessingHost();
+    return new HttpSolrClient.Builder(processingSolrHost).build();
+  }*/
+
+    private static SolrClient createProcessingUpdateClient(RepositoryConfiguration configuration) {
+        String processingSolrHost = configuration.getProcessingIndexHost();
+        return new ConcurrentUpdateSolrClient.Builder(processingSolrHost).withQueueSize(100).build();
     }
 
     @Override
@@ -207,12 +224,14 @@ public class ProcessingIndexSolr implements ProcessingIndex {
         }
     }
 
-    public void rebuildProcessingIndex(RepositoryObject repositoryObject, InputStream content) {
+    @Override
+    public void rebuildProcessingIndex(String pid) {
         try {
-            String s = IOUtils.toString(content, "UTF-8");
+            InputStream inputStream = coreRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT.toString());
+            String s = IOUtils.toString(inputStream, "UTF-8");
             RELSEXTSPARQLBuilder sparqlBuilder = new RELSEXTSPARQLBuilderImpl();
             sparqlBuilder.sparqlProps(s.trim(), (object, localName) -> {
-                processRELSEXTRelationAndFeedProcessingIndex(repositoryObject, object, localName);
+                processRELSEXTRelationAndFeedProcessingIndex(pid, object, localName);
                 return object;
             });
         } catch (Exception e) {
@@ -229,50 +248,50 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     /**
      * Process one relation and feed processing index
      */
-    private void processRELSEXTRelationAndFeedProcessingIndex(RepositoryObject repositoryObject, String object, String localName) {
+    private void processRELSEXTRelationAndFeedProcessingIndex(String pid, String object, String localName) {
         if (localName.equals("hasModel")) {
             try {
-                boolean dcStreamExists = repositoryObject.streamExists(KnownDatastreams.BIBLIO_DC.name());
+                boolean dcStreamExists = coreRepository.datastreamExists(pid, KnownDatastreams.BIBLIO_DC.name());
                 // TODO: Biblio mods ukladat jinam ??
-                boolean modsStreamExists = repositoryObject.streamExists(KnownDatastreams.BIBLIO_MODS.name());
+                boolean modsStreamExists = coreRepository.datastreamExists(pid, KnownDatastreams.BIBLIO_MODS.name());
                 if (dcStreamExists || modsStreamExists) {
                     try {
                         //LOGGER.info("DC or BIBLIOMODS exists");
                         if (dcStreamExists) {
-                            List<String> dcTList = dcTitle(repositoryObject);
+                            List<String> dcTList = dcTitle(pid);
                             if (dcTList != null && !dcTList.isEmpty()) {
-                                this.indexDescription(repositoryObject.getPid(), object, dcTList.stream().collect(Collectors.joining(" ")));
+                                this.indexDescription(pid, object, dcTList.stream().collect(Collectors.joining(" ")));
                             } else {
-                                this.indexDescription(repositoryObject.getPid(), object, "");
+                                this.indexDescription(pid, object, "");
                             }
                         } else if (modsStreamExists) {
                             // czech title or default
-                            List<String> modsTList = modsTitle(repositoryObject, "cze");
+                            List<String> modsTList = modsTitle(pid, "cze");
                             if (modsTList != null && !modsTList.isEmpty()) {
-                                this.indexDescription(repositoryObject.getPid(), object, modsTList.stream().collect(Collectors.joining(" ")), ProcessingIndexSolr.TitleType.mods);
+                                this.indexDescription(pid, object, modsTList.stream().collect(Collectors.joining(" ")), ProcessingIndexSolr.TitleType.mods);
                             } else {
-                                this.indexDescription(repositoryObject.getPid(), object, "");
+                                this.indexDescription(pid, object, "");
                             }
                         }
                     } catch (ParserConfigurationException e) {
                         LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                        this.indexDescription(repositoryObject.getPid(), object, "");
+                        this.indexDescription(pid, object, "");
                     } catch (SAXException e) {
                         LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                        this.indexDescription(repositoryObject.getPid(), object, "");
+                        this.indexDescription(pid, object, "");
                     }
                 } else {
                     LOGGER.info("Index description without dc or mods");
-                    this.indexDescription(repositoryObject.getPid(), object, "");
+                    this.indexDescription(pid, object, "");
                 }
             } catch (Throwable th) {
-                LOGGER.log(Level.SEVERE, "Cannot update processing index for "+ repositoryObject.getPid() + " - reindex manually.", th);
+                LOGGER.log(Level.SEVERE, "Cannot update processing index for "+ pid + " - reindex manually.", th);
             }
         } else {
             try {
-                this.feedRelationDocument(repositoryObject.getPid(), localName, object);
+                this.feedRelationDocument(pid, localName, object);
             } catch (Throwable th) {
-                LOGGER.log(Level.SEVERE, "Cannot update processing index for "+ repositoryObject.getPid() + " - reindex manually.", th);
+                LOGGER.log(Level.SEVERE, "Cannot update processing index for "+ pid + " - reindex manually.", th);
             }
         }
     }
@@ -285,15 +304,15 @@ public class ProcessingIndexSolr implements ProcessingIndex {
         this.feedDescriptionDocument(pid, model, title.trim(), RepositoryUtils.getAkubraInternalId(pid), new Date());
     }
 
-    private List<String> dcTitle(RepositoryObject repositoryObject) throws RepositoryException, ParserConfigurationException, SAXException, IOException {
-        InputStream stream = repositoryObject.getStream(KnownDatastreams.BIBLIO_DC.name()).getLastVersionContent();
-        Element title = DomUtils.findElement(DomUtils.streamToDocument(stream, true).getDocumentElement(), "title", RepositoryNamespaces.DC_NAMESPACE_URI);
+    private List<String> dcTitle(String pid) {
+        InputStream streamContent = coreRepository.getDatastreamContent(pid, KnownDatastreams.BIBLIO_DC.toString());
+        Element title = DomUtils.findElement(DomUtils.streamToDocument(streamContent, true).getDocumentElement(), "title", RepositoryNamespaces.DC_NAMESPACE_URI);
         return title != null ? Arrays.asList(title.getTextContent()) : new ArrayList<>();
     }
 
-    private List<String> modsTitle(RepositoryObject repositoryObject, String lang) throws RepositoryException, ParserConfigurationException, SAXException, IOException {
-        InputStream stream = repositoryObject.getStream(KnownDatastreams.BIBLIO_MODS.name()).getLastVersionContent();
-        Element docElement = DomUtils.streamToDocument(stream, true).getDocumentElement();
+    private List<String> modsTitle(String pid, String lang) throws RepositoryException, ParserConfigurationException, SAXException, IOException {
+        InputStream streamContent = coreRepository.getDatastreamContent(pid, KnownDatastreams.BIBLIO_MODS.toString());
+        Element docElement = DomUtils.streamToDocument(streamContent, true).getDocumentElement();
 
         List<Element> elements = DomUtils.getElementsRecursive(docElement, new DomUtils.ElementsFilter() {
             @Override

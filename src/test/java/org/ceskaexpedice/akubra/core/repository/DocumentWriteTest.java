@@ -23,6 +23,7 @@ import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
 import org.ceskaexpedice.akubra.HazelcastServerNode;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
+import org.ceskaexpedice.akubra.core.repository.impl.CoreRepositoryImpl;
 import org.ceskaexpedice.test.FunctionalTestsUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.junit.jupiter.api.*;
@@ -36,10 +37,9 @@ import java.nio.file.Path;
 import java.util.Properties;
 
 import static org.ceskaexpedice.akubra.AkubraTestsUtils.*;
-import static org.ceskaexpedice.test.FunctionalTestsUtils.*;
 import static org.mockito.Mockito.*;
 
-public class CoreRepositoryWriteTest {
+public class DocumentWriteTest {
     private static Properties testsProperties;
     private static ProcessingIndexSolr mockFeeder;
     private static CoreRepository coreRepository;
@@ -51,11 +51,9 @@ public class CoreRepositoryWriteTest {
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
         // configure repository
         mockFeeder = mock(ProcessingIndexSolr.class);
-        try (MockedStatic<CoreRepositoryFactory> mockedStatic = mockStatic(CoreRepositoryFactory.class, Mockito.CALLS_REAL_METHODS)) {
-            mockedStatic.when(() -> CoreRepositoryFactory.createProcessingIndexFeeder(any())).thenReturn(mockFeeder);
-            RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_OUTPUT_REPOSITORY.toFile().getAbsolutePath(), testsProperties, hazelcastConfig);
-            coreRepository = CoreRepositoryFactory.createRepository(config);
-        }
+        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_OUTPUT_REPOSITORY.toFile().getAbsolutePath(), testsProperties, hazelcastConfig);
+        coreRepository = CoreRepositoryFactory.createRepository(config);
+        ((CoreRepositoryImpl)coreRepository).setProcessingIndex(mockFeeder);
     }
 
     @AfterAll
@@ -91,7 +89,7 @@ public class CoreRepositoryWriteTest {
         // test ingest result
         digitalObjectImported = coreRepository.getAsRepositoryObject(PID_IMPORTED);
         Assertions.assertNotNull(digitalObjectImported);
-        verify(mockFeeder, times(1)).rebuildProcessingIndex(any(), any());
+        verify(mockFeeder, times(1)).rebuildProcessingIndex(any());
     }
 
     @Test

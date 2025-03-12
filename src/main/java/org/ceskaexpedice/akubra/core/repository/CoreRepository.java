@@ -64,18 +64,27 @@ public interface CoreRepository {
     byte[] getAsBytes(String pid);
 
     /**
-     *
-     * @param dsKey
-     * @return
-     */
-    InputStream retrieveDatastream(String dsKey);
-
-    /**
      * Resolves archived datastreams for the provided digital object.
      *
      * @param obj The digital object whose datastreams need to be resolved.
      */
     void resolveArchivedDatastreams(DigitalObject obj);
+
+    /**
+     * Deletes a digital object from the repository.
+     *
+     * @param pid The unique identifier of the object to be deleted.
+     */
+    void delete(String pid);
+
+    /**
+     * Deletes a digital object from the repository, with options for handling related data and relations.
+     *
+     * @param pid The unique identifier of the object to be deleted.
+     * @param deleteDataOfManagedDatastreams If true, the managed datastreams of the object will also be removed.
+     * @param deleteRelationsWithThisAsTarget If true, relations where this object is the target will be removed from the resource index.
+     */
+    void delete(String pid, boolean deleteDataOfManagedDatastreams, boolean deleteRelationsWithThisAsTarget);
 
     /**
      * Marshals a digital object into an InputStream representation.
@@ -93,21 +102,24 @@ public interface CoreRepository {
      */
     DigitalObject unmarshall(InputStream inputStream);
 
-    /**
-     * Deletes a digital object from the repository.
-     *
-     * @param pid The unique identifier of the object to be deleted.
-     */
-    void delete(String pid);
+    boolean datastreamExists(String pid, String dsId);
+
+    InputStream getDatastreamContent(String pid, String dsId);
 
     /**
-     * Deletes a digital object from the repository, with options for handling related data and relations.
      *
-     * @param pid The unique identifier of the object to be deleted.
-     * @param deleteDataOfManagedDatastreams If true, the managed datastreams of the object will also be removed.
-     * @param deleteRelationsWithThisAsTarget If true, relations where this object is the target will be removed from the resource index.
+     * @param dsKey
+     * @return
      */
-    void delete(String pid, boolean deleteDataOfManagedDatastreams, boolean deleteRelationsWithThisAsTarget);
+    InputStream retrieveDatastreamByInternalId(String dsKey);
+
+    RepositoryDatastream createXMLDatastream(RepositoryObject repositoryObject, String dsId, String mimeType, InputStream input);
+
+    RepositoryDatastream createManagedDatastream(RepositoryObject repositoryObject, String dsId, String mimeType, InputStream input);
+
+    RepositoryDatastream createRedirectedDatastream(RepositoryObject repositoryObject, String dsId, String url, String mimeType);
+
+    void deleteDatastream(String pid, String dsId);
 
     /**
      * Retrieves a read lock for a digital object.

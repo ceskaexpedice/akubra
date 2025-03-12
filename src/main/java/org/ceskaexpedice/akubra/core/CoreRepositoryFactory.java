@@ -16,13 +16,11 @@
  */
 package org.ceskaexpedice.akubra.core;
 
-import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.impl.ConcurrentUpdateSolrClient;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
-import org.ceskaexpedice.akubra.core.repository.impl.AkubraDOManager;
 import org.ceskaexpedice.akubra.core.repository.impl.CoreRepositoryImpl;
+import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 
 /**
  * Factory for creating instances of {@link CoreRepository}.
@@ -37,25 +35,10 @@ public final class CoreRepositoryFactory {
     }
 
     public static CoreRepository createRepository(RepositoryConfiguration configuration) {
-        ProcessingIndexSolr processingIndex = createProcessingIndexFeeder(configuration);
-        AkubraDOManager akubraDOManager = new AkubraDOManager(configuration);
-        return new CoreRepositoryImpl(processingIndex, akubraDOManager);
-    }
-
-    public static ProcessingIndexSolr createProcessingIndexFeeder(RepositoryConfiguration configuration) {
-        ProcessingIndexSolr processingIndex = new ProcessingIndexSolr(createProcessingUpdateClient(configuration));
-        return processingIndex;
-    }
-
-  /* TODO
-  private SolrClient processingQueryClient() {
-    String processingSolrHost = KConfiguration.getInstance().getSolrProcessingHost();
-    return new HttpSolrClient.Builder(processingSolrHost).build();
-  }*/
-
-    private static SolrClient createProcessingUpdateClient(RepositoryConfiguration configuration) {
-        String processingSolrHost = configuration.getProcessingIndexHost();
-        return new ConcurrentUpdateSolrClient.Builder(processingSolrHost).withQueueSize(100).build();
+        CoreRepositoryImpl coreRepository = new CoreRepositoryImpl(configuration);
+        ProcessingIndex processingIndex = new ProcessingIndexSolr(configuration, coreRepository);
+        coreRepository.setProcessingIndex(processingIndex);
+        return coreRepository;
     }
 
 }

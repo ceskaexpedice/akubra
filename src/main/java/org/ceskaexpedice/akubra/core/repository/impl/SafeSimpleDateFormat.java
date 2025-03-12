@@ -24,9 +24,9 @@ import java.util.Date;
 /**
  * SafeSimpleDateFormat
  */
-public class SafeSimpleDateFormat extends SimpleDateFormat {
+class SafeSimpleDateFormat extends SimpleDateFormat {
 
-    public SafeSimpleDateFormat(String pattern) {
+    SafeSimpleDateFormat(String pattern) {
         super(pattern);
     }
 

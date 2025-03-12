@@ -14,60 +14,63 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.impl.utils.saxhandlers;
+package org.ceskaexpedice.akubra.impl.utils.relsext;
 
 import org.ceskaexpedice.akubra.KnownDatastreams;
-import org.ceskaexpedice.akubra.relsext.KnownRelations;
+import org.ceskaexpedice.akubra.RepositoryNamespaces;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import static org.ceskaexpedice.akubra.impl.utils.InternalSaxUtils.FOUND;
 
-public class GetPidOfFirstChildSaxHandler extends DefaultHandler {
+public class GetFirstReplicatedFromSaxHandler extends DefaultHandler {
     private boolean insideRelsExt = false;
     private boolean insideXmlContent = false;
     private boolean insideRdfDescription = false;
-    private String firstChildPid = null;
+    private String replicatedFrom = null;
 
     @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes attributes) {
         if ("datastream".equals(qName) && KnownDatastreams.RELS_EXT.toString().equals(attributes.getValue("ID"))) {
             insideRelsExt = true;
         }
         if (insideRelsExt && "xmlContent".equals(qName)) {
             insideXmlContent = true;
         }
-        if (insideXmlContent && "rdf:Description".equals(qName)) {
+        if (insideXmlContent && "Description".equals(localName) && RepositoryNamespaces.RDF_NAMESPACE_URI.equals(uri)) {
             insideRdfDescription = true;
         }
-        if (insideRdfDescription) {
-            for (KnownRelations target : KnownRelations.values()) {
-                if (qName.endsWith(":" + target)) { // Matches namespace-prefixed element names
-                    String resource = attributes.getValue("rdf:resource");
-                    if (resource != null && resource.startsWith("info:fedora/")) {
-                        firstChildPid = resource.substring("info:fedora/".length());
-                        throw new SAXException(FOUND); // Stop parsing early
-                    }
-                }
-            }
+        if (insideRdfDescription && "replicatedFrom".equals(localName) &&
+                RepositoryNamespaces.ONTOLOGY_RELATIONSHIP_NAMESPACE_URI.equals(uri)) {
+            replicatedFrom = "";
         }
     }
 
     @Override
-    public void endElement(String uri, String localName, String qName) {
+    public void characters(char[] ch, int start, int length) {
+        if (replicatedFrom != null) {
+            replicatedFrom += new String(ch, start, length);
+        }
+    }
+
+    @Override
+    public void endElement(String uri, String localName, String qName) throws SAXException {
         if ("datastream".equals(qName)) {
             insideRelsExt = false;
         }
         if ("xmlContent".equals(qName)) {
             insideXmlContent = false;
         }
-        if ("rdf:Description".equals(qName)) {
+        if ("Description".equals(localName) && RepositoryNamespaces.RDF_NAMESPACE_URI.equals(uri)) {
             insideRdfDescription = false;
+        }
+        if ("replicatedFrom".equals(localName) && RepositoryNamespaces.ONTOLOGY_RELATIONSHIP_NAMESPACE_URI.equals(uri)) {
+            throw new SAXException(FOUND); // Stop parsing early
         }
     }
 
-    public String getFirstChildPid() {
-        return firstChildPid;
+    public String getReplicatedFrom() {
+        return replicatedFrom != null ? replicatedFrom.trim() : null;
     }
 }

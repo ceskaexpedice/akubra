@@ -18,25 +18,26 @@ package org.ceskaexpedice.akubra.core.repository.impl;
 
 import org.akubraproject.UnsupportedIdException;
 import org.akubraproject.map.IdMapper;
-import org.apache.commons.io.IOUtils;
 import org.ceskaexpedice.akubra.KnownDatastreams;
 import org.ceskaexpedice.akubra.KnownXmlFormatUris;
 import org.ceskaexpedice.akubra.RepositoryException;
-import org.ceskaexpedice.akubra.utils.DomUtils;
+import org.ceskaexpedice.akubra.core.repository.CoreRepository;
+import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.fedoramodel.*;
 import org.fcrepo.common.Constants;
 import org.fcrepo.common.FaultException;
 import org.fcrepo.common.PID;
 import org.fcrepo.server.errors.MalformedPidException;
 import org.fcrepo.server.storage.lowlevel.akubra.HashPathIdMapper;
-import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.io.*;
 import java.net.*;
-import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
@@ -52,10 +53,12 @@ import static org.ceskaexpedice.akubra.core.repository.CoreRepository.LOCAL_REF_
 public class RepositoryUtils {
     private static final Logger LOGGER = Logger.getLogger(RepositoryUtils.class.getName());
     private static final SafeSimpleDateFormat DATE_FORMAT = new SafeSimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSS'Z'");
+    static final String FOUND = "FOUND";
 
     private RepositoryUtils() {
     }
 
+    /* TODO AK_NEW
     public static DatastreamVersionType getLastStreamVersion(DigitalObject object, String streamID) {
         for (DatastreamType datastreamType : object.getDatastream()) {
             if (streamID.equals(datastreamType.getID())) {
@@ -64,6 +67,8 @@ public class RepositoryUtils {
         }
         return null;
     }
+
+     */
 
     static DatastreamVersionType getLastStreamVersion(DatastreamType datastreamType) {
         List<DatastreamVersionType> datastreamVersionList = datastreamType.getDatastreamVersion();
@@ -87,6 +92,7 @@ public class RepositoryUtils {
         return false;
     }
 
+    /* TODO AK_NEW
     static InputStream getStreamContent(DatastreamVersionType stream, AkubraDOManager manager) {
         try {
             if (stream.getXmlContent() != null) {
@@ -123,7 +129,65 @@ public class RepositoryUtils {
         }
     }
 
-    public static InputStream readFromURL(String url) {
+     */
+
+    static InputStream getDatastreamContent(InputStream foxml, String dsId, CoreRepository coreRepository) {
+        try {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser saxParser = factory.newSAXParser();
+            GetDatastreamContentSaxHandler handler = new GetDatastreamContentSaxHandler(dsId);
+            try {
+                saxParser.parse(foxml, handler);
+            } catch (SAXException e) {
+                if (!FOUND.equals(e.getMessage())) {
+                    throw e; // Only propagate real errors
+                }
+            }
+            // Handle <contentLocation> case
+            if (handler.getContentLocationRef() != null) {
+                String ref = handler.getContentLocationRef();
+                String type = handler.getContentLocationType();
+                if ("URL".equals(type)) {
+                    if (ref.startsWith(LOCAL_REF_PREFIX)) {
+                        String[] refArray = ref.replace(LOCAL_REF_PREFIX, "").split("/");
+                        if (refArray.length == 2) {
+                            return coreRepository.retrieveDatastreamByInternalId(refArray[0] + "+" + refArray[1] + "+" + refArray[1] + ".0");
+                        } else {
+                            throw new IOException("Invalid datastream local reference: " + ref);
+                        }
+                    } else {
+                        return readFromURL(ref);
+                    }
+                } else {
+                    return coreRepository.retrieveDatastreamByInternalId(ref);
+                }
+            }
+            // Handle <xmlContent> case
+            if (handler.getXmlContentStream() != null) {
+                return handler.getXmlContentStream();
+            }
+            LOGGER.warning("Datastream with ID '" + dsId + "' not found or has no relevant content.");
+            return null;
+        } catch (Exception e) {
+            throw new RepositoryException("Error processing XML file: " + e.getMessage(), e);
+        }
+    }
+
+    static boolean datastreamExists(InputStream foxml, String datastreamId) {
+        try {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser saxParser = factory.newSAXParser();
+            DatastreamExistsSaxHandler handler = new DatastreamExistsSaxHandler(datastreamId);
+            saxParser.parse(foxml, handler);
+        } catch (SAXException e) {
+            return FOUND.equals(e.getMessage());
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
+        return false;
+    }
+
+    private static InputStream readFromURL(String url) {
         try {
             URL searchURL = new URL(url);
             URLConnection conn = searchURL.openConnection();
@@ -177,7 +241,7 @@ public class RepositoryUtils {
         return internalId.toString();
     }
 
-    public static Date getLastModified(DigitalObject object) {
+    static Date getLastModified(DigitalObject object) {
         for (PropertyType propertyType : object.getObjectProperties().getProperty()) {
             if ("info:fedora/fedora-system:def/view#lastModifiedDate".equals(propertyType.getNAME())) {
                 try {
@@ -201,6 +265,7 @@ public class RepositoryUtils {
         return propertyType;
     }
 
+    /* TODO
     static DigitalObject createEmptyDigitalObject(String pid) {
         DigitalObject retval = new DigitalObject();
         retval.setPID(pid);
@@ -215,6 +280,8 @@ public class RepositoryUtils {
         retval.setObjectProperties(objectPropertiesType);
         return retval;
     }
+
+     */
 
     static String getFormatUriForDS(String dsID) {
         if (KnownDatastreams.RELS_EXT.name().equals(dsID)) {
@@ -290,5 +357,14 @@ public class RepositoryUtils {
             throw new FaultException(wontHappen);
         }
     }
+
+    static RepositoryDatastreamImpl.Type controlGroup2Type(String controlGroup) {
+        if ("E".equals(controlGroup) || "R".equals(controlGroup)) {
+            return RepositoryDatastream.Type.INDIRECT;
+        } else {
+            return RepositoryDatastream.Type.DIRECT;
+        }
+    }
+
 
 }

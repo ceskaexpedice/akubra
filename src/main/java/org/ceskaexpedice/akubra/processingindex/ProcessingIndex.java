@@ -42,6 +42,15 @@ public interface ProcessingIndex {
     }
 
     /**
+     * Iterates over processing index items based on the provided query parameters.
+     * For each item found, the provided action is executed.
+     *
+     * @param params The query parameters used to filter processing index entries.
+     * @param action The action to be performed on each processing index item.
+     */
+    String iterate(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action);
+
+    /**
      * Deletes processing index entries related to the given PID (Persistent Identifier).
      * Specifically targets relations involving the given object as a source.
      *
@@ -76,14 +85,7 @@ public interface ProcessingIndex {
      */
     void deleteDescriptionByPid(String pid);
 
-    /**
-     * Iterates over processing index items based on the provided query parameters.
-     * For each item found, the provided action is executed.
-     *
-     * @param params The query parameters used to filter processing index entries.
-     * @param action The action to be performed on each processing index item.
-     */
-    String iterate(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action);
+    void rebuildProcessingIndex(String pid);
 
     /**
      * Commits the changes to the processing index.

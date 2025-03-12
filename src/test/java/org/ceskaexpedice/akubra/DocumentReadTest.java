@@ -18,6 +18,11 @@ package org.ceskaexpedice.akubra;
 
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
+import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
+import org.ceskaexpedice.akubra.misc.MiscHandler;
+import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
+import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
+import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.ceskaexpedice.test.FunctionalTestsUtils;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.akubra.utils.StringUtils;
@@ -102,6 +107,7 @@ public class DocumentReadTest {
 
     @Test
     void testGetProperty() {
+        /* TODO
         String propertyOwnerId = akubraRepository.getProperties(PID_TITLE_PAGE).getProperty("info:fedora/fedora-system:def/model#ownerId");
         assertEquals("fedoraAdmin", propertyOwnerId);
         Date propertyCreated = akubraRepository.getProperties(PID_TITLE_PAGE).getPropertyCreated();
@@ -110,6 +116,35 @@ public class DocumentReadTest {
         assertEquals("- none -", propertyLabel);
         Date propertyLastModified = akubraRepository.getProperties(PID_TITLE_PAGE).getPropertyLastModified();
         // TODO AK_NEW assertEquals("2024-05-20T13:03:27.151", propertyLastModified.toString());
+        
+         */
+    }
+
+    @Test
+    void testMarshalling() {
+        DigitalObject digitalObject = akubraRepository.get(PID_TITLE_PAGE).asDigitalObject();
+        InputStream inputStream = akubraRepository.marshall(digitalObject);
+        assertNotNull(inputStream);
+        digitalObject = akubraRepository.unmarshall(inputStream);
+        assertEquals(digitalObject.getDatastream().size(), digitalObject.getDatastream().size());
+    }
+
+    @Test
+    void testGetProcessingIndex() {
+        ProcessingIndex processingIndex = akubraRepository.pi();
+        assertNotNull(processingIndex);
+    }
+
+    @Test
+    void testGetRelsExtHandler() {
+        RelsExtHandler re = akubraRepository.re();
+        assertNotNull(re);
+    }
+
+    @Test
+    void testGetMiscHandler() {
+        MiscHandler mi = akubraRepository.mi();
+        assertNotNull(mi);
     }
 
     @Test

@@ -14,13 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.impl.utils.saxhandlers;
+package org.ceskaexpedice.akubra.impl.utils;
 
 import org.ceskaexpedice.akubra.KnownDatastreams;
 import org.ceskaexpedice.akubra.RepositoryNamespaces;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import static org.ceskaexpedice.akubra.impl.utils.InternalSaxUtils.FOUND;
 
 public class GetModsPartTypeSaxHandler extends DefaultHandler {
     private boolean insideBiblioMods = false;
@@ -46,7 +48,7 @@ public class GetModsPartTypeSaxHandler extends DefaultHandler {
         // Extract type from <mods:part type="...">
         if (insideMods && "part".equals(localName) && uri.equals(RepositoryNamespaces.BIBILO_MODS_URI)) {
             partType = attributes.getValue("type");
-            throw new SAXException("FOUND"); // Stop parsing early if match found
+            throw new SAXException(FOUND); // Stop parsing early if match found
         }
     }
 

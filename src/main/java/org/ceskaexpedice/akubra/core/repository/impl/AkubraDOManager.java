@@ -24,7 +24,6 @@ import org.akubraproject.map.IdMappingBlobStore;
 import org.apache.commons.io.IOUtils;
 import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
-import org.ceskaexpedice.akubra.core.repository.HazelcastClientNode;
 import org.ceskaexpedice.fedoramodel.*;
 import org.fcrepo.server.errors.LowlevelStorageException;
 import org.fcrepo.server.errors.ObjectAlreadyInLowlevelStorageException;
@@ -55,7 +54,7 @@ import java.util.logging.Logger;
 /**
  * AkubraDOManager
  */
-public class AkubraDOManager {
+class AkubraDOManager {
     private static final int UNMARSHALLER_POOL_CAPACITY = 50; // TODO make it configurable
     private static final Logger LOGGER = Logger.getLogger(AkubraDOManager.class.getName());
 
@@ -68,7 +67,7 @@ public class AkubraDOManager {
     private final BlockingQueue<Unmarshaller> unmarshallerPool = new LinkedBlockingQueue<>(UNMARSHALLER_POOL_CAPACITY);
     private Marshaller marshaller;
 
-    public AkubraDOManager(RepositoryConfiguration configuration) {
+    AkubraDOManager(RepositoryConfiguration configuration) {
         try {
             this.initialize(configuration);
             this.configuration = configuration;
@@ -110,7 +109,7 @@ public class AkubraDOManager {
     }
 
     DigitalObject readObjectFromStorage(String pid) {
-        DigitalObject retval = null;
+        DigitalObject retval;
         Object obj;
         try (InputStream inputStream = this.storage.retrieveObject(pid);) {
             Unmarshaller unmarshaller = unmarshallerPool.take();
