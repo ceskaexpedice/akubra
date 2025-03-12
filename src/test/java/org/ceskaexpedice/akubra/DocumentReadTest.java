@@ -18,10 +18,9 @@ package org.ceskaexpedice.akubra;
 
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
-import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
-import org.ceskaexpedice.akubra.misc.MiscHandler;
+import org.ceskaexpedice.akubra.misc.MiscHelper;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
-import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
+import org.ceskaexpedice.akubra.relsext.RelsExtHelper;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.ceskaexpedice.test.FunctionalTestsUtils;
 import org.ceskaexpedice.akubra.utils.DomUtils;
@@ -33,7 +32,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Date;
 import java.util.Properties;
 
 import static org.ceskaexpedice.akubra.AkubraTestsUtils.*;
@@ -116,7 +114,7 @@ public class DocumentReadTest {
         assertEquals("- none -", propertyLabel);
         Date propertyLastModified = akubraRepository.getProperties(PID_TITLE_PAGE).getPropertyLastModified();
         // TODO AK_NEW assertEquals("2024-05-20T13:03:27.151", propertyLastModified.toString());
-        
+
          */
     }
 
@@ -137,13 +135,13 @@ public class DocumentReadTest {
 
     @Test
     void testGetRelsExtHandler() {
-        RelsExtHandler re = akubraRepository.re();
+        RelsExtHelper re = akubraRepository.re();
         assertNotNull(re);
     }
 
     @Test
     void testGetMiscHandler() {
-        MiscHandler mi = akubraRepository.mi();
+        MiscHelper mi = akubraRepository.mi();
         assertNotNull(mi);
     }
 

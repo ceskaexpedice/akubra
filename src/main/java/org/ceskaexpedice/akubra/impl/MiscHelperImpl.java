@@ -19,17 +19,16 @@ package org.ceskaexpedice.akubra.impl;
 import org.ceskaexpedice.akubra.AkubraRepository;
 import org.ceskaexpedice.akubra.DigitalObjectWrapper;
 import org.ceskaexpedice.akubra.impl.utils.InternalSaxUtils;
-import org.ceskaexpedice.akubra.impl.utils.relsext.RelsExtInternalSaxUtils;
-import org.ceskaexpedice.akubra.misc.MiscHandler;
+import org.ceskaexpedice.akubra.misc.MiscHelper;
 
 import java.util.logging.Logger;
 
-public class MiscHandlerImpl implements MiscHandler {
-    private static final Logger LOGGER = Logger.getLogger(MiscHandlerImpl.class.getName());
+public class MiscHelperImpl implements MiscHelper {
+    private static final Logger LOGGER = Logger.getLogger(MiscHelperImpl.class.getName());
 
     private AkubraRepository akubraRepository;
 
-    public MiscHandlerImpl(AkubraRepository akubraRepository) {
+    public MiscHelperImpl(AkubraRepository akubraRepository) {
         this.akubraRepository = akubraRepository;
     }
 

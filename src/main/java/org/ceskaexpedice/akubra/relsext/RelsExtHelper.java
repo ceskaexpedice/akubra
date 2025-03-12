@@ -28,7 +28,7 @@ import java.util.List;
  *
  * @author pavels, petrp
  */
-public interface RelsExtHandler {
+public interface RelsExtHelper {
     String RDF_DESCRIPTION_ELEMENT = "Description";
     String RDF_ELEMENT = "RDF";
 

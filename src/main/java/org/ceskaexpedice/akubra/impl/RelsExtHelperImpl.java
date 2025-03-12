@@ -23,7 +23,7 @@ import org.ceskaexpedice.akubra.impl.utils.relsext.RelsExtInternalDomUtils;
 import org.ceskaexpedice.akubra.impl.utils.relsext.RelsExtInternalSaxUtils;
 import org.ceskaexpedice.akubra.impl.utils.relsext.RelsExtProcessTreeDomUtils;
 import org.ceskaexpedice.akubra.impl.utils.relsext.StructureInfoDom4jUtils;
-import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
+import org.ceskaexpedice.akubra.relsext.RelsExtHelper;
 import org.ceskaexpedice.akubra.relsext.RelsExtLiteral;
 import org.ceskaexpedice.akubra.relsext.RelsExtRelation;
 import org.ceskaexpedice.akubra.utils.DomUtils;
@@ -45,14 +45,14 @@ import java.util.logging.Logger;
 /**
  * AkubraRepositoryImpl
  */
-public class RelsExtHandlerImpl implements RelsExtHandler {
+public class RelsExtHelperImpl implements RelsExtHelper {
     private static final String RDF_DESCRIPTION_ELEMENT = "Description";
     private static final String RDF_ELEMENT = "RDF";
-    private static final Logger LOGGER = Logger.getLogger(RelsExtHandlerImpl.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(RelsExtHelperImpl.class.getName());
 
     private AkubraRepository akubraRepository;
 
-    public RelsExtHandlerImpl(AkubraRepository akubraRepository) {
+    public RelsExtHelperImpl(AkubraRepository akubraRepository) {
         this.akubraRepository = akubraRepository;
     }
 

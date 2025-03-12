@@ -16,7 +16,7 @@
  */
 package org.ceskaexpedice.akubra.misc;
 
-public interface MiscHandler {
+public interface MiscHelper {
 
     String getModsPartType(String pid);
 }

@@ -21,9 +21,9 @@ import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
-import org.ceskaexpedice.akubra.misc.MiscHandler;
+import org.ceskaexpedice.akubra.misc.MiscHelper;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
-import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
+import org.ceskaexpedice.akubra.relsext.RelsExtHelper;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 
 import java.io.IOException;
@@ -41,13 +41,13 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     private static final Logger LOGGER = Logger.getLogger(AkubraRepositoryImpl.class.getName());
 
     private CoreRepository coreRepository;
-    private RelsExtHandler relsExtHandler;
-    private MiscHandler miscHandler;
+    private RelsExtHelper relsExtHelper;
+    private MiscHelper miscHelper;
 
     public AkubraRepositoryImpl(CoreRepository coreRepository) {
         this.coreRepository = coreRepository;
-        this.relsExtHandler = new RelsExtHandlerImpl(this);
-        this.miscHandler = new MiscHandlerImpl(this);
+        this.relsExtHelper = new RelsExtHelperImpl(this);
+        this.miscHelper = new MiscHelperImpl(this);
     }
 
     @Override
@@ -281,13 +281,13 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     }
 
     @Override
-    public RelsExtHandler re() {
-        return relsExtHandler;
+    public RelsExtHelper re() {
+        return relsExtHelper;
     }
 
     @Override
-    public MiscHandler mi() {
-        return miscHandler;
+    public MiscHelper mi() {
+        return miscHelper;
     }
 
     @Override

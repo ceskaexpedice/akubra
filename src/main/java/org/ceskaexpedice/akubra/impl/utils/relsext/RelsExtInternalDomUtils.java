@@ -22,7 +22,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.utils.StringUtils;
 import org.ceskaexpedice.akubra.relsext.KnownRelations;
-import org.ceskaexpedice.akubra.relsext.RelsExtHandler;
+import org.ceskaexpedice.akubra.relsext.RelsExtHelper;
 import org.ceskaexpedice.akubra.pid.LexerException;
 import org.ceskaexpedice.akubra.pid.PIDParser;
 import org.ceskaexpedice.akubra.utils.DomUtils;
@@ -223,7 +223,7 @@ public final class RelsExtInternalDomUtils {
                     return !element.hasAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource") && StringUtils.isAnyString(element.getTextContent());
                 }
             }).stream().filter((elm) -> {
-                return !elm.getLocalName().equals(RelsExtHandler.RDF_ELEMENT) && !elm.getLocalName().equals(RelsExtHandler.RDF_DESCRIPTION_ELEMENT);
+                return !elm.getLocalName().equals(RelsExtHelper.RDF_ELEMENT) && !elm.getLocalName().equals(RelsExtHelper.RDF_DESCRIPTION_ELEMENT);
             }).map((elm) -> {
                 String content = elm.getTextContent();
                 Triple<String, String, String> triple = new ImmutableTriple<>(elm.getNamespaceURI(), elm.getLocalName(), content);
