@@ -76,8 +76,6 @@ public interface RelsExtHelper {
 
     List<String> getPidsInTree(String pid);
 
-    JSONObject extractStructureInfo(String pid);
-
     // ------ CDU of individual relation or literal ------------------------------------------
 
     /**

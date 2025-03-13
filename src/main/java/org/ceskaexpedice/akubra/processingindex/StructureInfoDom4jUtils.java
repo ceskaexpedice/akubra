@@ -1,10 +1,8 @@
-package org.ceskaexpedice.akubra.impl.utils.relsext;
+package org.ceskaexpedice.akubra.processingindex;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.ceskaexpedice.akubra.AkubraRepository;
 import org.ceskaexpedice.akubra.KnownDatastreams;
-import org.ceskaexpedice.akubra.processingindex.ProcessingIndexRelation;
-import org.ceskaexpedice.akubra.processingindex.ProcessingIndexUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;

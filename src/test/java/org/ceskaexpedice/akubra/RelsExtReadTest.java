@@ -20,8 +20,10 @@ import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.relsext.RelsExtLiteral;
 import org.ceskaexpedice.akubra.relsext.RelsExtRelation;
+import org.ceskaexpedice.akubra.relsext.TreeNodeProcessor;
 import org.ceskaexpedice.test.AkubraTestsUtils;
 import org.ceskaexpedice.test.FunctionalTestsUtils;
+import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -118,6 +120,41 @@ public class RelsExtReadTest {
     void testGetModel() {
         String model = akubraRepository.re().getModel(PID_MONOGRAPH);
         assertEquals("monograph", model);
+    }
+
+    @Test
+    void testProcessInTree() {
+        // TODO
+        akubraRepository.re().processInTree(PID_MONOGRAPH, new TreeNodeProcessor() {
+            @Override
+            public void process(String pid, int level) {
+                System.out.println(pid + ":" + level);
+            }
+
+            @Override
+            public boolean skipBranch(String pid, int level) {
+                return false;
+            }
+
+            @Override
+            public boolean breakProcessing(String pid, int level) {
+                return false;
+            }
+        });
+    }
+
+    @Test
+    void testGetFirstViewablePidInTree() {
+        String firstViewablePidInTree = akubraRepository.re().getFirstViewablePidInTree(PID_MONOGRAPH);
+        FunctionalTestsUtils.debugPrint(firstViewablePidInTree, testsProperties);
+        // TODO
+    }
+
+    @Test
+    void testGetPidsInTree() {
+        List<String> pidsInTree = akubraRepository.re().getPidsInTree(PID_MONOGRAPH);
+        FunctionalTestsUtils.debugPrint(pidsInTree.toString(), testsProperties);
+        // TODO
     }
 
 }

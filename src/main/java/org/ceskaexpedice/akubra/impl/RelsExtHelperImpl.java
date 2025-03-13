@@ -16,13 +16,12 @@
  */
 package org.ceskaexpedice.akubra.impl;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.impl.utils.relsext.RelsExtInternalDomUtils;
 import org.ceskaexpedice.akubra.impl.utils.relsext.RelsExtInternalSaxUtils;
 import org.ceskaexpedice.akubra.impl.utils.relsext.RelsExtProcessTreeDomUtils;
-import org.ceskaexpedice.akubra.impl.utils.relsext.StructureInfoDom4jUtils;
+import org.ceskaexpedice.akubra.processingindex.StructureInfoDom4jUtils;
 import org.ceskaexpedice.akubra.pid.PIDParser;
 import org.ceskaexpedice.akubra.relsext.RelsExtHelper;
 import org.ceskaexpedice.akubra.relsext.RelsExtLiteral;
@@ -154,11 +153,6 @@ public class RelsExtHelperImpl implements RelsExtHelper {
     @Override
     public List<String> getPidsInTree(String pid) {
         return RelsExtProcessTreeDomUtils.getPidsFromTree(pid, akubraRepository);
-    }
-
-    @Override
-    public JSONObject extractStructureInfo(String pid) {
-        return StructureInfoDom4jUtils.extractStructureInfo(akubraRepository, pid);
     }
 
     @Override
