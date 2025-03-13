@@ -138,9 +138,11 @@ public class RelsExtHelperImpl implements RelsExtHelper {
 
     @Override
     public String getModel(String pid) {
-        // TODO use SAX
-        DatastreamContentWrapper relsExtWrapper = get(pid);
-        return RelsExtInternalDomUtils.getResourcePid(relsExtWrapper.asDom(true), "hasModel", RepositoryNamespaces.FEDORA_MODELS_URI, false);
+        DigitalObjectWrapper digitalObjectWrapper = akubraRepository.get(pid);
+        if(digitalObjectWrapper == null) {
+            return null;
+        }
+        return RelsExtInternalSaxUtils.getModel(digitalObjectWrapper.asInputStream());
     }
 
     @Override

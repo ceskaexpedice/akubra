@@ -89,4 +89,24 @@ public final class RelsExtInternalSaxUtils {
             throw new RepositoryException(e);
         }
     }
+
+    public static String getModel(InputStream foxml) {
+        try {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser saxParser = factory.newSAXParser();
+            GetModelSaxHandler handler = new GetModelSaxHandler();
+
+            try {
+                saxParser.parse(foxml, handler);
+            } catch (SAXException e) {
+                if (!InternalSaxUtils.FOUND.equals(e.getMessage())) {
+                    throw e;
+                }
+            }
+            return handler.getModel();
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
+    }
+
 }
