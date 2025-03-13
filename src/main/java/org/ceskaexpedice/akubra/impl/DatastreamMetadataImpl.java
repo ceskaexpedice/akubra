@@ -20,57 +20,70 @@ import org.ceskaexpedice.akubra.DatastreamMetadata;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.fedoramodel.ContentLocationType;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import static org.ceskaexpedice.akubra.ObjectProperties.TIMESTAMP_FORMATTER;
 
 /**
  * DatastreamMetadataImpl
  */
 class DatastreamMetadataImpl implements DatastreamMetadata {
-    private RepositoryDatastream repositoryDatastream;
+    private static final Logger LOGGER = Logger.getLogger(DatastreamMetadataImpl.class.getName());
+    private Map<String, String> metadata;
 
-    DatastreamMetadataImpl(RepositoryDatastream repositoryDatastream) {
-        this.repositoryDatastream = repositoryDatastream;
+    DatastreamMetadataImpl(Map<String, String> metadata) {
+        this.metadata = metadata;
     }
 
     @Override
     public String getMimetype() {
-        return repositoryDatastream.getLastVersionMimeType();
+        return metadata.get("MIMETYPE");
     }
 
     @Override
     public String getId() {
-        return repositoryDatastream.getName();
-    }
-
-    @Override
-    public RepositoryDatastream.Type getType() {
-        return repositoryDatastream.getStreamType();
+        return metadata.get("ID");
     }
 
     @Override
     public long getSize() {
-        return repositoryDatastream.getDatastream().getDatastreamVersion().get(0).getSIZE();
+        String sizeStr = metadata.get("SIZE");
+        return sizeStr != null ? Long.parseLong(sizeStr) : 0;
     }
 
     @Override
     public String getControlGroup() {
-        return repositoryDatastream.getDatastream().getCONTROLGROUP();
+        return metadata.get("CONTROL_GROUP");
     }
 
     @Override
     public String getLocation() {
-        ContentLocationType contentLocation = repositoryDatastream.getDatastream().getDatastreamVersion().get(0).getContentLocation();
-        return contentLocation == null ? null : contentLocation.getREF();
+        return metadata.get("LOCATION");
     }
 
     @Override
     public Date getLastModified() {
-        return repositoryDatastream.getLastVersionLastModified();
+        return parseDate(metadata.get("CREATED"));
     }
 
     @Override
     public Date getCreateDate() {
-        return repositoryDatastream.getDatastream().getDatastreamVersion().get(0).getCREATED().toGregorianCalendar().getTime();
+        return parseDate(metadata.get("CREATED"));
     }
 
+    private Date parseDate(String dateStr) {
+        try {
+            return Date.from(LocalDateTime.parse(dateStr, TIMESTAMP_FORMATTER)
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant());
+        } catch (DateTimeParseException e) {
+            LOGGER.warning(String.format("cannot parse createdDate %s", dateStr));
+        }
+        return null;
+    }
 }

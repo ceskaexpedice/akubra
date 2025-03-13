@@ -22,6 +22,8 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public final class InternalSaxUtils {
@@ -46,6 +48,30 @@ public final class InternalSaxUtils {
             return handler.getPartType();
         } catch (Exception e) {
             throw new RepositoryException("Error processing MODS XML: " + e.getMessage(), e);
+        }
+    }
+
+    public static List<String> getDatastreamNames(InputStream foxml) {
+        try {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser saxParser = factory.newSAXParser();
+            DatastreamNamesSaxHandler handler = new DatastreamNamesSaxHandler();
+            saxParser.parse(foxml, handler);
+            return handler.getDatastreamIds();
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
+    }
+
+    public static Map<String, String> getDatastreamMetadata(InputStream foxml, String dsId) {
+        try {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser saxParser = factory.newSAXParser();
+            DatastreamMetadataSaxHandler handler = new DatastreamMetadataSaxHandler(dsId);
+            saxParser.parse(foxml, handler);
+            return handler.getMetadata();
+        } catch (Exception e) {
+            throw new RepositoryException(e);
         }
     }
 

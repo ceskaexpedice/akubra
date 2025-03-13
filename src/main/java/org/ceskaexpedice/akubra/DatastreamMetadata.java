@@ -50,13 +50,6 @@ public interface DatastreamMetadata {
     String getMimetype();
 
     /**
-     * Retrieves the type of the datastream.
-     *
-     * @return The datastream type, as defined in {@link RepositoryDatastream.Type}.
-     */
-    RepositoryDatastream.Type getType();
-
-    /**
      * Retrieves the size of the datastream in bytes.
      *
      * @return The size of the datastream.

@@ -21,6 +21,7 @@ import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
+import org.ceskaexpedice.akubra.impl.utils.InternalSaxUtils;
 import org.ceskaexpedice.akubra.impl.utils.ObjectPropertiesSaxParser;
 import org.ceskaexpedice.akubra.misc.MiscHelper;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
@@ -30,6 +31,7 @@ import org.ceskaexpedice.fedoramodel.DigitalObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -225,10 +227,12 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public DatastreamMetadata getDatastreamMetadata(String pid, String dsId) {
-        // TODO use SAX
-        RepositoryObject object = coreRepository.getAsRepositoryObject(pid);
-        RepositoryDatastream stream = object.getStream(dsId);
-        return new DatastreamMetadataImpl(stream);
+        DigitalObjectWrapper digitalObjectWrapper = get(pid);
+        if (digitalObjectWrapper == null) {
+            return null;
+        }
+        Map<String, String> datastreamMetadata = InternalSaxUtils.getDatastreamMetadata(digitalObjectWrapper.asInputStream(), dsId);
+        return new DatastreamMetadataImpl(datastreamMetadata);
     }
 
     @Override
@@ -262,17 +266,12 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public List<String> getDatastreamNames(String pid) {
-        // TODO use SAX
-        RepositoryObject object = coreRepository.getAsRepositoryObject(pid);
-        List<RepositoryDatastream> streams = object.getStreams();
-        return streams.stream().map(it -> {
-            try {
-                return it.getName();
-            } catch (RepositoryException e) {
-                LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                return null;
-            }
-        }).collect(Collectors.toList());
+        DigitalObjectWrapper digitalObjectWrapper = get(pid);
+        if (digitalObjectWrapper == null) {
+            return null;
+        }
+        List<String> datastreamNames = InternalSaxUtils.getDatastreamNames(digitalObjectWrapper.asInputStream());
+        return datastreamNames;
     }
 
     @Override

@@ -69,12 +69,11 @@ public class DatastreamReadTest {
 
         assertEquals("DC", datastreamMetadata.getId());
         assertEquals("text/xml", datastreamMetadata.getMimetype());
-        assertEquals(RepositoryDatastream.Type.DIRECT, datastreamMetadata.getType());
         assertEquals("X", datastreamMetadata.getControlGroup());
         assertEquals(0, datastreamMetadata.getSize());
         assertNull(datastreamMetadata.getLocation());
-        // TODO assertEquals("Mon Feb 26 15:40:29 CET 2018", datastreamMetadata.getLastModified().toString());
-        // TODO assertEquals("Mon Feb 26 15:40:29 CET 2018", datastreamMetadata.getCreateDate().toString());
+        // TODO AK_NEW assertEquals("Mon Feb 26 15:40:29 CET 2018", datastreamMetadata.getLastModified().toString());
+        //assertEquals("Mon Feb 26 15:40:29 CET 2018", datastreamMetadata.getCreateDate().toString());
     }
 
     @Test
