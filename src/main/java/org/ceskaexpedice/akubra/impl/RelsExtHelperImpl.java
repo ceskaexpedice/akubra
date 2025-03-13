@@ -72,8 +72,7 @@ public class RelsExtHelperImpl implements RelsExtHelper {
 
     @Override
     public boolean relationExists(String pid, String relation, String namespace) {
-        // TODO use SAX
-        DatastreamContentWrapper datastreamContent = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
+        DatastreamContentWrapper datastreamContent = get(pid);
         if(datastreamContent == null) {
             return false;
         }
@@ -82,8 +81,10 @@ public class RelsExtHelperImpl implements RelsExtHelper {
 
     @Override
     public List<RelsExtRelation> getRelations(String pid, String namespace) {
-        // TODO use SAX
         DatastreamContentWrapper relsExtWrapper = get(pid);
+        if(relsExtWrapper == null){
+            return null;
+        }
         List<RelsExtRelation> rels = new ArrayList<>();
         List<Triple<String, String, String>> triples = RelsExtInternalDomUtils.getRelations(relsExtWrapper.asDom(true), namespace);
         for (Triple<String, String, String> triple : triples) {
@@ -95,8 +96,10 @@ public class RelsExtHelperImpl implements RelsExtHelper {
 
     @Override
     public List<RelsExtLiteral> getLiterals(String pid, String namespace) {
-        // TODO use SAX
         DatastreamContentWrapper relsExtWrapper = get(pid);
+        if(relsExtWrapper == null){
+            return null;
+        }
         List<RelsExtLiteral> rels = new ArrayList<>();
         List<Triple<String, String, String>> triples = RelsExtInternalDomUtils.getLiterals(relsExtWrapper.asDom(true), namespace);
         for (Triple<String, String, String> triple : triples) {
@@ -158,9 +161,9 @@ public class RelsExtHelperImpl implements RelsExtHelper {
     @Override
     public void addRelation(String pid, String relation, String namespace, String targetRelation) {
         try {
-            DatastreamContentWrapper datastreamContent = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
+            DatastreamContentWrapper datastreamContent = get(pid);
             if(datastreamContent == null) {
-                // TODO log
+                LOGGER.warning("Datastream RELS-EXT does not exist: " + pid);
                 return;
             }
             Document document = datastreamContent.asDom(true);
@@ -177,9 +180,9 @@ public class RelsExtHelperImpl implements RelsExtHelper {
     @Override
     public void removeRelation(String pid, String relation, String namespace, String targetRelation) {
         try {
-            DatastreamContentWrapper datastreamContent = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
+            DatastreamContentWrapper datastreamContent = get(pid);
             if(datastreamContent == null) {
-                // TODO log
+                LOGGER.warning("Datastream RELS-EXT does not exist: " + pid);
                 return;
             }
             Document document = datastreamContent.asDom(true);
@@ -204,9 +207,9 @@ public class RelsExtHelperImpl implements RelsExtHelper {
     @Override
     public void removeRelationsByNameAndNamespace(String pid, String relation, String namespace) {
         try {
-            DatastreamContentWrapper datastreamContent = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
+            DatastreamContentWrapper datastreamContent = get(pid);
             if(datastreamContent == null) {
-                // TODO log
+                LOGGER.warning("Datastream RELS-EXT does not exist: " + pid);
                 return;
             }
             Document document = datastreamContent.asDom(true);
@@ -231,9 +234,9 @@ public class RelsExtHelperImpl implements RelsExtHelper {
     @Override
     public void removeRelationsByNamespace(String pid, String namespace) {
         try {
-            DatastreamContentWrapper datastreamContent = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
+            DatastreamContentWrapper datastreamContent = get(pid);
             if(datastreamContent == null) {
-                // TODO log
+                LOGGER.warning("Datastream RELS-EXT does not exist: " + pid);
                 return;
             }
             Document document = datastreamContent.asDom(true);
@@ -258,9 +261,9 @@ public class RelsExtHelperImpl implements RelsExtHelper {
     @Override
     public void addLiteral(String pid, String relation, String namespace, String value) {
         try {
-            DatastreamContentWrapper datastreamContent = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
+            DatastreamContentWrapper datastreamContent = get(pid);
             if(datastreamContent == null) {
-                // TODO log
+                LOGGER.warning("Datastream RELS-EXT does not exist: " + pid);
                 return;
             }
             Document document = datastreamContent.asDom(true);
@@ -278,9 +281,9 @@ public class RelsExtHelperImpl implements RelsExtHelper {
     @Override
     public void removeLiteral(String pid, String relation, String namespace, String value) {
         try {
-            DatastreamContentWrapper datastreamContent = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT);
+            DatastreamContentWrapper datastreamContent = get(pid);
             if(datastreamContent == null) {
-                // TODO log
+                LOGGER.warning("Datastream RELS-EXT does not exist: " + pid);
                 return;
             }
             Document document = datastreamContent.asDom(true);
