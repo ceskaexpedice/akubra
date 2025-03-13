@@ -58,15 +58,15 @@ public interface RelsExtHelper {
      */
     boolean relationExists(String pid, String relation, String namespace);
 
-    String getElementValue(String pid, String xpathExpression);
+    List<RelsExtRelation> getRelations(String pid, String namespace);
+
+    List<RelsExtLiteral> getLiterals(String pid, String namespace);
 
     String getTilesUrl(String pid);
 
     String getPidOfFirstChild(String pid);
 
     String getFirstReplicatedFrom(String pid);
-
-    String getResourcePid(String pid, String localName, String namespace, boolean appendPrefix);
 
     String getModel(String pid);
 
@@ -75,12 +75,6 @@ public interface RelsExtHelper {
     String getFirstViewablePidInTree(String pid);
 
     List<String> getPidsInTree(String pid);
-
-    List<RelsExtRelation> getRelations(String pid);
-
-    List<RelsExtRelation> getRelations(String pid, String namespace);
-
-    List<RelsExtLiteral> getLiterals(String pid, String namespace);
 
     JSONObject extractStructureInfo(String pid);
 

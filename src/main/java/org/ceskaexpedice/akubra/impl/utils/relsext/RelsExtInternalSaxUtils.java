@@ -55,6 +55,7 @@ public final class RelsExtInternalSaxUtils {
     public static String getFirstReplicatedFrom(InputStream foxml) {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
             SAXParser saxParser = factory.newSAXParser();
             GetFirstReplicatedFromSaxHandler handler = new GetFirstReplicatedFromSaxHandler();
             try {
@@ -66,8 +67,26 @@ public final class RelsExtInternalSaxUtils {
             }
             return handler.getReplicatedFrom();
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            throw new RepositoryException(e);
+        }
+    }
+
+    public static String getTilesUrl(InputStream foxml) {
+        try {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
+            SAXParser saxParser = factory.newSAXParser();
+            GetTilesUrlSaxHandler handler = new GetTilesUrlSaxHandler();
+            try {
+                saxParser.parse(foxml, handler);
+            } catch (SAXException e) {
+                if (!FOUND.equals(e.getMessage())) {
+                    throw e;
+                }
+            }
+            return handler.getTilesUrl();
+        } catch (Exception e) {
+            throw new RepositoryException(e);
         }
     }
 }

@@ -29,6 +29,7 @@ public final class AkubraTestsUtils {
     public static final String PID_NOT_EXISTS = "uuid:92993b4a-71b4-4f19-8953-0701243cc25d";
     public static final String PID_MONOGRAPH = "uuid:5035a48a-5e2e-486c-8127-2fa650842e46";
     public static final String PID_IMPORTED = "uuid:32993b4a-71b4-4f19-8953-0701243cc25d";
+    public static final String PID_TILES = "uuid:ab7e5a30-bddb-11e0-bff9-0016e6840575";
 
     private AkubraTestsUtils() {}
 

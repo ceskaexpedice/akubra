@@ -30,9 +30,9 @@ import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 
-import static org.ceskaexpedice.test.AkubraTestsUtils.PID_MONOGRAPH;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.ceskaexpedice.test.AkubraTestsUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class RelsExtReadTest {
     private static AkubraRepository akubraRepository;
@@ -56,21 +56,68 @@ public class RelsExtReadTest {
     }
 
     @Test
+    void testExists() {
+        boolean objectExists = akubraRepository.re().exists(PID_TITLE_PAGE);
+        assertTrue(objectExists);
+    }
+
+    @Test
     void testGet() {
         DatastreamContentWrapper relsExtWrapper = akubraRepository.re().get(PID_MONOGRAPH);
         assertNotNull(relsExtWrapper);
+        FunctionalTestsUtils.debugPrint(relsExtWrapper.asDom4j(true).asXML(), testsProperties);
+    }
+
+    @Test
+    void testRelationExists() {
+        boolean exists = akubraRepository.re().relationExists(PID_MONOGRAPH, "hasPage", RepositoryNamespaces.KRAMERIUS_URI);
+        assertTrue(exists);
     }
 
     @Test
     void testGetRelations() {
         List<RelsExtRelation> relations = akubraRepository.re().getRelations(PID_MONOGRAPH, null);
         assertEquals(37, relations.size());
+        FunctionalTestsUtils.debugPrint(relations.toString(), testsProperties);
+        relations = akubraRepository.re().getRelations(PID_MONOGRAPH, RepositoryNamespaces.KRAMERIUS_URI);
+        assertEquals(36, relations.size());
+        FunctionalTestsUtils.debugPrint(relations.toString(), testsProperties);
     }
 
     @Test
     void testGetLiterals() {
         List<RelsExtLiteral> literals = akubraRepository.re().getLiterals(PID_MONOGRAPH, null);
         assertEquals(5, literals.size());
+        FunctionalTestsUtils.debugPrint(literals.toString(), testsProperties);
+        literals = akubraRepository.re().getLiterals(PID_MONOGRAPH, RepositoryNamespaces.OAI_NAMESPACE_URI);
+        assertEquals(1, literals.size());
+        FunctionalTestsUtils.debugPrint(literals.toString(), testsProperties);
+    }
+
+    @Test
+    void testGetTilesUrl() {
+        String tilesUrl = akubraRepository.re().getTilesUrl(PID_MONOGRAPH);
+        assertNull(tilesUrl);
+        tilesUrl = akubraRepository.re().getTilesUrl(PID_TILES);
+        assertEquals("kramerius4://deepZoomCache", tilesUrl);
+    }
+
+    @Test
+    void testPidOfFirstChild() {
+        String pidOfFirstChild = akubraRepository.re().getPidOfFirstChild(PID_MONOGRAPH);
+        assertEquals("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", pidOfFirstChild);
+    }
+
+    @Test
+    void testGetReplicateFrom() {
+        String firstReplicatedFrom = akubraRepository.re().getFirstReplicatedFrom(PID_MONOGRAPH);
+        assertEquals("http://vmkramerius.incad.cz:18080/search/handle/uuid:5035a48a-5e2e-486c-8127-2fa650842e46", firstReplicatedFrom);
+    }
+
+    @Test
+    void testGetModel() {
+        String model = akubraRepository.re().getModel(PID_MONOGRAPH);
+        assertEquals("monograph", model);
     }
 
 }

@@ -82,76 +82,6 @@ public class RelsExtHelperImpl implements RelsExtHelper {
     }
 
     @Override
-    public String getElementValue(String pid, String xpathExpression) {
-        // TODO use SAX
-        DatastreamContentWrapper relsExtWrapper = get(pid);
-        return RelsExtInternalDomUtils.getElementValue(relsExtWrapper.asDom(false),xpathExpression);
-    }
-
-    @Override
-    public String getTilesUrl(String pid) {
-        return getElementValue(pid, "//kramerius:tiles-url/text()");
-    }
-
-    @Override
-    public String getPidOfFirstChild(String pid) {
-        DigitalObjectWrapper digitalObjectWrapper = akubraRepository.get(pid);
-        if(digitalObjectWrapper == null) {
-            return null;
-        }
-        return RelsExtInternalSaxUtils.getPidOfFirstChild(digitalObjectWrapper.asInputStream());
-    }
-
-    @Override
-    public String getFirstReplicatedFrom(String pid) {
-        DigitalObjectWrapper digitalObjectWrapper = akubraRepository.get(pid);
-        if(digitalObjectWrapper == null) {
-            return null;
-        }
-        return RelsExtInternalSaxUtils.getFirstReplicatedFrom(digitalObjectWrapper.asInputStream());
-    }
-
-    @Override
-    public String getResourcePid(String pid, String localName, String namespace, boolean appendPrefix) {
-        // TODO use SAX
-        DatastreamContentWrapper relsExtWrapper = get(pid);
-        return RelsExtInternalDomUtils.getResourcePid(relsExtWrapper.asDom(false), localName, namespace, appendPrefix);
-    }
-
-    @Override
-    public String getModel(String pid) {
-        return getResourcePid(pid, "hasModel", RepositoryNamespaces.FEDORA_MODELS_URI, false);
-    }
-
-    @Override
-    public void processInTree(String pid, TreeNodeProcessor processor) {
-        RelsExtProcessTreeDomUtils.processInTree(pid, processor, akubraRepository);
-    }
-
-    @Override
-    public String getFirstViewablePidInTree(String pid) {
-        return RelsExtProcessTreeDomUtils.findFirstViewablePidFromTree(pid, akubraRepository);
-    }
-
-    @Override
-    public List<String> getPidsInTree(String pid) {
-        return RelsExtProcessTreeDomUtils.getPidsFromTree(pid, akubraRepository);
-    }
-
-    @Override
-    public List<RelsExtRelation> getRelations(String pid) {
-        // TODO use SAX
-        DatastreamContentWrapper relsExtWrapper = get(pid);
-        List<RelsExtRelation> rels = new ArrayList<>();
-        List<Pair<String, String>> relations = RelsExtInternalDomUtils.getRelations(relsExtWrapper.asDom(true));
-        for (Pair<String, String> pair : relations) {
-            RelsExtRelation relsExtRelation = new RelsExtRelation(null, pair.getLeft(), pair.getRight());
-            rels.add(relsExtRelation);
-        }
-        return rels;
-    }
-
-    @Override
     public List<RelsExtRelation> getRelations(String pid, String namespace) {
         // TODO use SAX
         DatastreamContentWrapper relsExtWrapper = get(pid);
@@ -175,6 +105,55 @@ public class RelsExtHelperImpl implements RelsExtHelper {
             rels.add(relsExtLiteral);
         }
         return rels;
+    }
+
+    @Override
+    public String getTilesUrl(String pid) {
+        DigitalObjectWrapper digitalObjectWrapper = akubraRepository.get(pid);
+        if(digitalObjectWrapper == null) {
+            return null;
+        }
+        return RelsExtInternalSaxUtils.getTilesUrl(digitalObjectWrapper.asInputStream());
+    }
+
+    @Override
+    public String getPidOfFirstChild(String pid) {
+        DigitalObjectWrapper digitalObjectWrapper = akubraRepository.get(pid);
+        if(digitalObjectWrapper == null) {
+            return null;
+        }
+        return RelsExtInternalSaxUtils.getPidOfFirstChild(digitalObjectWrapper.asInputStream());
+    }
+
+    @Override
+    public String getFirstReplicatedFrom(String pid) {
+        DigitalObjectWrapper digitalObjectWrapper = akubraRepository.get(pid);
+        if(digitalObjectWrapper == null) {
+            return null;
+        }
+        return RelsExtInternalSaxUtils.getFirstReplicatedFrom(digitalObjectWrapper.asInputStream());
+    }
+
+    @Override
+    public String getModel(String pid) {
+        // TODO use SAX
+        DatastreamContentWrapper relsExtWrapper = get(pid);
+        return RelsExtInternalDomUtils.getResourcePid(relsExtWrapper.asDom(true), "hasModel", RepositoryNamespaces.FEDORA_MODELS_URI, false);
+    }
+
+    @Override
+    public void processInTree(String pid, TreeNodeProcessor processor) {
+        RelsExtProcessTreeDomUtils.processInTree(pid, processor, akubraRepository);
+    }
+
+    @Override
+    public String getFirstViewablePidInTree(String pid) {
+        return RelsExtProcessTreeDomUtils.findFirstViewablePidFromTree(pid, akubraRepository);
+    }
+
+    @Override
+    public List<String> getPidsInTree(String pid) {
+        return RelsExtProcessTreeDomUtils.getPidsFromTree(pid, akubraRepository);
     }
 
     @Override

@@ -164,6 +164,7 @@ public final class RelsExtInternalDomUtils {
 
      */
 
+    /* TODO AK_NEW
      public static List<Pair<String, String>> getRelations(Document relsExt) {
         List<Pair<String, String>> pairs = new ArrayList<>();
         List<String> names = Arrays.stream(KnownRelations.values()).map(KnownRelations::toString).collect(Collectors.toList());
@@ -194,7 +195,7 @@ public final class RelsExtInternalDomUtils {
         });
 
         return pairs;
-    }
+    }*/
 
     public static List<Triple<String, String, String>> getRelations(Document relsExt, String namespace) {
         try {
