@@ -16,7 +16,16 @@
  */
 package org.ceskaexpedice.akubra.misc;
 
+/**
+ * Interface for various helper tasks
+ * @author pavels, petrp
+ */
 public interface MiscHelper {
 
+    /**
+     * Provides the value of part type from Biblio Mods
+     * @param pid object identifier
+     * @return part type value
+     */
     String getModsPartType(String pid);
 }

@@ -30,7 +30,7 @@ import java.util.Optional;
  * either returning them directly or wrapped in an {@link Optional} if the value is not found
  * or not of the expected type.
  *
- * @author petr
+ * @author petrp, pavels
  */
 public class ProcessingIndexItem {
 

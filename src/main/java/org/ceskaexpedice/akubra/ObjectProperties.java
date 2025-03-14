@@ -25,6 +25,9 @@ import java.util.Date;
  * Interface that defines the properties of an object, including the ability to retrieve
  * property values, labels, and metadata such as creation and modification timestamps.
  * Implementing classes should provide the logic for handling properties and metadata.
+ *
+ * @author pavels, petrp
+ *
  */
 public interface ObjectProperties {
     DateTimeFormatter TIMESTAMP_FORMATTER = new DateTimeFormatterBuilder()
@@ -42,23 +45,23 @@ public interface ObjectProperties {
     String getProperty(String propertyName);
 
     /**
-     * Retrieves the label or description of the property.
+     * Retrieves the label  property.
      *
-     * @return The label of the property.
+     * @return The label property.
      */
     String getPropertyLabel();
 
     /**
-     * Retrieves the timestamp when the property was created.
+     * Retrieves the created property.
      *
-     * @return The creation timestamp of the property.
+     * @return The created property.
      */
     Date getPropertyCreated();
 
     /**
-     * Retrieves the timestamp when the property was last modified.
+     * Retrieves the last modified property.
      *
-     * @return The last modification timestamp of the property.
+     * @return The last modifified property.
      */
     Date getPropertyLastModified();
 }

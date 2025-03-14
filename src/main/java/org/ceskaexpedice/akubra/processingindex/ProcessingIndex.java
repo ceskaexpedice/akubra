@@ -23,6 +23,7 @@ import java.util.function.Consumer;
  * The processing index is an implementation of a Solr index that stores relations between Akubra objects.
  * It also supports descriptions related to the objects. The index allows for efficient querying, updating,
  * and deletion of entries related to object relations and descriptions.
+ * @author pavels, petrp
  */
 public interface ProcessingIndex {
     // Constants representing types of index entries (relations and descriptions).
@@ -85,6 +86,10 @@ public interface ProcessingIndex {
      */
     void deleteDescriptionByPid(String pid);
 
+    /**
+     * rebuild processing index for the given pid
+     * @param pid  The unique identifier of the object whose index entries to rebuild
+     */
     void rebuildProcessingIndex(String pid);
 
     /**

@@ -106,7 +106,7 @@ public final class RelsExtProcessTreeDomUtils {
             try {
                 // should be from
                 if (akubraRepository.re().exists(pid)) {
-                    relsExt = akubraRepository.re().get(pid).asDom(false);
+                    relsExt = akubraRepository.re().get(pid).asDom(true);
                 } else {
                     LOGGER.warning("could not read root RELS-EXT, skipping object  (" + pid + ")");
                 }
@@ -159,7 +159,7 @@ public final class RelsExtProcessTreeDomUtils {
                             if (!processor.skipBranch(objectId, level + 1)) {
                                 Document iterationgRelsExt = null;
                                 try {
-                                    iterationgRelsExt = akubraRepository.re().get(objectId).asDom(false);
+                                    iterationgRelsExt = akubraRepository.re().get(objectId).asDom(true);
                                 } catch (Exception ex) {
                                     LOGGER.warning("could not read RELS-EXT, skipping branch [" + (level + 1)
                                             + "] and pid (" + objectId + "):" + ex);

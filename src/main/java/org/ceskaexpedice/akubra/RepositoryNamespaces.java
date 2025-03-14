@@ -18,7 +18,7 @@ package org.ceskaexpedice.akubra;
 
 /**
  * Namespaces in fedora
- * @author pavels
+ * @author pavels, petrp
  */
 public interface RepositoryNamespaces {
     /**

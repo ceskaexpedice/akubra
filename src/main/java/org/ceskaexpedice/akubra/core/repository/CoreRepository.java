@@ -27,6 +27,7 @@ import java.util.concurrent.locks.Lock;
  * This interface provides the primary functions for ingesting, accessing, and managing digital objects
  * in the repository. It serves as the core for repository access.
  * It also handles repository object locks and data marshaling operations.
+ * @author pavels, petrp
  */
 public interface CoreRepository {
     String LOCAL_REF_PREFIX = "http://local.fedora.server/fedora/get/";
@@ -102,23 +103,71 @@ public interface CoreRepository {
      */
     DigitalObject unmarshall(InputStream inputStream);
 
+    /**
+     * Checks whether a datastream with the given ID exists for the specified digital object.
+     *
+     * @param pid   The unique identifier of the object.
+     * @param dsId  The ID of the datastream.
+     * @return {@code true} if the datastream exists, {@code false} otherwise.
+     */
     boolean datastreamExists(String pid, String dsId);
 
+    /**
+     * Retrieves the content of a datastream for the specified digital object.
+     *
+     * @param pid   The unique identifier of the object.
+     * @param dsId  The ID of the datastream.
+     * @return An InputStream representing the datastream content.
+     */
     InputStream getDatastreamContent(String pid, String dsId);
 
     /**
+     * Retrieves a datastream by its internal identifier.
      *
-     * @param dsKey
-     * @return
+     * @param dsKey The internal key of the datastream.
+     * @return An InputStream representing the datastream content.
      */
     InputStream retrieveDatastreamByInternalId(String dsKey);
 
+    /**
+     * Creates an XML datastream for the given repository object.
+     *
+     * @param repositoryObject The target repository object.
+     * @param dsId             The ID of the datastream.
+     * @param mimeType         The MIME type of the datastream.
+     * @param input            The InputStream containing the datastream content.
+     * @return The created {@link RepositoryDatastream}.
+     */
     RepositoryDatastream createXMLDatastream(RepositoryObject repositoryObject, String dsId, String mimeType, InputStream input);
 
+    /**
+     * Creates a managed datastream for the given repository object.
+     *
+     * @param repositoryObject The target repository object.
+     * @param dsId             The ID of the datastream.
+     * @param mimeType         The MIME type of the datastream.
+     * @param input            The InputStream containing the datastream content.
+     * @return The created {@link RepositoryDatastream}.
+     */
     RepositoryDatastream createManagedDatastream(RepositoryObject repositoryObject, String dsId, String mimeType, InputStream input);
 
+    /**
+     * Creates a redirected datastream that points to an external URL.
+     *
+     * @param repositoryObject The target repository object.
+     * @param dsId             The ID of the datastream.
+     * @param url              The URL to which the datastream redirects.
+     * @param mimeType         The MIME type of the datastream.
+     * @return The created {@link RepositoryDatastream}.
+     */
     RepositoryDatastream createRedirectedDatastream(RepositoryObject repositoryObject, String dsId, String url, String mimeType);
 
+    /**
+     * Deletes a specific datastream from the given digital object.
+     *
+     * @param pid   The unique identifier of the object.
+     * @param dsId  The ID of the datastream to be deleted.
+     */
     void deleteDatastream(String pid, String dsId);
 
     /**

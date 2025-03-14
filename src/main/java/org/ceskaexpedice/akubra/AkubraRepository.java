@@ -62,10 +62,10 @@ public interface AkubraRepository {
     DigitalObjectWrapper get(String pid);
 
     /**
-     * Retrieves a digital object in a specific FOXML format.
+     * Retrieves a digital object in an archive format with all streams content inside.
      *
      * @param pid       The persistent identifier of the object.
-     * @return The digital object in the specified format, or {@code null} if not found.
+     * @return The digital object in an archive format, or {@code null} if not found.
      */
     DigitalObjectWrapper export(String pid);
 
@@ -303,11 +303,6 @@ public interface AkubraRepository {
 
     /**
      * Retrieves a list of datastream names associated with the specified Fedora object.
-     * <p>
-     * This method queries the Fedora repository and returns the names of all datastreams
-     * linked to the given persistent identifier (PID). The returned list may include
-     * system-generated and user-defined datastreams.
-     * </p>
      *
      * @param pid the persistent identifier (PID) of the Fedora object
      * @return a list of datastream names associated with the specified PID
@@ -326,18 +321,18 @@ public interface AkubraRepository {
     //-------------------- RelsExt -----------------------
 
     /**
-     * Returns a handler interface for the RELS EXT stream type manipulation.
+     * Returns a helper interface for the RELS EXT stream type manipulation.
      *
-     * @return A RELS EXT handler.
+     * @return A RELS EXT helper.
      */
     RelsExtHelper re();
 
     //-------------------- Misc -----------------------
 
     /**
-     * Returns a handler interface for the misc manipulation.
+     * Returns a helper interface for the misc manipulation.
      *
-     * @return A misc handler.
+     * @return A misc helper.
      */
     MiscHelper mi();
 

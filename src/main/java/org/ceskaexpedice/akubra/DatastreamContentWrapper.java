@@ -27,6 +27,7 @@ import java.io.InputStream;
  * allowing it to be accessed as an {@link InputStream}, a DOM {@link Document},
  * a Dom4j {@link org.dom4j.Document}, or a {@link String}.
  * </p>
+ * @author pavels, petrp
  */
 public interface DatastreamContentWrapper {
 

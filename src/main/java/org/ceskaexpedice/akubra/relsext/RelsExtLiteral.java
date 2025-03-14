@@ -20,6 +20,7 @@ package org.ceskaexpedice.akubra.relsext;
  * Represents a literal item in the RelsExt part of the Akubra Fefora model stream.
  * This class extends {@link RelsExtItem} to hold a literal content value in addition
  * to the namespace and local name.
+ * @author pavels, petrp
  */
 public class RelsExtLiteral extends RelsExtItem {
 

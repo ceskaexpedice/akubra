@@ -45,7 +45,7 @@ import java.util.logging.Logger;
 /**
  * Handle XML; parsing, find, etc..
  *
- * @author pavels
+ * @author pavels, petrp
  *
  * <b>Implementation note: All DOM access methods are synchronized on Document object </b>
  */

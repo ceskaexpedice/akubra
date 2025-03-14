@@ -29,7 +29,7 @@ package org.ceskaexpedice.akubra;
  *
  * @param <T> The type of the result returned by the operation.
  *
- * @author Inovatika
+ * @author pavels, petrp
  */
 public interface LockOperation<T> {
 

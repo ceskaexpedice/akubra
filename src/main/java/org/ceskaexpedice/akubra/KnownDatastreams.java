@@ -23,6 +23,9 @@ package org.ceskaexpedice.akubra;
  * including bibliographic metadata, OCR results, images, audio formats, and
  * administrative datastreams.
  * </p>
+ *
+ * @author pavels, petrp
+ *
  */
 public enum KnownDatastreams {
     RELS_EXT("RELS-EXT"),

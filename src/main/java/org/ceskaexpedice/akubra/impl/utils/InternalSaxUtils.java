@@ -36,6 +36,7 @@ public final class InternalSaxUtils {
     public static String getModsPartType(InputStream foxml) {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
             SAXParser saxParser = factory.newSAXParser();
             GetModsPartTypeSaxHandler handler = new GetModsPartTypeSaxHandler();
             try {

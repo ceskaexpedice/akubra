@@ -24,7 +24,7 @@ package org.ceskaexpedice.akubra;
  * It provides several constructors to create an exception with different
  * levels of detail (message, cause, suppression, and stack trace writing).
  *
- * @author pavels
+ * @author pavels, petrp
  */
 public class RepositoryException extends RuntimeException {
 

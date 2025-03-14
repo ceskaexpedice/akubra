@@ -1,7 +1,8 @@
 package org.ceskaexpedice.akubra.relsext;
 
 /**
- * Callbacks about subtree processing 
+ * Callbacks about subtree processing
+ * @author pavels, petrp
  */
 public interface TreeNodeProcessor {
 

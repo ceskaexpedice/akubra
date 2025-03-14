@@ -31,7 +31,7 @@ import java.util.Date;
  * <p>Implementations of this interface retrieve datastream properties
  * from the underlying Fedora-Akubra repository.</p>
  *
- * @author Inovatika
+ * @author pavels, petrp
  */
 public interface DatastreamMetadata {
 

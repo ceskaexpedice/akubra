@@ -41,6 +41,7 @@ import static org.ceskaexpedice.akubra.ObjectProperties.TIMESTAMP_FORMATTER;
 
 /**
  * Dom4jUtils
+ * @author petrp, pavels
  */
 public final class Dom4jUtils {
     private static final Namespace NS_FOXML = new Namespace("foxml", "info:fedora/fedora-system:def/foxml#");

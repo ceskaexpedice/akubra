@@ -24,7 +24,7 @@ import java.util.List;
  * This class encapsulates the search parameters, including the query string, sorting options, pagination, and the fields to fetch.
  * It follows the builder pattern for flexible and readable query construction.
  *
- * @author pavels
+ * @author pavels, petrp
  */
 public class ProcessingIndexQueryParameters {
 
@@ -103,7 +103,8 @@ public class ProcessingIndexQueryParameters {
     }
 
     /**
-     * @return
+     * gets the offset
+     * @return offset
      */
     public int getOffset() {
         return offset;
@@ -119,7 +120,8 @@ public class ProcessingIndexQueryParameters {
     }
 
     /**
-     * @return
+     * Whether to stop after reaching cursor mark
+     * @return yes - stop
      */
     public boolean isStopAfterCursorMark() {
         return stopAfterCursorMark;
@@ -206,6 +208,11 @@ public class ProcessingIndexQueryParameters {
             return this;
         }
 
+        /**
+         * Sets the offset
+         * @param offset
+         * @return  The builder instance for chaining.
+         */
         public Builder offset(int offset) {
             this.offset = offset;
             return this;
@@ -222,6 +229,11 @@ public class ProcessingIndexQueryParameters {
             return this;
         }
 
+        /**
+         * If to stop after reaching cursor mark
+         * @param stopAfterCursorMark stop or not to stop
+         * @return The builder instance for chaining.
+         */
         public Builder stopAfterCursorMark(boolean stopAfterCursorMark) {
             this.stopAfterCursorMark = stopAfterCursorMark;
             return this;

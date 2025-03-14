@@ -22,12 +22,15 @@ import org.w3c.dom.Document;
 import java.io.InputStream;
 
 /**
- * A wrapper interface for handling Fedora digital objects.
+ * A wrapper interface for storing Fedora digital objects.
  * <p>
- * This utility provides multiple representations of a Fedora digital object,
+ * This class provides multiple representations of a Fedora digital object,
  * allowing it to be accessed as a {@link DigitalObject}, an {@link InputStream},
  * a DOM {@link Document}, a Dom4j {@link org.dom4j.Document}, or a {@link String}.
  * </p>
+ *
+ * @author pavels, petrp
+ *
  */
 public interface DigitalObjectWrapper {
 
@@ -53,6 +56,15 @@ public interface DigitalObjectWrapper {
      */
     InputStream asInputStream();
 
+    /**
+     * Returns the digital object's content as byte array.
+     * <p>
+     * This stream can be used to read the raw binary or textual content
+     * of the Fedora digital object.
+     * </p>
+     *
+     * @return a byte array representing the digital object's content
+     */
     byte[] asBytes();
 
     /**

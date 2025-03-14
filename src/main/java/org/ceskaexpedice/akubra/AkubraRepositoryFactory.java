@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * <p>This class cannot be instantiated.</p>
  *
- * @author ppodsednik
+ * @author pavels, petrp
  */
 public final class AkubraRepositoryFactory {
 

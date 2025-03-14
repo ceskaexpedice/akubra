@@ -20,6 +20,8 @@ package org.ceskaexpedice.akubra.relsext;
  * Represents a relation item in the RelsExt part of the Akubra Fefora model stream.
  * This class extends {@link RelsExtItem} and holds a reference to another resource
  * in addition to the namespace and local name.
+ *
+ * @author pavels, petrp
  */
 public class RelsExtRelation extends RelsExtItem {
 

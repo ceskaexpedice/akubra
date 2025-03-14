@@ -79,17 +79,17 @@ public class RelsExtReadTest {
     @Test
     void testGetRelations() {
         List<RelsExtRelation> relations = akubraRepository.re().getRelations(PID_MONOGRAPH, null);
-        assertEquals(37, relations.size());
+        assertEquals(PID_MONOGRAPH_RELATIONS, relations.size());
         FunctionalTestsUtils.debugPrint(relations.toString(), testsProperties);
         relations = akubraRepository.re().getRelations(PID_MONOGRAPH, RepositoryNamespaces.KRAMERIUS_URI);
-        assertEquals(36, relations.size());
+        assertEquals(PID_MONOGRAPH_RELATIONS - 1, relations.size());
         FunctionalTestsUtils.debugPrint(relations.toString(), testsProperties);
     }
 
     @Test
     void testGetLiterals() {
         List<RelsExtLiteral> literals = akubraRepository.re().getLiterals(PID_MONOGRAPH, null);
-        assertEquals(5, literals.size());
+        assertEquals(PID_MONOGRAPH_LTERALS, literals.size());
         FunctionalTestsUtils.debugPrint(literals.toString(), testsProperties);
         literals = akubraRepository.re().getLiterals(PID_MONOGRAPH, RepositoryNamespaces.OAI_NAMESPACE_URI);
         assertEquals(1, literals.size());
@@ -107,7 +107,7 @@ public class RelsExtReadTest {
     @Test
     void testPidOfFirstChild() {
         String pidOfFirstChild = akubraRepository.re().getPidOfFirstChild(PID_MONOGRAPH);
-        assertEquals("uuid:12993b4a-71b4-4f19-8953-0701243cc25d", pidOfFirstChild);
+        assertEquals(PID_TITLE_PAGE, pidOfFirstChild);
     }
 
     @Test
@@ -124,11 +124,11 @@ public class RelsExtReadTest {
 
     @Test
     void testProcessInTree() {
-        // TODO
+        final int[] counter = {0};
         akubraRepository.re().processInTree(PID_MONOGRAPH, new TreeNodeProcessor() {
             @Override
             public void process(String pid, int level) {
-                System.out.println(pid + ":" + level);
+                counter[0]++;
             }
 
             @Override
@@ -141,20 +141,19 @@ public class RelsExtReadTest {
                 return false;
             }
         });
+        assertEquals(PID_MONOGRAPH_RELATIONS, counter[0]);
     }
 
     @Test
     void testGetFirstViewablePidInTree() {
         String firstViewablePidInTree = akubraRepository.re().getFirstViewablePidInTree(PID_MONOGRAPH);
-        FunctionalTestsUtils.debugPrint(firstViewablePidInTree, testsProperties);
-        // TODO
+        assertEquals(PID_TITLE_PAGE, firstViewablePidInTree);
     }
 
     @Test
     void testGetPidsInTree() {
         List<String> pidsInTree = akubraRepository.re().getPidsInTree(PID_MONOGRAPH);
-        FunctionalTestsUtils.debugPrint(pidsInTree.toString(), testsProperties);
-        // TODO
+        assertEquals(PID_MONOGRAPH_RELATIONS, pidsInTree.size());
     }
 
 }

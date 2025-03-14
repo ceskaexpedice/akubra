@@ -20,6 +20,8 @@ package org.ceskaexpedice.akubra.relsext;
  * Represents an item in the RelsExt part of the Akubra Fefora model stream.
  * This class is intended to hold information related to a namespace and a local name.
  * It serves as a base class for extensions that define specific RelsExt items.
+ *
+ * @author pavels, petrp
  */
 public abstract class RelsExtItem {
 

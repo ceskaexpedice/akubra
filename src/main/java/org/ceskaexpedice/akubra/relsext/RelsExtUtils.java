@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 /**
  * Utility class to handle various RELS EXT related tasks
+ * @author pavels, petrp
  */
 public final class RelsExtUtils {
     static final Logger LOGGER = Logger.getLogger(RelsExtUtils.class.getName());

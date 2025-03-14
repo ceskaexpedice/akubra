@@ -27,7 +27,7 @@ import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
  *
  * <p>This class cannot be instantiated.</p>
  *
- * @author ppodsednik
+ * @author pavels, petrp
  */
 public final class CoreRepositoryFactory {
 
