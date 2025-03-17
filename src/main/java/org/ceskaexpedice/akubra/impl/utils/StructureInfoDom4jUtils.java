@@ -3,9 +3,11 @@ package org.ceskaexpedice.akubra.impl.utils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ceskaexpedice.akubra.AkubraRepository;
 import org.ceskaexpedice.akubra.KnownDatastreams;
+import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.processingindex.ChildrenRelationPair;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.processingindex.ParentsRelationPair;
+import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -31,12 +33,12 @@ public final class StructureInfoDom4jUtils {
         return json;
     }
 
-    public static JSONObject extractStructureInfo(AkubraRepository akubraRepository, String pid) {
+    public static JSONObject extractStructureInfo(String pid, CoreRepository coreRepository) {
         JSONObject structure = new JSONObject();
         //parents
         JSONObject parents = new JSONObject();
 
-        ParentsRelationPair parentsTpls = akubraRepository.pi().getParentsRelation(pid);
+        ParentsRelationPair parentsTpls = coreRepository.getProcessingIndex().getParentsRelation(pid);
         if (parentsTpls.own() != null) {
             parents.put("own", pidAndRelationToJson(parentsTpls.own().source(), parentsTpls.own().relation()));
         }
@@ -47,10 +49,10 @@ public final class StructureInfoDom4jUtils {
         parents.put("foster", fosterParents);
         structure.put("parents", parents);
         
-        Document relsExt = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT).asDom4j(false);
+        Document relsExt = Dom4jUtils.streamToDocument(coreRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT.toString()),true);
 
         JSONObject children = new JSONObject();
-        ChildrenRelationPair childrenTpls = akubraRepository.pi().getChildrenRelation(pid);
+        ChildrenRelationPair childrenTpls = coreRepository.getProcessingIndex().getChildrenRelation(pid);
         JSONArray ownChildren = new JSONArray();
         Map<String, JSONObject> mapping = new HashMap<>();
         
@@ -90,7 +92,7 @@ public final class StructureInfoDom4jUtils {
         children.put("foster", fosterChildren);
         
         //model
-        String model = akubraRepository.pi().getModel(pid);
+        String model = ProcessingIndexUtils.getModel(pid, coreRepository);
         structure.put("model", model);
     
         return structure;

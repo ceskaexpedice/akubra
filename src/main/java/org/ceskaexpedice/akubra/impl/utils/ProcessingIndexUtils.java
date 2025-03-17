@@ -207,9 +207,8 @@ public final class ProcessingIndexUtils {
         return sizeItemsPair;
     }
 
-    /*
-    public static List<Pair<String, String>> getPidsOfObjectsWithTitlesByModel(String model, boolean ascendingOrder, int offset, int limit, AkubraRepository akubraRepository) {
-        List<Pair<String, String>> titlePidPairs = new ArrayList<>();
+    public static List<ProcessingIndexItem> getByModel(String model, boolean ascendingOrder, int offset, int limit, CoreRepository coreRepository) {
+        List<ProcessingIndexItem> titlePidPairs = new ArrayList<>();
         String query = String.format("type:description AND model:%s", "model\\:" + model); //prvni "model:" je filtr na solr pole, druhy "model:" je hodnota pole, coze je mozna zbytecne (ten prefix)
         ProcessingIndexQueryParameters params = new ProcessingIndexQueryParameters.Builder()
                 .queryString(query)
@@ -219,23 +218,11 @@ public final class ProcessingIndexUtils {
                 .offset(offset)
                 .fieldsToFetch(List.of("source", "dc.title"))
                 .build();
-        akubraRepository.pi().iterate(params, processingIndexItem -> {
-            String fieldPid = processingIndexItem.source();
-            String fieldTitle = processingIndexItem.dcTitle();
-            String pid = null;
-            String title = null;
-            if (fieldPid != null) {
-                pid = fieldPid.toString();
-            }
-            if (fieldTitle != null) {
-                title = fieldTitle.toString().trim();
-            }
-            titlePidPairs.add(new ImmutablePair<>(title, pid));
+        coreRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
+            titlePidPairs.add(processingIndexItem);
         });
         return titlePidPairs;
     }
-
-     */
 
     private static ProcessingIndexItem getDescription(String objectPid, CoreRepository coreRepository) {
         final ProcessingIndexItem[] processingIndexItemRetVal = {null};
@@ -334,6 +321,7 @@ public final class ProcessingIndexUtils {
     }
 
 
+    /* TODO AK_NEW
     private static JsonObject getStructure(String pid, AkubraRepository akubraRepository) {
         return fetchStructure(pid, akubraRepository);
     }
@@ -347,7 +335,7 @@ public final class ProcessingIndexUtils {
             return null;
         }
     }
-
+*/
     public static ProcessingIndexItem fromSolrDocument(SolrDocument doc) {
         return new ProcessingIndexItem(
                 (String) doc.getFieldValue("source"),

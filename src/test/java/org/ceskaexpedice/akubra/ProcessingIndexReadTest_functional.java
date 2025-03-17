@@ -24,6 +24,7 @@ import org.ceskaexpedice.akubra.impl.utils.ProcessingIndexUtils;
 import org.ceskaexpedice.akubra.relsext.KnownRelations;
 import org.ceskaexpedice.test.AkubraTestsUtils;
 import org.ceskaexpedice.test.FunctionalTestsUtils;
+import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +38,7 @@ import static org.ceskaexpedice.test.AkubraTestsUtils.*;
 import static org.ceskaexpedice.test.FunctionalTestsUtils.debugPrint;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 // TODO make decision about Solr test instance and test data, mapping, etc
+
 /**
  * ProcessingIndexTest
  * !!! It requires Solr instance running with processing index containing appropriate testing data to pass the tests
@@ -62,7 +64,7 @@ public class ProcessingIndexReadTest_functional {
 
     @AfterAll
     static void afterAll() {
-        if(akubraRepository != null) {
+        if (akubraRepository != null) {
             akubraRepository.shutdown();
         }
         HazelcastServerNode.shutdown();
@@ -106,7 +108,7 @@ public class ProcessingIndexReadTest_functional {
     @Test
     void testGetParents() {
         List<ProcessingIndexItem> parents = akubraRepository.pi().getParents(PID_TITLE_PAGE);
-        for (ProcessingIndexItem item: parents){
+        for (ProcessingIndexItem item : parents) {
             debugPrint(item.toString(), testsProperties);
         }
     }
@@ -123,7 +125,7 @@ public class ProcessingIndexReadTest_functional {
         debugPrint("Own", testsProperties);
         debugPrint(parents.own().toString(), testsProperties);
         debugPrint("Foster", testsProperties);
-        for (ProcessingIndexItem item: parents.foster()){
+        for (ProcessingIndexItem item : parents.foster()) {
             debugPrint(item.toString(), testsProperties);
         }
     }
@@ -131,7 +133,7 @@ public class ProcessingIndexReadTest_functional {
     @Test
     void testGetChildren() {
         List<ProcessingIndexItem> children = akubraRepository.pi().getChildren(KnownRelations.HAS_PAGE.toString(), PID_MONOGRAPH);
-        for (ProcessingIndexItem item: children){
+        for (ProcessingIndexItem item : children) {
             debugPrint(item.toString(), testsProperties);
         }
     }
@@ -140,11 +142,11 @@ public class ProcessingIndexReadTest_functional {
     void testGetChildrenRelation() {
         ChildrenRelationPair childrenRelation = akubraRepository.pi().getChildrenRelation(PID_MONOGRAPH);
         debugPrint("Own", testsProperties);
-        for (ProcessingIndexItem item: childrenRelation.own()){
+        for (ProcessingIndexItem item : childrenRelation.own()) {
             debugPrint(item.toString(), testsProperties);
         }
         debugPrint("Foster", testsProperties);
-        for (ProcessingIndexItem item: childrenRelation.foster()){
+        for (ProcessingIndexItem item : childrenRelation.foster()) {
             debugPrint(item.toString(), testsProperties);
         }
     }
@@ -159,18 +161,32 @@ public class ProcessingIndexReadTest_functional {
     void testGetByModelWithCursor() {
         CursorItemsPair cursorItemsPair = akubraRepository.pi().getByModelWithCursor("page", true, "*", 5);
         debugPrint(cursorItemsPair.nextCursor(), testsProperties);
-        for (ProcessingIndexItem item: cursorItemsPair.items()){
+        for (ProcessingIndexItem item : cursorItemsPair.items()) {
+            debugPrint(item.toString(), testsProperties);
+        }
+    }
+
+    @Test
+    void testGetByModelWithSize() {
+        SizeItemsPair sizeItemsPair = akubraRepository.pi().getByModel("page", null, 5, 0);
+        debugPrint(sizeItemsPair.size().toString(), testsProperties);
+        for (ProcessingIndexItem item : sizeItemsPair.items()) {
             debugPrint(item.toString(), testsProperties);
         }
     }
 
     @Test
     void testGetByModel() {
-        SizeItemsPair sizeItemsPair = akubraRepository.pi().getByModel("page", null, 5, 0);
-        debugPrint(sizeItemsPair.size().toString(), testsProperties);
-        for (ProcessingIndexItem item: sizeItemsPair.items()){
+        List<ProcessingIndexItem> page = akubraRepository.pi().getByModel("page", true, 0, 5);
+        for (ProcessingIndexItem item : page) {
             debugPrint(item.toString(), testsProperties);
         }
+    }
+
+    @Test
+    void testExtractStructureInfo() {
+        JSONObject extractStructureInfo = akubraRepository.pi().extractStructureInfo(PID_MONOGRAPH);
+        debugPrint(extractStructureInfo.toString(), testsProperties);
     }
 
 }

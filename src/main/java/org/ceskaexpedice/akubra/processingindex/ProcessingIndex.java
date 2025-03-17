@@ -17,6 +17,7 @@
 package org.ceskaexpedice.akubra.processingindex;
 
 import org.ceskaexpedice.akubra.RepositoryException;
+import org.json.JSONObject;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -66,6 +67,14 @@ public interface ProcessingIndex {
 
     String getModel(String pid);
 
+    CursorItemsPair getByModelWithCursor(String model, boolean ascendingOrder, String cursor, int limit);
+
+    SizeItemsPair getByModel(String model, String titlePrefix, int rows, int pageIndex);
+
+    List<ProcessingIndexItem> getByModel(String model, boolean ascendingOrder, int offset, int limit);
+
+    JSONObject extractStructureInfo(String pid);
+
     /**
      * Deletes processing index entries related to the given PID (Persistent Identifier).
      * Specifically targets relations involving the given object as a source.
@@ -106,10 +115,6 @@ public interface ProcessingIndex {
      * @param pid  The unique identifier of the object whose index entries to rebuild
      */
     void rebuildProcessingIndex(String pid);
-
-    CursorItemsPair getByModelWithCursor(String model, boolean ascendingOrder, String cursor, int limit);
-
-    SizeItemsPair getByModel(String model, String titlePrefix, int rows, int pageIndex);
 
     void doWithCommit(OperationsHandler op) throws RepositoryException;
 

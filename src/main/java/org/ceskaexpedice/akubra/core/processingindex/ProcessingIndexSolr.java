@@ -30,9 +30,11 @@ import org.ceskaexpedice.akubra.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
+import org.ceskaexpedice.akubra.impl.utils.StructureInfoDom4jUtils;
 import org.ceskaexpedice.akubra.processingindex.*;
 import org.ceskaexpedice.akubra.impl.utils.ProcessingIndexUtils;
 import org.ceskaexpedice.akubra.utils.DomUtils;
+import org.json.JSONObject;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
@@ -148,6 +150,16 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     @Override
     public SizeItemsPair getByModel(String model, String titlePrefix, int rows, int pageIndex) {
         return ProcessingIndexUtils.getByModel(model, titlePrefix, rows, pageIndex, coreRepository);
+    }
+
+    @Override
+    public List<ProcessingIndexItem> getByModel(String model, boolean ascendingOrder, int offset, int limit) {
+        return ProcessingIndexUtils.getByModel(model, ascendingOrder, offset, limit, coreRepository);
+    }
+
+    @Override
+    public JSONObject extractStructureInfo(String pid) {
+        return StructureInfoDom4jUtils.extractStructureInfo(pid, coreRepository);
     }
 
     @Override
