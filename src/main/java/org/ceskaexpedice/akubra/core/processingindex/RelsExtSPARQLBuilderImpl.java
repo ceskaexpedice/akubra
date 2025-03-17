@@ -43,7 +43,7 @@ import java.util.Map;
 /**
  * Created by pstastny on 10/11/2017.
  */
-class RELSEXTSPARQLBuilderImpl implements RELSEXTSPARQLBuilder {
+class RelsExtSPARQLBuilderImpl implements RelsExtSPARQLBuilder {
 
     private RepositoryNamespaceContext namespaceContext = new RepositoryNamespaceContext();
 
@@ -52,7 +52,7 @@ class RELSEXTSPARQLBuilderImpl implements RELSEXTSPARQLBuilder {
     }
 
     @Override
-    public String sparqlProps(String relsExt, RELSEXTSPARQLBuilderListener listener) throws IOException, SAXException, ParserConfigurationException, RepositoryException {
+    public String sparqlProps(String relsExt, RelsExtSPARQLBuilderListener listener) throws IOException, SAXException, ParserConfigurationException, RepositoryException {
         StringTemplateGroup strGroup = SPARQL_TEMPLATES();
 
         Document document = DomUtils.streamToDocument(new StringReader(relsExt), true);
@@ -123,7 +123,7 @@ class RELSEXTSPARQLBuilderImpl implements RELSEXTSPARQLBuilder {
     }
 
     public static StringTemplateGroup SPARQL_TEMPLATES() throws IOException {
-        InputStream stream = RELSEXTSPARQLBuilderImpl.class.getResourceAsStream("res/relsextsparql.stg");
+        InputStream stream = RelsExtSPARQLBuilderImpl.class.getResourceAsStream("res/relsextsparql.stg");
         String string = org.apache.commons.io.IOUtils.toString(stream, Charset.forName("UTF-8"));
         return new StringTemplateGroup(new StringReader(string), DefaultTemplateLexer.class);
     }

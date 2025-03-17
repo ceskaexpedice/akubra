@@ -35,8 +35,7 @@ import java.net.URL;
 import java.util.Properties;
 import java.util.concurrent.locks.Lock;
 
-import static org.ceskaexpedice.test.AkubraTestsUtils.PID_NOT_EXISTS;
-import static org.ceskaexpedice.test.AkubraTestsUtils.PID_TITLE_PAGE;
+import static org.ceskaexpedice.test.AkubraTestsUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DocumentReadTest {
@@ -49,8 +48,7 @@ public class DocumentReadTest {
         HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
 
-        URL resource = FunctionalTestsUtils.class.getClassLoader().getResource("data");
-        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(resource.getFile(), testsProperties, hazelcastConfig);
+        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_REPOSITORY.toFile().getAbsolutePath(), testsProperties, hazelcastConfig);
         coreRepository = CoreRepositoryFactory.createRepository(config);
     }
 

@@ -17,26 +17,20 @@
 package org.ceskaexpedice.akubra.core.processingindex;
 
 import org.ceskaexpedice.akubra.RepositoryException;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
 
 /**
- * Builder is able to prepare SPARQL update script
- * @see RELSEXTSPARQLBuilderListener
+ * Listener is able to receive information about processing RELS-EXT
+ * @see RelsExtSPARQLBuilder
  */
-interface RELSEXTSPARQLBuilder {
+interface RelsExtSPARQLBuilderListener {
 
     /**
-     * Generate update sparql
-     * @param relsExt processing RELS-EXT stream
-     * @param listener Listener Listener
+     * Returns changed path
+     * @param path Path parsed from RELS-EXT
+     * @param localName Local name
      * @return
-     * @throws IOException
-     * @throws SAXException
-     * @throws ParserConfigurationException
      * @throws RepositoryException
      */
-    String sparqlProps(String relsExt, RELSEXTSPARQLBuilderListener listener) throws IOException, SAXException, ParserConfigurationException, RepositoryException;
+    String inform(String path, String localName) throws RepositoryException;
+
 }

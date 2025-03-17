@@ -44,8 +44,7 @@ public class MiscReadTest {
         HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
 
-        URL resource = FunctionalTestsUtils.class.getClassLoader().getResource("data");
-        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(resource.getFile(), testsProperties, hazelcastConfig);
+        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_REPOSITORY.toFile().getAbsolutePath(), testsProperties, hazelcastConfig);
         akubraRepository = AkubraRepositoryFactory.createRepository(config);
     }
 

@@ -14,23 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.core.processingindex;
+package org.ceskaexpedice.akubra.processingindex;
 
-import org.ceskaexpedice.akubra.RepositoryException;
+import java.util.List;
 
 /**
- * Listener is able to receive information about processing RELS-EXT
- * @see RELSEXTSPARQLBuilder
+ * Processing index items with the cursor mark
+ * @param nextCursor
+ * @param items
  */
-interface RELSEXTSPARQLBuilderListener {
-
-    /**
-     * Returns changed path
-     * @param path Path parsed from RELS-EXT
-     * @param localName Local name
-     * @return
-     * @throws RepositoryException
-     */
-    String inform(String path, String localName) throws RepositoryException;
-
+public record CursorItemsPair(
+        String nextCursor,
+        List<ProcessingIndexItem> items
+) {
 }

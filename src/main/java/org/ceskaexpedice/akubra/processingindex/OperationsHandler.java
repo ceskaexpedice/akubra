@@ -16,31 +16,7 @@
  */
 package org.ceskaexpedice.akubra.processingindex;
 
-import java.util.Date;
-
-/**
- * One item of Processing index
- * @param source
- * @param type
- * @param model
- * @param dcTitle
- * @param title
- * @param ref
- * @param date
- * @param pid
- * @param relation
- * @param targetPid
- */
-public record ProcessingIndexItem(
-        String source,
-        String type,
-        String model,
-        String dcTitle,
-        String title,
-        String ref,
-        Date date,
-        String pid,
-        String relation,
-        String targetPid
-) {
+public interface OperationsHandler {
+    void operations();
 }
+

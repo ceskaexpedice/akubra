@@ -16,31 +16,15 @@
  */
 package org.ceskaexpedice.akubra.processingindex;
 
-import java.util.Date;
+import java.util.List;
 
 /**
- * One item of Processing index
- * @param source
- * @param type
- * @param model
- * @param dcTitle
- * @param title
- * @param ref
- * @param date
- * @param pid
- * @param relation
- * @param targetPid
+ * Processing index items with the total size
+ * @param size
+ * @param items
  */
-public record ProcessingIndexItem(
-        String source,
-        String type,
-        String model,
-        String dcTitle,
-        String title,
-        String ref,
-        Date date,
-        String pid,
-        String relation,
-        String targetPid
+public record SizeItemsPair(
+        Long size,
+        List<ProcessingIndexItem> items
 ) {
 }

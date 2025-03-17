@@ -21,14 +21,12 @@ import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.impl.utils.relsext.RelsExtInternalDomUtils;
 import org.ceskaexpedice.akubra.impl.utils.relsext.RelsExtInternalSaxUtils;
 import org.ceskaexpedice.akubra.impl.utils.relsext.RelsExtProcessTreeDomUtils;
-import org.ceskaexpedice.akubra.processingindex.StructureInfoDom4jUtils;
 import org.ceskaexpedice.akubra.pid.PIDParser;
 import org.ceskaexpedice.akubra.relsext.RelsExtHelper;
 import org.ceskaexpedice.akubra.relsext.RelsExtLiteral;
 import org.ceskaexpedice.akubra.relsext.RelsExtRelation;
 import org.ceskaexpedice.akubra.relsext.TreeNodeProcessor;
 import org.ceskaexpedice.akubra.utils.DomUtils;
-import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

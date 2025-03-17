@@ -34,8 +34,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 
-import static org.ceskaexpedice.test.AkubraTestsUtils.PID_MONOGRAPH;
-import static org.ceskaexpedice.test.AkubraTestsUtils.PID_TITLE_PAGE;
+import static org.ceskaexpedice.test.AkubraTestsUtils.*;
 
 public class Test_performance {
     // all time results mentioned in tests are for 100 x 1000
@@ -51,8 +50,7 @@ public class Test_performance {
         HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
 
-        URL resource = FunctionalTestsUtils.class.getClassLoader().getResource("data");
-        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(resource.getFile(), testsProperties, hazelcastConfig);
+        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_REPOSITORY.toFile().getAbsolutePath(), testsProperties, hazelcastConfig);
         akubraRepository = AkubraRepositoryFactory.createRepository(config);
     }
 

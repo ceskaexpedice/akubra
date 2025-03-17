@@ -16,6 +16,9 @@
  */
 package org.ceskaexpedice.akubra.processingindex;
 
+import org.ceskaexpedice.akubra.RepositoryException;
+
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -50,6 +53,18 @@ public interface ProcessingIndex {
      * @param action The action to be performed on each processing index item.
      */
     String iterate(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action);
+
+    List<ProcessingIndexItem>  getParents(String targetPid);
+
+    List<ProcessingIndexItem> getParents(String relation, String targetPid);
+
+    ParentsRelationPair getParentsRelation(String targetPid);
+
+    List<ProcessingIndexItem> getChildren(String relation, String targetPid);
+
+    ChildrenRelationPair getChildrenRelation(String pid);
+
+    String getModel(String pid);
 
     /**
      * Deletes processing index entries related to the given PID (Persistent Identifier).
@@ -91,6 +106,12 @@ public interface ProcessingIndex {
      * @param pid  The unique identifier of the object whose index entries to rebuild
      */
     void rebuildProcessingIndex(String pid);
+
+    CursorItemsPair getByModelWithCursor(String model, boolean ascendingOrder, String cursor, int limit);
+
+    SizeItemsPair getByModel(String model, String titlePrefix, int rows, int pageIndex);
+
+    void doWithCommit(OperationsHandler op) throws RepositoryException;
 
     /**
      * Commits the changes to the processing index.

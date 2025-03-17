@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static org.ceskaexpedice.test.AkubraTestsUtils.PID_TITLE_PAGE;
+import static org.ceskaexpedice.test.AkubraTestsUtils.TEST_REPOSITORY;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DatastreamReadTest {
@@ -45,8 +46,7 @@ public class DatastreamReadTest {
         HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
 
-        URL resource = FunctionalTestsUtils.class.getClassLoader().getResource("data");
-        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(resource.getFile(), testsProperties, hazelcastConfig);
+        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_REPOSITORY.toFile().getAbsolutePath(), testsProperties, hazelcastConfig);
         akubraRepository = AkubraRepositoryFactory.createRepository(config);
     }
 

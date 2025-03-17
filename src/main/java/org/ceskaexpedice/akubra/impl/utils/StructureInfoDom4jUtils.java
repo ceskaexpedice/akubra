@@ -1,8 +1,11 @@
-package org.ceskaexpedice.akubra.processingindex;
+package org.ceskaexpedice.akubra.impl.utils;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.ceskaexpedice.akubra.AkubraRepository;
 import org.ceskaexpedice.akubra.KnownDatastreams;
+import org.ceskaexpedice.akubra.processingindex.ChildrenRelationPair;
+import org.ceskaexpedice.akubra.processingindex.ProcessingIndexItem;
+import org.ceskaexpedice.akubra.processingindex.ParentsRelationPair;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -33,13 +36,13 @@ public final class StructureInfoDom4jUtils {
         //parents
         JSONObject parents = new JSONObject();
 
-        Pair<ProcessingIndexRelation, List<ProcessingIndexRelation>> parentsTpls = ProcessingIndexUtils.getParents(pid, akubraRepository);
-        if (parentsTpls.getLeft() != null) {
-            parents.put("own", pidAndRelationToJson(parentsTpls.getLeft().getSource(), parentsTpls.getLeft().getRelation()));
+        ParentsRelationPair parentsTpls = akubraRepository.pi().getParentsRelation(pid);
+        if (parentsTpls.own() != null) {
+            parents.put("own", pidAndRelationToJson(parentsTpls.own().source(), parentsTpls.own().relation()));
         }
         JSONArray fosterParents = new JSONArray();
-        for (ProcessingIndexRelation fosterParentTpl : parentsTpls.getRight()) {
-            fosterParents.put(pidAndRelationToJson(fosterParentTpl.getSource(), fosterParentTpl.getRelation()));
+        for (ProcessingIndexItem fosterParentTpl : parentsTpls.foster()) {
+            fosterParents.put(pidAndRelationToJson(fosterParentTpl.source(), fosterParentTpl.relation()));
         }
         parents.put("foster", fosterParents);
         structure.put("parents", parents);
@@ -47,12 +50,12 @@ public final class StructureInfoDom4jUtils {
         Document relsExt = akubraRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT).asDom4j(false);
 
         JSONObject children = new JSONObject();
-        Pair<List<ProcessingIndexRelation>, List<ProcessingIndexRelation>> childrenTpls = ProcessingIndexUtils.getChildren(pid, akubraRepository);
+        ChildrenRelationPair childrenTpls = akubraRepository.pi().getChildrenRelation(pid);
         JSONArray ownChildren = new JSONArray();
         Map<String, JSONObject> mapping = new HashMap<>();
         
-        for (ProcessingIndexRelation ownChildTpl : childrenTpls.getLeft()) {
-            mapping.put(ownChildTpl.getTarget(), pidAndRelationToJson(ownChildTpl.getTarget(), ownChildTpl.getRelation()));
+        for (ProcessingIndexItem ownChildTpl : childrenTpls.own()) {
+            mapping.put(ownChildTpl.targetPid(), pidAndRelationToJson(ownChildTpl.targetPid(), ownChildTpl.relation()));
         }        
 
         exploreRelsExt(relsExt, (child)-> {
@@ -79,15 +82,15 @@ public final class StructureInfoDom4jUtils {
         
         children.put("own", ownChildren);
         JSONArray fosterChildren = new JSONArray();
-        for (ProcessingIndexRelation fosterChildTpl : childrenTpls.getRight()) {
-            fosterChildren.put(pidAndRelationToJson(fosterChildTpl.getTarget(), fosterChildTpl.getRelation()));
+        for (ProcessingIndexItem fosterChildTpl : childrenTpls.foster()) {
+            fosterChildren.put(pidAndRelationToJson(fosterChildTpl.targetPid(), fosterChildTpl.relation()));
         }
         
         structure.put("children", children);
         children.put("foster", fosterChildren);
         
         //model
-        String model = ProcessingIndexUtils.getModel(pid, akubraRepository);
+        String model = akubraRepository.pi().getModel(pid);
         structure.put("model", model);
     
         return structure;

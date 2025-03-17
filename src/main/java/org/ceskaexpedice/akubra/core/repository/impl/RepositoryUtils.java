@@ -224,12 +224,10 @@ public class RepositoryUtils {
      * @param pid PID of the FOXML object (uuid:xxxxxx...)
      * @return internal file path relative to object store root, depends ob the property objectStore.pattern
      */
-    public static String getAkubraInternalId(String pid) {
+    public static String getAkubraInternalId(String pid, String objectPattern) {
         if (pid == null) {
             return "";
         }
-        // TODO String objectPattern = Configuration.getInstance().getProperty("objectStore.pattern");
-        String objectPattern = null;
         return getAkubraInternalIdWitPattern(pid, objectPattern);
     }
 
