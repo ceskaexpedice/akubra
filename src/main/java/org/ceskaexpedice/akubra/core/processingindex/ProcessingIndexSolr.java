@@ -123,7 +123,7 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     }
 
     @Override
-    public ParentsRelationPair getParentsRelation(String targetPid){
+    public OwnedAndFosteredParents getOwnedAndFosteredParents(String targetPid){
         return ProcessingIndexUtils.getParentsRelation(targetPid, coreRepository);
     }
 
@@ -133,7 +133,7 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     }
 
     @Override
-    public ChildrenRelationPair getChildrenRelation(String pid) {
+    public OwnedAndFosteredChildren getOwnedAndFosteredChildren(String pid) {
         return ProcessingIndexUtils.getChildrenRelation(pid, coreRepository);
     }
 

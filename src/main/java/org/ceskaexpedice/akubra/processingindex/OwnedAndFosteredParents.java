@@ -19,12 +19,12 @@ package org.ceskaexpedice.akubra.processingindex;
 import java.util.List;
 
 /**
- * Pair describing children relations as a result for given source Pid
+ * Pair describing parents relations as a result for given target Pid
  * @param own
  * @param foster
  */
-public record ChildrenRelationPair(
-        List<ProcessingIndexItem> own,
+public record OwnedAndFosteredParents(
+        ProcessingIndexItem own,
         List<ProcessingIndexItem> foster
 ) {
 }

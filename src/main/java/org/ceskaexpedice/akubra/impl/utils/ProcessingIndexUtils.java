@@ -17,26 +17,17 @@
 package org.ceskaexpedice.akubra.impl.utils;
 
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.common.SolrDocument;
-import org.ceskaexpedice.akubra.AkubraRepository;
 import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.impl.utils.relsext.RelsExtInternalDomUtils;
 import org.ceskaexpedice.akubra.processingindex.*;
 import org.ceskaexpedice.akubra.relsext.KnownRelations;
 import org.ceskaexpedice.akubra.utils.StringUtils;
-import org.json.JSONObject;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * Utils for various Processing Index related tasks
@@ -83,7 +74,7 @@ public final class ProcessingIndexUtils {
         return pids;
     }
 
-    public static ParentsRelationPair getParentsRelation(String targetPid, CoreRepository coreRepository) {
+    public static OwnedAndFosteredParents getParentsRelation(String targetPid, CoreRepository coreRepository) {
         List<ProcessingIndexItem> pseudoparentProcessingIndexRelations = getParentsForTarget(targetPid, coreRepository);
         ProcessingIndexItem ownParentProcessingIndexRelation = null;
         List<ProcessingIndexItem> fosterParentProcessingIndexRelations = new ArrayList<>();
@@ -98,7 +89,7 @@ public final class ProcessingIndexUtils {
                 fosterParentProcessingIndexRelations.add(processingIndexRelation);
             }
         }
-        return new ParentsRelationPair(ownParentProcessingIndexRelation, fosterParentProcessingIndexRelations);
+        return new OwnedAndFosteredParents(ownParentProcessingIndexRelation, fosterParentProcessingIndexRelations);
     }
 
     /* TODO AK_NEW
@@ -140,7 +131,7 @@ public final class ProcessingIndexUtils {
         return processingIndexItems;
     }
 
-    public static ChildrenRelationPair getChildrenRelation(String sourcePid, CoreRepository coreRepository) {
+    public static OwnedAndFosteredChildren getChildrenRelation(String sourcePid, CoreRepository coreRepository) {
         List<ProcessingIndexItem> pseudochildrenTriplets = getChildrenForSource(sourcePid, coreRepository);
         List<ProcessingIndexItem> ownChildrenTriplets = new ArrayList<>();
         List<ProcessingIndexItem> fosterChildrenTriplets = new ArrayList<>();
@@ -153,7 +144,7 @@ public final class ProcessingIndexUtils {
                 }
             }
         }
-        return new ChildrenRelationPair(ownChildrenTriplets, fosterChildrenTriplets);
+        return new OwnedAndFosteredChildren(ownChildrenTriplets, fosterChildrenTriplets);
     }
 
     /* TODO AK_NEW

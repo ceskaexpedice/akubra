@@ -16,7 +16,6 @@
  */
 package org.ceskaexpedice.akubra.processingindex;
 
-import org.ceskaexpedice.akubra.RepositoryException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -55,24 +54,95 @@ public interface ProcessingIndex {
      */
     String iterate(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action);
 
+    /**
+     * Retrieves a list of parent items associated with the given target PID.
+     *
+     * @param targetPid The unique identifier of the target object.
+     * @return A list of parent items associated with the given PID.
+     */
     List<ProcessingIndexItem>  getParents(String targetPid);
 
+    /**
+     * Retrieves a list of parent items associated with the given target PID and relation type.
+     *
+     * @param relation The type of relation to filter the parents.
+     * @param targetPid The unique identifier of the target object.
+     * @return A list of parent items matching the specified relation.
+     */
     List<ProcessingIndexItem> getParents(String relation, String targetPid);
 
-    ParentsRelationPair getParentsRelation(String targetPid);
+    /**
+     * Retrieves the parents of the given target PID, categorized into "owned" and "fostered" relationships.
+     *
+     * @param targetPid The unique identifier of the target object.
+     * @return An {@code OwnedAndFosteredParents} object containing lists of parents classified by relation type.
+     */
+    OwnedAndFosteredParents getOwnedAndFosteredParents(String targetPid);
 
+    /**
+     * Retrieves a list of child items associated with the given target PID and relation type.
+     *
+     * @param relation The type of relation to filter the children.
+     * @param targetPid The unique identifier of the target object.
+     * @return A list of child items matching the specified relation.
+     */
     List<ProcessingIndexItem> getChildren(String relation, String targetPid);
 
-    ChildrenRelationPair getChildrenRelation(String pid);
+    /**
+     * Retrieves the children of the given PID, categorized into "owned" and "fostered" relationships.
+     *
+     * @param pid The unique identifier of the object whose children are to be retrieved.
+     * @return An {@code OwnedAndFosteredChildren} object containing lists of children classified by relation type.
+     */
+    OwnedAndFosteredChildren getOwnedAndFosteredChildren(String pid);
 
+    /**
+     * Retrieves the model associated with the given PID.
+     *
+     * @param pid The unique identifier of the object.
+     * @return The model of the object.
+     */
     String getModel(String pid);
 
+    /**
+     * Retrieves indexed items by model using a cursor-based pagination approach.
+     *
+     * @param model The model type to filter results.
+     * @param ascendingOrder Whether the results should be sorted in ascending order.
+     * @param cursor The cursor for pagination.
+     * @param limit The maximum number of results to retrieve.
+     * @return A pair containing the retrieved items and cursor for further pagination.
+     */
     CursorItemsPair getByModelWithCursor(String model, boolean ascendingOrder, String cursor, int limit);
 
+    /**
+     * Retrieves indexed items by model with a paginated response.
+     *
+     * @param model The model type to filter results.
+     * @param titlePrefix The title prefix to filter results.
+     * @param rows The number of rows per page.
+     * @param pageIndex The index of the page to retrieve.
+     * @return A pair containing the size of results and the retrieved items.
+     */
     SizeItemsPair getByModel(String model, String titlePrefix, int rows, int pageIndex);
 
+    /**
+     * Retrieves indexed items by model with offset-based pagination.
+     *
+     * @param model The model type to filter results.
+     * @param ascendingOrder Whether the results should be sorted in ascending order.
+     * @param offset The starting index of the results.
+     * @param limit The maximum number of results to retrieve.
+     * @return A list of items matching the specified model.
+     */
     List<ProcessingIndexItem> getByModel(String model, boolean ascendingOrder, int offset, int limit);
 
+    /**
+     * Extracts structured information for the given PID.
+     *
+     * @param pid The unique identifier of the object.
+     * @return A JSON object containing the structured information.
+     */
     JSONObject extractStructureInfo(String pid);
 
     /**
@@ -116,7 +186,12 @@ public interface ProcessingIndex {
      */
     void rebuildProcessingIndex(String pid);
 
-    void doWithCommit(OperationsHandler op) throws RepositoryException;
+    /**
+     * Performs operations on the processing index with an explicit commit.
+     *
+     * @param op The operations handler defining the operations to be executed.
+     */
+    void doWithCommit(OperationsHandler op);
 
     /**
      * Commits the changes to the processing index.

@@ -1,12 +1,10 @@
 package org.ceskaexpedice.akubra.impl.utils;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.ceskaexpedice.akubra.AkubraRepository;
 import org.ceskaexpedice.akubra.KnownDatastreams;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
-import org.ceskaexpedice.akubra.processingindex.ChildrenRelationPair;
+import org.ceskaexpedice.akubra.processingindex.OwnedAndFosteredChildren;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexItem;
-import org.ceskaexpedice.akubra.processingindex.ParentsRelationPair;
+import org.ceskaexpedice.akubra.processingindex.OwnedAndFosteredParents;
 import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -38,7 +36,7 @@ public final class StructureInfoDom4jUtils {
         //parents
         JSONObject parents = new JSONObject();
 
-        ParentsRelationPair parentsTpls = coreRepository.getProcessingIndex().getParentsRelation(pid);
+        OwnedAndFosteredParents parentsTpls = coreRepository.getProcessingIndex().getOwnedAndFosteredParents(pid);
         if (parentsTpls.own() != null) {
             parents.put("own", pidAndRelationToJson(parentsTpls.own().source(), parentsTpls.own().relation()));
         }
@@ -52,7 +50,7 @@ public final class StructureInfoDom4jUtils {
         Document relsExt = Dom4jUtils.streamToDocument(coreRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT.toString()),true);
 
         JSONObject children = new JSONObject();
-        ChildrenRelationPair childrenTpls = coreRepository.getProcessingIndex().getChildrenRelation(pid);
+        OwnedAndFosteredChildren childrenTpls = coreRepository.getProcessingIndex().getOwnedAndFosteredChildren(pid);
         JSONArray ownChildren = new JSONArray();
         Map<String, JSONObject> mapping = new HashMap<>();
         

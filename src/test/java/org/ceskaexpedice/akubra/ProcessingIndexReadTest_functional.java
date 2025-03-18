@@ -16,11 +16,9 @@
  */
 package org.ceskaexpedice.akubra;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.processingindex.*;
-import org.ceskaexpedice.akubra.impl.utils.ProcessingIndexUtils;
 import org.ceskaexpedice.akubra.relsext.KnownRelations;
 import org.ceskaexpedice.test.AkubraTestsUtils;
 import org.ceskaexpedice.test.FunctionalTestsUtils;
@@ -32,7 +30,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 import static org.ceskaexpedice.test.AkubraTestsUtils.*;
 import static org.ceskaexpedice.test.FunctionalTestsUtils.debugPrint;
@@ -120,8 +117,8 @@ public class ProcessingIndexReadTest_functional {
     }
 
     @Test
-    void testGetParentsRelation() {
-        ParentsRelationPair parents = akubraRepository.pi().getParentsRelation(PID_TITLE_PAGE);
+    void testGetOwnedAndFosteredParents() {
+        OwnedAndFosteredParents parents = akubraRepository.pi().getOwnedAndFosteredParents(PID_TITLE_PAGE);
         debugPrint("Own", testsProperties);
         debugPrint(parents.own().toString(), testsProperties);
         debugPrint("Foster", testsProperties);
@@ -139,8 +136,8 @@ public class ProcessingIndexReadTest_functional {
     }
 
     @Test
-    void testGetChildrenRelation() {
-        ChildrenRelationPair childrenRelation = akubraRepository.pi().getChildrenRelation(PID_MONOGRAPH);
+    void testGetOwnedAndFosteredChildren() {
+        OwnedAndFosteredChildren childrenRelation = akubraRepository.pi().getOwnedAndFosteredChildren(PID_MONOGRAPH);
         debugPrint("Own", testsProperties);
         for (ProcessingIndexItem item : childrenRelation.own()) {
             debugPrint(item.toString(), testsProperties);
