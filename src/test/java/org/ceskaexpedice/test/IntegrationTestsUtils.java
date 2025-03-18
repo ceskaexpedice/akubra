@@ -21,21 +21,21 @@ import java.util.Properties;
 
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-public final class FunctionalTestsUtils {
-    private static final String PROPERTIES = "tests.properties";
-    private static final String SKIP_FUNCTIONAL_TESTS_PROPERTY = "skipFunctionalTests";
+public final class IntegrationTestsUtils {
+    private static final String PROPERTIES = "integrationTests.properties";
+    private static final String SKIP_INTEGRATION_TESTS_PROPERTY = "skipIntegrationTests";
     private static final String DEBUG_PRINT_PROPERTY = "debugPrint";
 
-    private FunctionalTestsUtils() {}
+    private IntegrationTestsUtils() {}
 
-    public static void checkFunctionalTestsIgnored(Properties props) {
-        assumeTrue(!isIgnored(props), "Test ignored by the property: " + SKIP_FUNCTIONAL_TESTS_PROPERTY);
+    public static void checkIntegrationTestsIgnored(Properties props) {
+        assumeTrue(!isIgnored(props), "Test ignored by the property: " + SKIP_INTEGRATION_TESTS_PROPERTY);
     }
 
     public static Properties loadProperties() {
         Properties properties = new Properties();
         try {
-            properties.load(FunctionalTestsUtils.class.getClassLoader().getResourceAsStream(PROPERTIES));
+            properties.load(IntegrationTestsUtils.class.getClassLoader().getResourceAsStream(PROPERTIES));
         } catch (IOException e) {
             System.out.println("Cannot find property file, will continue anyway:" + PROPERTIES);
         }
@@ -43,7 +43,7 @@ public final class FunctionalTestsUtils {
     }
 
     private static boolean isIgnored(Properties properties) {
-        String ignore = getProperty(SKIP_FUNCTIONAL_TESTS_PROPERTY, "true", properties);
+        String ignore = getProperty(SKIP_INTEGRATION_TESTS_PROPERTY, "true", properties);
         return Boolean.valueOf(ignore);
     }
 

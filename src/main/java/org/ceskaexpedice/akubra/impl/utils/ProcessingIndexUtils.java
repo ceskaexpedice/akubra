@@ -50,8 +50,8 @@ public final class ProcessingIndexUtils {
 
     public static List<ProcessingIndexItem>  getParents(String targetPid, CoreRepository coreRepository) {
         final List<ProcessingIndexItem> retvals = new ArrayList<>();
-        iterateSectionOfProcessingSortedByFieldWithCursor("targetPid:\"" + targetPid + "\"", "pid", true, "*",
-                1000, (doc) -> { // TODO AK_NEW
+        iterateSectionOfProcessingSortedByFieldWithCursor("targetPid:\"" + targetPid + "\"", "pid", true, ProcessingIndex.CURSOR_MARK_START,
+                Integer.MAX_VALUE, (doc) -> {
                     retvals.add(doc);
                 }, coreRepository);
         return retvals;
@@ -64,8 +64,8 @@ public final class ProcessingIndexUtils {
                 .queryString(query)
                 .sortField("date")
                 .ascending(true)
-                .cursorMark("*")
-                .rows(100) // TODO
+                .cursorMark(ProcessingIndex.CURSOR_MARK_START)
+                .rows(Integer.MAX_VALUE)
                 .fieldsToFetch(List.of("source"))
                 .build();
         coreRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
@@ -92,26 +92,6 @@ public final class ProcessingIndexUtils {
         return new OwnedAndFosteredParents(ownParentProcessingIndexRelation, fosterParentProcessingIndexRelations);
     }
 
-    /* TODO AK_NEW
-    public static Pair<String, Set<String>> getPidsOfParents(String pid, AkubraRepository akubraRepository) {
-        JsonObject structure = getStructure(pid, akubraRepository);
-        JsonObject parentsJson = structure.getAsJsonObject("parents");
-        //own
-        String ownParent = null;
-        if (parentsJson.has("own")) {
-            ownParent = parentsJson.getAsJsonObject("own").get("pid").getAsString();
-        }
-        //foster
-        JsonArray fosterParentsJson = parentsJson.getAsJsonArray("foster");
-        Set<String> fosterParents = new HashSet<>();
-        Iterator<JsonElement> fosterParentsIt = fosterParentsJson.iterator();
-        while (fosterParentsIt.hasNext()) {
-            fosterParents.add(fosterParentsIt.next().getAsJsonObject().get("pid").getAsString());
-        }
-        return new ImmutablePair<>(ownParent, fosterParents);
-    }
-
-     */
     // ------------- children ----------------------------------
 
     public static List<ProcessingIndexItem> getChildren(String relation, String sourcePid, CoreRepository coreRepository) {
@@ -121,8 +101,8 @@ public final class ProcessingIndexUtils {
                 .queryString(query)
                 .sortField("date")
                 .ascending(true)
-                .cursorMark("*")
-                .rows(100) // TODO AK_NEW
+                .cursorMark(ProcessingIndex.CURSOR_MARK_START)
+                .rows(Integer.MAX_VALUE)
                 .fieldsToFetch(List.of("targetPid"))
                 .build();
         coreRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
@@ -146,30 +126,6 @@ public final class ProcessingIndexUtils {
         }
         return new OwnedAndFosteredChildren(ownChildrenTriplets, fosterChildrenTriplets);
     }
-
-    /* TODO AK_NEW
-    public static Pair<List<String>, List<String>> getPidsOfChildren(String pid, AkubraRepository akubraRepository) {
-        JsonObject structure = getStructure(pid, akubraRepository);
-        if (structure != null) {
-            JsonObject childrenJson = structure.getAsJsonObject("children");
-            //own
-            JsonArray ownChildrenJson = childrenJson.getAsJsonArray("own");
-            List<String> ownChildren = new ArrayList<>();
-            Iterator<JsonElement> ownChildrenIt = ownChildrenJson.iterator();
-            while (ownChildrenIt.hasNext()) {
-                ownChildren.add(ownChildrenIt.next().getAsJsonObject().get("pid").getAsString());
-            }
-            //foster
-            JsonArray fosterChildrenJson = childrenJson.getAsJsonArray("foster");
-            List<String> fosterChildren = new ArrayList<>();
-            Iterator<JsonElement> fosterParentsIt = fosterChildrenJson.iterator();
-            while (fosterParentsIt.hasNext()) {
-                fosterChildren.add(fosterParentsIt.next().getAsJsonObject().get("pid").getAsString());
-            }
-            return new ImmutablePair<>(ownChildren, fosterChildren);
-        } else return new ImmutablePair<>(new ArrayList<>(), new ArrayList<>());
-    }*/
-
 
     // -------------- model ------------------------------
 
@@ -255,8 +211,8 @@ public final class ProcessingIndexUtils {
                 .queryString(query)
                 .sortField("date")
                 .ascending(true)
-                .cursorMark("*")
-                .rows(100) // TODO
+                .cursorMark(ProcessingIndex.CURSOR_MARK_START)
+                .rows(Integer.MAX_VALUE)
                 .fieldsToFetch(List.of("source", "relation"))
                 .build();
         coreRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
@@ -311,22 +267,6 @@ public final class ProcessingIndexUtils {
         throw new IllegalArgumentException(String.format("unknown relation '%s'", relation));
     }
 
-
-    /* TODO AK_NEW
-    private static JsonObject getStructure(String pid, AkubraRepository akubraRepository) {
-        return fetchStructure(pid, akubraRepository);
-    }
-
-    private static JsonObject fetchStructure(String pid, AkubraRepository akubraRepository) {
-        try {
-            JSONObject extractStructureInfo = StructureInfoDom4jUtils.extractStructureInfo(akubraRepository, pid);
-            return StringUtils.stringToJsonObject(extractStructureInfo.toString());
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            return null;
-        }
-    }
-*/
     public static ProcessingIndexItem fromSolrDocument(SolrDocument doc) {
         return new ProcessingIndexItem(
                 (String) doc.getFieldValue("source"),

@@ -22,13 +22,11 @@ import org.ceskaexpedice.akubra.relsext.RelsExtLiteral;
 import org.ceskaexpedice.akubra.relsext.RelsExtRelation;
 import org.ceskaexpedice.akubra.relsext.TreeNodeProcessor;
 import org.ceskaexpedice.test.AkubraTestsUtils;
-import org.ceskaexpedice.test.FunctionalTestsUtils;
-import org.json.JSONObject;
+import org.ceskaexpedice.test.IntegrationTestsUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 
@@ -42,7 +40,7 @@ public class RelsExtReadTest {
 
     @BeforeAll
     static void beforeAll() {
-        testsProperties = FunctionalTestsUtils.loadProperties();
+        testsProperties = IntegrationTestsUtils.loadProperties();
         HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
 
@@ -66,7 +64,7 @@ public class RelsExtReadTest {
     void testGet() {
         DatastreamContentWrapper relsExtWrapper = akubraRepository.re().get(PID_MONOGRAPH);
         assertNotNull(relsExtWrapper);
-        FunctionalTestsUtils.debugPrint(relsExtWrapper.asDom4j(true).asXML(), testsProperties);
+        IntegrationTestsUtils.debugPrint(relsExtWrapper.asDom4j(true).asXML(), testsProperties);
     }
 
     @Test
@@ -79,20 +77,20 @@ public class RelsExtReadTest {
     void testGetRelations() {
         List<RelsExtRelation> relations = akubraRepository.re().getRelations(PID_MONOGRAPH, null);
         assertEquals(PID_MONOGRAPH_RELATIONS, relations.size());
-        FunctionalTestsUtils.debugPrint(relations.toString(), testsProperties);
+        IntegrationTestsUtils.debugPrint(relations.toString(), testsProperties);
         relations = akubraRepository.re().getRelations(PID_MONOGRAPH, RepositoryNamespaces.KRAMERIUS_URI);
         assertEquals(PID_MONOGRAPH_RELATIONS - 1, relations.size());
-        FunctionalTestsUtils.debugPrint(relations.toString(), testsProperties);
+        IntegrationTestsUtils.debugPrint(relations.toString(), testsProperties);
     }
 
     @Test
     void testGetLiterals() {
         List<RelsExtLiteral> literals = akubraRepository.re().getLiterals(PID_MONOGRAPH, null);
         assertEquals(PID_MONOGRAPH_LTERALS, literals.size());
-        FunctionalTestsUtils.debugPrint(literals.toString(), testsProperties);
+        IntegrationTestsUtils.debugPrint(literals.toString(), testsProperties);
         literals = akubraRepository.re().getLiterals(PID_MONOGRAPH, RepositoryNamespaces.OAI_NAMESPACE_URI);
         assertEquals(1, literals.size());
-        FunctionalTestsUtils.debugPrint(literals.toString(), testsProperties);
+        IntegrationTestsUtils.debugPrint(literals.toString(), testsProperties);
     }
 
     @Test

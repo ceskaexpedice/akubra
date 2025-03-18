@@ -25,7 +25,7 @@ import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.impl.CoreRepositoryImpl;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.ceskaexpedice.test.AkubraTestsUtils;
-import org.ceskaexpedice.test.FunctionalTestsUtils;
+import org.ceskaexpedice.test.IntegrationTestsUtils;
 import org.junit.jupiter.api.*;
 
 import java.io.IOException;
@@ -44,7 +44,7 @@ public class DocumentWriteTest {
 
     @BeforeAll
     static void beforeAll() {
-        testsProperties = FunctionalTestsUtils.loadProperties();
+        testsProperties = IntegrationTestsUtils.loadProperties();
         HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
         // configure akubraRepository

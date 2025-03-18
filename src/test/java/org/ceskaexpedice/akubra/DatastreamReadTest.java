@@ -18,17 +18,15 @@ package org.ceskaexpedice.akubra;
 
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
-import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.test.AkubraTestsUtils;
-import org.ceskaexpedice.test.FunctionalTestsUtils;
+import org.ceskaexpedice.test.IntegrationTestsUtils;
 import org.dom4j.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 
@@ -42,7 +40,7 @@ public class DatastreamReadTest {
 
     @BeforeAll
     static void beforeAll() {
-        testsProperties = FunctionalTestsUtils.loadProperties();
+        testsProperties = IntegrationTestsUtils.loadProperties();
         HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
 
@@ -86,28 +84,28 @@ public class DatastreamReadTest {
     void testGetDatastreamContent_asXmlDom() {
         org.w3c.dom.Document xmlDom = akubraRepository.getDatastreamContent(PID_TITLE_PAGE, KnownDatastreams.BIBLIO_DC).asDom(false);
         assertNotNull(xmlDom);
-        FunctionalTestsUtils.debugPrint(DomUtils.toString(xmlDom.getDocumentElement(), true), testsProperties);
+        IntegrationTestsUtils.debugPrint(DomUtils.toString(xmlDom.getDocumentElement(), true), testsProperties);
     }
 
     @Test
     void testGetDatastreamContent_asXmlDom4j() {
         Document xmlDom4j = akubraRepository.getDatastreamContent(PID_TITLE_PAGE, KnownDatastreams.BIBLIO_DC).asDom4j(true);
         assertNotNull(xmlDom4j);
-        FunctionalTestsUtils.debugPrint(xmlDom4j.asXML(), testsProperties);
+        IntegrationTestsUtils.debugPrint(xmlDom4j.asXML(), testsProperties);
     }
 
     @Test
     void testGetDatastreamContent_asString() {
         String dc = akubraRepository.getDatastreamContent(PID_TITLE_PAGE, KnownDatastreams.BIBLIO_DC).asString();
         assertNotNull(dc);
-        FunctionalTestsUtils.debugPrint(dc, testsProperties);
+        IntegrationTestsUtils.debugPrint(dc, testsProperties);
     }
 
     @Test
     void testGetDatastreamNames() {
         List<String> datastreamNames = akubraRepository.getDatastreamNames(PID_TITLE_PAGE);
         assertEquals(9, datastreamNames.size());
-        FunctionalTestsUtils.debugPrint(String.join(", ", datastreamNames), testsProperties);
+        IntegrationTestsUtils.debugPrint(String.join(", ", datastreamNames), testsProperties);
     }
 
 }

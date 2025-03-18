@@ -21,17 +21,14 @@ import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.test.AkubraTestsUtils;
 import org.ceskaexpedice.test.ConcurrencyUtils;
-import org.ceskaexpedice.test.FunctionalTestsUtils;
+import org.ceskaexpedice.test.IntegrationTestsUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.w3c.dom.Document;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.util.List;
 import java.util.Properties;
 
 import static org.ceskaexpedice.test.AkubraTestsUtils.*;
@@ -46,7 +43,7 @@ public class Test_performance {
 
     @BeforeAll
     static void beforeAll() {
-        testsProperties = FunctionalTestsUtils.loadProperties();
+        testsProperties = IntegrationTestsUtils.loadProperties();
         HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
 
@@ -123,7 +120,6 @@ public class Test_performance {
                 // locks    - 45,7 min
                 // no locks - 16,5 min
                 // new      - 6,3 min
-                // TODO zamek pry nemusi byt ...
                 if (i % 50 == 0) {
                     System.out.println(Thread.currentThread().getName() + ": " + i + ",Time: " + (System.currentTimeMillis() - start));
                 }

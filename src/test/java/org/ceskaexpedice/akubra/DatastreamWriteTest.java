@@ -26,7 +26,7 @@ import org.ceskaexpedice.akubra.core.repository.impl.CoreRepositoryImpl;
 import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.ceskaexpedice.test.AkubraTestsUtils;
-import org.ceskaexpedice.test.FunctionalTestsUtils;
+import org.ceskaexpedice.test.IntegrationTestsUtils;
 import org.dom4j.Document;
 import org.junit.jupiter.api.*;
 
@@ -46,7 +46,7 @@ public class DatastreamWriteTest {
 
     @BeforeAll
     static void beforeAll() {
-        testsProperties = FunctionalTestsUtils.loadProperties();
+        testsProperties = IntegrationTestsUtils.loadProperties();
         HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
         // configure akubraRepository
@@ -89,7 +89,7 @@ public class DatastreamWriteTest {
 
         DigitalObject digitalObject = akubraRepository.get(PID_MONOGRAPH).asDigitalObject();
         Document document = Dom4jUtils.streamToDocument(akubraRepository.marshall(digitalObject), true);
-        FunctionalTestsUtils.debugPrint(document.asXML(),testsProperties);
+        IntegrationTestsUtils.debugPrint(document.asXML(),testsProperties);
     }
 
     @Test
@@ -105,7 +105,7 @@ public class DatastreamWriteTest {
 
         DigitalObject digitalObject = akubraRepository.get(PID_MONOGRAPH).asDigitalObject();
         Document document = Dom4jUtils.streamToDocument(akubraRepository.marshall(digitalObject), true);
-        FunctionalTestsUtils.debugPrint(document.asXML(),testsProperties);
+        IntegrationTestsUtils.debugPrint(document.asXML(),testsProperties);
     }
 
     @Test
@@ -119,7 +119,7 @@ public class DatastreamWriteTest {
 
         DigitalObject digitalObject = akubraRepository.get(PID_MONOGRAPH).asDigitalObject();
         Document document = Dom4jUtils.streamToDocument(akubraRepository.marshall(digitalObject), true);
-        FunctionalTestsUtils.debugPrint(document.asXML(),testsProperties);
+        IntegrationTestsUtils.debugPrint(document.asXML(),testsProperties);
     }
 
     @Test

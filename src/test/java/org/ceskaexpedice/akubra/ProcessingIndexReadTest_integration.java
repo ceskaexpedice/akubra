@@ -21,7 +21,7 @@ import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.processingindex.*;
 import org.ceskaexpedice.akubra.relsext.KnownRelations;
 import org.ceskaexpedice.test.AkubraTestsUtils;
-import org.ceskaexpedice.test.FunctionalTestsUtils;
+import org.ceskaexpedice.test.IntegrationTestsUtils;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static org.ceskaexpedice.test.AkubraTestsUtils.*;
-import static org.ceskaexpedice.test.FunctionalTestsUtils.debugPrint;
+import static org.ceskaexpedice.test.IntegrationTestsUtils.debugPrint;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 // TODO make decision about Solr test instance and test data, mapping, etc
 
@@ -40,13 +40,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * ProcessingIndexTest
  * !!! It requires Solr instance running with processing index containing appropriate testing data to pass the tests
  */
-public class ProcessingIndexReadTest_functional {
+public class ProcessingIndexReadTest_integration {
     private static Properties testsProperties;
     private static AkubraRepository akubraRepository;
 
     @BeforeAll
     static void beforeAll() {
-        testsProperties = FunctionalTestsUtils.loadProperties();
+        testsProperties = IntegrationTestsUtils.loadProperties();
         HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
 
@@ -56,7 +56,7 @@ public class ProcessingIndexReadTest_functional {
 
     @BeforeEach
     void beforeEach() {
-        FunctionalTestsUtils.checkFunctionalTestsIgnored(testsProperties);
+        IntegrationTestsUtils.checkIntegrationTestsIgnored(testsProperties);
     }
 
     @AfterAll

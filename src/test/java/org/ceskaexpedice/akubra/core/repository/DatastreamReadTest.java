@@ -23,13 +23,12 @@ import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
 import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 import org.ceskaexpedice.test.AkubraTestsUtils;
-import org.ceskaexpedice.test.FunctionalTestsUtils;
+import org.ceskaexpedice.test.IntegrationTestsUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Properties;
 
 import static org.ceskaexpedice.test.AkubraTestsUtils.PID_TITLE_PAGE;
@@ -42,7 +41,7 @@ public class DatastreamReadTest {
 
     @BeforeAll
     static void beforeAll() {
-        testsProperties = FunctionalTestsUtils.loadProperties();
+        testsProperties = IntegrationTestsUtils.loadProperties();
         HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
 
@@ -72,7 +71,7 @@ public class DatastreamReadTest {
         assertNotNull(imgThumb);
         InputStream relsExtIs = coreRepository.getDatastreamContent(PID_TITLE_PAGE, KnownDatastreams.RELS_EXT.toString());
         assertNotNull(relsExtIs);
-        FunctionalTestsUtils.debugPrint(Dom4jUtils.streamToDocument(relsExtIs, true).asXML(), testsProperties);
+        IntegrationTestsUtils.debugPrint(Dom4jUtils.streamToDocument(relsExtIs, true).asXML(), testsProperties);
         /* Uncomment for check
         try {
             IOUtils.copy(imgThumb, new FileOutputStream("c:\\tmp\\pepoTest.jpg"));

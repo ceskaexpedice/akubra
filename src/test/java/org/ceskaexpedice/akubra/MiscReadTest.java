@@ -18,17 +18,12 @@ package org.ceskaexpedice.akubra;
 
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
-import org.ceskaexpedice.akubra.relsext.RelsExtLiteral;
-import org.ceskaexpedice.akubra.relsext.RelsExtRelation;
-import org.ceskaexpedice.akubra.relsext.TreeNodeProcessor;
 import org.ceskaexpedice.test.AkubraTestsUtils;
-import org.ceskaexpedice.test.FunctionalTestsUtils;
+import org.ceskaexpedice.test.IntegrationTestsUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.net.URL;
-import java.util.List;
 import java.util.Properties;
 
 import static org.ceskaexpedice.test.AkubraTestsUtils.*;
@@ -40,7 +35,7 @@ public class MiscReadTest {
 
     @BeforeAll
     static void beforeAll() {
-        testsProperties = FunctionalTestsUtils.loadProperties();
+        testsProperties = IntegrationTestsUtils.loadProperties();
         HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
 

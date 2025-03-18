@@ -49,7 +49,7 @@ public final class AkubraTestsUtils {
     public static RepositoryConfiguration createRepositoryConfig(String repoDir, Properties props, HazelcastConfiguration hazelcastConfig) {
         String testRepoPath = repoDir + "/";
         RepositoryConfiguration config = new RepositoryConfiguration.Builder()
-                .processingIndexHost(FunctionalTestsUtils.getProperty("processingIndexHost", null, props))
+                .processingIndexHost(IntegrationTestsUtils.getProperty("processingIndexHost", null, props))
                 .objectStorePath(testRepoPath + "objectStore")
                 .objectStorePattern("##/##")
                 .datastreamStorePath(testRepoPath + "datastreamStore")

@@ -25,14 +25,13 @@ import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.akubra.utils.StringUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.ceskaexpedice.test.AkubraTestsUtils;
-import org.ceskaexpedice.test.FunctionalTestsUtils;
+import org.ceskaexpedice.test.IntegrationTestsUtils;
 import org.dom4j.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Date;
 import java.util.Properties;
 
@@ -45,7 +44,7 @@ public class DocumentReadTest {
 
     @BeforeAll
     static void beforeAll() {
-        testsProperties = FunctionalTestsUtils.loadProperties();
+        testsProperties = IntegrationTestsUtils.loadProperties();
         HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
 
@@ -73,35 +72,35 @@ public class DocumentReadTest {
     void testGet_asStream() {
         InputStream digitalObject = akubraRepository.get(PID_TITLE_PAGE).asInputStream();
         assertNotNull(digitalObject);
-        FunctionalTestsUtils.debugPrint(StringUtils.streamToString(digitalObject), testsProperties);
+        IntegrationTestsUtils.debugPrint(StringUtils.streamToString(digitalObject), testsProperties);
     }
 
     @Test
     void testGet_asXmlDom4j() {
         Document asXmlDom4j = akubraRepository.get(PID_TITLE_PAGE).asDom4j(true);
         assertNotNull(asXmlDom4j);
-        FunctionalTestsUtils.debugPrint(asXmlDom4j.asXML(), testsProperties);
+        IntegrationTestsUtils.debugPrint(asXmlDom4j.asXML(), testsProperties);
     }
 
     @Test
     void testGet_asXmlDom() {
         org.w3c.dom.Document asXmlDom = akubraRepository.get(PID_TITLE_PAGE).asDom(false);
         assertNotNull(asXmlDom);
-        FunctionalTestsUtils.debugPrint(DomUtils.toString(asXmlDom.getDocumentElement(), true), testsProperties);
+        IntegrationTestsUtils.debugPrint(DomUtils.toString(asXmlDom.getDocumentElement(), true), testsProperties);
     }
 
     @Test
     void testGet_asString() {
         String asString = akubraRepository.get(PID_TITLE_PAGE).asString();
         assertNotNull(asString);
-        FunctionalTestsUtils.debugPrint(asString, testsProperties);
+        IntegrationTestsUtils.debugPrint(asString, testsProperties);
     }
 
     @Test
     void testExport_asStream() {
         InputStream objectStream = akubraRepository.export(PID_TITLE_PAGE).asInputStream();
         assertNotNull(objectStream);
-        FunctionalTestsUtils.debugPrint(StringUtils.streamToString(objectStream), testsProperties);
+        IntegrationTestsUtils.debugPrint(StringUtils.streamToString(objectStream), testsProperties);
     }
 
     @Test

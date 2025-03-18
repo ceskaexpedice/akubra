@@ -63,18 +63,6 @@ public class RepositoryUtils {
     private RepositoryUtils() {
     }
 
-    /* TODO AK_NEW
-    public static DatastreamVersionType getLastStreamVersion(DigitalObject object, String streamID) {
-        for (DatastreamType datastreamType : object.getDatastream()) {
-            if (streamID.equals(datastreamType.getID())) {
-                return getLastStreamVersion(datastreamType);
-            }
-        }
-        return null;
-    }
-
-     */
-
     static DatastreamVersionType getLastStreamVersion(DatastreamType datastreamType) {
         List<DatastreamVersionType> datastreamVersionList = datastreamType.getDatastreamVersion();
         if (datastreamVersionList == null || datastreamVersionList.isEmpty()) {
@@ -96,45 +84,6 @@ public class RepositoryUtils {
         }
         return false;
     }
-
-    /* TODO AK_NEW
-    static InputStream getStreamContent(DatastreamVersionType stream, AkubraDOManager manager) {
-        try {
-            if (stream.getXmlContent() != null) {
-                StringWriter wrt = new StringWriter();
-                for (Element element : stream.getXmlContent().getAny()) {
-                    DomUtils.print(element, wrt);
-                }
-                return IOUtils.toInputStream(wrt.toString(), Charset.forName("UTF-8"));
-            } else if (stream.getContentLocation() != null) {
-                if (stream.getContentLocation().getTYPE().equals("INTERNAL_ID")) {
-                    return manager.retrieveDatastream(stream.getContentLocation().getREF());
-                } else if (stream.getContentLocation().getTYPE().equals("URL")) {
-                    if (stream.getContentLocation().getREF().startsWith(LOCAL_REF_PREFIX)) {
-                        String[] refArray = stream.getContentLocation().getREF().replace(LOCAL_REF_PREFIX, "").split("/");
-                        if (refArray.length == 2) {
-                            return manager.retrieveDatastream(refArray[0] + "+" + refArray[1] + "+" + refArray[1] + ".0");
-                        } else {
-                            throw new IOException("Invalid datastream local reference: " + stream.getContentLocation().getREF());
-                        }
-                    } else {
-                        return readFromURL(stream.getContentLocation().getREF());
-                    }
-                } else {
-                    throw new IOException("Unsupported datastream reference type: " + stream.getContentLocation().getTYPE() + "(" + stream.getContentLocation().getREF() + ")");
-                }
-            } else if (stream.getBinaryContent() != null) {
-                LOGGER.warning("Reading binaryContent from the managed stream.");
-                return new ByteArrayInputStream(stream.getBinaryContent());
-            } else {
-                throw new IOException("Unsupported datastream content type: " + stream.getID());
-            }
-        } catch (Exception e) {
-            throw new RepositoryException(e);
-        }
-    }
-
-     */
 
     static InputStream getDatastreamContent(InputStream foxml, String dsId, CoreRepository coreRepository) {
         try {
@@ -267,24 +216,6 @@ public class RepositoryUtils {
         propertyType.setVALUE(value);
         return propertyType;
     }
-
-    /* TODO
-    static DigitalObject createEmptyDigitalObject(String pid) {
-        DigitalObject retval = new DigitalObject();
-        retval.setPID(pid);
-        retval.setVERSION("1.1");
-        ObjectPropertiesType objectPropertiesType = new ObjectPropertiesType();
-        List<PropertyType> propertyTypeList = objectPropertiesType.getProperty();
-        propertyTypeList.add(RepositoryUtils.createProperty("info:fedora/fedora-system:def/model#state", "Active"));
-        propertyTypeList.add(RepositoryUtils.createProperty("info:fedora/fedora-system:def/model#ownerId", "fedoraAdmin"));
-        String currentTime = RepositoryUtils.currentTimeString();
-        propertyTypeList.add(RepositoryUtils.createProperty("info:fedora/fedora-system:def/model#createdDate", currentTime));
-        propertyTypeList.add(RepositoryUtils.createProperty("info:fedora/fedora-system:def/view#lastModifiedDate", currentTime));
-        retval.setObjectProperties(objectPropertiesType);
-        return retval;
-    }
-
-     */
 
     static String getFormatUriForDS(String dsID) {
         if (KnownDatastreams.RELS_EXT.name().equals(dsID)) {

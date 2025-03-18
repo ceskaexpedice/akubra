@@ -67,7 +67,6 @@ public final class AkubraRepositoryFactory {
             if (existingInstance == null) {
                 CoreRepository coreRepository = CoreRepositoryFactory.createRepository(configuration);
                 AkubraRepository baseAccess = new AkubraRepositoryImpl(coreRepository);
-                // TODO: Consider adding decorators in the future.
                 return baseAccess;
             }
             return existingInstance;
@@ -78,7 +77,6 @@ public final class AkubraRepositoryFactory {
         return INSTANCE.updateAndGet(existingInstance -> {
             if (existingInstance == null) {
                 AkubraRepository baseAccess = new AkubraRepositoryImpl(coreRepository);
-                // TODO: Consider adding decorators in the future.
                 return baseAccess;
             }
             return existingInstance;
