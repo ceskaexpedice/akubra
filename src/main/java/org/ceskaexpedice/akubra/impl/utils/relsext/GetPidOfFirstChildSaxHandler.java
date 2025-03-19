@@ -43,7 +43,7 @@ public class GetPidOfFirstChildSaxHandler extends DefaultHandler {
         }
         if (insideRdfDescription) {
             for (KnownRelations target : KnownRelations.values()) {
-                if (qName.endsWith(":" + target)) { // Matches namespace-prefixed element names
+                if (qName.equals(String.valueOf(target)) || qName.endsWith(":" + target)) { // Matches namespace-prefixed element names
                     String resource = attributes.getValue("rdf:resource");
                     if (resource != null && resource.startsWith("info:fedora/")) {
                         firstChildPid = resource.substring("info:fedora/".length());
