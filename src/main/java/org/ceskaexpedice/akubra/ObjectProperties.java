@@ -30,11 +30,6 @@ import java.util.Date;
  *
  */
 public interface ObjectProperties {
-    DateTimeFormatter TIMESTAMP_FORMATTER = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd'T'HH:mm:ss.")
-            .appendFraction(ChronoField.MILLI_OF_SECOND, 1, 3, false)
-            .appendPattern("'Z'")
-            .toFormatter();
 
     /**
      * Retrieves the value of a property by its name.

@@ -70,8 +70,8 @@ public class DatastreamReadTest {
         assertEquals("X", datastreamMetadata.getControlGroup());
         assertEquals(0, datastreamMetadata.getSize());
         assertNull(datastreamMetadata.getLocation());
-        // TODO AK_NEW assertEquals("Mon Feb 26 15:40:29 CET 2018", datastreamMetadata.getLastModified().toString());
-        //assertEquals("Mon Feb 26 15:40:29 CET 2018", datastreamMetadata.getCreateDate().toString());
+        assertNotNull(datastreamMetadata.getLastModified());
+        assertNotNull(datastreamMetadata.getCreateDate());
     }
 
     @Test

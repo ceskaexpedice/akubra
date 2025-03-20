@@ -17,6 +17,7 @@
 package org.ceskaexpedice.akubra.impl;
 
 import org.ceskaexpedice.akubra.ObjectProperties;
+import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
 import org.ceskaexpedice.akubra.impl.utils.ObjectPropertiesSaxParser;
 
 import java.time.LocalDateTime;
@@ -51,31 +52,13 @@ class ObjectPropertiesImpl implements ObjectProperties {
     @Override
     public Date getPropertyCreated() {
         String propertyValue = getProperty("info:fedora/fedora-system:def/model#createdDate");
-        if (propertyValue != null) {
-            try {
-                return Date.from(LocalDateTime.parse(propertyValue, TIMESTAMP_FORMATTER)
-                        .atZone(ZoneId.systemDefault())
-                        .toInstant());
-            } catch (DateTimeParseException e) {
-                LOGGER.warning(String.format("cannot parse createdDate %s from object %s", propertyValue, pid));
-            }
-        }
-        return null;
+        return RepositoryUtils.parseDate(propertyValue);
     }
 
     @Override
     public Date getPropertyLastModified() {
         String propertyValue = getProperty("info:fedora/fedora-system:def/view#lastModifiedDate");
-        if (propertyValue != null) {
-            try {
-                return Date.from(LocalDateTime.parse(propertyValue, TIMESTAMP_FORMATTER)
-                        .atZone(ZoneId.systemDefault())
-                        .toInstant());
-            } catch (DateTimeParseException e) {
-                LOGGER.warning(String.format("cannot parse lastModifiedDate %s from object %s", propertyValue, pid));
-            }
-        }
-        return null;
+        return RepositoryUtils.parseDate(propertyValue);
     }
 
 }

@@ -44,6 +44,12 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -59,6 +65,13 @@ public class RepositoryUtils {
     private static final Logger LOGGER = Logger.getLogger(RepositoryUtils.class.getName());
     private static final SafeSimpleDateFormat DATE_FORMAT = new SafeSimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSS'Z'");
     static final String FOUND = "FOUND";
+    public static final DateTimeFormatter TIMESTAMP_FORMATTER = new DateTimeFormatterBuilder()
+            .appendPattern("yyyy-MM-dd'T'HH:mm:ss")
+            .optionalStart()
+            .appendFraction(ChronoField.MILLI_OF_SECOND, 1, 3, true)
+            .optionalEnd()
+            .appendPattern("'Z'")
+            .toFormatter();
 
     private RepositoryUtils() {
     }
@@ -300,5 +313,18 @@ public class RepositoryUtils {
         }
     }
 
+    public static Date parseDate(String dateStr) {
+        if(dateStr == null) {
+            return null;
+        }
+        try {
+            return Date.from(LocalDateTime.parse(dateStr, TIMESTAMP_FORMATTER)
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant());
+        } catch (DateTimeParseException e) {
+            LOGGER.warning(String.format("Cannot parse date %s", dateStr));
+            return null;
+        }
+    }
 
 }

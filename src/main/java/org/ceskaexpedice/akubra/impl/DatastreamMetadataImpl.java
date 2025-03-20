@@ -17,17 +17,10 @@
 package org.ceskaexpedice.akubra.impl;
 
 import org.ceskaexpedice.akubra.DatastreamMetadata;
-import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
-import org.ceskaexpedice.fedoramodel.ContentLocationType;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeParseException;
+import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
 import java.util.Date;
 import java.util.Map;
 import java.util.logging.Logger;
-
-import static org.ceskaexpedice.akubra.ObjectProperties.TIMESTAMP_FORMATTER;
 
 /**
  * DatastreamMetadataImpl
@@ -68,22 +61,12 @@ class DatastreamMetadataImpl implements DatastreamMetadata {
 
     @Override
     public Date getLastModified() {
-        return parseDate(metadata.get("CREATED"));
+        return RepositoryUtils.parseDate(metadata.get("CREATED"));
     }
 
     @Override
     public Date getCreateDate() {
-        return parseDate(metadata.get("CREATED"));
+        return RepositoryUtils.parseDate(metadata.get("CREATED"));
     }
 
-    private Date parseDate(String dateStr) {
-        try {
-            return Date.from(LocalDateTime.parse(dateStr, TIMESTAMP_FORMATTER)
-                    .atZone(ZoneId.systemDefault())
-                    .toInstant());
-        } catch (DateTimeParseException e) {
-            LOGGER.warning(String.format("cannot parse createdDate %s", dateStr));
-        }
-        return null;
-    }
 }

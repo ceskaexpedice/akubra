@@ -108,11 +108,11 @@ public class DocumentReadTest {
         String propertyOwnerId = akubraRepository.getProperties(PID_TITLE_PAGE).getProperty("info:fedora/fedora-system:def/model#ownerId");
         assertEquals("fedoraAdmin", propertyOwnerId);
         Date propertyCreated = akubraRepository.getProperties(PID_TITLE_PAGE).getPropertyCreated();
-        assertNull(propertyCreated); // no milliseconds in test data
+        assertNotNull(propertyCreated);
         String propertyLabel = akubraRepository.getProperties(PID_TITLE_PAGE).getPropertyLabel();
         assertEquals("- none -", propertyLabel);
         Date propertyLastModified = akubraRepository.getProperties(PID_TITLE_PAGE).getPropertyLastModified();
-        // TODO AK_NEW assertEquals("Mon May 20 13:03:27 CEST 2024", propertyLastModified.toString());
+        assertNotNull(propertyLastModified);
     }
 
     @Test

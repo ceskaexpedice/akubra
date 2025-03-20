@@ -18,6 +18,7 @@ package org.ceskaexpedice.akubra.utils;
 
 import org.ceskaexpedice.akubra.AkubraRepository;
 import org.ceskaexpedice.akubra.RepositoryException;
+import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.dom4j.*;
 import org.dom4j.io.OutputFormat;
@@ -36,8 +37,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.ceskaexpedice.akubra.ObjectProperties.TIMESTAMP_FORMATTER;
 
 /**
  * Dom4jUtils
@@ -308,12 +307,12 @@ public final class Dom4jUtils {
     public static void updateLastModifiedTimestamp(Document foxml) {
         Attribute valueAttr = (Attribute) Dom4jUtils.buildXpath("/foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='info:fedora/fedora-system:def/view#lastModifiedDate']/@VALUE").selectSingleNode(foxml);
         if (valueAttr != null) {
-            valueAttr.setValue(LocalDateTime.now().format(TIMESTAMP_FORMATTER));
+            valueAttr.setValue(LocalDateTime.now().format(RepositoryUtils.TIMESTAMP_FORMATTER));
         } else {
             Element objectProperties = (Element) Dom4jUtils.buildXpath("/foxml:digitalObject/foxml:objectProperties").selectSingleNode(foxml);
             Element propertyLastModified = objectProperties.addElement(new QName("property", NS_FOXML));
             propertyLastModified.addAttribute("NAME", "info:fedora/fedora-system:def/view#lastModifiedDate");
-            propertyLastModified.addAttribute("VALUE", LocalDateTime.now().format(TIMESTAMP_FORMATTER));
+            propertyLastModified.addAttribute("VALUE", LocalDateTime.now().format(RepositoryUtils.TIMESTAMP_FORMATTER));
         }
     }
 
