@@ -60,4 +60,12 @@ public final class AkubraTestsUtils {
         return config;
     }
 
+    public static void sleep(int millis){
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

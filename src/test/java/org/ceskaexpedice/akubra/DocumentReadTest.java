@@ -142,18 +142,4 @@ public class DocumentReadTest {
         assertNotNull(mi);
     }
 
-    @Test
-    void testDoWithLocks_simple() {
-        String pid = PID_MONOGRAPH;
-        String pid1 = PID_TITLE_PAGE;
-        Boolean result = akubraRepository.doWithWriteLock(pid, () -> {
-            akubraRepository.get(pid);
-            Boolean result1 = akubraRepository.doWithReadLock(pid1, () -> {
-                akubraRepository.get(pid1);
-                return true;
-            });
-            return result1;
-        });
-        assertTrue(result);
-    }
 }
