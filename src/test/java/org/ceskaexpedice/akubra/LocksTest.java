@@ -23,6 +23,7 @@ import org.ceskaexpedice.test.ConcurrencyUtils;
 import org.ceskaexpedice.test.IntegrationTestsUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
@@ -279,6 +280,55 @@ public class LocksTest {
         String fourthLast = result.pop();
         assertEquals(thirdLast, fourthLast);
         assertTrue(result.isEmpty());
+    }
+
+    /**
+     * WARNING! The following test serves just to demonstrate how deadlock can happen. Leave it disabled...
+     */
+    @Disabled
+    @Test
+    void testDeadLock() {
+        ConcurrencyUtils.runFactoryTasks(2, new Function<>() {
+            @Override
+            public ConcurrencyUtils.TestTask apply(Integer taskNumber) {
+                if (taskNumber == 1) {
+                    return new ConcurrencyUtils.TestTask(taskNumber + "") {
+                        @Override
+                        public void run() {
+                            super.run();
+                            akubraRepository.doWithWriteLock(PID_MONOGRAPH, () -> {
+                                IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": acquiredWriteLock for " + PID_MONOGRAPH, testsProperties);
+                                AkubraTestsUtils.sleep(2000);
+
+                                IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": attempt to acquire readLock for " + PID_TITLE_PAGE, testsProperties);
+                                akubraRepository.doWithReadLock(PID_TITLE_PAGE, () -> {
+                                    // never gets here
+                                    return null;
+                                });
+                                return null;
+                            });
+                        }
+                    };
+                } else {
+                    return new ConcurrencyUtils.TestTask(taskNumber + "") {
+                        @Override
+                        public void run() {
+                            super.run();
+                            akubraRepository.doWithWriteLock(PID_TITLE_PAGE, () -> {
+                                IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": acquiredWriteLock for " + PID_TITLE_PAGE, testsProperties);
+
+                                IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": attempt to acquire readLock for " + PID_MONOGRAPH, testsProperties);
+                                akubraRepository.doWithReadLock(PID_MONOGRAPH, () -> {
+                                    // never gets here
+                                    return null;
+                                });
+                                return null;
+                            });
+                        }
+                    };
+                }
+            }
+        });
     }
 
 }
