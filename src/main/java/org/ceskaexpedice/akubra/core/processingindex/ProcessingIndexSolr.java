@@ -17,9 +17,11 @@
 package org.ceskaexpedice.akubra.core.processingindex;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.impl.ConcurrentUpdateSolrClient;
+import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
@@ -160,6 +162,21 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     @Override
     public JSONObject extractStructureInfo(String pid) {
         return StructureInfoDom4jUtils.extractStructureInfo(pid, coreRepository);
+    }
+
+    @Override
+    public List<Pair<String,Long>> getModelsCount() {
+        try {
+            QueryResponse response = this.solrClient.query(new SolrQuery("type:description").setRows(0).setFacet(true).addFacetField("model"));
+            List<FacetField.Count> values = response.getFacetField("model").getValues();
+            return values.stream().map(c-> {
+                long count = c.getCount();
+                String cname = c.getName();
+                return Pair.of(cname, count);
+            }).collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
     }
 
     @Override

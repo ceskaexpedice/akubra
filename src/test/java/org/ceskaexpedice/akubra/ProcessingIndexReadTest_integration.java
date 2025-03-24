@@ -16,8 +16,10 @@
  */
 package org.ceskaexpedice.akubra;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
+import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
 import org.ceskaexpedice.akubra.processingindex.*;
 import org.ceskaexpedice.akubra.relsext.KnownRelations;
 import org.ceskaexpedice.test.AkubraTestsUtils;
@@ -184,6 +186,12 @@ public class ProcessingIndexReadTest_integration {
     void testExtractStructureInfo() {
         JSONObject extractStructureInfo = akubraRepository.pi().extractStructureInfo(PID_MONOGRAPH);
         debugPrint(extractStructureInfo.toString(), testsProperties);
+    }
+
+    @Test
+    void testGetModelsCount() {
+        List<Pair<String, Long>> allFedoraModelsAsList = akubraRepository.pi().getModelsCount();
+        debugPrint(allFedoraModelsAsList.toString(), testsProperties);
     }
 
 }

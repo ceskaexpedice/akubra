@@ -16,6 +16,7 @@
  */
 package org.ceskaexpedice.akubra.processingindex;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -144,6 +145,12 @@ public interface ProcessingIndex {
      * @return A JSON object containing the structured information.
      */
     JSONObject extractStructureInfo(String pid);
+
+    /**
+     * Returns count of all models
+     * @return
+     */
+    List<Pair<String,Long>> getModelsCount();
 
     /**
      * Deletes processing index entries related to the given PID (Persistent Identifier).
