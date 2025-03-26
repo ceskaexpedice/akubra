@@ -21,6 +21,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.impl.ConcurrentUpdateSolrClient;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
@@ -62,13 +63,15 @@ public class ProcessingIndexSolr implements ProcessingIndex {
 
     private static final Logger LOGGER = Logger.getLogger(ProcessingIndexSolr.class.getName());
 
-    private SolrClient solrClient;
+    private SolrClient solrUpdateClient;
+    private SolrClient solrQueryClient;
     private CoreRepository coreRepository;
     RepositoryConfiguration repositoryConfiguration;
 
     public ProcessingIndexSolr(RepositoryConfiguration configuration, CoreRepository coreRepository) {
         super();
-        this.solrClient =  createProcessingUpdateClient(configuration);
+        this.solrUpdateClient = createProcessingUpdateClient(configuration);
+        this.solrQueryClient = createProcessingQueryClient(configuration);
         this.coreRepository = coreRepository;
         this.repositoryConfiguration = configuration;
     }
@@ -78,30 +81,30 @@ public class ProcessingIndexSolr implements ProcessingIndex {
         try {
             SolrQuery solrQuery = new SolrQuery(params.getQueryString());
             solrQuery.setRows(params.getRows());
-            if(params.getCursorMark() == null) {
+            if (params.getCursorMark() == null) {
                 solrQuery.setSort(params.getSortField(), params.isAscending() ? SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
                 int offset = params.getOffset() != -1 ? params.getOffset() : params.getPageIndex() * params.getRows();
                 solrQuery.setStart(offset);
-                QueryResponse response = this.solrClient.query(solrQuery);
+                QueryResponse response = this.solrQueryClient.query(solrQuery);
                 response.getResults().forEach((doc) -> {
                     action.accept(ProcessingIndexUtils.fromSolrDocument(doc));
                 });
-            }else{
+            } else {
                 solrQuery.addSort(params.getSortField(), params.isAscending() ? SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
                 solrQuery.addSort(UNIQUE_KEY, SolrQuery.ORDER.asc);
                 String cursorMark = params.getCursorMark();
                 boolean done = false;
                 while (!done) {
                     solrQuery.set(CursorMarkParams.CURSOR_MARK_PARAM, cursorMark);
-                    QueryResponse response = this.solrClient.query(solrQuery);
+                    QueryResponse response = this.solrQueryClient.query(solrQuery);
                     response.getResults().forEach((doc) -> {
                         action.accept(ProcessingIndexUtils.fromSolrDocument(doc));
                     });
                     String nextCursorMark = response.getNextCursorMark();
                     if (cursorMark.equals(nextCursorMark)) {
                         done = true;
-                    }else{
-                        if(params.isStopAfterCursorMark()){
+                    } else {
+                        if (params.isStopAfterCursorMark()) {
                             return nextCursorMark;
                         }
                     }
@@ -115,7 +118,7 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     }
 
     @Override
-    public List<ProcessingIndexItem>  getParents(String targetPid) {
+    public List<ProcessingIndexItem> getParents(String targetPid) {
         return ProcessingIndexUtils.getParents(targetPid, coreRepository);
     }
 
@@ -125,7 +128,7 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     }
 
     @Override
-    public OwnedAndFosteredParents getOwnedAndFosteredParents(String targetPid){
+    public OwnedAndFosteredParents getOwnedAndFosteredParents(String targetPid) {
         return ProcessingIndexUtils.getParentsRelation(targetPid, coreRepository);
     }
 
@@ -165,11 +168,11 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     }
 
     @Override
-    public List<Pair<String,Long>> getModelsCount() {
+    public List<Pair<String, Long>> getModelsCount() {
         try {
-            QueryResponse response = this.solrClient.query(new SolrQuery("type:description").setRows(0).setFacet(true).addFacetField("model"));
+            QueryResponse response = this.solrQueryClient.query(new SolrQuery("type:description").setRows(0).setFacet(true).addFacetField("model"));
             List<FacetField.Count> values = response.getFacetField("model").getValues();
-            return values.stream().map(c-> {
+            return values.stream().map(c -> {
                 long count = c.getCount();
                 String cname = c.getName();
                 return Pair.of(cname, count);
@@ -191,7 +194,7 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     @Override
     public void deleteProcessingIndex() {
         try {
-            this.solrClient.deleteByQuery("*:*");
+            this.solrUpdateClient.deleteByQuery("*:*");
         } catch (Exception e) {
             throw new RepositoryException(e);
         }
@@ -200,7 +203,7 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     @Override
     public void deleteByPid(String pid) {
         try {
-            this.solrClient.deleteByQuery("source:\"" + pid + "\"");
+            this.solrUpdateClient.deleteByQuery("source:\"" + pid + "\"");
         } catch (Exception e) {
             throw new RepositoryException(e);
         }
@@ -209,7 +212,7 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     @Override
     public void deleteByTargetPid(String pid) {
         try {
-            this.solrClient.deleteByQuery("targetPid:\"" + pid + "\"");
+            this.solrUpdateClient.deleteByQuery("targetPid:\"" + pid + "\"");
         } catch (Exception e) {
             throw new RepositoryException(e);
         }
@@ -218,7 +221,7 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     @Override
     public void deleteDescriptionByPid(String pid) {
         try {
-            this.solrClient.deleteByQuery("source:\"" + pid + "\" AND type:\"description\"");
+            this.solrUpdateClient.deleteByQuery("source:\"" + pid + "\" AND type:\"description\"");
         } catch (Exception e) {
             throw new RepositoryException(e);
         }
@@ -228,7 +231,7 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     public void deleteByRelationsForPid(String pid) {
         try {
             String query = "source:\"" + pid + "\" AND type:\"relation\"";
-            this.solrClient.deleteByQuery(query);
+            this.solrUpdateClient.deleteByQuery(query);
         } catch (Exception e) {
             throw new RepositoryException(e);
         }
@@ -295,13 +298,13 @@ public class ProcessingIndexSolr implements ProcessingIndex {
                     this.indexDescription(pid, object, "");
                 }
             } catch (Throwable th) {
-                LOGGER.log(Level.SEVERE, "Cannot update processing index for "+ pid + " - reindex manually.", th);
+                LOGGER.log(Level.SEVERE, "Cannot update processing index for " + pid + " - reindex manually.", th);
             }
         } else {
             try {
                 this.feedRelationDocument(pid, localName, object);
             } catch (Throwable th) {
-                LOGGER.log(Level.SEVERE, "Cannot update processing index for "+ pid + " - reindex manually.", th);
+                LOGGER.log(Level.SEVERE, "Cannot update processing index for " + pid + " - reindex manually.", th);
             }
         }
     }
@@ -360,7 +363,7 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     @Override
     public void commit() {
         try {
-            this.solrClient.commit();
+            this.solrUpdateClient.commit();
             LOGGER.info("Processing index commit ");
         } catch (Exception e) {
             throw new RepositoryException(e);
@@ -397,7 +400,7 @@ public class ProcessingIndexSolr implements ProcessingIndex {
 
     private UpdateResponse feedDescriptionDocument(SolrInputDocument doc) {
         try {
-            UpdateResponse response = this.solrClient.add(doc);
+            UpdateResponse response = this.solrUpdateClient.add(doc);
             return response;
         } catch (Exception e) {
             throw new RepositoryException(e);
@@ -416,18 +419,17 @@ public class ProcessingIndexSolr implements ProcessingIndex {
 
     private UpdateResponse feedRelationDocument(SolrInputDocument sdoc) {
         try {
-            UpdateResponse resp = this.solrClient.add(sdoc);
+            UpdateResponse resp = this.solrUpdateClient.add(sdoc);
             return resp;
         } catch (Exception e) {
             throw new RepositoryException(e);
         }
     }
 
-  /* TODO
-  private SolrClient processingQueryClient() {
-    String processingSolrHost = KConfiguration.getInstance().getSolrProcessingHost();
-    return new HttpSolrClient.Builder(processingSolrHost).build();
-  }*/
+    private static SolrClient createProcessingQueryClient(RepositoryConfiguration configuration) {
+        String processingSolrHost = configuration.getProcessingIndexHost();
+        return new HttpSolrClient.Builder(processingSolrHost).build();
+    }
 
     private static SolrClient createProcessingUpdateClient(RepositoryConfiguration configuration) {
         String processingSolrHost = configuration.getProcessingIndexHost();
