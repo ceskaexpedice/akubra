@@ -54,6 +54,7 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.ceskaexpedice:hazelcast-locks-server:1.0-SNAPSHOT'
     //akubra storage
     implementation 'org.akubraproject:akubra-core:0.4.0'
     implementation('org.akubraproject:akubra-fs:0.4.0') {
@@ -79,14 +80,12 @@ dependencies {
     implementation 'jaxen:jaxen:1.2.0'
     implementation 'org.dom4j:dom4j:2.1.1'
 
-    implementation 'com.hazelcast:hazelcast-all:3.11.2'
     implementation "commons-configuration:commons-configuration:1.10"
     implementation 'com.google.guava:guava:31.0.1-jre'
     implementation 'javax.servlet:servlet-api:2.5'
     implementation 'org.apache.solr:solr-solrj:8.8.1'
     implementation "org.apache.commons:commons-lang3:3.5"
     implementation "org.antlr:stringtemplate:3.2.1"
-    implementation 'net.jcip:jcip-annotations:1.0'
     implementation "commons-dbcp:commons-dbcp:1.4"
     implementation 'fast-md5:fast-md5:2.5'
     implementation 'com.google.code.gson:gson:2.8.6'

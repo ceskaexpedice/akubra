@@ -16,9 +16,10 @@
  */
 package org.ceskaexpedice.akubra;
 
-import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.utils.DomUtils;
+import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
+import org.ceskaexpedice.hazelcast.HazelcastServerNode;
 import org.ceskaexpedice.test.AkubraTestsUtils;
 import org.ceskaexpedice.test.IntegrationTestsUtils;
 import org.dom4j.Document;

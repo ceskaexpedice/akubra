@@ -17,13 +17,14 @@
 package org.ceskaexpedice.akubra;
 
 import org.apache.commons.io.FileUtils;
-import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.impl.CoreRepositoryImpl;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
+import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
+import org.ceskaexpedice.hazelcast.HazelcastServerNode;
 import org.ceskaexpedice.test.AkubraTestsUtils;
 import org.ceskaexpedice.test.IntegrationTestsUtils;
 import org.junit.jupiter.api.*;

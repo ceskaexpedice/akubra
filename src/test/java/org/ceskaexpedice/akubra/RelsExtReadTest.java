@@ -16,11 +16,12 @@
  */
 package org.ceskaexpedice.akubra;
 
-import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.relsext.RelsExtLiteral;
 import org.ceskaexpedice.akubra.relsext.RelsExtRelation;
 import org.ceskaexpedice.akubra.relsext.TreeNodeProcessor;
+import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
+import org.ceskaexpedice.hazelcast.HazelcastServerNode;
 import org.ceskaexpedice.test.AkubraTestsUtils;
 import org.ceskaexpedice.test.IntegrationTestsUtils;
 import org.junit.jupiter.api.AfterAll;

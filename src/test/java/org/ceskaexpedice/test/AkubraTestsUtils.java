@@ -16,8 +16,8 @@
  */
 package org.ceskaexpedice.test;
 
-import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
+import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
 
 import java.nio.file.Path;
 import java.util.Properties;

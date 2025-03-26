@@ -25,6 +25,7 @@ import org.apache.commons.io.IOUtils;
 import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.fedoramodel.*;
+import org.ceskaexpedice.hazelcast.HazelcastClientNode;
 import org.fcrepo.server.errors.LowlevelStorageException;
 import org.fcrepo.server.errors.ObjectAlreadyInLowlevelStorageException;
 import org.fcrepo.server.errors.ObjectNotInLowlevelStorageException;
@@ -90,7 +91,7 @@ class AkubraDOManager {
         }
         hazelcastClientNode = new HazelcastClientNode();
         hazelcastClientNode.ensureHazelcastNode(configuration.getHazelcastConfiguration());
-        lockService = DistributedLockService.newHazelcastLockService(hazelcastClientNode.getHzInstance());
+        lockService = DistributedLockService.newHazelcastLockService(hazelcastClientNode);
     }
 
     private ILowlevelStorage initLowLevelStorage() throws Exception {

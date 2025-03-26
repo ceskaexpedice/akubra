@@ -16,7 +16,6 @@
  */
 package org.ceskaexpedice.akubra;
 
-import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.misc.MiscHelper;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
@@ -24,6 +23,8 @@ import org.ceskaexpedice.akubra.relsext.RelsExtHelper;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.akubra.utils.StringUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
+import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
+import org.ceskaexpedice.hazelcast.HazelcastServerNode;
 import org.ceskaexpedice.test.AkubraTestsUtils;
 import org.ceskaexpedice.test.IntegrationTestsUtils;
 import org.dom4j.Document;

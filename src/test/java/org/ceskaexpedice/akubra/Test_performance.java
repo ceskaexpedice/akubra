@@ -17,8 +17,9 @@
 package org.ceskaexpedice.akubra;
 
 import org.apache.commons.io.IOUtils;
-import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
+import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
+import org.ceskaexpedice.hazelcast.HazelcastServerNode;
 import org.ceskaexpedice.test.AkubraTestsUtils;
 import org.ceskaexpedice.test.ConcurrencyUtils;
 import org.ceskaexpedice.test.IntegrationTestsUtils;

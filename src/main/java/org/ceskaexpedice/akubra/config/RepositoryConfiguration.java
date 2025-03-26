@@ -16,6 +16,8 @@
  */
 package org.ceskaexpedice.akubra.config;
 
+import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
+
 /**
  * Represents the configuration for a repository, containing various paths, patterns,
  * cache expiration settings, and Hazelcast configuration for distributed locking.

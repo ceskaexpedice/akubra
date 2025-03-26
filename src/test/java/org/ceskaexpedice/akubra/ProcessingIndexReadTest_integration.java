@@ -17,11 +17,11 @@
 package org.ceskaexpedice.akubra;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.ceskaexpedice.akubra.config.HazelcastConfiguration;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
-import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
 import org.ceskaexpedice.akubra.processingindex.*;
 import org.ceskaexpedice.akubra.relsext.KnownRelations;
+import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
+import org.ceskaexpedice.hazelcast.HazelcastServerNode;
 import org.ceskaexpedice.test.AkubraTestsUtils;
 import org.ceskaexpedice.test.IntegrationTestsUtils;
 import org.json.JSONObject;
