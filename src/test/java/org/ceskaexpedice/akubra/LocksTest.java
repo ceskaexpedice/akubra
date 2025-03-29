@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 import static org.ceskaexpedice.test.AkubraTestsUtils.*;
@@ -283,13 +284,11 @@ public class LocksTest {
         assertTrue(result.isEmpty());
     }
 
-    /**
-     * WARNING! The following test serves just to demonstrate how deadlock can happen. Leave it disabled...
-     */
-    @Disabled
     @Test
     void testDeadLock() {
+        AtomicBoolean deadlockReleased = new AtomicBoolean(false);
         ConcurrencyUtils.runFactoryTasks(2, new Function<>() {
+
             @Override
             public ConcurrencyUtils.TestTask apply(Integer taskNumber) {
                 if (taskNumber == 1) {
@@ -302,10 +301,16 @@ public class LocksTest {
                                 AkubraTestsUtils.sleep(2000);
 
                                 IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": attempt to acquire readLock for " + PID_TITLE_PAGE, testsProperties);
-                                akubraRepository.doWithReadLock(PID_TITLE_PAGE, () -> {
-                                    // never gets here
-                                    return null;
-                                });
+                                try {
+                                    akubraRepository.doWithReadLock(PID_TITLE_PAGE, () -> {
+                                        // never gets here
+                                        return null;
+                                    });
+                                } catch (DistributedLocksException e) {
+                                    if(e.getCode().equals(DistributedLocksException.LOCK_TIMEOUT)){
+                                        deadlockReleased.set(true);
+                                    }
+                                }
                                 return null;
                             });
                         }
@@ -319,10 +324,16 @@ public class LocksTest {
                                 IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": acquiredWriteLock for " + PID_TITLE_PAGE, testsProperties);
 
                                 IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": attempt to acquire readLock for " + PID_MONOGRAPH, testsProperties);
-                                akubraRepository.doWithReadLock(PID_MONOGRAPH, () -> {
-                                    // never gets here
-                                    return null;
-                                });
+                                try {
+                                    akubraRepository.doWithReadLock(PID_MONOGRAPH, () -> {
+                                        // never gets here
+                                        return null;
+                                    });
+                                } catch (DistributedLocksException e) {
+                                    if(e.getCode().equals(DistributedLocksException.LOCK_TIMEOUT)){
+                                        deadlockReleased.set(true);
+                                    }
+                                }
                                 return null;
                             });
                         }
@@ -330,6 +341,7 @@ public class LocksTest {
                 }
             }
         });
+        assertTrue(deadlockReleased.get());
     }
 
 }

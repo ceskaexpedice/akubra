@@ -20,6 +20,7 @@ import org.akubraproject.UnsupportedIdException;
 import org.akubraproject.map.IdMapper;
 import org.apache.commons.io.IOUtils;
 import org.ceskaexpedice.akubra.KnownDatastreams;
+import org.ceskaexpedice.akubra.LockOperation;
 import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
@@ -261,15 +262,13 @@ public class CoreRepositoryImpl implements CoreRepository {
     }
 
     @Override
-    public Lock getReadLock(String pid) {
-        Lock readLock = manager.getReadLock(pid);
-        return readLock;
+    public <T> T doWithReadLock(String pid, LockOperation<T> operation){
+        return manager.doWithReadLock(pid, operation);
     }
 
     @Override
-    public Lock getWriteLock(String pid) {
-        Lock writeLock = manager.getWriteLock(pid);
-        return writeLock;
+    public <T> T doWithWriteLock(String pid, LockOperation<T> operation){
+        return manager.doWithWriteLock(pid, operation);
     }
 
     @Override

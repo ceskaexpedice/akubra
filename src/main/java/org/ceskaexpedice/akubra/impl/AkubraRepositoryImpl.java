@@ -291,22 +291,12 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public <T> T doWithReadLock(String pid, LockOperation<T> operation) {
-        Lock readLock = coreRepository.getReadLock(pid);
-        try {
-            return operation.execute();
-        } finally {
-            readLock.unlock();
-        }
+        return coreRepository.doWithReadLock(pid, operation);
     }
 
     @Override
     public <T> T doWithWriteLock(String pid, LockOperation<T> operation) {
-        Lock writeLock = coreRepository.getWriteLock(pid);
-        try {
-            return operation.execute();
-        } finally {
-            writeLock.unlock();
-        }
+        return coreRepository.doWithWriteLock(pid, operation);
     }
 
     @Override

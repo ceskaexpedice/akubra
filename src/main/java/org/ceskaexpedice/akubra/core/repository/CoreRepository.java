@@ -16,6 +16,7 @@
  */
 package org.ceskaexpedice.akubra.core.repository;
 
+import org.ceskaexpedice.akubra.LockOperation;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 
@@ -171,20 +172,24 @@ public interface CoreRepository {
     void deleteDatastream(String pid, String dsId);
 
     /**
-     * Retrieves a read lock for a digital object.
+     * Executes an operation with a read lock on the specified object.
      *
-     * @param pid The unique identifier of the object.
-     * @return A Lock instance that ensures read access to the object.
+     * @param pid       The persistent identifier of the object.
+     * @param operation The operation to execute.
+     * @param <T>       The return type of the operation.
+     * @return The result of the operation.
      */
-    Lock getReadLock(String pid);
+    <T> T doWithReadLock(String pid, LockOperation<T> operation);
 
     /**
-     * Retrieves a write lock for a digital object.
+     * Executes an operation with a write lock on the specified object.
      *
-     * @param pid The unique identifier of the object.
-     * @return A Lock instance that ensures write access to the object.
+     * @param pid       The persistent identifier of the object.
+     * @param operation The operation to execute.
+     * @param <T>       The return type of the operation.
+     * @return The result of the operation.
      */
-    Lock getWriteLock(String pid);
+    <T> T doWithWriteLock(String pid, LockOperation<T> operation);
 
     /**
      * Returns a processing index  for the repository.

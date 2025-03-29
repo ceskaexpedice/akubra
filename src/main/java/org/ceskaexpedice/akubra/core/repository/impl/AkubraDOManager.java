@@ -22,6 +22,8 @@ import org.akubraproject.fs.FSBlobStore;
 import org.akubraproject.map.IdMapper;
 import org.akubraproject.map.IdMappingBlobStore;
 import org.apache.commons.io.IOUtils;
+import org.ceskaexpedice.akubra.DistributedLocksException;
+import org.ceskaexpedice.akubra.LockOperation;
 import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.fedoramodel.*;
@@ -47,6 +49,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.logging.Level;
@@ -89,9 +92,23 @@ class AkubraDOManager {
             LOGGER.log(Level.SEVERE, "Cannot init JAXB", e);
             throw new RepositoryException(e);
         }
-        hazelcastClientNode = new HazelcastClientNode();
-        hazelcastClientNode.ensureHazelcastNode(configuration.getHazelcastConfiguration());
-        lockService = DistributedLockService.newHazelcastLockService(hazelcastClientNode);
+    }
+
+    private DistributedLockService getLockService() {
+        if (lockService == null) { // First check (without lock)
+            synchronized (this) {
+                if (lockService == null) { // Second check (within lock)
+                    try {
+                        hazelcastClientNode = new HazelcastClientNode();
+                        hazelcastClientNode.ensureHazelcastNode(configuration.getHazelcastConfiguration());
+                        lockService = DistributedLockService.newHazelcastLockService(hazelcastClientNode);
+                    } catch (Exception e) {
+                        throw new DistributedLocksException(DistributedLocksException.LOCK_SERVER_ERROR, e);
+                    }
+                }
+            }
+        }
+        return lockService;
     }
 
     private ILowlevelStorage initLowLevelStorage() throws Exception {
@@ -152,8 +169,7 @@ class AkubraDOManager {
     }
 
     void deleteObject(String pid, boolean includingManagedDatastreams) {
-        Lock lock = getWriteLock(pid);
-        try {
+        doWithWriteLock(pid, () -> {
             DigitalObject object = readObjectFromStorage(pid);
             if (includingManagedDatastreams) {
                 for (DatastreamType datastreamType : object.getDatastream()) {
@@ -165,14 +181,12 @@ class AkubraDOManager {
             } catch (LowlevelStorageException e) {
                 LOGGER.severe("Could not remove object from Akubra: " + e);
             }
-        } finally {
-            lock.unlock();
-        }
+            return null;
+        });
     }
 
     void deleteStream(String pid, String streamId) {
-        Lock lock = getWriteLock(pid);
-        try {
+        doWithWriteLock(pid, () -> {
             DigitalObject object = readObjectFromStorage(pid);
             List<DatastreamType> datastreamList = object.getDatastream();
             Iterator<DatastreamType> iterator = datastreamList.iterator();
@@ -195,9 +209,8 @@ class AkubraDOManager {
             } catch (Exception e) {
                 LOGGER.severe("Could not replace object in Akubra: " + e + ", pid:'" + pid + "'");
             }
-        } finally {
-            lock.unlock();
-        }
+            return null;
+        });
     }
 
     private void removeManagedStream(DatastreamType datastreamType) {
@@ -215,8 +228,7 @@ class AkubraDOManager {
     }
 
     void write(DigitalObject object, String streamId) {
-        Lock lock = getWriteLock(object.getPID());
-        try {
+        doWithWriteLock(object.getPID(), () -> {
             List<DatastreamType> datastreamList = object.getDatastream();
             Iterator<DatastreamType> iterator = datastreamList.iterator();
             while (iterator.hasNext()) {
@@ -241,9 +253,8 @@ class AkubraDOManager {
             } catch (Exception e) {
                 LOGGER.severe("Could not replace object in Akubra: " + e);
             }
-        } finally {
-            lock.unlock();
-        }
+            return null;
+        });
     }
 
     InputStream marshallObject(DigitalObject object) {
@@ -391,29 +402,46 @@ class AkubraDOManager {
         }
     }
 
-    Lock getWriteLock(String pid) {
-        if (pid == null) {
-            throw new IllegalArgumentException("pid cannot be null");
-        }
-        ReadWriteLock lock = lockService.getReentrantReadWriteLock(pid);
-        lock.writeLock().lock();
-        return lock.writeLock();
+    <T> T doWithReadLock(String pid, LockOperation<T> operation) {
+        return doWithLock(pid, operation, false);
     }
 
-    Lock getReadLock(String pid) {
-        if (pid == null) {
-            throw new IllegalArgumentException("pid cannot be null");
+    <T> T doWithWriteLock(String pid, LockOperation<T> operation) {
+        return doWithLock(pid, operation, true);
+    }
+
+    private <T> T doWithLock(String pid, LockOperation<T> operation, boolean writeLock) {
+        try {
+            ReadWriteLock readWriteLock = getLockService().getReentrantReadWriteLock(pid);
+            Lock lock = writeLock ? readWriteLock.writeLock() : readWriteLock.readLock();
+            if (lock == null) {
+                throw new DistributedLocksException(DistributedLocksException.LOCK_NULL, "Null lock acquired");
+            }
+            if (lock.tryLock(configuration.getLockTimeoutInSec(), TimeUnit.SECONDS)) {
+                try {
+                    return operation.execute();
+                } finally {
+                    lock.unlock();
+                }
+            } else {
+                throw new DistributedLocksException(DistributedLocksException.LOCK_TIMEOUT, "Lock timed out after sec:" + configuration.getLockTimeoutInSec());
+            }
+        } catch (Exception e) {
+            if(e instanceof DistributedLocksException){
+                throw (DistributedLocksException) e;
+            }else{
+                throw new DistributedLocksException(DistributedLocksException.LOCK_SERVER_ERROR, e);
+            }
         }
-        ReadWriteLock lock = lockService.getReentrantReadWriteLock(pid);
-        lock.readLock().lock();
-        return lock.readLock();
     }
 
     void shutdown() {
         if (lockService != null) {
             lockService.shutdown();
         }
-        hazelcastClientNode.shutdown();
+        if (hazelcastClientNode != null) {
+            hazelcastClientNode.shutdown();
+        }
     }
 
     RepositoryConfiguration getConfiguration() {

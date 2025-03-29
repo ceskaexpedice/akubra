@@ -24,13 +24,14 @@ import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
  * @author pavels, petrp
  */
 public class RepositoryConfiguration {
+    private static final int LOCK_TIMEOUT_DEFAULT = 120;
 
     private final String processingIndexHost;
     private final String objectStorePath;
     private final String objectStorePattern;
     private final String datastreamStorePath;
     private final String datastreamStorePattern;
-    private final int cacheTimeToLiveExpiration;
+    private final int lockTimeoutInSec;
     private final HazelcastConfiguration hazelcastConfiguration;
 
     /**
@@ -44,7 +45,7 @@ public class RepositoryConfiguration {
         this.objectStorePattern = builder.objectStorePattern;
         this.datastreamStorePath = builder.datastreamStorePath;
         this.datastreamStorePattern = builder.datastreamStorePattern;
-        this.cacheTimeToLiveExpiration = builder.cacheTimeToLiveExpiration;
+        this.lockTimeoutInSec = builder.lockTimeoutInSec == 0 ? LOCK_TIMEOUT_DEFAULT : builder.lockTimeoutInSec;
         this.hazelcastConfiguration = builder.hazelcastConfiguration;
     }
 
@@ -68,8 +69,8 @@ public class RepositoryConfiguration {
         return datastreamStorePattern;
     }
 
-    public int getCacheTimeToLiveExpiration() {
-        return cacheTimeToLiveExpiration;
+    public int getLockTimeoutInSec() {
+        return lockTimeoutInSec;
     }
 
     public HazelcastConfiguration getHazelcastConfiguration() {
@@ -86,7 +87,7 @@ public class RepositoryConfiguration {
         private String objectStorePattern;
         private String datastreamStorePath;
         private String datastreamStorePattern;
-        private int cacheTimeToLiveExpiration;
+        private int lockTimeoutInSec;
         private HazelcastConfiguration hazelcastConfiguration;
 
         /**
@@ -144,14 +145,8 @@ public class RepositoryConfiguration {
             return this;
         }
 
-        /**
-         * Sets the cache time-to-live expiration value.
-         *
-         * @param cacheTimeToLiveExpiration The cache TTL expiration time in seconds.
-         * @return The Builder instance.
-         */
-        public RepositoryConfiguration.Builder cacheTimeToLiveExpiration(int cacheTimeToLiveExpiration) {
-            this.cacheTimeToLiveExpiration = cacheTimeToLiveExpiration;
+        public RepositoryConfiguration.Builder lockTimeoutInSec(int lockTimeoutInSec) {
+            this.lockTimeoutInSec = lockTimeoutInSec;
             return this;
         }
 

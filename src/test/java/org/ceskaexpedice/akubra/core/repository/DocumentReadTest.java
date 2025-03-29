@@ -106,19 +106,6 @@ public class DocumentReadTest {
     }
 
     @Test
-    void testLocks_simple() {
-        Lock readLock = null;
-        try {
-            readLock = coreRepository.getReadLock(PID_TITLE_PAGE);
-            assertNotNull(readLock);
-        } finally {
-            if(readLock != null){
-                readLock.unlock();
-            }
-        }
-    }
-
-    @Test
     void testGetProcessingIndex() {
         ProcessingIndex processingIndex = coreRepository.getProcessingIndex();
         assertNotNull(processingIndex);

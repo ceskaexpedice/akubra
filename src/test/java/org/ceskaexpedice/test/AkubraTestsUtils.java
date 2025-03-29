@@ -54,7 +54,7 @@ public final class AkubraTestsUtils {
                 .objectStorePattern("##/##")
                 .datastreamStorePath(testRepoPath + "datastreamStore")
                 .datastreamStorePattern("##/##")
-                .cacheTimeToLiveExpiration(60)
+                .lockTimeoutInSec(10)
                 .hazelcastConfiguration(hazelcastConfig)
                 .build();
         return config;
