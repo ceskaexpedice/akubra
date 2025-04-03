@@ -411,27 +411,31 @@ class AkubraDOManager {
     }
 
     private <T> T doWithLock(String pid, LockOperation<T> operation, boolean writeLock) {
+        Lock lock;
         try {
             ReadWriteLock readWriteLock = getLockService().getReentrantReadWriteLock(pid);
-            Lock lock = writeLock ? readWriteLock.writeLock() : readWriteLock.readLock();
-            if (lock == null) {
-                throw new DistributedLocksException(DistributedLocksException.LOCK_NULL, "Null lock acquired");
-            }
-            if (lock.tryLock(configuration.getLockTimeoutInSec(), TimeUnit.SECONDS)) {
-                try {
-                    return operation.execute();
-                } finally {
-                    lock.unlock();
-                }
-            } else {
-                throw new DistributedLocksException(DistributedLocksException.LOCK_TIMEOUT, "Lock timed out after sec:" + configuration.getLockTimeoutInSec());
-            }
+            lock = writeLock ? readWriteLock.writeLock() : readWriteLock.readLock();
         } catch (Exception e) {
-            if(e instanceof DistributedLocksException){
-                throw (DistributedLocksException) e;
-            }else{
-                throw new DistributedLocksException(DistributedLocksException.LOCK_SERVER_ERROR, e);
-            }
+            throw new DistributedLocksException(DistributedLocksException.LOCK_SERVER_ERROR, e);
+        }
+        if (lock == null) {
+            throw new DistributedLocksException(DistributedLocksException.LOCK_NULL, "Null lock acquired");
+        }
+        boolean tryLock;
+        try {
+            tryLock = lock.tryLock(configuration.getLockTimeoutInSec(), TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            throw new DistributedLocksException(DistributedLocksException.LOCK_SERVER_ERROR, e);
+        }
+        if (!tryLock) {
+            throw new DistributedLocksException(DistributedLocksException.LOCK_TIMEOUT, "Lock timed out after sec:" + configuration.getLockTimeoutInSec());
+        }
+        try {
+            return operation.execute();
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        } finally {
+            lock.unlock();
         }
     }
 
