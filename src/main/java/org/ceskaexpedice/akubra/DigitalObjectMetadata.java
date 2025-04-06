@@ -16,9 +16,7 @@
  */
 package org.ceskaexpedice.akubra;
 
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
+import java.io.File;
 import java.util.Date;
 
 /**
@@ -29,7 +27,7 @@ import java.util.Date;
  * @author pavels, petrp
  *
  */
-public interface ObjectProperties {
+public interface DigitalObjectMetadata {
 
     /**
      * Retrieves the value of a property by its name.
@@ -59,5 +57,11 @@ public interface ObjectProperties {
      * @return The last modifified property.
      */
     Date getPropertyLastModified();
+
+    /**
+     * Retrieves digital object storage path
+     * @return the digital object storage path
+     */
+    File getObjectStoragePath();
 }
 

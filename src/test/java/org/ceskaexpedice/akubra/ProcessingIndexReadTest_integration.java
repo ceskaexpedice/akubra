@@ -49,10 +49,7 @@ public class ProcessingIndexReadTest_integration {
     @BeforeAll
     static void beforeAll() {
         testsProperties = IntegrationTestsUtils.loadProperties();
-        HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
-        HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
-
-        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_REPOSITORY.toFile().getAbsolutePath(), testsProperties, hazelcastConfig);
+        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_REPOSITORY.toFile().getAbsolutePath(), testsProperties, null);
         akubraRepository = AkubraRepositoryFactory.createRepository(config);
     }
 
@@ -66,7 +63,6 @@ public class ProcessingIndexReadTest_integration {
         if (akubraRepository != null) {
             akubraRepository.shutdown();
         }
-        HazelcastServerNode.shutdown();
     }
 
     @Test

@@ -16,7 +16,6 @@
  */
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import org.akubraproject.UnsupportedIdException;
 import org.akubraproject.map.IdMapper;
 import org.apache.commons.io.IOUtils;
 import org.ceskaexpedice.akubra.KnownDatastreams;
@@ -41,7 +40,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -73,16 +71,25 @@ public class CoreRepositoryImpl implements CoreRepository {
     @Override
     public boolean exists(String pid) {
         try {
+            File file = getObjectStorePath(pid);
+            return file == null ? false : file.exists();
+        } catch (Exception e) {
+            LOGGER.warning("Exception while checking if object exists: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public File getObjectStorePath(String pid) {
+        try {
             URI blobId = getBlobId(pid);
             URI internalId = idMapper.getInternalId(blobId);
             URI canonicalId = validateId(internalId);
             File file = new File(manager.getConfiguration().getObjectStorePath(), canonicalId.getRawSchemeSpecificPart());
-            return file.exists();
-        } catch (UnsupportedIdException e) {
-            return false;
+            return file;
         } catch (Exception e) {
             LOGGER.warning("Exception while checking if object exists: " + e.getMessage());
-            return false;
+            return null;
         }
     }
 

@@ -42,17 +42,13 @@ public class RelsExtReadTest {
     @BeforeAll
     static void beforeAll() {
         testsProperties = IntegrationTestsUtils.loadProperties();
-        HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
-        HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
-
-        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_REPOSITORY.toFile().getAbsolutePath(), testsProperties, hazelcastConfig);
+        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_REPOSITORY.toFile().getAbsolutePath(), testsProperties, null);
         akubraRepository = AkubraRepositoryFactory.createRepository(config);
     }
 
     @AfterAll
     static void afterAll() {
         akubraRepository.shutdown();
-        HazelcastServerNode.shutdown();
     }
 
     @Test

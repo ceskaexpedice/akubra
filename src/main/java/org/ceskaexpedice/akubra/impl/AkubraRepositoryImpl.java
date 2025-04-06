@@ -19,7 +19,6 @@ package org.ceskaexpedice.akubra.impl;
 import org.apache.commons.io.IOUtils;
 import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
-import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import org.ceskaexpedice.akubra.impl.utils.InternalSaxUtils;
 import org.ceskaexpedice.akubra.impl.utils.ObjectPropertiesSaxParser;
@@ -32,10 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * AkubraRepositoryImpl
@@ -92,12 +88,13 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     }
 
     @Override
-    public ObjectProperties getProperties(String pid) {
+    public DigitalObjectMetadata getMetadata(String pid) {
         DigitalObjectWrapper digitalObjectWrapper = get(pid);
         if (digitalObjectWrapper == null) {
             return null;
         }
-        return new ObjectPropertiesImpl(new ObjectPropertiesSaxParser(digitalObjectWrapper.asInputStream()),pid);
+        return new DigitalObjectMetadataImpl(new ObjectPropertiesSaxParser(digitalObjectWrapper.asInputStream()),
+                coreRepository.getObjectStorePath(pid));
     }
 
     @Override

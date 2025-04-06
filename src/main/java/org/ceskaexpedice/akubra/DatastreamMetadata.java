@@ -50,13 +50,6 @@ public interface DatastreamMetadata {
     String getMimetype();
 
     /**
-     * Retrieves the size of the datastream in bytes.
-     *
-     * @return The size of the datastream.
-     */
-    long getSize();
-
-    /**
      * Retrieves the control group of the datastream.
      * <p>
      * The control group defines how the datastream is managed in the repository,

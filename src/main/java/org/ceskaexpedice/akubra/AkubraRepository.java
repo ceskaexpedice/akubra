@@ -75,7 +75,7 @@ public interface AkubraRepository {
      * @param pid The persistent identifier of the object.
      * @return The object properties containing metadata.
      */
-    ObjectProperties getProperties(String pid);
+    DigitalObjectMetadata getMetadata(String pid);
 
     /**
      * Deletes a digital object from the repository.

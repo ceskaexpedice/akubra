@@ -23,8 +23,6 @@ import org.ceskaexpedice.akubra.relsext.RelsExtHelper;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.akubra.utils.StringUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
-import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
-import org.ceskaexpedice.hazelcast.HazelcastServerNode;
 import org.ceskaexpedice.test.AkubraTestsUtils;
 import org.ceskaexpedice.test.IntegrationTestsUtils;
 import org.dom4j.Document;
@@ -46,17 +44,13 @@ public class DocumentReadTest {
     @BeforeAll
     static void beforeAll() {
         testsProperties = IntegrationTestsUtils.loadProperties();
-        HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
-        HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
-
-        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_REPOSITORY.toFile().getAbsolutePath(), testsProperties, hazelcastConfig);
+        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_REPOSITORY.toFile().getAbsolutePath(), testsProperties, null);
         akubraRepository = AkubraRepositoryFactory.createRepository(config);
     }
 
     @AfterAll
     static void afterAll() {
         akubraRepository.shutdown();
-        HazelcastServerNode.shutdown();
     }
 
     @Test
@@ -105,14 +99,14 @@ public class DocumentReadTest {
     }
 
     @Test
-    void testGetProperty() {
-        String propertyOwnerId = akubraRepository.getProperties(PID_TITLE_PAGE).getProperty("info:fedora/fedora-system:def/model#ownerId");
+    void testGetProperties() {
+        String propertyOwnerId = akubraRepository.getMetadata(PID_TITLE_PAGE).getProperty("info:fedora/fedora-system:def/model#ownerId");
         assertEquals("fedoraAdmin", propertyOwnerId);
-        Date propertyCreated = akubraRepository.getProperties(PID_TITLE_PAGE).getPropertyCreated();
+        Date propertyCreated = akubraRepository.getMetadata(PID_TITLE_PAGE).getPropertyCreated();
         assertNotNull(propertyCreated);
-        String propertyLabel = akubraRepository.getProperties(PID_TITLE_PAGE).getPropertyLabel();
+        String propertyLabel = akubraRepository.getMetadata(PID_TITLE_PAGE).getPropertyLabel();
         assertEquals("- none -", propertyLabel);
-        Date propertyLastModified = akubraRepository.getProperties(PID_TITLE_PAGE).getPropertyLastModified();
+        Date propertyLastModified = akubraRepository.getMetadata(PID_TITLE_PAGE).getPropertyLastModified();
         assertNotNull(propertyLastModified);
     }
 

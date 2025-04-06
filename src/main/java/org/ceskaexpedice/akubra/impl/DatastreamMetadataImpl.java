@@ -44,12 +44,6 @@ class DatastreamMetadataImpl implements DatastreamMetadata {
     }
 
     @Override
-    public long getSize() {
-        String sizeStr = metadata.get("SIZE");
-        return sizeStr != null ? Long.parseLong(sizeStr) : 0;
-    }
-
-    @Override
     public String getControlGroup() {
         return metadata.get("CONTROL_GROUP");
     }

@@ -42,17 +42,13 @@ public class DatastreamReadTest {
     @BeforeAll
     static void beforeAll() {
         testsProperties = IntegrationTestsUtils.loadProperties();
-        HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
-        HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
-
-        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_REPOSITORY.toFile().getAbsolutePath(), testsProperties, hazelcastConfig);
+        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_REPOSITORY.toFile().getAbsolutePath(), testsProperties, null);
         akubraRepository = AkubraRepositoryFactory.createRepository(config);
     }
 
     @AfterAll
     static void afterAll() {
         akubraRepository.shutdown();
-        HazelcastServerNode.shutdown();
     }
 
     @Test
@@ -69,7 +65,6 @@ public class DatastreamReadTest {
         assertEquals("DC", datastreamMetadata.getId());
         assertEquals("text/xml", datastreamMetadata.getMimetype());
         assertEquals("X", datastreamMetadata.getControlGroup());
-        assertEquals(0, datastreamMetadata.getSize());
         assertNull(datastreamMetadata.getLocation());
         assertNotNull(datastreamMetadata.getLastModified());
         assertNotNull(datastreamMetadata.getCreateDate());

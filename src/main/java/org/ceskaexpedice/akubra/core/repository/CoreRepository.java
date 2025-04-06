@@ -20,6 +20,7 @@ import org.ceskaexpedice.akubra.LockOperation;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.concurrent.locks.Lock;
 
@@ -40,6 +41,13 @@ public interface CoreRepository {
      * @return true if the object exists and is a raw object, false otherwise.
      */
     boolean exists(String pid);
+
+    /**
+     * Get digital object storage path
+     * @param pid The unique identifier of the object.
+     * @return digital object storage path
+     */
+    File getObjectStorePath(String pid);
 
     /**
      * Ingests a new digital object into the repository from the provided object representation.

@@ -16,27 +16,25 @@
  */
 package org.ceskaexpedice.akubra.impl;
 
-import org.ceskaexpedice.akubra.ObjectProperties;
+import org.ceskaexpedice.akubra.DigitalObjectMetadata;
 import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
 import org.ceskaexpedice.akubra.impl.utils.ObjectPropertiesSaxParser;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeParseException;
+import java.io.File;
 import java.util.Date;
 import java.util.logging.Logger;
 
 /**
  * ObjectPropertiesImpl
  */
-class ObjectPropertiesImpl implements ObjectProperties {
-    private static final Logger LOGGER = Logger.getLogger(ObjectPropertiesImpl.class.getName());
+class DigitalObjectMetadataImpl implements DigitalObjectMetadata {
+    private static final Logger LOGGER = Logger.getLogger(DigitalObjectMetadataImpl.class.getName());
     private ObjectPropertiesSaxParser objectPropertiesSaxParser;
-    private String pid;
+    private File objectStoragePath;
 
-    ObjectPropertiesImpl(ObjectPropertiesSaxParser objectPropertiesSaxParser, String pid) {
+    DigitalObjectMetadataImpl(ObjectPropertiesSaxParser objectPropertiesSaxParser, File objectStoragePath) {
         this.objectPropertiesSaxParser = objectPropertiesSaxParser;
-        this.pid = pid;
+        this.objectStoragePath = objectStoragePath;
     }
 
     @Override
@@ -59,6 +57,11 @@ class ObjectPropertiesImpl implements ObjectProperties {
     public Date getPropertyLastModified() {
         String propertyValue = getProperty("info:fedora/fedora-system:def/view#lastModifiedDate");
         return RepositoryUtils.parseDate(propertyValue);
+    }
+
+    @Override
+    public File getObjectStoragePath() {
+        return objectStoragePath;
     }
 
 }
