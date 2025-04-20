@@ -28,6 +28,7 @@ import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.fedoramodel.*;
 import org.ceskaexpedice.hazelcast.HazelcastClientNode;
+import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
 import org.fcrepo.server.errors.LowlevelStorageException;
 import org.fcrepo.server.errors.ObjectAlreadyInLowlevelStorageException;
 import org.fcrepo.server.errors.ObjectNotInLowlevelStorageException;
@@ -95,12 +96,16 @@ class AkubraDOManager {
     }
 
     private DistributedLockService getLockService() {
+        HazelcastConfiguration hazelcastConfiguration = configuration.getHazelcastConfiguration();
+        if(hazelcastConfiguration == null){
+            return null;
+        }
         if (lockService == null) { // First check (without lock)
             synchronized (this) {
                 if (lockService == null) { // Second check (within lock)
                     try {
                         hazelcastClientNode = new HazelcastClientNode();
-                        hazelcastClientNode.ensureHazelcastNode(configuration.getHazelcastConfiguration());
+                        hazelcastClientNode.ensureHazelcastNode(hazelcastConfiguration);
                         lockService = DistributedLockService.newHazelcastLockService(hazelcastClientNode);
                     } catch (Exception e) {
                         throw new DistributedLocksException(DistributedLocksException.LOCK_SERVER_ERROR, e);
@@ -411,31 +416,36 @@ class AkubraDOManager {
     }
 
     private <T> T doWithLock(String pid, LockOperation<T> operation, boolean writeLock) {
-        Lock lock;
-        try {
-            ReadWriteLock readWriteLock = getLockService().getReentrantReadWriteLock(pid);
-            lock = writeLock ? readWriteLock.writeLock() : readWriteLock.readLock();
-        } catch (Exception e) {
-            throw new DistributedLocksException(DistributedLocksException.LOCK_SERVER_ERROR, e);
-        }
-        if (lock == null) {
-            throw new DistributedLocksException(DistributedLocksException.LOCK_NULL, "Null lock acquired");
-        }
-        boolean tryLock;
-        try {
-            tryLock = lock.tryLock(configuration.getLockTimeoutInSec(), TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            throw new DistributedLocksException(DistributedLocksException.LOCK_SERVER_ERROR, e);
-        }
-        if (!tryLock) {
-            throw new DistributedLocksException(DistributedLocksException.LOCK_TIMEOUT, "Lock timed out after sec:" + configuration.getLockTimeoutInSec());
+        Lock lock = null;
+        DistributedLockService lockService = getLockService();
+        if(lockService != null){
+            try {
+                ReadWriteLock readWriteLock = lockService.getReentrantReadWriteLock(pid);
+                lock = writeLock ? readWriteLock.writeLock() : readWriteLock.readLock();
+            } catch (Exception e) {
+                throw new DistributedLocksException(DistributedLocksException.LOCK_SERVER_ERROR, e);
+            }
+            if (lock == null) {
+                throw new DistributedLocksException(DistributedLocksException.LOCK_NULL, "Null lock acquired");
+            }
+            boolean tryLock;
+            try {
+                tryLock = lock.tryLock(configuration.getLockTimeoutInSec(), TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                throw new DistributedLocksException(DistributedLocksException.LOCK_SERVER_ERROR, e);
+            }
+            if (!tryLock) {
+                throw new DistributedLocksException(DistributedLocksException.LOCK_TIMEOUT, "Lock timed out after sec:" + configuration.getLockTimeoutInSec());
+            }
         }
         try {
             return operation.execute();
         } catch (Exception e) {
             throw new RepositoryException(e);
         } finally {
-            lock.unlock();
+            if(lock != null){
+                lock.unlock();
+            }
         }
     }
 

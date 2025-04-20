@@ -1,4 +1,4 @@
-package org.ceskaexpedice.test;
+package org.ceskaexpedice.testutils;
 
 import java.util.ArrayList;
 import java.util.List;

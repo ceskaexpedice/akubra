@@ -23,8 +23,8 @@ import org.ceskaexpedice.akubra.relsext.RelsExtHelper;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.akubra.utils.StringUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
-import org.ceskaexpedice.test.AkubraTestsUtils;
-import org.ceskaexpedice.test.IntegrationTestsUtils;
+import org.ceskaexpedice.testutils.AkubraTestsUtils;
+import org.ceskaexpedice.testutils.IntegrationTestsUtils;
 import org.dom4j.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -34,7 +34,7 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.Properties;
 
-import static org.ceskaexpedice.test.AkubraTestsUtils.*;
+import static org.ceskaexpedice.testutils.AkubraTestsUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DocumentReadTest {

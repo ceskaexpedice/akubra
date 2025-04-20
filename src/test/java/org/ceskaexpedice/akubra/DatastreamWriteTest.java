@@ -26,8 +26,8 @@ import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
 import org.ceskaexpedice.hazelcast.HazelcastServerNode;
-import org.ceskaexpedice.test.AkubraTestsUtils;
-import org.ceskaexpedice.test.IntegrationTestsUtils;
+import org.ceskaexpedice.testutils.AkubraTestsUtils;
+import org.ceskaexpedice.testutils.IntegrationTestsUtils;
 import org.dom4j.Document;
 import org.junit.jupiter.api.*;
 
@@ -37,7 +37,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
-import static org.ceskaexpedice.test.AkubraTestsUtils.*;
+import static org.ceskaexpedice.testutils.AkubraTestsUtils.*;
 import static org.mockito.Mockito.mock;
 
 public class DatastreamWriteTest {

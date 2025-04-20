@@ -25,8 +25,8 @@ import org.ceskaexpedice.akubra.core.repository.impl.CoreRepositoryImpl;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
 import org.ceskaexpedice.hazelcast.HazelcastServerNode;
-import org.ceskaexpedice.test.AkubraTestsUtils;
-import org.ceskaexpedice.test.IntegrationTestsUtils;
+import org.ceskaexpedice.testutils.AkubraTestsUtils;
+import org.ceskaexpedice.testutils.IntegrationTestsUtils;
 import org.junit.jupiter.api.*;
 
 import java.io.IOException;
@@ -35,7 +35,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
-import static org.ceskaexpedice.test.AkubraTestsUtils.*;
+import static org.ceskaexpedice.testutils.AkubraTestsUtils.*;
 import static org.mockito.Mockito.*;
 
 public class DocumentWriteTest {

@@ -17,17 +17,15 @@
 package org.ceskaexpedice.akubra;
 
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
-import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
-import org.ceskaexpedice.hazelcast.HazelcastServerNode;
-import org.ceskaexpedice.test.AkubraTestsUtils;
-import org.ceskaexpedice.test.IntegrationTestsUtils;
+import org.ceskaexpedice.testutils.AkubraTestsUtils;
+import org.ceskaexpedice.testutils.IntegrationTestsUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
-import static org.ceskaexpedice.test.AkubraTestsUtils.*;
+import static org.ceskaexpedice.testutils.AkubraTestsUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MiscReadTest {

@@ -14,18 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra.core.repository;
+package org.ceskaexpedice.akubra;
 
 import org.apache.commons.io.FileUtils;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
+import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.impl.CoreRepositoryImpl;
+import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
 import org.ceskaexpedice.hazelcast.HazelcastServerNode;
 import org.ceskaexpedice.testutils.AkubraTestsUtils;
 import org.ceskaexpedice.testutils.IntegrationTestsUtils;
+import org.dom4j.Document;
 import org.junit.jupiter.api.*;
 
 import java.io.IOException;
@@ -35,29 +38,33 @@ import java.nio.file.Path;
 import java.util.Properties;
 
 import static org.ceskaexpedice.testutils.AkubraTestsUtils.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-public class DocumentWriteTest {
+/**
+ * Do ingest and do not use locks
+ */
+public class NoLocksTest {
     private static Properties testsProperties;
     private static ProcessingIndexSolr mockFeeder;
-    private static CoreRepository coreRepository;
+    private static AkubraRepository akubraRepository;
 
     @BeforeAll
     static void beforeAll() {
         testsProperties = IntegrationTestsUtils.loadProperties();
-        HazelcastConfiguration hazelcastConfig = AkubraTestsUtils.createHazelcastConfig(testsProperties);
-        HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
-        // configure repository
+        // configure akubraRepository
         mockFeeder = mock(ProcessingIndexSolr.class);
-        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_OUTPUT_REPOSITORY.toFile().getAbsolutePath(), testsProperties, hazelcastConfig);
-        coreRepository = CoreRepositoryFactory.createRepository(config);
+        // no Hazelcast config means no locks will be used
+        RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_OUTPUT_REPOSITORY.toFile().getAbsolutePath(), testsProperties, null);
+        CoreRepository coreRepository = CoreRepositoryFactory.createRepository(config);
         ((CoreRepositoryImpl)coreRepository).setProcessingIndex(mockFeeder);
+        akubraRepository = AkubraRepositoryFactory.createRepository(coreRepository);
     }
 
     @AfterAll
     static void afterAll() {
-        coreRepository.shutdown();
-        HazelcastServerNode.shutdown();
+        akubraRepository.shutdown();
     }
 
     @BeforeEach
@@ -76,28 +83,27 @@ public class DocumentWriteTest {
     @Test
     void testIngest() throws IOException {
         // prepare import document
-        RepositoryObject digitalObjectImported = coreRepository.getAsRepositoryObject(PID_IMPORTED);
-        Assertions.assertNull(digitalObjectImported);
+        Assertions.assertNull(akubraRepository.get(PID_IMPORTED));
         Path importFile = Path.of("src/test/resources/titlePageImport.xml");
         InputStream inputStream = Files.newInputStream(importFile);
-        DigitalObject digitalObject = coreRepository.unmarshall(inputStream);
+        DigitalObject digitalObject = akubraRepository.unmarshall(inputStream);
         // ingest document
         reset(mockFeeder);
-        coreRepository.ingest(digitalObject);
+        akubraRepository.ingest(digitalObject);
         // test ingest result
-        digitalObjectImported = coreRepository.getAsRepositoryObject(PID_IMPORTED);
+        DigitalObject digitalObjectImported = akubraRepository.get(PID_IMPORTED).asDigitalObject();
         Assertions.assertNotNull(digitalObjectImported);
         verify(mockFeeder, times(1)).rebuildProcessingIndex(any());
+        verify(mockFeeder, times(1)).commit();
     }
 
     @Test
-    void testDeleteObject() {
-        RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(PID_TITLE_PAGE);
+    void testDelete() {
+        DigitalObject repositoryObject = akubraRepository.get(PID_TITLE_PAGE).asDigitalObject();
         Assertions.assertNotNull(repositoryObject);
         reset(mockFeeder);
-        coreRepository.delete(PID_TITLE_PAGE);
-        repositoryObject = coreRepository.getAsRepositoryObject(PID_TITLE_PAGE);
-        Assertions.assertNull(repositoryObject);
+        akubraRepository.delete(PID_TITLE_PAGE);
+        Assertions.assertNull(akubraRepository.get(PID_TITLE_PAGE));
         verify(mockFeeder, times(1)).deleteByRelationsForPid(eq(PID_TITLE_PAGE));
         verify(mockFeeder, times(1)).deleteByTargetPid(eq(PID_TITLE_PAGE));
         verify(mockFeeder, times(1)).deleteDescriptionByPid(eq(PID_TITLE_PAGE));

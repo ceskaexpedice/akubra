@@ -18,10 +18,8 @@ package org.ceskaexpedice.akubra;
 
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.utils.DomUtils;
-import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
-import org.ceskaexpedice.hazelcast.HazelcastServerNode;
-import org.ceskaexpedice.test.AkubraTestsUtils;
-import org.ceskaexpedice.test.IntegrationTestsUtils;
+import org.ceskaexpedice.testutils.AkubraTestsUtils;
+import org.ceskaexpedice.testutils.IntegrationTestsUtils;
 import org.dom4j.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,8 +29,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
-import static org.ceskaexpedice.test.AkubraTestsUtils.PID_TITLE_PAGE;
-import static org.ceskaexpedice.test.AkubraTestsUtils.TEST_REPOSITORY;
+import static org.ceskaexpedice.testutils.AkubraTestsUtils.PID_TITLE_PAGE;
+import static org.ceskaexpedice.testutils.AkubraTestsUtils.TEST_REPOSITORY;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DatastreamReadTest {

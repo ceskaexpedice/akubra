@@ -20,10 +20,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.processingindex.*;
 import org.ceskaexpedice.akubra.relsext.KnownRelations;
-import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
-import org.ceskaexpedice.hazelcast.HazelcastServerNode;
-import org.ceskaexpedice.test.AkubraTestsUtils;
-import org.ceskaexpedice.test.IntegrationTestsUtils;
+import org.ceskaexpedice.testutils.AkubraTestsUtils;
+import org.ceskaexpedice.testutils.IntegrationTestsUtils;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -33,8 +31,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Properties;
 
-import static org.ceskaexpedice.test.AkubraTestsUtils.*;
-import static org.ceskaexpedice.test.IntegrationTestsUtils.debugPrint;
+import static org.ceskaexpedice.testutils.AkubraTestsUtils.*;
+import static org.ceskaexpedice.testutils.IntegrationTestsUtils.debugPrint;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 // TODO make decision about Solr test instance and test data, mapping, etc
 
