@@ -20,8 +20,19 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    environment: BUILD
+
 
     steps:
+
+    - name: Print environment variables (safe)
+      run: |
+        echo "USERNAME = $USERNAME"
+        echo "TOKEN (first 4 chars) = ${TOKEN:0:4}****"
+      env:
+        USERNAME: ${{ secrets.USER }}
+        TOKEN: ${{ secrets.PAS }}
+    
     - uses: actions/checkout@v3
     - name: Set up JDK 21
       uses: actions/setup-java@v3
