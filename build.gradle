@@ -54,8 +54,8 @@ repositories {
     maven {
         url "https://maven.pkg.github.com/ceskaexpedice/hazelcast-locks-server"
 		credentials {
-            username = System.getenv("GITHUB_ACTOR")
-            password = System.getenv("GITHUB_TOKEN")
+            username = System.getenv("USERNAME")
+            password = System.getenv("TOKEN")
         }
     }
 }
