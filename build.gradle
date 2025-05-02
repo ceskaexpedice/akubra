@@ -12,7 +12,6 @@ publishing {
     }
 
     repositories {
-        //mavenLocal()
         maven {
             name = "GitHubPackages"
             url = "https://maven.pkg.github.com/ceskaexpedice/akubra"
@@ -54,6 +53,10 @@ repositories {
 	// Hazel cast dependency
     maven {
         url "https://maven.pkg.github.com/ceskaexpedice/hazelcast-locks-server"
+		credentials {
+            username = System.getenv("USERNAME")
+            password = System.getenv("TOKEN")
+        }
     }
 }
 
