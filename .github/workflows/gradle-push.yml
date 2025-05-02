@@ -28,6 +28,7 @@ jobs:
     - name: Print environment variables (safe)
       run: |
         echo "USERNAME = $USERNAME"
+        echo "USERNAME = ${USERNAME:0:4}"
         echo "TOKEN (first 4 chars) = ${TOKEN:0:4}****"
       env:
         USERNAME: ${{ secrets.USER }}
@@ -46,4 +47,8 @@ jobs:
       run: chmod +x ./gradlew
     - name: Build with Gradle
       run: ./gradlew build
+      env:
+        USERNAME: ${{ secrets.USER }}
+        TOKEN: ${{ secrets.PAS }}
+
     
