@@ -35,8 +35,5 @@ public class RepositoryUtilsTest {
         InputStream bilioMods = RepositoryUtils.getDatastreamContent(is, "BIBLIO_MODS", null);
         Document parsedDocument = Dom4jUtils.streamToDocument(bilioMods, true);
         assertNotNull(parsedDocument);
-
-        String output = Dom4jUtils.docToPrettyString(parsedDocument);
-        System.out.println(output);
     }
 }
