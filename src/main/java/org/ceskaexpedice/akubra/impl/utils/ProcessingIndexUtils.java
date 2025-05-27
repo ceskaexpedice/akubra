@@ -131,6 +131,9 @@ public final class ProcessingIndexUtils {
 
     public static String getModel(String objectPid, CoreRepository coreRepository) {
         ProcessingIndexItem description = getDescription(objectPid, coreRepository);
+        if(description == null) {
+            return null;
+        }
         String model = description.model();
         return model == null ? null : model.substring("model:".length());
     }
