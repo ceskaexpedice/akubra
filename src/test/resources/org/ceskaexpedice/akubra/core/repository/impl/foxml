@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><digitalObject VERSION="1.1" PID="uuid:ab7e5a2c-bddb-11e0-bff9-0016e6840575" xmlns="info:fedora/fedora-system:def/foxml#"><objectProperties><property NAME="info:fedora/fedora-system:def/model#state" VALUE="Active"/><property NAME="info:fedora/fedora-system:def/model#label" VALUE="- none -"/><property NAME="info:fedora/fedora-system:def/model#ownerId" VALUE="fedoraAdmin"/><property NAME="info:fedora/fedora-system:def/model#createdDate" VALUE="2018-02-26T14:46:42Z"/><property NAME="info:fedora/fedora-system:def/view#lastModifiedDate" VALUE="2024-05-24T17:26:12.592Z"/></objectProperties><datastream ID="FULL_MODS" CONTROL_GROUP="X" STATE="A" VERSIONABLE="false"><datastreamVersion ID="FULL_MODS.0" LABEL="FULL_MODS description of current object" CREATED="2018-02-26T14:46:42Z" MIMETYPE="text/xml"><xmlContent><mods:modsCollection xmlns:mods="http://www.loc.gov/mods/v3" xmlns:foxml="info:fedora/fedora-system:def/foxml#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><mods:mods version="3.4"><mods:identifier type="urn">045b1250-7e47-11e0-add1-000d606f5dc6</mods:identifier><mods:identifier type="issn">0862-6111</mods:identifier><mods:location><mods:physicalLocation>ABA000</mods:physicalLocation><mods:shelfLocator>nezjištěna</mods:shelfLocator>
+                          </mods:location><mods:titleInfo><mods:title>Dějiny a současnost</mods:title>
+                          </mods:titleInfo><mods:typeOfResource>text</mods:typeOfResource><mods:originInfo><mods:issuance>continuing</mods:issuance><mods:frequency>čtvrtletně</mods:frequency>
+                          </mods:originInfo><mods:language><mods:languageTerm authority="iso639-2b" type="code">cze</mods:languageTerm>
+                          </mods:language>
+                      </mods:mods><mods:mods version="3.4"><mods:identifier type="urn">f7e50720-80b6-11e0-9ec7-000d606f5dc6</mods:identifier><mods:titleInfo/><mods:typeOfResource>text</mods:typeOfResource><mods:originInfo><mods:issuance>continuing</mods:issuance>
+                          </mods:originInfo><mods:part><mods:detail type="volume"><mods:number>33</mods:number>
+                              </mods:detail><mods:date>2011</mods:date>
+                          </mods:part>
+                      </mods:mods><mods:mods version="3.4"><mods:identifier type="urn">91214030-80bb-11e0-b482-000d606f5dc6</mods:identifier><mods:titleInfo><mods:title>Dějiny a současnost</mods:title><mods:subTitle>Kulturně historická revue</mods:subTitle>
+                          </mods:titleInfo><mods:typeOfResource>text</mods:typeOfResource><mods:originInfo><mods:issuance>continuing</mods:issuance>
+                          </mods:originInfo><mods:part type="PeriodicalIssue"><mods:detail type="issue"><mods:number>3</mods:number>
+                              </mods:detail><mods:date>2011</mods:date>
+                          </mods:part>
+                      </mods:mods><mods:mods version="3.4"><mods:identifier type="urn">ab7e5a2c-bddb-11e0-bff9-0016e6840575</mods:identifier><mods:titleInfo><mods:title>Lubomír KOPEČEK
+  Éra nevinnosti
+  Česká politika 1989-1997
+  Barrister &amp; Principal, Brno 2010, 380 s.,
+  299 Kč</mods:title>
+                          </mods:titleInfo><mods:name type="personal"><mods:namePart type="family">HLOUŠEK</mods:namePart><mods:namePart type="given">Vít</mods:namePart><mods:role><mods:roleTerm type="code">cre</mods:roleTerm><mods:roleTerm type="text"/>
+                              </mods:role>
+                          </mods:name><mods:typeOfResource>text</mods:typeOfResource><mods:originInfo><mods:issuance>continuing</mods:issuance>
+                          </mods:originInfo><mods:part type=""><mods:extent unit="pages"><mods:list>s. 45 - 46;</mods:list>
+                              </mods:extent><mods:detail type="pageNumber"><mods:number>45</mods:number>
+                              </mods:detail>
+                          </mods:part>
+                      </mods:mods>
+                  </mods:modsCollection></xmlContent></datastreamVersion></datastream><datastream ID="AUDIT" CONTROL_GROUP="X" STATE="A" VERSIONABLE="false"><datastreamVersion ID="AUDIT.0" LABEL="AUDIT description of current object" CREATED="2018-02-26T14:46:42Z" MIMETYPE="text/xml"><xmlContent><audit:auditTrail xmlns:audit="info:fedora/fedora-system:def/audit#" xmlns:foxml="info:fedora/fedora-system:def/foxml#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><audit:record ID="AUDREC1"><audit:process type="Fedora API-M"/><audit:action>ingest</audit:action><audit:componentID/><audit:responsibility>fedoraAdmin</audit:responsibility><audit:date>2011-08-04T12:34:00.513Z</audit:date><audit:justification>Initial ingest</audit:justification>
+  </audit:record><audit:record ID="AUDREC2"><audit:process type="Fedora API-M"/><audit:action>addDatastream</audit:action><audit:componentID>FULL_MODS</audit:componentID><audit:responsibility>fedoraAdmin</audit:responsibility><audit:date>2011-08-29T20:11:34.449Z</audit:date><audit:justification>added FULL_MODS datastream</audit:justification>
+  </audit:record><audit:record ID="AUDREC3"><audit:process type="Fedora API-M"/><audit:action>ingest</audit:action><audit:componentID/><audit:responsibility>fedoraAdmin</audit:responsibility><audit:date>2014-06-27T06:08:32.670Z</audit:date><audit:justification>Initial ingest</audit:justification>
+  </audit:record>
+  </audit:auditTrail></xmlContent></datastreamVersion></datastream><datastream ID="BIBLIO_MODS" CONTROL_GROUP="X" STATE="A" VERSIONABLE="false"><datastreamVersion ID="BIBLIO_MODS.0" LABEL="BIBLIO_MODS description of current object" CREATED="2018-02-26T14:46:42Z" MIMETYPE="text/xml"><xmlContent><mods:modsCollection xmlns:mods="http://www.loc.gov/mods/v3" xmlns:foxml="info:fedora/fedora-system:def/foxml#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><mods:mods version="3.4"><mods:identifier type="urn">ab7e5a2c-bddb-11e0-bff9-0016e6840575</mods:identifier><mods:titleInfo><mods:title>Lubomír KOPEČEK
+  Éra nevinnosti
+  Česká politika 1989-1997
+  Barrister &amp; Principal, Brno 2010, 380 s.,
+  299 Kč</mods:title>
+                          </mods:titleInfo><mods:name type="personal"><mods:namePart type="family">HLOUŠEK</mods:namePart><mods:namePart type="given">Vít</mods:namePart><mods:role><mods:roleTerm type="code">cre</mods:roleTerm><mods:roleTerm type="text"/>
+                              </mods:role>
+                          </mods:name><mods:typeOfResource>text</mods:typeOfResource><mods:originInfo><mods:issuance>continuing</mods:issuance>
+                          </mods:originInfo><mods:part type=""><mods:extent unit="pages"><mods:list>s. 45 - 46;</mods:list>
+                              </mods:extent><mods:detail type="pageNumber"><mods:number>45</mods:number>
+                              </mods:detail>
+                          </mods:part>
+                      </mods:mods>
+                  </mods:modsCollection></xmlContent></datastreamVersion></datastream><datastream ID="DC" CONTROL_GROUP="X" STATE="A" VERSIONABLE="false"><datastreamVersion ID="DC.0" CREATED="2023-09-14T14:18:53.952Z" MIMETYPE="text/xml" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/"><xmlContent><oai_dc:dc xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd" xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:foxml="info:fedora/fedora-system:def/foxml#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>Lubomír KOPEČEK
+  Éra nevinnosti
+  Česká politika 1989-1997
+  Barrister &amp; Principal, Brno 2010, 380 s.,
+  299 Kč</dc:title><dc:creator>HLOUŠEK Vít</dc:creator><dc:type>model:internalpart</dc:type><dc:identifier>uuid:ab7e5a2c-bddb-11e0-bff9-0016e6840575</dc:identifier>
+  </oai_dc:dc></xmlContent></datastreamVersion></datastream><datastream ID="RELS-EXT" CONTROL_GROUP="X" STATE="A" VERSIONABLE="false"><datastreamVersion ID="RELS-EXT.0" CREATED="2024-05-24T17:26:12.588Z" MIMETYPE="text/xml" FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0"><xmlContent><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:foxml="info:fedora/fedora-system:def/foxml#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><rdf:Description rdf:about="info:fedora/uuid:ab7e5a2c-bddb-11e0-bff9-0016e6840575"><hasModel rdf:resource="info:fedora/model:internalpart" xmlns="info:fedora/fedora-system:def/model#"/><itemID xmlns="http://www.openarchives.org/OAI/2.0/">uuid:ab7e5a2c-bddb-11e0-bff9-0016e6840575</itemID><isOnPage rdf:resource="info:fedora/uuid:91a51630-80bb-11e0-82c9-000d606f5dc6" xmlns="http://www.nsdl.org/ontologies/relationships#"/><isOnPage rdf:resource="info:fedora/uuid:6de21680-8138-11e0-b5e8-000d606f5dc6" xmlns="http://www.nsdl.org/ontologies/relationships#"/><replicatedFrom xmlns="http://www.nsdl.org/ontologies/relationships#">http://krameriusdemo.mzk.cz/search/handle/uuid:ab7e5a2c-bddb-11e0-bff9-0016e6840575</replicatedFrom><tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">kramerius4://deepZoomCache</tiles-url><replicatedFrom xmlns="http://www.nsdl.org/ontologies/relationships#">http://vmkramerius.incad.cz:18080/search/handle/uuid:ab7e5a2c-bddb-11e0-bff9-0016e6840575</replicatedFrom><policy xmlns="http://www.nsdl.org/ontologies/relationships#">policy:private</policy></rdf:Description>
+
+  </rdf:RDF></xmlContent></datastreamVersion></datastream></digitalObject>

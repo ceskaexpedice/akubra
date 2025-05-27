@@ -32,7 +32,10 @@ import org.fcrepo.common.FaultException;
 import org.fcrepo.common.PID;
 import org.fcrepo.server.errors.MalformedPidException;
 import org.fcrepo.server.storage.lowlevel.akubra.HashPathIdMapper;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -41,6 +44,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.text.ParseException;
@@ -102,9 +106,22 @@ public class RepositoryUtils {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser saxParser = factory.newSAXParser();
+            XMLReader xmlReader = saxParser.getXMLReader();
+
+
             GetDatastreamContentSaxHandler handler = new GetDatastreamContentSaxHandler(dsId);
+            EntityResolver entityResolver = new EntityResolver() {
+                @Override
+                public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+                    return new InputSource(new StringReader(""));
+                }
+            };
+            // external entities
+            xmlReader.setEntityResolver(entityResolver);
+            xmlReader.setContentHandler(handler);
+
             try {
-                saxParser.parse(foxml, handler);
+                xmlReader.parse(new InputSource(foxml));
             } catch (SAXException e) {
                 if (!FOUND.equals(e.getMessage())) {
                     throw e; // Only propagate real errors

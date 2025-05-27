@@ -17,11 +17,15 @@
 package org.ceskaexpedice.akubra.core.repository.impl;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 
@@ -80,7 +84,10 @@ class GetDatastreamContentSaxHandler extends DefaultHandler {
     @Override
     public void characters(char[] ch, int start, int length) {
         if (insideXmlContent) {
-            xmlContentWriter.write(new String(ch, start, length));
+            String raw = new String(ch, start, length);
+            // Escape internal entities
+            String escaped = StringEscapeUtils.escapeXml10(raw);
+            xmlContentWriter.write(escaped);
         }
     }
 
@@ -116,5 +123,10 @@ class GetDatastreamContentSaxHandler extends DefaultHandler {
 
     InputStream getXmlContentStream() {
         return xmlContentWriter != null ? IOUtils.toInputStream(xmlContentWriter.toString(), StandardCharsets.UTF_8) : null;
+    }
+
+    @Override
+    public InputSource resolveEntity(String publicId, String systemId) throws IOException, SAXException {
+        return new InputSource(new StringReader(""));
     }
 }
