@@ -431,7 +431,7 @@ class AkubraDOManager {
             boolean tryLock;
             try {
                 tryLock = lock.tryLock(configuration.getLockTimeoutInSec(), TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 throw new DistributedLocksException(DistributedLocksException.LOCK_SERVER_ERROR, e);
             }
             if (!tryLock) {
