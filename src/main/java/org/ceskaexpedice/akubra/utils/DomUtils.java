@@ -16,6 +16,7 @@
  */
 package org.ceskaexpedice.akubra.utils;
 
+import org.apache.commons.io.IOUtils;
 import org.ceskaexpedice.akubra.RepositoryException;
 import org.w3c.dom.*;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
