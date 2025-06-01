@@ -31,7 +31,7 @@ class DatastreamExistsSaxHandler extends DefaultHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        if ("datastream".equals(qName) && dsId.equals(attributes.getValue("ID"))) {
+        if ("datastream".equals(localName) && dsId.equals(attributes.getValue("ID"))) {
             throw new SAXException(FOUND); // Stop parsing early
         }
     }

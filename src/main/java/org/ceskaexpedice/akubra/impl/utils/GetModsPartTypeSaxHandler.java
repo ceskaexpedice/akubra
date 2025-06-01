@@ -33,10 +33,10 @@ public class GetModsPartTypeSaxHandler extends DefaultHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        if ("datastream".equals(qName) && KnownDatastreams.BIBLIO_MODS.toString().equals(attributes.getValue("ID"))) {
+        if ("datastream".equals(localName) && KnownDatastreams.BIBLIO_MODS.toString().equals(attributes.getValue("ID"))) {
             insideBiblioMods = true;
         }
-        if (insideBiblioMods && "xmlContent".equals(qName)) {
+        if (insideBiblioMods && "xmlContent".equals(localName)) {
             insideXmlContent = true;
         }
         if (insideXmlContent && "modsCollection".equals(localName) && uri.equals(RepositoryNamespaces.BIBILO_MODS_URI)) {
@@ -54,10 +54,10 @@ public class GetModsPartTypeSaxHandler extends DefaultHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) {
-        if ("datastream".equals(qName)) {
+        if ("datastream".equals(localName)) {
             insideBiblioMods = false;
         }
-        if ("xmlContent".equals(qName)) {
+        if ("xmlContent".equals(localName)) {
             insideXmlContent = false;
         }
         if ("modsCollection".equals(localName) && uri.equals(RepositoryNamespaces.BIBILO_MODS_URI)) {

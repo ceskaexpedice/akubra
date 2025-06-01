@@ -23,8 +23,11 @@ import java.nio.file.Path;
 import java.util.Properties;
 
 public final class AkubraTestsUtils {
-    //public static final Path TEST_REPOSITORY = Path.of("c:\\Users\\petr\\.kramerius4\\data");
+
+
+
     public static final Path TEST_REPOSITORY = Path.of("src/test/resources/data");
+
     public static final Path TEST_OUTPUT_REPOSITORY = Path.of("testoutput/data");
 
     public static final String PID_NOT_EXISTS = "uuid:92993b4a-71b4-4f19-8953-0701243cc25d";

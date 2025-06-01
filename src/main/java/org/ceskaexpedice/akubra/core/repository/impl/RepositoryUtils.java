@@ -105,6 +105,7 @@ public class RepositoryUtils {
     static InputStream getDatastreamContent(InputStream foxml, String dsId, CoreRepository coreRepository) {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
             SAXParser saxParser = factory.newSAXParser();
             XMLReader xmlReader = saxParser.getXMLReader();
 
@@ -160,6 +161,7 @@ public class RepositoryUtils {
     static boolean datastreamExists(InputStream foxml, String datastreamId) {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
             SAXParser saxParser = factory.newSAXParser();
             DatastreamExistsSaxHandler handler = new DatastreamExistsSaxHandler(datastreamId);
             saxParser.parse(foxml, handler);

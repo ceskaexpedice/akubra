@@ -61,7 +61,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.ceskaexpedice:hazelcast-locks-server:1.0-SNAPSHOT'
+    implementation 'org.ceskaexpedice:hazelcast-locks-server:1.0-rc1'
     //akubra storage
     implementation 'org.akubraproject:akubra-core:0.4.0'
     implementation('org.akubraproject:akubra-fs:0.4.0') {

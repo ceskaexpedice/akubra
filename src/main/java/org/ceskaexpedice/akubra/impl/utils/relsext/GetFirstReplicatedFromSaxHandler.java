@@ -32,10 +32,10 @@ public class GetFirstReplicatedFromSaxHandler extends DefaultHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) {
-        if ("datastream".equals(qName) && KnownDatastreams.RELS_EXT.toString().equals(attributes.getValue("ID"))) {
+        if ("datastream".equals(localName) && KnownDatastreams.RELS_EXT.toString().equals(attributes.getValue("ID"))) {
             insideRelsExt = true;
         }
-        if (insideRelsExt && "xmlContent".equals(qName)) {
+        if (insideRelsExt && "xmlContent".equals(localName)) {
             insideXmlContent = true;
         }
         if (insideXmlContent && "Description".equals(localName) && RepositoryNamespaces.RDF_NAMESPACE_URI.equals(uri)) {
@@ -56,10 +56,10 @@ public class GetFirstReplicatedFromSaxHandler extends DefaultHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        if ("datastream".equals(qName)) {
+        if ("datastream".equals(localName)) {
             insideRelsExt = false;
         }
-        if ("xmlContent".equals(qName)) {
+        if ("xmlContent".equals(localName)) {
             insideXmlContent = false;
         }
         if ("Description".equals(localName) && RepositoryNamespaces.RDF_NAMESPACE_URI.equals(uri)) {
