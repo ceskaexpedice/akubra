@@ -249,12 +249,6 @@ public class ProcessingIndexSolr implements ProcessingIndex {
             });
         } catch (Exception e) {
             throw new RepositoryException(e);
-        } finally {
-            try {
-                this.commit();
-            } catch (Exception e) {
-                throw new RepositoryException(e);
-            }
         }
     }
 
