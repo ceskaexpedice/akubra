@@ -26,22 +26,155 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 import static org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.FOUND;
 
 class GetDatastreamContentSaxHandler extends DefaultHandler {
+
+    // Light rendering element; used for rendering raw xml content
+    class LRElement {
+
+        private String qName;
+        private String localName;
+        private String uri;
+
+        private Map<String, String> namespaces = new LinkedHashMap<>();
+        private Map<String, String> attributes = new LinkedHashMap<>();
+
+        private List<LRElement> children = new ArrayList<>();
+        private StringBuilder text = new StringBuilder();
+
+        private LRElement parent = null;
+
+        public LRElement(String qName, String localName, String uri) {
+            this.qName = qName;
+            this.localName = localName;
+            this.uri = uri;
+        }
+
+        public void addNamespace(String prefix, String uri) {
+            this.namespaces.put(prefix, uri);
+        }
+
+        public void removeNamespace(String prefix) {
+            this.namespaces.remove(prefix);
+        }
+
+        public Map<String, String> getNamespaces() {
+            return namespaces;
+        }
+
+        public void putNamespaces(Map<String,String> namespaces) {
+            this.namespaces.putAll(namespaces);
+        }
+
+        public Map<String,String> getAttributes() {
+            return this.attributes;
+        }
+
+        public void addAttribute(String name, String value) {
+            this.attributes.put(name, value);
+        }
+
+        public void removeAttribute(String name) {
+            this.attributes.remove(name);
+        }
+
+        public void setParent(LRElement parent) {
+            this.parent = parent;
+        }
+
+        public LRElement getParent() {
+            return parent;
+        }
+
+        public List<LRElement> getChildren() {
+            return children;
+        }
+
+        public void addChild(LRElement ch) {
+            ch.setParent(this);
+            this.children.add(ch);
+        }
+
+        public void removeChild(LRElement ch) {
+            ch.setParent(null);
+            this.children.remove(ch);
+        }
+
+
+        public String toXml(boolean includeNamespaces) {
+            // xml content contains all necessary namespaces inhereted from foxml -> we can use in rendering if necessary
+            if (this.localName.equals("xmlContent") && this.getChildren().size() == 1) {
+                return this.getChildren().get(0).toXml(true);
+            } else  {
+                StringBuilder sb = new StringBuilder();
+                sb.append("<").append(qName);
+                if (includeNamespaces) {
+                    for (Map.Entry<String, String> ns : namespaces.entrySet()) {
+                        String prefix = ns.getKey();
+                        String uri = ns.getValue();
+                        if (prefix == null || prefix.isEmpty()) {
+                            sb.append(" xmlns=\"").append(uri).append("\"");
+                        } else {
+                            sb.append(" xmlns:").append(prefix).append("=\"").append(uri).append("\"");
+                        }
+                    }
+                }
+
+                if (parent != null && parent.getNamespaces().containsKey("") && this.getNamespaces().containsKey("")) {
+                    // different -> write it
+                    sb.append(" xmlns=\"").append(getNamespaces().get("")).append("\"");
+                }
+
+
+                for (Map.Entry<String, String> attr : attributes.entrySet()) {
+                    sb.append(" ").append(attr.getKey()).append("=\"").append(attr.getValue()).append("\"");
+                }
+
+                if (children.isEmpty() && text.length() == 0) {
+                    sb.append("/>");
+                } else {
+                    sb.append(">");
+                    if (text.length() > 0) {
+                        sb.append(text);
+                    }
+                    for (LRElement child : children) {
+                        sb.append(child.toXml(includeNamespaces));
+                    }
+                    sb.append("</").append(qName).append(">");
+                }
+                return sb.toString();
+            }
+        }
+    }
+    // Rendering root
+    LRElement lightRenderingRoot = null;
+
     private final String targetId;
 
     private boolean insideTargetDatastream;
     private boolean insideDatastreamVersion;
     private boolean insideXmlContent;
-    private boolean skipXmlContentTag;
 
     private String contentLocationRef;
     private String contentLocationType;
-    private StringWriter xmlContentWriter;
+
+
+
+    private final Map<String, String> pendingMappings = new LinkedHashMap<>();
+    private final Map<String, String> allSeenNamespaces = new LinkedHashMap<>();
+
+    private final Deque<LRElement> elementStack = new ArrayDeque<>();
+
+    @Override
+    public void startPrefixMapping(String prefix, String uri) {
+        String safePrefix = prefix == null ? "" : prefix;
+        pendingMappings.put(safePrefix, uri);
+        allSeenNamespaces.putIfAbsent(safePrefix, uri);
+    }
 
     GetDatastreamContentSaxHandler(String targetId) {
         this.targetId = targetId;
@@ -49,67 +182,70 @@ class GetDatastreamContentSaxHandler extends DefaultHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        if ("datastream".equals(qName) && targetId.equals(attributes.getValue("ID"))) {
+
+
+        if ("datastream".equals(localName) && "info:fedora/fedora-system:def/foxml#".equals(uri) &&
+                targetId.equals(attributes.getValue("ID"))) {
             insideTargetDatastream = true;
         }
-        if (insideTargetDatastream && "datastreamVersion".equals(qName)) {
+        if (insideTargetDatastream && "datastreamVersion".equals(localName)) {
             insideDatastreamVersion = true;
         }
-        if (insideDatastreamVersion && "contentLocation".equals(qName)) {
+
+        if (insideDatastreamVersion && "contentLocation".equals(localName)) {
             contentLocationRef = attributes.getValue("REF");
             contentLocationType = attributes.getValue("TYPE");
             // Stop parsing early if contentLocation is found
             throw new SAXException(FOUND);
         }
-        // Start capturing <xmlContent> but **skip writing the root xmlContent tag**
-        if (insideDatastreamVersion && "xmlContent".equals(qName)) {
+        if (insideDatastreamVersion && "xmlContent".equals(localName)) {
             insideXmlContent = true;
-            skipXmlContentTag = true; // Mark that we should skip <xmlContent>
-            xmlContentWriter = new StringWriter();
         }
-        // If inside <xmlContent>, preserve tags **but skip <xmlContent> itself**
         if (insideXmlContent) {
-            if (skipXmlContentTag) {
-                skipXmlContentTag = false; // Ensure first child is captured
-            } else {
-                xmlContentWriter.write("<" + qName);
-                for (int i = 0; i < attributes.getLength(); i++) {
-                    xmlContentWriter.write(" " + attributes.getQName(i) + "=\"" + attributes.getValue(i) + "\"");
-                }
-                xmlContentWriter.write(">");
+
+            LRElement element = new LRElement(qName, localName, uri);
+            element.putNamespaces(pendingMappings);
+
+            for (int i = 0; i < attributes.getLength(); i++) {
+                element.addAttribute(attributes.getQName(i), attributes.getValue(i));
             }
+
+            if (elementStack.isEmpty()) {
+                lightRenderingRoot = element;
+            } else {
+                elementStack.peek().addChild(element);
+            }
+            elementStack.push(element);
+            pendingMappings.clear();
         }
     }
 
     @Override
     public void characters(char[] ch, int start, int length) {
-        if (insideXmlContent) {
+        if (insideXmlContent && !elementStack.isEmpty()) {
             String raw = new String(ch, start, length);
-            // Escape internal entities
             String escaped = StringEscapeUtils.escapeXml10(raw);
-            xmlContentWriter.write(escaped);
+            elementStack.peek().text.append(escaped);
         }
     }
 
     @Override
     public void endElement(String uri, String localName, String qName) {
-        if ("datastreamVersion".equals(qName)) {
+        if ("datastreamVersion".equals(localName)) {
             insideDatastreamVersion = false;
         }
-        if ("datastream".equals(qName)) {
+        if ("datastream".equals(localName)) {
             insideTargetDatastream = false;
         }
-        if ("xmlContent".equals(qName)) {
+        if ("xmlContent".equals(localName)) {
             insideXmlContent = false;
         }
-        if ("xmlContent".equals(qName)) {
+        if ("xmlContent".equals(localName)) {
             insideXmlContent = false;
-            skipXmlContentTag = false; // Reset flag
-            return; // Skip writing </xmlContent> tag
+            return; 
         }
-        // If inside <xmlContent>, preserve closing tags (excluding </xmlContent>)
-        if (insideXmlContent) {
-            xmlContentWriter.write("</" + qName + ">");
+        if (!elementStack.isEmpty()) {
+            elementStack.pop();
         }
     }
 
@@ -122,7 +258,12 @@ class GetDatastreamContentSaxHandler extends DefaultHandler {
     }
 
     InputStream getXmlContentStream() {
-        return xmlContentWriter != null ? IOUtils.toInputStream(xmlContentWriter.toString(), StandardCharsets.UTF_8) : null;
+
+        if (lightRenderingRoot == null) return null;
+        // all namespaces to root
+        lightRenderingRoot.putNamespaces(allSeenNamespaces);
+        String content = lightRenderingRoot.toXml(true);
+        return IOUtils.toInputStream(content, StandardCharsets.UTF_8);
     }
 
     @Override

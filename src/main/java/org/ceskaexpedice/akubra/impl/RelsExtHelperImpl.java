@@ -16,6 +16,7 @@
  */
 package org.ceskaexpedice.akubra.impl;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.ceskaexpedice.akubra.*;
 import org.ceskaexpedice.akubra.impl.utils.relsext.RelsExtInternalDomUtils;
@@ -32,6 +33,7 @@ import org.w3c.dom.Element;
 
 import javax.xml.transform.TransformerException;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
@@ -98,6 +100,7 @@ public class RelsExtHelperImpl implements RelsExtHelper {
         if(relsExtWrapper == null){
             return null;
         }
+
         List<RelsExtLiteral> rels = new ArrayList<>();
         List<Triple<String, String, String>> triples = RelsExtInternalDomUtils.getLiterals(relsExtWrapper.asDom(true), namespace);
         for (Triple<String, String, String> triple : triples) {

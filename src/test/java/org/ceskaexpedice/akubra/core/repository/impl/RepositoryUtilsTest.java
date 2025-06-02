@@ -16,7 +16,6 @@
  */
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import org.apache.commons.io.IOUtils;
 import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 import org.dom4j.Document;
 import org.junit.jupiter.api.Test;
@@ -29,11 +28,48 @@ public class RepositoryUtilsTest {
 
     @Test
     public void testReadXMLDatastreamFromFOXML() throws IOException {
-        InputStream is = RepositoryUtilsTest.class.getResourceAsStream("foxml");
+        InputStream is = RepositoryUtilsTest.class.getResourceAsStream("info%253Afedora%252Fuuid%253Aab7e5a2c-bddb-11e0-bff9-0016e6840575");
         assertNotNull(is);
-        //TODO: Core repisotory is null ??  Should test with core repository
         InputStream bilioMods = RepositoryUtils.getDatastreamContent(is, "BIBLIO_MODS", null);
         Document parsedDocument = Dom4jUtils.streamToDocument(bilioMods, true);
         assertNotNull(parsedDocument);
+    }
+
+
+    @Test
+    public void testReadXMLNDK_1_BIBLIO_MODS_GetContent() throws IOException {
+        InputStream is = RepositoryUtilsTest.class.getResourceAsStream("info%253Afedora%252Fuuid%253A99a5df44-55a4-4ed3-8e1f-e8c49ebcd603");
+        assertNotNull(is);
+        InputStream bilioMods = RepositoryUtils.getDatastreamContent(is, "BIBLIO_MODS", null);
+        Document parsedDocument = Dom4jUtils.streamToDocument(bilioMods, true);
+        assertNotNull(parsedDocument);
+    }
+
+
+    @Test
+    public void testReadXMLNDK_1_BIBLIO_MODS_Exits() throws IOException {
+        InputStream is = RepositoryUtilsTest.class.getResourceAsStream("info%253Afedora%252Fuuid%253A99a5df44-55a4-4ed3-8e1f-e8c49ebcd603");
+        assertNotNull(is);
+        boolean biblioModsExists = RepositoryUtils.datastreamExists(is, "BIBLIO_MODS");
+        assertTrue(biblioModsExists);
+    }
+
+    @Test
+    public void testReadXMLNDK_1_RELS_EXT_GetContent() throws IOException {
+        InputStream is = RepositoryUtilsTest.class.getResourceAsStream("info%253Afedora%252Fuuid%253A99a5df44-55a4-4ed3-8e1f-e8c49ebcd603");
+        assertNotNull(is);
+        //TODO: Core repisotory is null ??  Should test with core repository
+        InputStream bilioMods = RepositoryUtils.getDatastreamContent(is, "RELS-EXT", null);
+        Document parsedDocument = Dom4jUtils.streamToDocument(bilioMods, true);
+        assertNotNull(parsedDocument);
+    }
+
+
+    @Test
+    public void testReadXMLNDK_1_RELS_EXT_Exits() throws IOException {
+        InputStream is = RepositoryUtilsTest.class.getResourceAsStream("info%253Afedora%252Fuuid%253A99a5df44-55a4-4ed3-8e1f-e8c49ebcd603");
+        assertNotNull(is);
+        boolean relsExt = RepositoryUtils.datastreamExists(is, "RELS-EXT");
+        assertTrue(relsExt);
     }
 }
