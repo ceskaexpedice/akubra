@@ -36,6 +36,7 @@ public final class RelsExtInternalSaxUtils {
     public static String getPidOfFirstChild(InputStream foxml) {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
             SAXParser saxParser = factory.newSAXParser();
             GetPidOfFirstChildSaxHandler handler = new GetPidOfFirstChildSaxHandler();
 
@@ -93,6 +94,7 @@ public final class RelsExtInternalSaxUtils {
     public static String getModel(InputStream foxml) {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
             SAXParser saxParser = factory.newSAXParser();
             GetModelSaxHandler handler = new GetModelSaxHandler();
 

@@ -16,7 +16,6 @@
  */
 package org.ceskaexpedice.akubra.core.processingindex;
 
-import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
@@ -52,8 +51,7 @@ class RelsExtSPARQLBuilderImpl implements RelsExtSPARQLBuilder {
     }
 
     @Override
-    public String sparqlProps(String relsExt, RelsExtSPARQLBuilderListener listener) throws IOException, SAXException, ParserConfigurationException, RepositoryException {
-        StringTemplateGroup strGroup = SPARQL_TEMPLATES();
+    public void sparqlProps(String relsExt, RelsExtSPARQLBuilderListener listener) throws IOException, SAXException, ParserConfigurationException, RepositoryException {
 
         Document document = DomUtils.streamToDocument(new StringReader(relsExt), true);
         Element description = DomUtils.findElement(document.getDocumentElement(), "Description", RepositoryNamespaces.RDF_NAMESPACE_URI);
@@ -116,10 +114,6 @@ class RelsExtSPARQLBuilderImpl implements RelsExtSPARQLBuilder {
                 }
             }
         }
-
-        StringTemplate sparql = strGroup.getInstanceOf("relsext_sparql");
-        sparql.setAttribute("triples",triples);
-        return sparql.toString();
     }
 
     public static StringTemplateGroup SPARQL_TEMPLATES() throws IOException {

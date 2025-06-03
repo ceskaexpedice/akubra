@@ -67,6 +67,7 @@ public final class InternalSaxUtils {
     public static Map<String, String> getDatastreamMetadata(InputStream foxml, String dsId) {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
             SAXParser saxParser = factory.newSAXParser();
             DatastreamMetadataSaxHandler handler = new DatastreamMetadataSaxHandler(dsId);
             saxParser.parse(foxml, handler);

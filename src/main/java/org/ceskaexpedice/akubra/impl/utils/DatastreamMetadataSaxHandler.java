@@ -37,7 +37,7 @@ public class DatastreamMetadataSaxHandler extends DefaultHandler {
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         // Enter <datastream ID="...">
-        if ("datastream".equals(qName) && dsId.equals(attributes.getValue("ID"))) {
+        if ("datastream".equals(localName) && dsId.equals(attributes.getValue("ID"))) {
             insideTargetDatastream = true;
 
             // Collect metadata from <datastream>
@@ -48,7 +48,7 @@ public class DatastreamMetadataSaxHandler extends DefaultHandler {
         }
 
         // Inside <datastreamVersion>
-        if (insideTargetDatastream && "datastreamVersion".equals(qName)) {
+        if (insideTargetDatastream && "datastreamVersion".equals(localName)) {
             insideDatastreamVersion = true;
 
             // Collect metadata from <datastreamVersion>
@@ -58,17 +58,17 @@ public class DatastreamMetadataSaxHandler extends DefaultHandler {
         }
 
         // Extract <contentLocation REF="...">
-        if (insideDatastreamVersion && "contentLocation".equals(qName)) {
+        if (insideDatastreamVersion && "contentLocation".equals(localName)) {
             metadata.put("LOCATION", attributes.getValue("REF"));
         }
     }
 
     @Override
     public void endElement(String uri, String localName, String qName) {
-        if ("datastreamVersion".equals(qName)) {
+        if ("datastreamVersion".equals(localName)) {
             insideDatastreamVersion = false;
         }
-        if ("datastream".equals(qName)) {
+        if ("datastream".equals(localName)) {
             insideTargetDatastream = false;
         }
     }

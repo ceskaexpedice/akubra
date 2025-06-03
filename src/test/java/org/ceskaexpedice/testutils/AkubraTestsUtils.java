@@ -55,8 +55,10 @@ public final class AkubraTestsUtils {
                 .processingIndexHost(IntegrationTestsUtils.getProperty("processingIndexHost", null, props))
                 .objectStorePath(testRepoPath + "objectStore")
                 .objectStorePattern("##/##")
+//                .objectStorePattern("##/##/##")
                 .datastreamStorePath(testRepoPath + "datastreamStore")
                 .datastreamStorePattern("##/##")
+//                .datastreamStorePattern("##/##/##")
                 .lockTimeoutInSec(10)
                 .hazelcastConfiguration(hazelcastConfig)
                 .build();

@@ -32,19 +32,20 @@ public class GetPidOfFirstChildSaxHandler extends DefaultHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        if ("datastream".equals(qName) && KnownDatastreams.RELS_EXT.toString().equals(attributes.getValue("ID"))) {
+        if ("datastream".equals(localName) && KnownDatastreams.RELS_EXT.toString().equals(attributes.getValue("ID"))) {
             insideRelsExt = true;
         }
-        if (insideRelsExt && "xmlContent".equals(qName)) {
+        if (insideRelsExt && "xmlContent".equals(localName)) {
             insideXmlContent = true;
         }
-        if (insideXmlContent && "rdf:Description".equals(qName)) {
+        if (insideXmlContent && "Description".equals(localName)) {
             insideRdfDescription = true;
         }
         if (insideRdfDescription) {
             for (KnownRelations target : KnownRelations.values()) {
-                if (qName.equals(String.valueOf(target)) || qName.endsWith(":" + target)) { // Matches namespace-prefixed element names
-                    String resource = attributes.getValue("rdf:resource");
+                if (localName.equals(String.valueOf(target.toString()))) { // Matches namespace-prefixed element names
+
+                    String resource = attributes.getValue("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "resource");
                     if (resource != null && resource.startsWith("info:fedora/")) {
                         firstChildPid = resource.substring("info:fedora/".length());
                         throw new SAXException(FOUND); // Stop parsing early
@@ -56,13 +57,13 @@ public class GetPidOfFirstChildSaxHandler extends DefaultHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) {
-        if ("datastream".equals(qName)) {
+        if ("datastream".equals(localName)) {
             insideRelsExt = false;
         }
-        if ("xmlContent".equals(qName)) {
+        if ("xmlContent".equals(localName)) {
             insideXmlContent = false;
         }
-        if ("rdf:Description".equals(qName)) {
+        if ("Description".equals(localName)) {
             insideRdfDescription = false;
         }
     }

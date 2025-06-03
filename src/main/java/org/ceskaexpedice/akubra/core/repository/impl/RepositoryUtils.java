@@ -102,7 +102,7 @@ public class RepositoryUtils {
         return false;
     }
 
-    static InputStream getDatastreamContent(InputStream foxml, String dsId, CoreRepository coreRepository) {
+    static InputStream getDatastreamContent(String pid, InputStream foxml, String dsId, CoreRepository coreRepository) {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -151,7 +151,7 @@ public class RepositoryUtils {
             if (handler.getXmlContentStream() != null) {
                 return handler.getXmlContentStream();
             }
-            LOGGER.warning("Datastream with ID '" + dsId + "' not found or has no relevant content.");
+            LOGGER.warning(String.format("Datastream with ID '%s' not found or has no relevant content for pid '%s'", dsId, pid));
             return null;
         } catch (Exception e) {
             throw new RepositoryException("Error processing XML file: " + e.getMessage(), e);

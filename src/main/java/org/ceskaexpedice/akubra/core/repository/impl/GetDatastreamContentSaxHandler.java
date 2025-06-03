@@ -28,10 +28,14 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.FOUND;
 
 class GetDatastreamContentSaxHandler extends DefaultHandler {
+
+    public static final Logger LOGGER = Logger.getLogger(GetDatastreamContentSaxHandler.class.getName());
 
     // Light rendering element; used for rendering raw xml content
     class LRElement {
@@ -52,6 +56,18 @@ class GetDatastreamContentSaxHandler extends DefaultHandler {
             this.qName = qName;
             this.localName = localName;
             this.uri = uri;
+        }
+
+        public String getqName() {
+            return qName;
+        }
+
+        public String getLocalName() {
+            return localName;
+        }
+
+        public String getUri() {
+            return uri;
         }
 
         public void addNamespace(String prefix, String uri) {
@@ -108,7 +124,26 @@ class GetDatastreamContentSaxHandler extends DefaultHandler {
         public String toXml(boolean includeNamespaces) {
             // xml content contains all necessary namespaces inhereted from foxml -> we can use in rendering if necessary
             if (this.localName.equals("xmlContent") && this.getChildren().size() == 1) {
-                return this.getChildren().get(0).toXml(true);
+                Map<String, String> pickedNamespaces = new HashMap<>();
+                Stack<LRElement> stack = new Stack<>();
+                stack.push(this);
+                while(!stack.isEmpty()) {
+                    LRElement topElm  = stack.pop();
+                    String qname = topElm.getqName();
+                    String[] names = qname.split(":");
+                    if (names.length > 0) {
+                        String prefix = names[0];
+                        if (!"".equals(prefix) && this.namespaces.containsKey(prefix)) {
+                            String val = this.namespaces.get(prefix);
+                            pickedNamespaces.put(prefix,val);
+                        }
+                    }
+                    topElm.getChildren().forEach(stack::push);
+                }
+
+                LRElement firstChild = this.getChildren().get(0);
+                firstChild.putNamespaces(pickedNamespaces);
+                return firstChild.toXml(true);
             } else  {
                 StringBuilder sb = new StringBuilder();
                 sb.append("<").append(qName);
@@ -124,10 +159,10 @@ class GetDatastreamContentSaxHandler extends DefaultHandler {
                     }
                 }
 
-                if (parent != null && parent.getNamespaces().containsKey("") && this.getNamespaces().containsKey("")) {
-                    // different -> write it
-                    sb.append(" xmlns=\"").append(getNamespaces().get("")).append("\"");
-                }
+//                if (parent != null && parent.getNamespaces().containsKey("") && this.getNamespaces().containsKey("") && (!parent.getNamespaces().get("").equals(this.getNamespaces().get("")))) {
+//                    // different -> write it
+//                    sb.append(" xmlns=\"").append(getNamespaces().get("")).append("\"");
+//                }
 
 
                 for (Map.Entry<String, String> attr : attributes.entrySet()) {
@@ -183,6 +218,15 @@ class GetDatastreamContentSaxHandler extends DefaultHandler {
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
+        String formatted = String.format("(uri:'%s', localName:'%s', qName:'%s')",uri, localName, qName);
+        StringBuilder debugMsg = new StringBuilder("===> [startElement]:" + formatted + "\nAttributes:\n");
+        for (int i = 0; i < attributes.getLength(); i++) {
+            String attrName = attributes.getQName(i);
+            String attrValue = attributes.getValue(i);
+            debugMsg.append(" - ").append(attrName).append(" = ").append(attrValue).append("\n");
+        }
+        LOGGER.log(Level.FINE, debugMsg.toString());
+
 
         if ("datastream".equals(localName) && "info:fedora/fedora-system:def/foxml#".equals(uri) &&
                 targetId.equals(attributes.getValue("ID"))) {
@@ -195,12 +239,19 @@ class GetDatastreamContentSaxHandler extends DefaultHandler {
         if (insideDatastreamVersion && "contentLocation".equals(localName)) {
             contentLocationRef = attributes.getValue("REF");
             contentLocationType = attributes.getValue("TYPE");
+            StringBuilder locDebugMsg = new StringBuilder(String.format("===> [startElement-findLocation]: contentLocationRef:'%s', contentLocationType:'%s'", contentLocationRef, contentLocationType));
+            LOGGER.fine(locDebugMsg.toString());
             // Stop parsing early if contentLocation is found
             throw new SAXException(FOUND);
         }
         if (insideDatastreamVersion && "xmlContent".equals(localName)) {
             insideXmlContent = true;
         }
+
+//        String msg = String.format("contentLocationRef=%s, contentLocationType=%s,insideDatastreamVersion=%b,insideTargetDatastream=%b", contentLocationRef, contentLocationType, insideDatastreamVersion, insideTargetDatastream);
+//        StringBuilder flags = new StringBuilder("===> [startElement-flags]:" + msg);
+//        LOGGER.info(flags.toString());
+
         if (insideXmlContent) {
 
             LRElement element = new LRElement(qName, localName, uri);
@@ -225,12 +276,21 @@ class GetDatastreamContentSaxHandler extends DefaultHandler {
         if (insideXmlContent && !elementStack.isEmpty()) {
             String raw = new String(ch, start, length);
             String escaped = StringEscapeUtils.escapeXml10(raw);
+
+            StringBuilder debugMsg = new StringBuilder("===> [characters] Escaped text: '" + escaped +"'");
+            LOGGER.log(Level.FINE, debugMsg.toString());
+
             elementStack.peek().text.append(escaped);
         }
     }
 
     @Override
     public void endElement(String uri, String localName, String qName) {
+        String formatted = String.format("(uri:'%s', localName:'%s', qName:'%s')",uri, localName, qName);
+        StringBuilder debugMsg = new StringBuilder("===> [endElement]: " + formatted);
+
+        LOGGER.log(Level.FINE, debugMsg.toString());
+
         if ("datastreamVersion".equals(localName)) {
             insideDatastreamVersion = false;
         }

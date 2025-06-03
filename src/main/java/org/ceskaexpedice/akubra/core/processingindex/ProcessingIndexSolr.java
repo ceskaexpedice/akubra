@@ -20,8 +20,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.ConcurrentUpdateSolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
@@ -239,23 +241,42 @@ public class ProcessingIndexSolr implements ProcessingIndex {
 
     @Override
     public void rebuildProcessingIndex(String pid) {
+        List<SolrInputDocument> batch = new ArrayList<>();
         try {
             InputStream isRelsExt = coreRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT.toString());
             String stringRelsExt = IOUtils.toString(isRelsExt, StandardCharsets.UTF_8);
             RelsExtSPARQLBuilder sparqlBuilder = new RelsExtSPARQLBuilderImpl();
+
             sparqlBuilder.sparqlProps(stringRelsExt.trim(), (object, localName) -> {
-                processRelsExtRelationAndFeedProcessingIndex(pid, object, localName);
+                processRelsExtRelationAndFeedProcessingIndex(pid, object, localName, batch);
                 return object;
             });
+
         } catch (Exception e) {
             throw new RepositoryException(e);
+        } finally {
+            if (batch.size() > 0) {
+                UpdateRequest req = new UpdateRequest();
+                batch.forEach(doc-> {req.add(doc);});
+                LOGGER.fine(String.format("Update batch with size %s",  req.getDocuments().size()));
+                try {
+                    UpdateResponse response = req.process(solrUpdateClient);
+                    LOGGER.fine("qtime:"+response.getQTime());
+                } catch (SolrServerException | IOException e) {
+                    LOGGER.log(Level.SEVERE,e.getMessage());
+                }
+            }
         }
     }
+
+
+
+
 
     /**
      * Process one relation and feed processing index
      */
-    private void processRelsExtRelationAndFeedProcessingIndex(String pid, String object, String localName) {
+    private void processRelsExtRelationAndFeedProcessingIndex(String pid, String object, String localName, List<SolrInputDocument> batch) {
         if (localName.equals("hasModel")) {
             try {
                 boolean dcStreamExists = coreRepository.datastreamExists(pid, KnownDatastreams.BIBLIO_DC.name());
@@ -267,36 +288,47 @@ public class ProcessingIndexSolr implements ProcessingIndex {
                         if (dcStreamExists) {
                             List<String> dcTList = dcTitle(pid);
                             if (dcTList != null && !dcTList.isEmpty()) {
-                                this.indexDescription(pid, object, dcTList.stream().collect(Collectors.joining(" ")));
+                                SolrInputDocument doc = prepareDescriptionDocument(pid, object, dcTList.stream().collect(Collectors.joining(" ")).trim(), RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date());
+                                batch.add(doc);
                             } else {
-                                this.indexDescription(pid, object, "");
+                                SolrInputDocument doc = prepareDescriptionDocument(pid, object, "", RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date());
+                                batch.add(doc);
                             }
                         } else if (modsStreamExists) {
                             // czech title or default
                             List<String> modsTList = modsTitle(pid, "cze");
                             if (modsTList != null && !modsTList.isEmpty()) {
-                                this.indexDescription(pid, object, modsTList.stream().collect(Collectors.joining(" ")), ProcessingIndexSolr.TitleType.mods);
+                                SolrInputDocument doc = prepareDescriptionDocument(pid, object,  modsTList.stream().collect(Collectors.joining(" ")), RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date(), ProcessingIndexSolr.TitleType.mods);
+                                batch.add(doc);
                             } else {
-                                this.indexDescription(pid, object, "");
+                                SolrInputDocument doc = prepareDescriptionDocument(pid, object, "", RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date());
+                                batch.add(doc);
                             }
                         }
                     } catch (ParserConfigurationException e) {
                         LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                        this.indexDescription(pid, object, "");
-                    } catch (SAXException e) {
+
+                        SolrInputDocument doc = prepareDescriptionDocument(pid, object, "", RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date());
+                        batch.add(doc);
+                   } catch (SAXException e) {
                         LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                        this.indexDescription(pid, object, "");
+
+                        SolrInputDocument doc = prepareDescriptionDocument(pid, object, "", RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date());
+                        batch.add(doc);
                     }
                 } else {
                     LOGGER.info("Index description without dc or mods");
-                    this.indexDescription(pid, object, "");
+
+                    SolrInputDocument doc = prepareDescriptionDocument(pid, object, "", RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date());
+                    batch.add(doc);
                 }
             } catch (Throwable th) {
                 LOGGER.log(Level.SEVERE, "Cannot update processing index for " + pid + " - reindex manually.", th);
             }
         } else {
             try {
-                this.feedRelationDocument(pid, localName, object);
+                SolrInputDocument sdoc = prepareRelationDocument(pid, localName, object);
+                 batch.add(sdoc);
             } catch (Throwable th) {
                 LOGGER.log(Level.SEVERE, "Cannot update processing index for " + pid + " - reindex manually.", th);
             }
@@ -365,6 +397,16 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     }
 
     private UpdateResponse feedDescriptionDocument(String sourcePid, String model, String title, String ref, Date date, TitleType ttype) {
+        SolrInputDocument sdoc = prepareDescriptionDocument(sourcePid, model, title, ref, date, ttype);
+        return feedDescriptionDocument(sdoc);
+    }
+
+    private UpdateResponse feedDescriptionDocument(String sourcePid, String model, String title, String ref, Date date) {
+        SolrInputDocument sdoc = prepareDescriptionDocument(sourcePid, model, title, ref, date);
+        return feedDescriptionDocument(sdoc);
+    }
+
+    private static SolrInputDocument prepareDescriptionDocument(String sourcePid, String model, String title, String ref, Date date, TitleType ttype) {
         SolrInputDocument sdoc = new SolrInputDocument();
         sdoc.addField("source", sourcePid);
         sdoc.addField("type", TYPE_DESC);
@@ -377,10 +419,10 @@ public class ProcessingIndexSolr implements ProcessingIndex {
         sdoc.addField("ref", ref);
         sdoc.addField("date", date);
         sdoc.addField("pid", TYPE_DESC + "|" + sourcePid);
-        return feedDescriptionDocument(sdoc);
+        return sdoc;
     }
 
-    private UpdateResponse feedDescriptionDocument(String sourcePid, String model, String title, String ref, Date date) {
+    private static SolrInputDocument prepareDescriptionDocument(String sourcePid, String model, String title, String ref, Date date) {
         SolrInputDocument sdoc = new SolrInputDocument();
         sdoc.addField("source", sourcePid);
         sdoc.addField("type", TYPE_DESC);
@@ -389,7 +431,17 @@ public class ProcessingIndexSolr implements ProcessingIndex {
         sdoc.addField("ref", ref);
         sdoc.addField("date", date);
         sdoc.addField("pid", TYPE_DESC + "|" + sourcePid);
-        return feedDescriptionDocument(sdoc);
+        return sdoc;
+    }
+
+    private static SolrInputDocument prepareRelationDocument(String sourcePid, String relation, String targetPid) {
+        SolrInputDocument sdoc = new SolrInputDocument();
+        sdoc.addField("source", sourcePid);
+        sdoc.addField("type", TYPE_RELATION);
+        sdoc.addField("relation", relation);
+        sdoc.addField("targetPid", targetPid);
+        sdoc.addField("pid", TYPE_RELATION + "|" + sourcePid + "|" + relation + "|" + targetPid);
+        return sdoc;
     }
 
     private UpdateResponse feedDescriptionDocument(SolrInputDocument doc) {
@@ -402,14 +454,10 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     }
 
     private UpdateResponse feedRelationDocument(String sourcePid, String relation, String targetPid) {
-        SolrInputDocument sdoc = new SolrInputDocument();
-        sdoc.addField("source", sourcePid);
-        sdoc.addField("type", TYPE_RELATION);
-        sdoc.addField("relation", relation);
-        sdoc.addField("targetPid", targetPid);
-        sdoc.addField("pid", TYPE_RELATION + "|" + sourcePid + "|" + relation + "|" + targetPid);
+        SolrInputDocument sdoc = prepareRelationDocument(sourcePid, relation, targetPid);
         return feedRelationDocument(sdoc);
     }
+
 
     private UpdateResponse feedRelationDocument(SolrInputDocument sdoc) {
         try {

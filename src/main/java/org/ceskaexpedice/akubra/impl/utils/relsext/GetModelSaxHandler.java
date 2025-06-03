@@ -18,6 +18,7 @@ package org.ceskaexpedice.akubra.impl.utils.relsext;
 
 import org.ceskaexpedice.akubra.KnownDatastreams;
 import org.ceskaexpedice.akubra.RepositoryException;
+import org.ceskaexpedice.akubra.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.pid.LexerException;
 import org.ceskaexpedice.akubra.pid.PIDParser;
 import org.ceskaexpedice.akubra.relsext.KnownRelations;
@@ -35,18 +36,18 @@ public class GetModelSaxHandler extends DefaultHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        if ("datastream".equals(qName) && KnownDatastreams.RELS_EXT.toString().equals(attributes.getValue("ID"))) {
+        if ("datastream".equals(localName) && KnownDatastreams.RELS_EXT.toString().equals(attributes.getValue("ID"))) {
             insideRelsExt = true;
         }
-        if (insideRelsExt && "xmlContent".equals(qName)) {
+        if (insideRelsExt && "xmlContent".equals(localName)) {
             insideXmlContent = true;
         }
-        if (insideXmlContent && "rdf:Description".equals(qName)) {
+        if (insideXmlContent && "Description".equals(localName)) {
             insideRdfDescription = true;
         }
-        if (insideRdfDescription && "hasModel".equals(qName)) {
+        if (insideRdfDescription && "hasModel".equals(localName)) {
             try {
-                String modelT = attributes.getValue("rdf:resource");
+                String modelT = attributes.getValue(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
                 PIDParser pidParser = new PIDParser(modelT);
                 pidParser.disseminationURI();
                 model = pidParser.getObjectId();
@@ -59,13 +60,13 @@ public class GetModelSaxHandler extends DefaultHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) {
-        if ("datastream".equals(qName)) {
+        if ("datastream".equals(localName)) {
             insideRelsExt = false;
         }
-        if ("xmlContent".equals(qName)) {
+        if ("xmlContent".equals(localName)) {
             insideXmlContent = false;
         }
-        if ("rdf:Description".equals(qName)) {
+        if ("rdf:Description".equals(localName)) {
             insideRdfDescription = false;
         }
     }

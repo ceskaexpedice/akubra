@@ -174,7 +174,7 @@ public class CoreRepositoryImpl implements CoreRepository {
         if(asBytes == null) {
             return null;
         }
-        InputStream streamContent = RepositoryUtils.getDatastreamContent(new ByteArrayInputStream(asBytes), dsId, this);
+        InputStream streamContent = RepositoryUtils.getDatastreamContent(pid, new ByteArrayInputStream(asBytes), dsId, this);
         if(streamContent == null) {
             return null;
         }

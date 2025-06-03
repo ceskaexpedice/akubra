@@ -30,13 +30,13 @@ interface RelsExtSPARQLBuilder {
 
     /**
      * Generate update sparql
-     * @param relsExt processing RELS-EXT stream
+     *
+     * @param relsExt  processing RELS-EXT stream
      * @param listener Listener Listener
-     * @return
      * @throws IOException
      * @throws SAXException
      * @throws ParserConfigurationException
      * @throws RepositoryException
      */
-    String sparqlProps(String relsExt, RelsExtSPARQLBuilderListener listener) throws IOException, SAXException, ParserConfigurationException, RepositoryException;
+    void sparqlProps(String relsExt, RelsExtSPARQLBuilderListener listener) throws IOException, SAXException, ParserConfigurationException, RepositoryException;
 }
