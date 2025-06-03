@@ -18,6 +18,7 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
 
+    
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
     - name: Set execute permission for gradlew
@@ -25,7 +26,14 @@ jobs:
       env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+
+    - name: Get project version from Gradle
+      run: |
+        VERSION=$(./gradlew printVersion -q)
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+        echo "TAG_NAME=v$VERSION" >> $GITHUB_ENV
+        echo "RELEASE_NAME=Release v$VERSION" >> $GITHUB_ENV          
+    
     - name: Build with Gradle
       run: ./gradlew build publish
       env:
@@ -33,5 +41,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           USERNAME: ${{ secrets.USER }}
           TOKEN: ${{ secrets.PAS }}
-
+    
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name:  ${{ env.TAG_NAME }}
+        release_name: ${{ env.RELEASE_NAME }}
+        body: |
+          Auto-generated release for version ${{ env.VERSION }}
+        draft: true
+        prerelease: false
 
