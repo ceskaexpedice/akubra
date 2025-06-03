@@ -110,6 +110,9 @@ test {
     forkEvery = 1
 }
 
-build.doLast {
-    println "Build outputs located in ${project.buildDir}"
+
+task printVersion {
+    doLast {
+        println project.version
+    }
 }
