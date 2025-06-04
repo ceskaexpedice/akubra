@@ -47,6 +47,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -77,6 +78,28 @@ public class ProcessingIndexSolr implements ProcessingIndex {
         this.coreRepository = coreRepository;
         this.repositoryConfiguration = configuration;
     }
+
+
+
+    public void lookAt(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action) {
+        try {
+            SolrQuery solrQuery = new SolrQuery(params.getQueryString());
+            solrQuery.setRows(params.getRows());
+            if (params.getCursorMark() == null) {
+                int offset = params.getOffset() != -1 ? params.getOffset() : params.getPageIndex() * params.getRows();
+                solrQuery.setStart(offset);
+                QueryResponse response = this.solrQueryClient.query(solrQuery);
+                response.getResults().forEach((doc) -> {
+                    action.accept(ProcessingIndexUtils.fromSolrDocument(doc));
+                });
+            } else {
+                throw new IllegalArgumentException("cursorMark is not supported in lookAt method");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     @Override
     public String iterate(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action) {
@@ -239,11 +262,15 @@ public class ProcessingIndexSolr implements ProcessingIndex {
         }
     }
 
+
+
     @Override
-    public void rebuildProcessingIndex(String pid) {
+    public void rebuildProcessingIndex(String pid, Consumer<UpdateRequest> updateRequestCustomizer) {
+
         List<SolrInputDocument> batch = new ArrayList<>();
         try {
             InputStream isRelsExt = coreRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT.toString());
+
             String stringRelsExt = IOUtils.toString(isRelsExt, StandardCharsets.UTF_8);
             RelsExtSPARQLBuilder sparqlBuilder = new RelsExtSPARQLBuilderImpl();
 
@@ -257,6 +284,9 @@ public class ProcessingIndexSolr implements ProcessingIndex {
         } finally {
             if (batch.size() > 0) {
                 UpdateRequest req = new UpdateRequest();
+                if (updateRequestCustomizer != null) {
+                    updateRequestCustomizer.accept(req);
+                }
                 batch.forEach(doc-> {req.add(doc);});
                 LOGGER.fine(String.format("Update batch with size %s",  req.getDocuments().size()));
                 try {
@@ -269,8 +299,11 @@ public class ProcessingIndexSolr implements ProcessingIndex {
         }
     }
 
-
-
+    private static void diff(String message, long rebuildStop, long rebuildStart) {
+        long diff = rebuildStop - rebuildStart;
+        String m = String.format("\t"+message+"; diff=%d", diff);
+        LOGGER.info(m);
+    }
 
 
     /**
@@ -356,7 +389,7 @@ public class ProcessingIndexSolr implements ProcessingIndex {
         List<Element> elements = DomUtils.getElementsRecursive(docElement, new DomUtils.ElementsFilter() {
             @Override
             public boolean acceptElement(Element element) {
-                if (element.getNamespaceURI().equals(RepositoryNamespaces.BIBILO_MODS_URI)) {
+                if (element.getNamespaceURI() != null &&  element.getNamespaceURI().equals(RepositoryNamespaces.BIBILO_MODS_URI)) {
                     if (element.getLocalName().equals("title") && element.hasAttribute("lang") && element.getAttribute("lang").equals("cze")) {
                         return true;
                     }
@@ -370,7 +403,7 @@ public class ProcessingIndexSolr implements ProcessingIndex {
             elements = DomUtils.getElementsRecursive(docElement, new DomUtils.ElementsFilter() {
                 @Override
                 public boolean acceptElement(Element element) {
-                    if (element.getNamespaceURI().equals(RepositoryNamespaces.BIBILO_MODS_URI)) {
+                    if (element.getNamespaceURI() != null &&  element.getNamespaceURI().equals(RepositoryNamespaces.BIBILO_MODS_URI)) {
                         // TODO: Change it
                         if (element.getLocalName().equals("title")) {
                             return true;

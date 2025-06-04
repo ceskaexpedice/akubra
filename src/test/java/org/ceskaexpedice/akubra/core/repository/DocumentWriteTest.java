@@ -87,7 +87,7 @@ public class DocumentWriteTest {
         // test ingest result
         digitalObjectImported = coreRepository.getAsRepositoryObject(PID_IMPORTED);
         Assertions.assertNotNull(digitalObjectImported);
-        verify(mockFeeder, times(1)).rebuildProcessingIndex(any());
+        verify(mockFeeder, times(1)).rebuildProcessingIndex(any(), isNull());
     }
 
     @Test

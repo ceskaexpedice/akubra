@@ -93,8 +93,8 @@ public class NoLocksTest {
         // test ingest result
         DigitalObject digitalObjectImported = akubraRepository.get(PID_IMPORTED).asDigitalObject();
         Assertions.assertNotNull(digitalObjectImported);
-        verify(mockFeeder, times(1)).rebuildProcessingIndex(any());
         verify(mockFeeder, times(1)).commit();
+        verify(mockFeeder, times(1)).rebuildProcessingIndex(any(), isNull());
     }
 
     @Test

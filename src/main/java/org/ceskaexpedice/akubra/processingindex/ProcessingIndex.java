@@ -17,8 +17,10 @@
 package org.ceskaexpedice.akubra.processingindex;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.json.JSONObject;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -56,11 +58,22 @@ public interface ProcessingIndex {
     String iterate(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action);
 
     /**
-     * Retrieves a list of parent items associated with the given target PID.
+     * Performs a lightweight inspection of processing index items based on the provided query parameters.
+     * Unlike {@link #iterate}, this method does not use Solr cursor-based pagination and is intended for
+     * quickly retrieving a limited number of matching entries..
      *
-     * @param targetPid The unique identifier of the target object.
-     * @return A list of parent items associated with the given PID.
+     * @param params The query parameters used to filter processing index entries.
+     * @param action The action to be performed on each of the initially retrieved processing index items.
      */
+    void lookAt(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action);
+
+
+        /**
+         * Retrieves a list of parent items associated with the given target PID.
+         *
+         * @param targetPid The unique identifier of the target object.
+         * @return A list of parent items associated with the given PID.
+         */
     List<ProcessingIndexItem>  getParents(String targetPid);
 
     /**
@@ -173,6 +186,10 @@ public interface ProcessingIndex {
      */
     void deleteByPid(String pid);
 
+
+
+
+
     /**
      * Deletes processing index entries where the given PID is the target of relations.
      *
@@ -191,7 +208,7 @@ public interface ProcessingIndex {
      * rebuild processing index for the given pid
      * @param pid  The unique identifier of the object whose index entries to rebuild
      */
-    void rebuildProcessingIndex(String pid);
+    void rebuildProcessingIndex(String pid, Consumer<UpdateRequest> updateRequestCustomizer);
 
     /**
      * Performs operations on the processing index with an explicit commit.

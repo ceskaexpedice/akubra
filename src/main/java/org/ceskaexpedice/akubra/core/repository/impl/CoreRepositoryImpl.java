@@ -26,6 +26,8 @@ import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
+import org.ceskaexpedice.akubra.processingindex.ProcessingIndexItem;
+import org.ceskaexpedice.akubra.processingindex.ProcessingIndexQueryParameters;
 import org.ceskaexpedice.fedoramodel.*;
 import org.fcrepo.server.storage.lowlevel.akubra.HashPathIdMapper;
 import org.w3c.dom.Document;
@@ -38,6 +40,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -100,7 +104,7 @@ public class CoreRepositoryImpl implements CoreRepository {
         } else {
             RepositoryObjectImpl obj = new RepositoryObjectImpl(digitalObject);
             manager.write(obj.getDigitalObject(), null);
-            processingIndex.rebuildProcessingIndex(obj.getPid());
+            processingIndex.rebuildProcessingIndex(obj.getPid(), null);
             return obj;
         }
     }
@@ -210,9 +214,23 @@ public class CoreRepositoryImpl implements CoreRepository {
             if (dsId.equals(KnownDatastreams.RELS_EXT.toString())) {
                 try {
                     // process rels-ext and create all children and relations
-                    this.processingIndex.deleteByRelationsForPid(repositoryObject.getPid());
+                    //this.processingIndex.deleteByRelationsForPid(repositoryObject.getPid());
+
+                    String query = "source:\"" + repositoryObject.getPid() + "\" AND type:\"relation\"";
+                    List<ProcessingIndexItem> pids = new ArrayList<>();
+                    ProcessingIndexQueryParameters params = new ProcessingIndexQueryParameters.Builder()
+                            .rows(10_000) // TODO: Do it better- maximum number of relations
+                            .queryString(query)
+                            .fieldsToFetch(Arrays.asList("pid"))
+                            .build();
+                    this.processingIndex.lookAt(params, pids::add);
+
                     input.reset();
-                    processingIndex.rebuildProcessingIndex(repositoryObject.getPid());
+                    processingIndex.rebuildProcessingIndex(repositoryObject.getPid(),updateRequest -> {
+                        pids.stream().forEach(pid-> {
+                            updateRequest.deleteById(pid.pid());
+                        });
+                    });
                 } catch (Throwable th) {
                     LOGGER.log(Level.SEVERE, "Cannot update processing index for " + repositoryObject.getPid() + " - reindex manually.", th);
                 }
