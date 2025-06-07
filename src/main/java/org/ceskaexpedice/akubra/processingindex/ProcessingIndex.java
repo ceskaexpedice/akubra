@@ -68,12 +68,12 @@ public interface ProcessingIndex {
     void lookAt(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action);
 
 
-        /**
-         * Retrieves a list of parent items associated with the given target PID.
-         *
-         * @param targetPid The unique identifier of the target object.
-         * @return A list of parent items associated with the given PID.
-         */
+    /**
+     * Retrieves a list of parent items associated with the given target PID.
+     *
+     * @param targetPid The unique identifier of the target object.
+     * @return A list of parent items associated with the given PID.
+     */
     List<ProcessingIndexItem>  getParents(String targetPid);
 
     /**

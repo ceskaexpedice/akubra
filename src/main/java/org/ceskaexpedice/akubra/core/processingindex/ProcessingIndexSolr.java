@@ -284,10 +284,12 @@ public class ProcessingIndexSolr implements ProcessingIndex {
         } finally {
             if (batch.size() > 0) {
                 UpdateRequest req = new UpdateRequest();
+                batch.forEach(doc-> {req.add(doc);});
+
                 if (updateRequestCustomizer != null) {
                     updateRequestCustomizer.accept(req);
                 }
-                batch.forEach(doc-> {req.add(doc);});
+
                 LOGGER.fine(String.format("Update batch with size %s",  req.getDocuments().size()));
                 try {
                     UpdateResponse response = req.process(solrUpdateClient);
