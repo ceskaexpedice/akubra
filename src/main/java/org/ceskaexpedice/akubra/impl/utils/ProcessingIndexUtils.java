@@ -35,6 +35,8 @@ import java.util.logging.Logger;
 public final class ProcessingIndexUtils {
     public static final Logger LOGGER = Logger.getLogger(RelsExtInternalDomUtils.class.getName());
 
+    public static final int DEFAULT_MAX_LOOKAT_VALUE = 10_000;
+
     private static List<KnownRelations> OWN_RELATIONS = Arrays.asList(new KnownRelations[]{
             KnownRelations.HAS_PAGE, KnownRelations.HAS_UNIT, KnownRelations.HAS_VOLUME, KnownRelations.HAS_ITEM,
             KnownRelations.HAS_SOUND_UNIT, KnownRelations.HAS_TRACK, KnownRelations.CONTAINS_TRACK, KnownRelations.HAS_INT_COMP_PART
@@ -81,7 +83,13 @@ public final class ProcessingIndexUtils {
         for (ProcessingIndexItem processingIndexRelation : pseudoparentProcessingIndexRelations) {
             if (isOwnRelation(processingIndexRelation.relation())) {
                 if (ownParentProcessingIndexRelation != null) {
-                    throw new RepositoryException(String.format("found multiple own parent relations: %s and %s", ownParentProcessingIndexRelation, processingIndexRelation));
+
+                    String header = String.format("Object \"%s\" has multiple own parents via:", targetPid);
+                    String firstRelation = String.format("\n\t - " + ownParentProcessingIndexRelation.pid());
+                    String secondRelation = String.format("\n\t - " + processingIndexRelation.pid());
+
+
+                    throw new RepositoryException(header+firstRelation+secondRelation);
                 } else {
                     ownParentProcessingIndexRelation = processingIndexRelation;
                 }
@@ -179,12 +187,12 @@ public final class ProcessingIndexUtils {
         String query = String.format("type:description AND source:%s", objectPid.replace(":", "\\:"));
         ProcessingIndexQueryParameters params = new ProcessingIndexQueryParameters.Builder()
                 .queryString(query)
-                .sortField("pid")
-                .ascending(true)
-                .cursorMark("*")
-                .rows(100)
+//                .sortField("pid")
+//                .ascending(true)
+//                .cursorMark("*")
+                .rows(DEFAULT_MAX_LOOKAT_VALUE)
                 .build();
-        coreRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
+        coreRepository.getProcessingIndex().lookAt(params, processingIndexItem -> {
             processingIndexItemRetVal[0] = processingIndexItem;
         });
         return processingIndexItemRetVal[0];
@@ -197,11 +205,11 @@ public final class ProcessingIndexUtils {
                 .queryString(query)
                 .sortField("date")
                 .ascending(true)
-                .cursorMark("*")
-                .rows(100)
+                //.cursorMark("*")
+                .rows(DEFAULT_MAX_LOOKAT_VALUE)
                 .fieldsToFetch(List.of("targetPid", "relation"))
                 .build();
-        coreRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
+        coreRepository.getProcessingIndex().lookAt(params, processingIndexItem -> {
             triplets.add(processingIndexItem);
         });
         return triplets;
@@ -212,13 +220,14 @@ public final class ProcessingIndexUtils {
         String query = String.format("targetPid:%s", targetPid.replace(":", "\\:"));
         ProcessingIndexQueryParameters params = new ProcessingIndexQueryParameters.Builder()
                 .queryString(query)
-                .sortField("date")
-                .ascending(true)
-                .cursorMark(ProcessingIndex.CURSOR_MARK_START)
-                .rows(Integer.MAX_VALUE)
+//                .sortField("date")
+//                .ascending(true)
+//                .cursorMark(ProcessingIndex.CURSOR_MARK_START)
+//                .rows(Integer.MAX_VALUE)
+                .rows(DEFAULT_MAX_LOOKAT_VALUE)
                 .fieldsToFetch(List.of("source", "relation"))
                 .build();
-        coreRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
+        coreRepository.getProcessingIndex().lookAt(params, processingIndexItem -> {
             processingIndexRelations.add(processingIndexItem);
         });
         return processingIndexRelations;

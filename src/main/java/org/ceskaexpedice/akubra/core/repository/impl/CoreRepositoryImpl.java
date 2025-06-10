@@ -18,6 +18,7 @@ package org.ceskaexpedice.akubra.core.repository.impl;
 
 import org.akubraproject.map.IdMapper;
 import org.apache.commons.io.IOUtils;
+import org.apache.solr.common.SolrInputField;
 import org.ceskaexpedice.akubra.KnownDatastreams;
 import org.ceskaexpedice.akubra.LockOperation;
 import org.ceskaexpedice.akubra.RepositoryException;
@@ -25,6 +26,7 @@ import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.core.repository.RepositoryObject;
+import org.ceskaexpedice.akubra.impl.utils.ProcessingIndexUtils;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexQueryParameters;
@@ -46,6 +48,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.getBlobId;
 import static org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils.validateId;
@@ -219,7 +222,7 @@ public class CoreRepositoryImpl implements CoreRepository {
                     String query = "source:\"" + repositoryObject.getPid() + "\" AND type:\"relation\"";
                     List<ProcessingIndexItem> pids = new ArrayList<>();
                     ProcessingIndexQueryParameters params = new ProcessingIndexQueryParameters.Builder()
-                            .rows(10_000) // TODO: Do it better- maximum number of relations
+                            .rows(ProcessingIndexUtils.DEFAULT_MAX_LOOKAT_VALUE)
                             .queryString(query)
                             .fieldsToFetch(Arrays.asList("pid"))
                             .build();
@@ -227,8 +230,19 @@ public class CoreRepositoryImpl implements CoreRepository {
 
                     input.reset();
                     processingIndex.rebuildProcessingIndex(repositoryObject.getPid(),updateRequest -> {
-                        pids.stream().forEach(pid-> {
-                            updateRequest.deleteById(pid.pid());
+
+                        List<Object> updateRequestPids = updateRequest.getDocuments().stream().map(doc -> {
+                            SolrInputField pid = doc.getField("pid");
+                            return pid.getValue();
+                        }).collect(Collectors.toList());
+
+                        List<String> realPids = pids.stream().map(ProcessingIndexItem::pid).collect(Collectors.toList());
+                        updateRequestPids.stream().forEach(p-> {
+                            realPids.remove(p);
+                        });
+
+                        realPids.stream().forEach(p-> {
+                            updateRequest.deleteById(p);
                         });
                     });
                 } catch (Throwable th) {

@@ -80,7 +80,6 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     }
 
 
-
     public void lookAt(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action) {
         try {
             SolrQuery solrQuery = new SolrQuery(params.getQueryString());
@@ -107,7 +106,9 @@ public class ProcessingIndexSolr implements ProcessingIndex {
             SolrQuery solrQuery = new SolrQuery(params.getQueryString());
             solrQuery.setRows(params.getRows());
             if (params.getCursorMark() == null) {
-                solrQuery.setSort(params.getSortField(), params.isAscending() ? SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
+                if (params.getSortField() != null) {
+                    solrQuery.setSort(params.getSortField(), params.isAscending() ? SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
+                }
                 int offset = params.getOffset() != -1 ? params.getOffset() : params.getPageIndex() * params.getRows();
                 solrQuery.setStart(offset);
                 QueryResponse response = this.solrQueryClient.query(solrQuery);
