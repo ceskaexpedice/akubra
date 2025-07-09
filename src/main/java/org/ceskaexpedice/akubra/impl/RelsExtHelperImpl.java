@@ -67,7 +67,9 @@ public class RelsExtHelperImpl implements RelsExtHelper {
 
     @Override
     public void update(String pid, InputStream xmlContent) {
-        akubraRepository.updateXMLDatastream(pid, KnownDatastreams.RELS_EXT, "text/xml", xmlContent);
+        akubraRepository.pi().doWithCommit(()->{
+            akubraRepository.updateXMLDatastream(pid, KnownDatastreams.RELS_EXT, "text/xml", xmlContent);
+        });
     }
 
     @Override
