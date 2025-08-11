@@ -114,7 +114,7 @@ public class DatastreamWriteTest {
         boolean datastreamExists = akubraRepository.datastreamExists(PID_MONOGRAPH, "pepo");
         Assertions.assertFalse(datastreamExists);
 
-        akubraRepository.createRedirectedDatastream(PID_MONOGRAPH, "pepo", "http://www.pepo.cz", "image/jpeg");
+        akubraRepository.createExternalDatastream(PID_MONOGRAPH, "pepo", "http://www.pepo.cz", "image/jpeg");
         datastreamExists = akubraRepository.datastreamExists(PID_MONOGRAPH, "pepo");
         Assertions.assertTrue(datastreamExists);
 

@@ -116,7 +116,7 @@ public class DatastreamWriteTest {
         Assertions.assertFalse(datastreamExists);
 
         RepositoryObject asRepositoryObject = coreRepository.getAsRepositoryObject(PID_MONOGRAPH);
-        coreRepository.createRedirectedDatastream(asRepositoryObject, "pepo", "http://www.pepo.cz", "image/jpeg");
+        coreRepository.createExternalDatastream(asRepositoryObject, "pepo", "http://www.pepo.cz", "image/jpeg");
         datastreamExists = coreRepository.datastreamExists(PID_MONOGRAPH, "pepo");
         Assertions.assertTrue(datastreamExists);
 

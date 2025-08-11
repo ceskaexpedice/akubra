@@ -181,35 +181,35 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     }
 
     @Override
-    public void createRedirectedDatastream(String pid, String dsId, String url, String mimeType) {
+    public void createExternalDatastream(String pid, String dsId, String url, String mimeType) {
         RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
         if (repositoryObject == null) {
             return;
         }
-        coreRepository.createRedirectedDatastream(repositoryObject, dsId, url, mimeType);
+        coreRepository.createExternalDatastream(repositoryObject, dsId, url, mimeType);
     }
 
     @Override
-    public void createRedirectedDatastream(String pid, KnownDatastreams dsId, String url, String mimeType) {
-        createRedirectedDatastream(pid, dsId.toString(), url, mimeType);
+    public void createExternalDatastream(String pid, KnownDatastreams dsId, String url, String mimeType) {
+        createExternalDatastream(pid, dsId.toString(), url, mimeType);
     }
 
     @Override
-    public void updateRedirectedDatastream(String pid, String dsId, String url, String mimeType) {
+    public void updateExternalDatastream(String pid, String dsId, String url, String mimeType) {
         doWithWriteLock(pid, () -> {
             RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
             if (repositoryObject == null) {
                 return null;
             }
             coreRepository.deleteDatastream(pid, dsId);
-            coreRepository.createRedirectedDatastream(repositoryObject, dsId, url, mimeType);
+            coreRepository.createExternalDatastream(repositoryObject, dsId, url, mimeType);
             return null;
         });
     }
 
     @Override
-    public void updateRedirectedDatastream(String pid, KnownDatastreams dsId, String url, String mimeType) {
-        updateRedirectedDatastream(pid, dsId.toString(), url, mimeType);
+    public void updateExternalDatastream(String pid, KnownDatastreams dsId, String url, String mimeType) {
+        updateExternalDatastream(pid, dsId.toString(), url, mimeType);
     }
 
     @Override

@@ -192,24 +192,24 @@ public interface AkubraRepository {
     void updateManagedDatastream(String pid, KnownDatastreams dsId, String mimeType, InputStream binaryContent);
 
     /**
-     * Creates a redirected datastream linking to an external resource.
+     * Creates an external datastream linking to an external resource. (Type of datastream is 'E')
      *
      * @param pid      The persistent identifier of the object.
      * @param dsId     The datastream identifier.
      * @param url      The external URL.
      * @param mimeType The MIME type of the datastream.
      */
-    void createRedirectedDatastream(String pid, String dsId, String url, String mimeType);
+    void createExternalDatastream(String pid, String dsId, String url, String mimeType);
 
     /**
-     * Creates a redirected datastream linking to an external resource.
+     * Creates an external datastream linking to an external resource. (Type of datastream is 'E')
      *
      * @param pid      The persistent identifier of the object.
      * @param dsId     The datastream identifier as enum.
      * @param url      The external URL.
      * @param mimeType The MIME type of the datastream.
      */
-    void createRedirectedDatastream(String pid, KnownDatastreams dsId, String url, String mimeType);
+    void createExternalDatastream(String pid, KnownDatastreams dsId, String url, String mimeType);
 
     /**
      * Updates a redirected datastream linking to an external resource.
@@ -219,7 +219,7 @@ public interface AkubraRepository {
      * @param url      The external URL.
      * @param mimeType The MIME type of the datastream.
      */
-    void updateRedirectedDatastream(String pid, String dsId, String url, String mimeType);
+    void updateExternalDatastream(String pid, String dsId, String url, String mimeType);
 
     /**
      * Updates a redirected datastream linking to an external resource.
@@ -229,7 +229,7 @@ public interface AkubraRepository {
      * @param url      The external URL.
      * @param mimeType The MIME type of the datastream.
      */
-    void updateRedirectedDatastream(String pid, KnownDatastreams dsId, String url, String mimeType);
+    void updateExternalDatastream(String pid, KnownDatastreams dsId, String url, String mimeType);
 
     /**
      * Checks if a datastream exists for a given object.

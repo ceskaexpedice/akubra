@@ -270,7 +270,7 @@ public class CoreRepositoryImpl implements CoreRepository {
     }
 
     @Override
-    public RepositoryDatastream createRedirectedDatastream(RepositoryObject repositoryObject, String dsId, String url, String mimeType) {
+    public RepositoryDatastream createExternalDatastream(RepositoryObject repositoryObject, String dsId, String url, String mimeType) {
         DatastreamType datastreamType = createDatastreamHeader(repositoryObject.getDigitalObject(), dsId, mimeType, "E");
         ContentLocationType contentLocationType = new ContentLocationType();
         contentLocationType.setTYPE("URL");

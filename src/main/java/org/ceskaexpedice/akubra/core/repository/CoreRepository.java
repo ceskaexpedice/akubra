@@ -22,7 +22,6 @@ import org.ceskaexpedice.fedoramodel.DigitalObject;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.concurrent.locks.Lock;
 
 /**
  * Core access to Akubra repository.
@@ -139,7 +138,7 @@ public interface CoreRepository {
     InputStream retrieveDatastreamByInternalId(String dsKey);
 
     /**
-     * Creates an XML datastream for the given repository object.
+     * Creates an XML datastream for the given repository object. Type of datastream is 'X'
      *
      * @param repositoryObject The target repository object.
      * @param dsId             The ID of the datastream.
@@ -150,7 +149,7 @@ public interface CoreRepository {
     RepositoryDatastream createXMLDatastream(RepositoryObject repositoryObject, String dsId, String mimeType, InputStream input);
 
     /**
-     * Creates a managed datastream for the given repository object.
+     * Creates a managed datastream for the given repository object. Type of datastream is 'M'
      *
      * @param repositoryObject The target repository object.
      * @param dsId             The ID of the datastream.
@@ -161,7 +160,7 @@ public interface CoreRepository {
     RepositoryDatastream createManagedDatastream(RepositoryObject repositoryObject, String dsId, String mimeType, InputStream input);
 
     /**
-     * Creates a redirected datastream that points to an external URL.
+     * Creates a external datastream that points to an external URL. Type of datastrem is 'E'
      *
      * @param repositoryObject The target repository object.
      * @param dsId             The ID of the datastream.
@@ -169,7 +168,7 @@ public interface CoreRepository {
      * @param mimeType         The MIME type of the datastream.
      * @return The created {@link RepositoryDatastream}.
      */
-    RepositoryDatastream createRedirectedDatastream(RepositoryObject repositoryObject, String dsId, String url, String mimeType);
+    RepositoryDatastream createExternalDatastream(RepositoryObject repositoryObject, String dsId, String url, String mimeType);
 
     /**
      * Deletes a specific datastream from the given digital object.
