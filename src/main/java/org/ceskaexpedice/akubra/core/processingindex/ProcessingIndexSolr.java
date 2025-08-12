@@ -47,7 +47,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -157,6 +156,12 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     public OwnedAndFosteredParents getOwnedAndFosteredParents(String targetPid) {
         return ProcessingIndexUtils.getParentsRelation(targetPid, coreRepository);
     }
+
+
+    public ConflictingOwnedAndFosteredParents getConflictingOwnerAndFosteredParents(String targetPid) {
+        return ProcessingIndexUtils.getConflictingOwnerAndFosteredParents(targetPid, coreRepository);
+    }
+
 
     @Override
     public List<ProcessingIndexItem> getChildren(String relation, String targetPid) {

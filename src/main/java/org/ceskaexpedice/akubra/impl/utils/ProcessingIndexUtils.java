@@ -76,6 +76,22 @@ public final class ProcessingIndexUtils {
         return pids;
     }
 
+    public static ConflictingOwnedAndFosteredParents getConflictingOwnerAndFosteredParents(String targetPid, CoreRepository coreRepository) {
+        List<ProcessingIndexItem> pseudoparentProcessingIndexRelations = getParentsForTarget(targetPid, coreRepository);
+        List<ProcessingIndexItem> ownParentProcessingIndexRelation = new ArrayList<>();
+        List<ProcessingIndexItem> fosterParentProcessingIndexRelations = new ArrayList<>();
+        for (ProcessingIndexItem processingIndexRelation : pseudoparentProcessingIndexRelations) {
+            if (isOwnRelation(processingIndexRelation.relation())) {
+                ownParentProcessingIndexRelation.add(processingIndexRelation);
+            } else {
+                fosterParentProcessingIndexRelations.add(processingIndexRelation);
+            }
+        }
+        return new ConflictingOwnedAndFosteredParents(ownParentProcessingIndexRelation, fosterParentProcessingIndexRelations);
+    }
+
+
+
     public static OwnedAndFosteredParents getParentsRelation(String targetPid, CoreRepository coreRepository) {
         List<ProcessingIndexItem> pseudoparentProcessingIndexRelations = getParentsForTarget(targetPid, coreRepository);
         ProcessingIndexItem ownParentProcessingIndexRelation = null;
@@ -83,12 +99,9 @@ public final class ProcessingIndexUtils {
         for (ProcessingIndexItem processingIndexRelation : pseudoparentProcessingIndexRelations) {
             if (isOwnRelation(processingIndexRelation.relation())) {
                 if (ownParentProcessingIndexRelation != null) {
-
                     String header = String.format("Object \"%s\" has multiple own parents via:", targetPid);
                     String firstRelation = String.format("\n\t - " + ownParentProcessingIndexRelation.pid());
                     String secondRelation = String.format("\n\t - " + processingIndexRelation.pid());
-
-
                     throw new RepositoryException(header+firstRelation+secondRelation);
                 } else {
                     ownParentProcessingIndexRelation = processingIndexRelation;

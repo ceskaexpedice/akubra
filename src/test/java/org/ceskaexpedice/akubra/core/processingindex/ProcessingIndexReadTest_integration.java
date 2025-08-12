@@ -14,9 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ceskaexpedice.akubra;
+package org.ceskaexpedice.akubra.core.processingindex;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.ceskaexpedice.akubra.AkubraRepository;
+import org.ceskaexpedice.akubra.AkubraRepositoryFactory;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.processingindex.*;
 import org.ceskaexpedice.akubra.relsext.KnownRelations;

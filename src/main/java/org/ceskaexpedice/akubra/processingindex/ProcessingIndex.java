@@ -93,6 +93,17 @@ public interface ProcessingIndex {
      */
     OwnedAndFosteredParents getOwnedAndFosteredParents(String targetPid);
 
+
+    /***
+     * Retrieves the conflicting parents of the given target PID, categorized into "owned" and "fostered" relationships.
+     *
+     * @param targetPid The unique identifier of the target object.
+     * @return An {@code ConflictingOwnedAndFosteredParents} object containing lists of parents classified by relation type.
+     */
+    ConflictingOwnedAndFosteredParents getConflictingOwnerAndFosteredParents(String targetPid);
+
+
+
     /**
      * Retrieves a list of child items associated with the given target PID and relation type.
      *
