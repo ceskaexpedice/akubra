@@ -26,10 +26,7 @@ import org.ceskaexpedice.akubra.processingindex.OwnedAndFosteredParents;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.testutils.AkubraTestsUtils;
 import org.ceskaexpedice.testutils.IntegrationTestsUtils;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.util.List;
 import java.util.Properties;
@@ -53,6 +50,12 @@ public class ProcessingIndexConflictTest_integration {
         RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_REPOSITORY.toFile().getAbsolutePath(), testsProperties, null);
         akubraRepository = AkubraRepositoryFactory.createRepository(config);
     }
+
+    @BeforeEach
+    void beforeEach() {
+        IntegrationTestsUtils.checkIntegrationTestsIgnored(testsProperties);
+    }
+
 
     @AfterAll
     static void afterAll() {
