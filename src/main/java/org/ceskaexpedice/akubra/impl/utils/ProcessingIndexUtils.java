@@ -298,7 +298,9 @@ public final class ProcessingIndexUtils {
                 (String) doc.getFieldValue("type"),
                 (String) doc.getFieldValue("model"),
                 (String) doc.getFieldValue("dc.title"),
-                (String) doc.getFieldValue("title"),
+
+                (String) doc.getFirstValue("title"),
+
                 (String) doc.getFieldValue("ref"),
                 (Date) doc.getFieldValue("date"),
                 (String) doc.getFieldValue("pid"),
