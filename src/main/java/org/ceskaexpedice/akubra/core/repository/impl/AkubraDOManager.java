@@ -175,8 +175,8 @@ class AkubraDOManager {
 
     void deleteObject(String pid, boolean includingManagedDatastreams) {
         doWithWriteLock(pid, () -> {
-            DigitalObject object = readObjectFromStorage(pid);
             if (includingManagedDatastreams) {
+                DigitalObject object = readObjectFromStorage(pid);
                 for (DatastreamType datastreamType : object.getDatastream()) {
                     removeManagedStream(datastreamType);
                 }
