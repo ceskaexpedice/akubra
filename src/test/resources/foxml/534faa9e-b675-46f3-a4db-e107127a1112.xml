@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<foxml:digitalObject xmlns:foxml="info:fedora/fedora-system:def/foxml#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" VERSION="1.1" PID="uuid:534faa9e-b675-46f3-a4db-e107127a1112" xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
+    <foxml:objectProperties>
+        <foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="Active"/>
+        <foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="3"/>
+        <foxml:property NAME="info:fedora/fedora-system:def/model#ownerId" VALUE="fedoraAdmin"/>
+        <foxml:property NAME="info:fedora/fedora-system:def/model#createdDate" VALUE="2013-04-25T13:07:51.215Z"/>
+        <foxml:property NAME="info:fedora/fedora-system:def/view#lastModifiedDate" VALUE="2021-03-23T07:12:14.093Z"/>
+    </foxml:objectProperties>
+    <foxml:datastream ID="AUDIT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="false">
+        <foxml:datastreamVersion ID="AUDIT.0" LABEL="Audit Trail for this object" CREATED="2013-04-25T13:07:51.215Z" MIMETYPE="text/xml" FORMAT_URI="info:fedora/fedora-system:format/xml.fedora.audit">
+            <foxml:xmlContent>
+                <audit:auditTrail xmlns:audit="info:fedora/fedora-system:def/audit#">
+                    <audit:record ID="AUDREC1">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>addDatastream</audit:action>
+                        <audit:componentID>IMG_PREVIEW</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2013-05-24T09:19:52.888Z</audit:date>
+                        <audit:justification>noLog</audit:justification>
+                    </audit:record>
+                    <audit:record ID="AUDREC2">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>purgeDatastream</audit:action>
+                        <audit:componentID>IMG_THUMB</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2014-08-18T10:49:21.144Z</audit:date>
+                        <audit:justification>Purged datastream (ID=IMG_THUMB), versions ranging from the beginning of time to the end of time.  This resulted in the permanent removal of 1 datastream version(s) (2013-04-25T17:07:31.000Z) and all associated audit records.</audit:justification>
+                    </audit:record>
+                    <audit:record ID="AUDREC3">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>addDatastream</audit:action>
+                        <audit:componentID>IMG_THUMB</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2014-08-18T10:49:21.176Z</audit:date>
+                        <audit:justification/>
+                    </audit:record>
+                    <audit:record ID="AUDREC4">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>purgeDatastream</audit:action>
+                        <audit:componentID>IMG_FULL</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2014-08-18T10:49:21.246Z</audit:date>
+                        <audit:justification>Purged datastream (ID=IMG_FULL), versions ranging from the beginning of time to the end of time.  This resulted in the permanent removal of 1 datastream version(s) (2013-04-25T17:07:31.000Z) and all associated audit records.</audit:justification>
+                    </audit:record>
+                    <audit:record ID="AUDREC5">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>addDatastream</audit:action>
+                        <audit:componentID>IMG_FULL</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2014-08-18T10:49:21.277Z</audit:date>
+                        <audit:justification/>
+                    </audit:record>
+                    <audit:record ID="AUDREC6">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>modifyDatastreamByValue</audit:action>
+                        <audit:componentID>RELS-EXT</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2014-08-18T10:49:21.359Z</audit:date>
+                        <audit:justification/>
+                    </audit:record>
+                    <audit:record ID="AUDREC7">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>ingest</audit:action>
+                        <audit:componentID/>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2015-08-31T13:27:42.714Z</audit:date>
+                        <audit:justification>Initial ingest</audit:justification>
+                    </audit:record>
+                    <audit:record ID="AUDREC8">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>purgeDatastream</audit:action>
+                        <audit:componentID>IMG_FULL</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2019-03-13T12:31:45.958Z</audit:date>
+                        <audit:justification>Purged datastream (ID=IMG_FULL), versions ranging from the beginning of time to the end of time.  This resulted in the permanent removal of 1 datastream version(s) (2014-08-18T12:49:21.277Z) and all associated audit records.</audit:justification>
+                    </audit:record>
+                    <audit:record ID="AUDREC9">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>addDatastream</audit:action>
+                        <audit:componentID>IMG_FULL</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2019-03-13T12:31:46.025Z</audit:date>
+                        <audit:justification/>
+                    </audit:record>
+                    <audit:record ID="AUDREC10">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>purgeDatastream</audit:action>
+                        <audit:componentID>IMG_PREVIEW</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2019-03-13T12:31:46.056Z</audit:date>
+                        <audit:justification>Purged datastream (ID=IMG_PREVIEW), versions ranging from the beginning of time to the end of time.  This resulted in the permanent removal of 1 datastream version(s) (2013-05-24T11:19:52.888Z) and all associated audit records.</audit:justification>
+                    </audit:record>
+                    <audit:record ID="AUDREC11">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>addDatastream</audit:action>
+                        <audit:componentID>IMG_PREVIEW</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2019-03-13T12:31:46.090Z</audit:date>
+                        <audit:justification/>
+                    </audit:record>
+                    <audit:record ID="AUDREC12">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>purgeDatastream</audit:action>
+                        <audit:componentID>IMG_THUMB</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2019-03-13T12:31:46.116Z</audit:date>
+                        <audit:justification>Purged datastream (ID=IMG_THUMB), versions ranging from the beginning of time to the end of time.  This resulted in the permanent removal of 1 datastream version(s) (2014-08-18T12:49:21.176Z) and all associated audit records.</audit:justification>
+                    </audit:record>
+                    <audit:record ID="AUDREC13">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>addDatastream</audit:action>
+                        <audit:componentID>IMG_THUMB</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2019-03-13T12:31:46.135Z</audit:date>
+                        <audit:justification/>
+                    </audit:record>
+                    <audit:record ID="AUDREC14">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>modifyDatastreamByValue</audit:action>
+                        <audit:componentID>RELS-EXT</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2019-03-13T12:31:46.166Z</audit:date>
+                        <audit:justification/>
+                    </audit:record>
+                    <audit:record ID="AUDREC15">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>modifyDatastreamByValue</audit:action>
+                        <audit:componentID>DC</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2020-01-03T00:20:44.669Z</audit:date>
+                        <audit:justification/>
+                    </audit:record>
+                    <audit:record ID="AUDREC16">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>purgeDatastream</audit:action>
+                        <audit:componentID>POLICY</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2020-01-03T00:20:44.847Z</audit:date>
+                        <audit:justification> . . . Purged datastream (ID=POLICY), versions ranging from the beginning of time to the end of time.  This resulted in the permanent removal of 0 datastream version(s) () and all associated audit records.</audit:justification>
+                    </audit:record>
+                    <audit:record ID="AUDREC17">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>addDatastream</audit:action>
+                        <audit:componentID>POLICY</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2020-01-03T00:20:44.877Z</audit:date>
+                        <audit:justification/>
+                    </audit:record>
+                    <audit:record ID="AUDREC18">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>modifyDatastreamByValue</audit:action>
+                        <audit:componentID>DC</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2020-01-03T02:39:27.409Z</audit:date>
+                        <audit:justification/>
+                    </audit:record>
+                    <audit:record ID="AUDREC19">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>purgeDatastream</audit:action>
+                        <audit:componentID>POLICY</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2020-01-03T02:39:27.489Z</audit:date>
+                        <audit:justification> . . . Purged datastream (ID=POLICY), versions ranging from the beginning of time to the end of time.  This resulted in the permanent removal of 1 datastream version(s) (2020-01-03T01:20:44.877Z) and all associated audit records.</audit:justification>
+                    </audit:record>
+                    <audit:record ID="AUDREC20">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>addDatastream</audit:action>
+                        <audit:componentID>POLICY</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2020-01-03T02:39:27.519Z</audit:date>
+                        <audit:justification/>
+                    </audit:record>
+                    <audit:record ID="AUDREC21">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>modifyDatastreamByValue</audit:action>
+                        <audit:componentID>DC</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2021-02-08T02:08:15.420Z</audit:date>
+                        <audit:justification/>
+                    </audit:record>
+                    <audit:record ID="AUDREC22">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>purgeDatastream</audit:action>
+                        <audit:componentID>POLICY</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2021-02-08T02:08:15.490Z</audit:date>
+                        <audit:justification> . . . Purged datastream (ID=POLICY), versions ranging from the beginning of time to the end of time.  This resulted in the permanent removal of 1 datastream version(s) (2020-01-03T03:39:27.519Z) and all associated audit records.</audit:justification>
+                    </audit:record>
+                    <audit:record ID="AUDREC23">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>addDatastream</audit:action>
+                        <audit:componentID>POLICY</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2021-02-08T02:08:15.513Z</audit:date>
+                        <audit:justification/>
+                    </audit:record>
+                    <audit:record ID="AUDREC24">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>modifyDatastreamByValue</audit:action>
+                        <audit:componentID>DC</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2021-03-23T07:12:13.980Z</audit:date>
+                        <audit:justification/>
+                    </audit:record>
+                    <audit:record ID="AUDREC25">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>purgeDatastream</audit:action>
+                        <audit:componentID>POLICY</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2021-03-23T07:12:14.050Z</audit:date>
+                        <audit:justification> . . . Purged datastream (ID=POLICY), versions ranging from the beginning of time to the end of time.  This resulted in the permanent removal of 1 datastream version(s) (2021-02-08T03:08:15.513Z) and all associated audit records.</audit:justification>
+                    </audit:record>
+                    <audit:record ID="AUDREC26">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>addDatastream</audit:action>
+                        <audit:componentID>POLICY</audit:componentID>
+                        <audit:responsibility>fedoraAdmin</audit:responsibility>
+                        <audit:date>2021-03-23T07:12:14.093Z</audit:date>
+                        <audit:justification/>
+                    </audit:record>
+                </audit:auditTrail>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+    </foxml:datastream>
+    <foxml:datastream ID="DC" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+        <foxml:datastreamVersion ID="DC.0" LABEL="Dublin Core Record for this object" CREATED="2013-04-25T15:07:31.000Z" MIMETYPE="text/xml" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="467">
+            <foxml:xmlContent>
+                <oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+                    <dc:title>3</dc:title>
+                    <dc:type>model:page</dc:type>
+                    <dc:identifier>uuid:534faa9e-b675-46f3-a4db-e107127a1112</dc:identifier>
+                    <dc:rights>policy:private</dc:rights>
+                </oai_dc:dc>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+        <foxml:datastreamVersion ID="DC.1" LABEL="Dublin Core Record for this object" CREATED="2020-01-03T00:20:44.669Z" MIMETYPE="text/xml" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="466">
+            <foxml:xmlContent>
+                <oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+                    <dc:title>3</dc:title>
+                    <dc:type>model:page</dc:type>
+                    <dc:identifier>uuid:534faa9e-b675-46f3-a4db-e107127a1112</dc:identifier>
+                    <dc:rights>policy:public</dc:rights>
+                </oai_dc:dc>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+        <foxml:datastreamVersion ID="DC.2" LABEL="Dublin Core Record for this object" CREATED="2020-01-03T02:39:27.409Z" MIMETYPE="text/xml" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="466">
+            <foxml:xmlContent>
+                <oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+                    <dc:title>3</dc:title>
+                    <dc:type>model:page</dc:type>
+                    <dc:identifier>uuid:534faa9e-b675-46f3-a4db-e107127a1112</dc:identifier>
+                    <dc:rights>policy:public</dc:rights>
+                </oai_dc:dc>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+        <foxml:datastreamVersion ID="DC.3" LABEL="Dublin Core Record for this object" CREATED="2021-02-08T02:08:15.420Z" MIMETYPE="text/xml" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="467">
+            <foxml:xmlContent>
+                <oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+                    <dc:title>3</dc:title>
+                    <dc:type>model:page</dc:type>
+                    <dc:identifier>uuid:534faa9e-b675-46f3-a4db-e107127a1112</dc:identifier>
+                    <dc:rights>policy:private</dc:rights>
+                </oai_dc:dc>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+        <foxml:datastreamVersion ID="DC.4" LABEL="Dublin Core Record for this object" CREATED="2021-03-23T07:12:13.980Z" MIMETYPE="text/xml" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="467">
+            <foxml:xmlContent>
+                <oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+                    <dc:title>3</dc:title>
+                    <dc:type>model:page</dc:type>
+                    <dc:identifier>uuid:534faa9e-b675-46f3-a4db-e107127a1112</dc:identifier>
+                    <dc:rights>policy:private</dc:rights>
+                </oai_dc:dc>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+    </foxml:datastream>
+    <foxml:datastream ID="BIBLIO_MODS" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+        <foxml:datastreamVersion ID="BIBLIO_MODS.0" LABEL="BIBLIO_MODS description of current object" CREATED="2013-04-25T15:07:31.000Z" MIMETYPE="text/xml" FORMAT_URI="http://www.loc.gov/mods/v3" SIZE="1177">
+            <foxml:xmlContent>
+                <mods:modsCollection xmlns:mods="http://www.loc.gov/mods/v3" schemaLocation="http://www.loc.gov/mods/v3 https://raw.github.com/moravianlibrary/MEditor/master/resources/xml/mods-3-3.xsd">
+                    <mods:mods version="3.3">
+                        <mods:identifier type="urn">534faa9e-b675-46f3-a4db-e107127a1112</mods:identifier>
+                        <mods:identifier type="sici"/>
+                        <mods:titleInfo>
+                            <mods:title>3</mods:title>
+                        </mods:titleInfo>
+                        <mods:typeOfResource>text</mods:typeOfResource>
+                        <mods:part type="NormalPage">
+                            <mods:detail type="pageNumber">
+                                <mods:number>3</mods:number>
+                            </mods:detail>
+                            <mods:detail type="pageIndex">
+                                <mods:number>3</mods:number>
+                            </mods:detail>
+                        </mods:part>
+                        <mods:location>
+                            <mods:url>http://kramerius.fsv.cuni.cz/search/handle/uuid:534faa9e-b675-46f3-a4db-e107127a1112</mods:url>
+                        </mods:location>
+                        <mods:identifier type="uuid">uuid:534faa9e-b675-46f3-a4db-e107127a1112</mods:identifier>
+                    </mods:mods>
+                </mods:modsCollection>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+    </foxml:datastream>
+    <foxml:datastream ID="RELS-EXT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+        <foxml:datastreamVersion ID="RELS_EXT.0" LABEL="RDF Statements about this object" CREATED="2013-04-25T15:07:31.000Z" MIMETYPE="application/rdf+xml" FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0" SIZE="621">
+            <foxml:xmlContent>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:kramerius="http://www.nsdl.org/ontologies/relationships#">
+                    <rdf:Description rdf:about="info:fedora/uuid:534faa9e-b675-46f3-a4db-e107127a1112">
+                        <fedora-model:hasModel xmlns:fedora-model="info:fedora/fedora-system:def/model#" rdf:resource="info:fedora/model:page"></fedora-model:hasModel>
+                        <oai:itemID xmlns:oai="http://www.openarchives.org/OAI/2.0/">uuid:534faa9e-b675-46f3-a4db-e107127a1112</oai:itemID>
+                        <kramerius:policy>policy:private</kramerius:policy>
+                    </rdf:Description>
+                </rdf:RDF>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+        <foxml:datastreamVersion ID="RELS-EXT.1" LABEL="RDF Statements about this object" CREATED="2013-05-24T09:08:16.955Z" MIMETYPE="application/rdf+xml" FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0" SIZE="586">
+            <foxml:xmlContent>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+                    <rdf:Description rdf:about="info:fedora/uuid:534faa9e-b675-46f3-a4db-e107127a1112">
+                        <hasModel xmlns="info:fedora/fedora-system:def/model#" rdf:resource="info:fedora/model:page"></hasModel>
+                        <itemID xmlns="http://www.openarchives.org/OAI/2.0/">uuid:534faa9e-b675-46f3-a4db-e107127a1112</itemID>
+                        <policy xmlns="http://www.nsdl.org/ontologies/relationships#">policy:private</policy>
+                        <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">kramerius4://deepZoomCache</tiles-url>
+                    </rdf:Description>
+
+                </rdf:RDF>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+        <foxml:datastreamVersion ID="RELS-EXT.2" LABEL="RDF Statements about this object" CREATED="2014-08-18T10:49:21.359Z" MIMETYPE="application/rdf+xml" FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0" SIZE="667">
+            <foxml:xmlContent>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                    <rdf:Description rdf:about="info:fedora/uuid:534faa9e-b675-46f3-a4db-e107127a1112">
+                        <hasModel xmlns="info:fedora/fedora-system:def/model#" rdf:resource="info:fedora/model:page"></hasModel>
+                        <itemID xmlns="http://www.openarchives.org/OAI/2.0/">uuid:534faa9e-b675-46f3-a4db-e107127a1112</itemID>
+                        <policy xmlns="http://www.nsdl.org/ontologies/relationships#">policy:private</policy>
+                        <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">http://meditor.fsv.cuni.cz/imageserver/mzk01/000/181/899/396341e0-d29d-3680-b911-a50adc3f9a47</tiles-url>
+                    </rdf:Description>
+                </rdf:RDF>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+        <foxml:datastreamVersion ID="RELS-EXT.3" LABEL="RDF Statements about this object" CREATED="2014-11-15T12:33:28.875Z" MIMETYPE="application/rdf+xml" FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0" SIZE="929">
+            <foxml:xmlContent>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+                    <rdf:Description rdf:about="info:fedora/uuid:534faa9e-b675-46f3-a4db-e107127a1112">
+                        <hasModel xmlns="info:fedora/fedora-system:def/model#" rdf:resource="info:fedora/model:page"></hasModel>
+                        <itemID xmlns="http://www.openarchives.org/OAI/2.0/">uuid:534faa9e-b675-46f3-a4db-e107127a1112</itemID>
+                        <policy xmlns="http://www.nsdl.org/ontologies/relationships#">policy:private</policy>
+                        <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">http://meditor.fsv.cuni.cz/imageserver/mzk01/000/181/899/396341e0-d29d-3680-b911-a50adc3f9a47</tiles-url>
+                        <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">kramerius4://deepZoomCache</tiles-url>
+                        <replicatedFrom xmlns="http://www.nsdl.org/ontologies/relationships#">http://kramerius.fsv.cuni.cz/search/handle/uuid:534faa9e-b675-46f3-a4db-e107127a1112</replicatedFrom></rdf:Description>
+
+                </rdf:RDF>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+        <foxml:datastreamVersion ID="RELS-EXT.4" LABEL="RDF Statements about this object" CREATED="2019-03-13T12:31:46.166Z" MIMETYPE="application/rdf+xml" FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0" SIZE="838">
+            <foxml:xmlContent>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                    <rdf:Description rdf:about="info:fedora/uuid:534faa9e-b675-46f3-a4db-e107127a1112">
+                        <hasModel xmlns="info:fedora/fedora-system:def/model#" rdf:resource="info:fedora/model:page"></hasModel>
+                        <itemID xmlns="http://www.openarchives.org/OAI/2.0/">uuid:534faa9e-b675-46f3-a4db-e107127a1112</itemID>
+                        <policy xmlns="http://www.nsdl.org/ontologies/relationships#">policy:private</policy>
+                        <replicatedFrom xmlns="http://www.nsdl.org/ontologies/relationships#">http://kramerius.fsv.cuni.cz/search/handle/uuid:534faa9e-b675-46f3-a4db-e107127a1112</replicatedFrom>
+                        <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">http://imageserver.mzk.cz/mzk01/000/181/899/1949/34/534faa9e-b675-46f3-a4db-e107127a1112</tiles-url>
+                    </rdf:Description>
+                </rdf:RDF>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+        <foxml:datastreamVersion ID="RELS-EXT.5" LABEL="RDF Statements about this object" CREATED="2020-01-03T00:20:44.712Z" MIMETYPE="application/rdf+xml" FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0" SIZE="734">
+            <foxml:xmlContent>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+                    <rdf:Description rdf:about="info:fedora/uuid:534faa9e-b675-46f3-a4db-e107127a1112">
+                        <hasModel xmlns="info:fedora/fedora-system:def/model#" rdf:resource="info:fedora/model:page"></hasModel>
+                        <itemID xmlns="http://www.openarchives.org/OAI/2.0/">uuid:534faa9e-b675-46f3-a4db-e107127a1112</itemID>
+                        <replicatedFrom xmlns="http://www.nsdl.org/ontologies/relationships#">http://kramerius.fsv.cuni.cz/search/handle/uuid:534faa9e-b675-46f3-a4db-e107127a1112</replicatedFrom>
+                        <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">http://imageserver.mzk.cz/mzk01/000/181/899/1949/34/534faa9e-b675-46f3-a4db-e107127a1112</tiles-url>
+                    </rdf:Description>
+
+                </rdf:RDF>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+        <foxml:datastreamVersion ID="RELS-EXT.6" LABEL="RDF Statements about this object" CREATED="2020-01-03T00:20:44.820Z" MIMETYPE="application/rdf+xml" FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0" SIZE="820">
+            <foxml:xmlContent>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+                    <rdf:Description rdf:about="info:fedora/uuid:534faa9e-b675-46f3-a4db-e107127a1112">
+                        <hasModel xmlns="info:fedora/fedora-system:def/model#" rdf:resource="info:fedora/model:page"></hasModel>
+                        <itemID xmlns="http://www.openarchives.org/OAI/2.0/">uuid:534faa9e-b675-46f3-a4db-e107127a1112</itemID>
+                        <replicatedFrom xmlns="http://www.nsdl.org/ontologies/relationships#">http://kramerius.fsv.cuni.cz/search/handle/uuid:534faa9e-b675-46f3-a4db-e107127a1112</replicatedFrom>
+                        <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">http://imageserver.mzk.cz/mzk01/000/181/899/1949/34/534faa9e-b675-46f3-a4db-e107127a1112</tiles-url>
+                        <policy xmlns="http://www.nsdl.org/ontologies/relationships#">policy:public</policy>
+                    </rdf:Description>
+
+                </rdf:RDF>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+        <foxml:datastreamVersion ID="RELS-EXT.7" LABEL="RDF Statements about this object" CREATED="2020-01-03T02:39:27.442Z" MIMETYPE="application/rdf+xml" FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0" SIZE="734">
+            <foxml:xmlContent>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+                    <rdf:Description rdf:about="info:fedora/uuid:534faa9e-b675-46f3-a4db-e107127a1112">
+                        <hasModel xmlns="info:fedora/fedora-system:def/model#" rdf:resource="info:fedora/model:page"></hasModel>
+                        <itemID xmlns="http://www.openarchives.org/OAI/2.0/">uuid:534faa9e-b675-46f3-a4db-e107127a1112</itemID>
+                        <replicatedFrom xmlns="http://www.nsdl.org/ontologies/relationships#">http://kramerius.fsv.cuni.cz/search/handle/uuid:534faa9e-b675-46f3-a4db-e107127a1112</replicatedFrom>
+                        <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">http://imageserver.mzk.cz/mzk01/000/181/899/1949/34/534faa9e-b675-46f3-a4db-e107127a1112</tiles-url>
+                    </rdf:Description>
+
+                </rdf:RDF>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+        <foxml:datastreamVersion ID="RELS-EXT.8" LABEL="RDF Statements about this object" CREATED="2020-01-03T02:39:27.464Z" MIMETYPE="application/rdf+xml" FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0" SIZE="820">
+            <foxml:xmlContent>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+                    <rdf:Description rdf:about="info:fedora/uuid:534faa9e-b675-46f3-a4db-e107127a1112">
+                        <hasModel xmlns="info:fedora/fedora-system:def/model#" rdf:resource="info:fedora/model:page"></hasModel>
+                        <itemID xmlns="http://www.openarchives.org/OAI/2.0/">uuid:534faa9e-b675-46f3-a4db-e107127a1112</itemID>
+                        <replicatedFrom xmlns="http://www.nsdl.org/ontologies/relationships#">http://kramerius.fsv.cuni.cz/search/handle/uuid:534faa9e-b675-46f3-a4db-e107127a1112</replicatedFrom>
+                        <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">http://imageserver.mzk.cz/mzk01/000/181/899/1949/34/534faa9e-b675-46f3-a4db-e107127a1112</tiles-url>
+                        <policy xmlns="http://www.nsdl.org/ontologies/relationships#">policy:public</policy>
+                    </rdf:Description>
+
+                </rdf:RDF>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+        <foxml:datastreamVersion ID="RELS-EXT.9" LABEL="RDF Statements about this object" CREATED="2021-02-08T02:08:15.446Z" MIMETYPE="application/rdf+xml" FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0" SIZE="734">
+            <foxml:xmlContent>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+                    <rdf:Description rdf:about="info:fedora/uuid:534faa9e-b675-46f3-a4db-e107127a1112">
+                        <hasModel xmlns="info:fedora/fedora-system:def/model#" rdf:resource="info:fedora/model:page"></hasModel>
+                        <itemID xmlns="http://www.openarchives.org/OAI/2.0/">uuid:534faa9e-b675-46f3-a4db-e107127a1112</itemID>
+                        <replicatedFrom xmlns="http://www.nsdl.org/ontologies/relationships#">http://kramerius.fsv.cuni.cz/search/handle/uuid:534faa9e-b675-46f3-a4db-e107127a1112</replicatedFrom>
+                        <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">http://imageserver.mzk.cz/mzk01/000/181/899/1949/34/534faa9e-b675-46f3-a4db-e107127a1112</tiles-url>
+                    </rdf:Description>
+
+                </rdf:RDF>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+        <foxml:datastreamVersion ID="RELS-EXT.10" LABEL="RDF Statements about this object" CREATED="2021-02-08T02:08:15.467Z" MIMETYPE="application/rdf+xml" FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0" SIZE="821">
+            <foxml:xmlContent>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+                    <rdf:Description rdf:about="info:fedora/uuid:534faa9e-b675-46f3-a4db-e107127a1112">
+                        <hasModel xmlns="info:fedora/fedora-system:def/model#" rdf:resource="info:fedora/model:page"></hasModel>
+                        <itemID xmlns="http://www.openarchives.org/OAI/2.0/">uuid:534faa9e-b675-46f3-a4db-e107127a1112</itemID>
+                        <replicatedFrom xmlns="http://www.nsdl.org/ontologies/relationships#">http://kramerius.fsv.cuni.cz/search/handle/uuid:534faa9e-b675-46f3-a4db-e107127a1112</replicatedFrom>
+                        <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">http://imageserver.mzk.cz/mzk01/000/181/899/1949/34/534faa9e-b675-46f3-a4db-e107127a1112</tiles-url>
+                        <policy xmlns="http://www.nsdl.org/ontologies/relationships#">policy:private</policy>
+                    </rdf:Description>
+
+                </rdf:RDF>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+        <foxml:datastreamVersion ID="RELS-EXT.11" LABEL="RDF Statements about this object" CREATED="2021-03-23T07:12:14.005Z" MIMETYPE="application/rdf+xml" FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0" SIZE="734">
+            <foxml:xmlContent>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+                    <rdf:Description rdf:about="info:fedora/uuid:534faa9e-b675-46f3-a4db-e107127a1112">
+                        <hasModel xmlns="info:fedora/fedora-system:def/model#" rdf:resource="info:fedora/model:page"></hasModel>
+                        <itemID xmlns="http://www.openarchives.org/OAI/2.0/">uuid:534faa9e-b675-46f3-a4db-e107127a1112</itemID>
+                        <replicatedFrom xmlns="http://www.nsdl.org/ontologies/relationships#">http://kramerius.fsv.cuni.cz/search/handle/uuid:534faa9e-b675-46f3-a4db-e107127a1112</replicatedFrom>
+                        <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">http://imageserver.mzk.cz/mzk01/000/181/899/1949/34/534faa9e-b675-46f3-a4db-e107127a1112</tiles-url>
+                    </rdf:Description>
+
+                </rdf:RDF>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+        <foxml:datastreamVersion ID="RELS-EXT.12" LABEL="RDF Statements about this object" CREATED="2021-03-23T07:12:14.023Z" MIMETYPE="application/rdf+xml" FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0" SIZE="821">
+            <foxml:xmlContent>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+                    <rdf:Description rdf:about="info:fedora/uuid:534faa9e-b675-46f3-a4db-e107127a1112">
+                        <hasModel xmlns="info:fedora/fedora-system:def/model#" rdf:resource="info:fedora/model:page"></hasModel>
+                        <itemID xmlns="http://www.openarchives.org/OAI/2.0/">uuid:534faa9e-b675-46f3-a4db-e107127a1112</itemID>
+                        <replicatedFrom xmlns="http://www.nsdl.org/ontologies/relationships#">http://kramerius.fsv.cuni.cz/search/handle/uuid:534faa9e-b675-46f3-a4db-e107127a1112</replicatedFrom>
+                        <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">http://imageserver.mzk.cz/mzk01/000/181/899/1949/34/534faa9e-b675-46f3-a4db-e107127a1112</tiles-url>
+                        <policy xmlns="http://www.nsdl.org/ontologies/relationships#">policy:private</policy>
+                    </rdf:Description>
+
+                </rdf:RDF>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+    </foxml:datastream>
+
+
+    <foxml:datastream ID="IMG_THUMB" STATE="A" CONTROL_GROUP="E" VERSIONABLE="false">
+        <foxml:datastreamVersion ID="IMG_THUMB.0" LABEL="" CREATED="2019-03-13T12:31:46.135Z" MIMETYPE="image/jpeg">
+            <foxml:contentLocation TYPE="URL" REF="http://imageserver.mzk.cz/mzk01/000/181/899/1949/34/534faa9e-b675-46f3-a4db-e107127a1112/thumb.jpg"/>
+        </foxml:datastreamVersion>
+    </foxml:datastream>
+    <foxml:datastream ID="POLICY" STATE="A" CONTROL_GROUP="E" VERSIONABLE="false">
+        <foxml:datastreamVersion ID="POLICY.0" LABEL="" CREATED="2021-03-23T07:12:14.093Z" MIMETYPE="application/rdf+xml">
+            <foxml:contentLocation TYPE="URL" REF="http://local.fedora.server/fedora/get/policy:private/POLICYDEF"/>
+        </foxml:datastreamVersion>
+    </foxml:datastream>
+</foxml:digitalObject>
