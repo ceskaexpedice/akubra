@@ -31,15 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class RelsExtInternalSaxUtilsTest {
 
 
-//    @Test
-//    public void testReadBiBLIO_MODSNDK_2_GetContent() throws IOException {
-//        InputStream is = RepositoryUtilsTest.class.getResourceAsStream("info%253Afedora%252Fuuid%253Aa47ea67b-87d5-4a05-a817-aa65b26eb515");
-//        assertNotNull(is);
-//        InputStream biblioMods = RepositoryUtils.getDatastreamContent("",is, "BIBLIO_MODS", null);
-//        Element docElement = DomUtils.streamToDocument(biblioMods, true).getDocumentElement();
-//        assertTrue(docElement != null);
-//    }
-
     @Test
     public void testRelsExtSaxUtils() {
         InputStream is = RelsExtInternalSaxUtilsTest.class.getResourceAsStream("info%253Afedora%252Fuuid%253A3a288340-a00e-11e8-a81d-5ef3fc9bb22f");
