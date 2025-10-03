@@ -34,6 +34,7 @@ public class GetTilesUrlSaxHandler extends DefaultHandler {
     private boolean insideTilesUrl = false;
 
     private String tilesUrl = null;
+
     private String versionable = "false";
     private int lastAcceptedVersion = 0;
     private int currentVersion = 0;

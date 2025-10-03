@@ -34,11 +34,25 @@ public class GetModelSaxHandler extends DefaultHandler {
     private boolean insideRdfDescription = false;
     private String model = null;
 
+    private String versionable = "false";
+    private int lastAcceptedVersion = 0;
+    private int currentVersion = 0;
+
+
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         if ("datastream".equals(localName) && KnownDatastreams.RELS_EXT.toString().equals(attributes.getValue("ID"))) {
+            this.versionable = attributes.getValue("VERSIONABLE");
             insideRelsExt = true;
         }
+        if ("datastreamVersion".equals(localName) && versionable.trim().equals("true")) {
+            String versionName =  attributes.getValue("ID");
+            if (versionName.contains(".")) {
+                versionName = versionName.substring(versionName.indexOf(".")+1);
+                this.currentVersion = Integer.parseInt(versionName);
+            }
+        }
+
         if (insideRelsExt && "xmlContent".equals(localName)) {
             insideXmlContent = true;
         }
@@ -50,8 +64,14 @@ public class GetModelSaxHandler extends DefaultHandler {
                 String modelT = attributes.getValue(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
                 PIDParser pidParser = new PIDParser(modelT);
                 pidParser.disseminationURI();
-                model = pidParser.getObjectId();
-                throw new SAXException(FOUND); // Stop parsing early
+
+                if (versionable.trim().equals("true")) {
+                    if (currentVersion >= lastAcceptedVersion) {
+                        model = pidParser.getObjectId();
+                    }
+                } else {
+                    model = pidParser.getObjectId();
+                }
             } catch (LexerException e) {
                 throw new RepositoryException(e);
             }
@@ -66,12 +86,25 @@ public class GetModelSaxHandler extends DefaultHandler {
         if ("xmlContent".equals(localName)) {
             insideXmlContent = false;
         }
-        if ("rdf:Description".equals(localName)) {
+        if ("Description".equals(localName)) {
             insideRdfDescription = false;
+        }
+
+        if ("hasModel".equals(localName)) {
+            lastAcceptedVersion = currentVersion;
         }
     }
 
     public String getModel() {
         return model;
     }
+
+    public int getLastAcceptedVersion() {
+        return lastAcceptedVersion;
+    }
+
+    public String getVersionable() {
+        return versionable;
+    }
+
 }
