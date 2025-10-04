@@ -310,6 +310,7 @@
                     <rdf:Description rdf:about="info:fedora/uuid:534faa9e-b675-46f3-a4db-e107127a1112">
                         <fedora-model:hasModel xmlns:fedora-model="info:fedora/fedora-system:def/model#" rdf:resource="info:fedora/model:page0"></fedora-model:hasModel>
                         <oai:itemID xmlns:oai="http://www.openarchives.org/OAI/2.0/">uuid:534faa9e-b675-46f3-a4db-e107127a1112</oai:itemID>
+                        <hasPage xmlns="http://www.nsdl.org/ontologies/relationships#" rdf:resource="info:fedora/uuid:c71a7ed0-19ef-11e7-8f17-005056822547jedna"></hasPage>
                         <kramerius:policy>policy:private</kramerius:policy>
                     </rdf:Description>
                 </rdf:RDF>
@@ -323,6 +324,7 @@
                         <hasModel xmlns="info:fedora/fedora-system:def/model#" rdf:resource="info:fedora/model:page1"></hasModel>
                         <itemID xmlns="http://www.openarchives.org/OAI/2.0/">uuid:534faa9e-b675-46f3-a4db-e107127a1112</itemID>
                         <policy xmlns="http://www.nsdl.org/ontologies/relationships#">policy:private</policy>
+                        <hasPage xmlns="http://www.nsdl.org/ontologies/relationships#" rdf:resource="info:fedora/uuid:c71a7ed0-19ef-11e7-8f17-005056822547dva"></hasPage>
                         <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">kramerius4://deepZoomCache</tiles-url>
                     </rdf:Description>
 
@@ -336,6 +338,7 @@
                         <hasModel xmlns="info:fedora/fedora-system:def/model#" rdf:resource="info:fedora/model:page2"></hasModel>
                         <itemID xmlns="http://www.openarchives.org/OAI/2.0/">uuid:534faa9e-b675-46f3-a4db-e107127a1112</itemID>
                         <policy xmlns="http://www.nsdl.org/ontologies/relationships#">policy:private</policy>
+                        <hasPage xmlns="http://www.nsdl.org/ontologies/relationships#" rdf:resource="info:fedora/uuid:c71a7ed0-19ef-11e7-8f17-005056822547tri"></hasPage>
                         <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">http://meditor.fsv.cuni.cz/imageserver/mzk01/000/181/899/396341e0-d29d-3680-b911-a50adc3f9a47</tiles-url>
                     </rdf:Description>
                 </rdf:RDF>
@@ -351,6 +354,7 @@
                         <policy xmlns="http://www.nsdl.org/ontologies/relationships#">policy:private</policy>
                         <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">http://meditor.fsv.cuni.cz/imageserver/mzk01/000/181/899/396341e0-d29d-3680-b911-a50adc3f9a47</tiles-url>
                         <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">kramerius4://deepZoomCache</tiles-url>
+                        <hasPage xmlns="http://www.nsdl.org/ontologies/relationships#" rdf:resource="info:fedora/uuid:c71a7ed0-19ef-11e7-8f17-005056822547ctyri"></hasPage>
                         <replicatedFrom xmlns="http://www.nsdl.org/ontologies/relationships#">http://kramerius.fsv.cuni.cz/search/handle/uuid:534faa9e-b675-46f3-a4db-e107127a1112</replicatedFrom></rdf:Description>
 
                 </rdf:RDF>
@@ -364,6 +368,7 @@
                         <itemID xmlns="http://www.openarchives.org/OAI/2.0/">uuid:534faa9e-b675-46f3-a4db-e107127a1112</itemID>
                         <policy xmlns="http://www.nsdl.org/ontologies/relationships#">policy:private</policy>
                         <replicatedFrom xmlns="http://www.nsdl.org/ontologies/relationships#">http://kramerius.fsv.cuni.cz/search/handle/uuid:534faa9e-b675-46f3-a4db-e107127a1112</replicatedFrom>
+                        <hasPage xmlns="http://www.nsdl.org/ontologies/relationships#" rdf:resource="info:fedora/uuid:c71a7ed0-19ef-11e7-8f17-005056822547pet"></hasPage>
                         <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">http://imageserver.mzk.cz/mzk01/000/181/899/1949/34/534faa9e-b675-46f3-a4db-e107127a1112</tiles-url>
                     </rdf:Description>
                 </rdf:RDF>
@@ -478,10 +483,14 @@
                         <hasModel xmlns="info:fedora/fedora-system:def/model#" rdf:resource="info:fedora/model:page12"></hasModel>
                         <itemID xmlns="http://www.openarchives.org/OAI/2.0/">uuid:534faa9e-b675-46f3-a4db-e107127a1112</itemID>
                         <replicatedFrom xmlns="http://www.nsdl.org/ontologies/relationships#">http://kramerius.fsv.cuni.cz/search/handle/uuid:534faa9e-b675-46f3-a4db-e107127a1112</replicatedFrom>
+
+                        <hasPage xmlns="http://www.nsdl.org/ontologies/relationships#" rdf:resource="info:fedora/uuid:c71a7ed0-19ef-11e7-8f17-005056822549"></hasPage>
+                        <hasPage xmlns="http://www.nsdl.org/ontologies/relationships#" rdf:resource="info:fedora/uuid:c71a7ed0-19ef-11e7-8f17-005056822548"></hasPage>
+                        <hasPage xmlns="http://www.nsdl.org/ontologies/relationships#" rdf:resource="info:fedora/uuid:c71a7ed0-19ef-11e7-8f17-005056822547"></hasPage>
+
                         <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">http://imageserver.mzk.cz/mzk01/000/181/899/1949/34/534faa9e-b675-46f3-a4db-e107127a1112</tiles-url>
                         <policy xmlns="http://www.nsdl.org/ontologies/relationships#">policy:private</policy>
 
-                        <hasPage xmlns="http://www.nsdl.org/ontologies/relationships#" rdf:resource="info:fedora/uuid:c71a7ed0-19ef-11e7-8f17-005056822549"></hasPage>
 
                     </rdf:Description>
 
