@@ -31,9 +31,8 @@ public class GetPidOfFirstChildSaxHandler extends DefaultHandler {
     private String firstChildPid = null;
 
     private String versionable = "false";
-    private int lastAcceptedVersion = 0;
-    private int currentVersion = 0;
-
+    private int lastAcceptedVersion = -1;
+    private int currentVersion = -1;
 
 
     @Override
@@ -59,7 +58,6 @@ public class GetPidOfFirstChildSaxHandler extends DefaultHandler {
             String fchild = null;
             for (KnownRelations target : KnownRelations.values()) {
                 if (localName.equals(String.valueOf(target.toString()))) { // Matches namespace-prefixed element names
-
                     String resource = attributes.getValue("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "resource");
                     if (resource != null && resource.startsWith("info:fedora/")) {
                         fchild = resource.substring("info:fedora/".length());
@@ -67,13 +65,16 @@ public class GetPidOfFirstChildSaxHandler extends DefaultHandler {
                     }
                 }
             }
-
-            if (versionable.trim().equals("true")) {
-                if (currentVersion >= lastAcceptedVersion) {
+            if (fchild != null) {
+                if (versionable.trim().equals("true")) {
+                    if (currentVersion > lastAcceptedVersion) {
+                        this.firstChildPid = fchild;
+                        this.lastAcceptedVersion = currentVersion;
+                    }
+                } else {
                     this.firstChildPid = fchild;
+                    throw new SAXException(FOUND);
                 }
-            } else {
-                this.firstChildPid = fchild;
             }
         }
     }
@@ -89,9 +90,9 @@ public class GetPidOfFirstChildSaxHandler extends DefaultHandler {
         if ("Description".equals(localName)) {
             insideRdfDescription = false;
         }
-        if ("datastreamVersion".equals(localName) && versionable.trim().equals("true")) {
-            lastAcceptedVersion = currentVersion;
-        }
+//        if ("datastreamVersion".equals(localName) && versionable.trim().equals("true")) {
+//            lastAcceptedVersion = currentVersion;
+//        }
     }
 
     public String getFirstChildPid() {
