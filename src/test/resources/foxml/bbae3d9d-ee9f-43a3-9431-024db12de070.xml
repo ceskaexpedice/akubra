@@ -47,5 +47,8 @@
         <kramerius:replicatedFrom xmlns="http://www.nsdl.org/ontologies/relationships#">http://kramerius.fsv.cuni.cz/search/handle/uuid:bbae3d9d-ee9f-43a3-9431-024db12de070</kramerius:replicatedFrom>
         <kramerius:tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">http://imageserver.mzk.cz/mzk01/000/181/899/1949/34/bbae3d9d-ee9f-43a3-9431-024db12de070</kramerius:tiles-url>
         <kramerius:policy xmlns="http://www.nsdl.org/ontologies/relationships#">policy:private</kramerius:policy>
+
+        <hasPage xmlns="http://www.nsdl.org/ontologies/relationships#" rdf:resource="info:fedora/uuid:c71a7ed0-19ef-11e7-8f17-005056822549"></hasPage>
+
     </rdf:Description>
 </rdf:RDF></xmlContent></datastreamVersion></datastream></digitalObject>

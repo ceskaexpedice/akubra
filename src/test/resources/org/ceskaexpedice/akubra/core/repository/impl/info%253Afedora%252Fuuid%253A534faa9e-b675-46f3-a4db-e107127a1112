@@ -480,14 +480,28 @@
                         <replicatedFrom xmlns="http://www.nsdl.org/ontologies/relationships#">http://kramerius.fsv.cuni.cz/search/handle/uuid:534faa9e-b675-46f3-a4db-e107127a1112</replicatedFrom>
                         <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">http://imageserver.mzk.cz/mzk01/000/181/899/1949/34/534faa9e-b675-46f3-a4db-e107127a1112</tiles-url>
                         <policy xmlns="http://www.nsdl.org/ontologies/relationships#">policy:private</policy>
-
-                        <hasPage xmlns="http://www.nsdl.org/ontologies/relationships#" rdf:resource="info:fedora/uuid:c71a7ed0-19ef-11e7-8f17-005056822549"></hasPage>
-
                     </rdf:Description>
 
                 </rdf:RDF>
             </foxml:xmlContent>
         </foxml:datastreamVersion>
+
+        <foxml:datastreamVersion ID="RELS-EXT.13" LABEL="RDF Statements about this object" CREATED="2021-03-23T07:12:14.023Z" MIMETYPE="application/rdf+xml" FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0" SIZE="821">
+            <foxml:xmlContent>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" id-test="final-version">
+
+                    <rdf:Description rdf:about="info:fedora/uuid:534faa9e-b675-46f3-a4db-e107127a1112">
+                        <hasModel xmlns="info:fedora/fedora-system:def/model#" rdf:resource="info:fedora/model:page13"></hasModel>
+                        <itemID xmlns="http://www.openarchives.org/OAI/2.0/">uuid:534faa9e-b675-46f3-a4db-e107127a1112</itemID>
+                        <replicatedFrom xmlns="http://www.nsdl.org/ontologies/relationships#">http://kramerius.fsv.cuni.cz/search/handle/uuid:534faa9e-b675-46f3-a4db-e107127a1112</replicatedFrom>
+                        <tiles-url xmlns="http://www.nsdl.org/ontologies/relationships#">http://imageserver.mzk.cz/mzk01/000/181/899/1949/34/534faa9e-b675-46f3-a4db-e107127a1112</tiles-url>
+                        <policy xmlns="http://www.nsdl.org/ontologies/relationships#">policy:private:final</policy>
+                    </rdf:Description>
+
+                </rdf:RDF>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+
     </foxml:datastream>
 
 

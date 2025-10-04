@@ -21,6 +21,7 @@ import org.ceskaexpedice.akubra.KnownDatastreams;
 import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.dom4j.Document;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 
@@ -85,6 +86,18 @@ public class RepositoryUtilsTest {
         InputStream biblioMods = RepositoryUtils.getDatastreamContent("",is, "BIBLIO_MODS", null);
         Element docElement = DomUtils.streamToDocument(biblioMods, true).getDocumentElement();
         assertTrue(docElement != null);
+    }
+
+
+    @Test
+    public void testReadRELEXT_MultiversionedGetContent() throws IOException {
+        InputStream is = RepositoryUtilsTest.class.getResourceAsStream("info%253Afedora%252Fuuid%253A534faa9e-b675-46f3-a4db-e107127a1112");
+        assertNotNull(is);
+        InputStream datastreamContent = RepositoryUtils.getDatastreamContent("uuid:534faa9e-b675-46f3-a4db-e107127a1112", is, "RELS-EXT", null);
+        org.w3c.dom.Document document = DomUtils.streamToDocument(datastreamContent, true);
+        String attribute = document.getDocumentElement().getAttribute("id-test");
+        Assertions.assertTrue(attribute != null);
+        Assertions.assertEquals("final-version", attribute);
     }
 
 }
