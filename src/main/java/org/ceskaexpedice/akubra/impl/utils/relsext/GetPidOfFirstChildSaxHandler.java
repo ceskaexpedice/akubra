@@ -30,10 +30,23 @@ public class GetPidOfFirstChildSaxHandler extends DefaultHandler {
     private boolean insideRdfDescription = false;
     private String firstChildPid = null;
 
+    private String versionable = "false";
+    private int lastAcceptedVersion = -1;
+    private int currentVersion = -1;
+
+
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         if ("datastream".equals(localName) && KnownDatastreams.RELS_EXT.toString().equals(attributes.getValue("ID"))) {
+            this.versionable = attributes.getValue("VERSIONABLE");
             insideRelsExt = true;
+        }
+        if ("datastreamVersion".equals(localName) && versionable.trim().equals("true")) {
+            String versionName =  attributes.getValue("ID");
+            if (versionName.contains(".")) {
+                versionName = versionName.substring(versionName.indexOf(".")+1);
+                this.currentVersion = Integer.parseInt(versionName);
+            }
         }
         if (insideRelsExt && "xmlContent".equals(localName)) {
             insideXmlContent = true;
@@ -42,14 +55,25 @@ public class GetPidOfFirstChildSaxHandler extends DefaultHandler {
             insideRdfDescription = true;
         }
         if (insideRdfDescription) {
+            String fchild = null;
             for (KnownRelations target : KnownRelations.values()) {
                 if (localName.equals(String.valueOf(target.toString()))) { // Matches namespace-prefixed element names
-
                     String resource = attributes.getValue("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "resource");
                     if (resource != null && resource.startsWith("info:fedora/")) {
-                        firstChildPid = resource.substring("info:fedora/".length());
-                        throw new SAXException(FOUND); // Stop parsing early
+                        fchild = resource.substring("info:fedora/".length());
+                        break;
                     }
+                }
+            }
+            if (fchild != null) {
+                if (versionable.trim().equals("true")) {
+                    if (currentVersion > lastAcceptedVersion) {
+                        this.firstChildPid = fchild;
+                        this.lastAcceptedVersion = currentVersion;
+                    }
+                } else {
+                    this.firstChildPid = fchild;
+                    throw new SAXException(FOUND);
                 }
             }
         }
@@ -66,9 +90,21 @@ public class GetPidOfFirstChildSaxHandler extends DefaultHandler {
         if ("Description".equals(localName)) {
             insideRdfDescription = false;
         }
+//        if ("datastreamVersion".equals(localName) && versionable.trim().equals("true")) {
+//            lastAcceptedVersion = currentVersion;
+//        }
     }
 
     public String getFirstChildPid() {
         return firstChildPid;
     }
+
+    public int getLastAcceptedVersion() {
+        return lastAcceptedVersion;
+    }
+
+    public String getVersionable() {
+        return versionable;
+    }
+
 }
