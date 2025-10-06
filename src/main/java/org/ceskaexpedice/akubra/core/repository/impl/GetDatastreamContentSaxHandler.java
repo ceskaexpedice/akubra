@@ -197,11 +197,12 @@ class GetDatastreamContentSaxHandler extends DefaultHandler {
     private String contentLocationRef;
     private String contentLocationType;
 
-
+    private String versionable = "false";
+    private int lastAcceptedVersion = -1;
+    private int currentVersion = -1;
 
     private final Map<String, String> pendingMappings = new LinkedHashMap<>();
     private final Map<String, String> allSeenNamespaces = new LinkedHashMap<>();
-
     private final Deque<LRElement> elementStack = new ArrayDeque<>();
 
     @Override
@@ -217,7 +218,6 @@ class GetDatastreamContentSaxHandler extends DefaultHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-
         String formatted = String.format("(uri:'%s', localName:'%s', qName:'%s')",uri, localName, qName);
         StringBuilder debugMsg = new StringBuilder("===> [startElement]:" + formatted + "\nAttributes:\n");
         for (int i = 0; i < attributes.getLength(); i++) {
@@ -230,10 +230,18 @@ class GetDatastreamContentSaxHandler extends DefaultHandler {
 
         if ("datastream".equals(localName) && "info:fedora/fedora-system:def/foxml#".equals(uri) &&
                 targetId.equals(attributes.getValue("ID"))) {
+            this.versionable = attributes.getValue("VERSIONABLE");
             insideTargetDatastream = true;
         }
         if (insideTargetDatastream && "datastreamVersion".equals(localName)) {
             insideDatastreamVersion = true;
+            String versionName =  attributes.getValue("ID");
+            if (versionName.contains(".")) {
+                versionName = versionName.substring(versionName.indexOf(".")+1);
+                this.currentVersion = Integer.parseInt(versionName);
+                LOGGER.fine("Current version: " + this.currentVersion);
+            }
+
         }
 
         if (insideDatastreamVersion && "contentLocation".equals(localName)) {
@@ -244,16 +252,11 @@ class GetDatastreamContentSaxHandler extends DefaultHandler {
             // Stop parsing early if contentLocation is found
             throw new SAXException(FOUND);
         }
-        if (insideDatastreamVersion && "xmlContent".equals(localName)) {
+        if (insideTargetDatastream && insideDatastreamVersion && "xmlContent".equals(localName)) {
             insideXmlContent = true;
         }
 
-//        String msg = String.format("contentLocationRef=%s, contentLocationType=%s,insideDatastreamVersion=%b,insideTargetDatastream=%b", contentLocationRef, contentLocationType, insideDatastreamVersion, insideTargetDatastream);
-//        StringBuilder flags = new StringBuilder("===> [startElement-flags]:" + msg);
-//        LOGGER.info(flags.toString());
-
-        if (insideXmlContent) {
-
+        if (insideTargetDatastream && insideXmlContent) {
             LRElement element = new LRElement(qName, localName, uri);
             element.putNamespaces(pendingMappings);
 
@@ -297,12 +300,16 @@ class GetDatastreamContentSaxHandler extends DefaultHandler {
         if ("datastream".equals(localName)) {
             insideTargetDatastream = false;
         }
+
         if ("xmlContent".equals(localName)) {
             insideXmlContent = false;
-        }
-        if ("xmlContent".equals(localName)) {
-            insideXmlContent = false;
-            return; 
+            if (insideTargetDatastream) {
+                if (currentVersion > lastAcceptedVersion) {
+                    lastAcceptedVersion = currentVersion;
+                    LOGGER.fine("Accepted version: " + this.lastAcceptedVersion);
+                }
+            }
+            return;
         }
         if (!elementStack.isEmpty()) {
             elementStack.pop();
@@ -317,8 +324,15 @@ class GetDatastreamContentSaxHandler extends DefaultHandler {
         return contentLocationType;
     }
 
-    InputStream getXmlContentStream() {
+    public String getVersionable() {
+        return versionable;
+    }
 
+    public int getLastAcceptedVersion() {
+        return lastAcceptedVersion;
+    }
+
+    InputStream getXmlContentStream() {
         if (lightRenderingRoot == null) return null;
         // all namespaces to root
         lightRenderingRoot.putNamespaces(allSeenNamespaces);

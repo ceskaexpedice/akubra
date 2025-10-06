@@ -39,11 +39,10 @@ import java.util.List;
 import java.util.Properties;
 
 import static org.ceskaexpedice.testutils.AkubraTestsUtils.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.*;
 
 //TODO
-@Disabled
+//@Disabled
 public class RelsExtWriteTest {
     private static Properties testsProperties;
     private static ProcessingIndexSolr mockFeeder;
@@ -56,6 +55,14 @@ public class RelsExtWriteTest {
         HazelcastServerNode.ensureHazelcastNode(hazelcastConfig);
         // configure akubraRepository
         mockFeeder = spy(ProcessingIndexSolr.class);
+
+        //TODO: pass correct argument
+        doNothing().when(mockFeeder).deleteByRelationsForPid(anyString());
+        doNothing().when(mockFeeder).lookAt(any(), any());
+        doNothing().when(mockFeeder).rebuildProcessingIndex(any(), any());
+        doNothing().when(mockFeeder).commit();
+
+
         RepositoryConfiguration config = AkubraTestsUtils.createRepositoryConfig(TEST_OUTPUT_REPOSITORY.toFile().getAbsolutePath(), testsProperties, hazelcastConfig);
         CoreRepository coreRepository = CoreRepositoryFactory.createRepository(config);
         ((CoreRepositoryImpl)coreRepository).setProcessingIndex(mockFeeder);
@@ -87,11 +94,26 @@ public class RelsExtWriteTest {
         Assertions.assertEquals(1, relations.size());
 
         akubraRepository.re().addRelation(PID_TITLE_PAGE, "kramerius:hasPage",
-                "http://www.nsdl.org/ontologies/relationships#", "info:fedora/uuid:12993b4a-71b4-4f19-8953-0701243cc25d");
+                "http://www.nsdl.org/ontologies/relationships#", "info:fedora/uuid:12993b4a-71b4-4f19-8953-0701243cc25d_1");
         relations = akubraRepository.re().getRelations(PID_TITLE_PAGE, null);
         Assertions.assertEquals(2, relations.size());
 
         DigitalObject digitalObject = akubraRepository.get(PID_TITLE_PAGE).asDigitalObject();
+        Document document = Dom4jUtils.streamToDocument(akubraRepository.marshall(digitalObject), true);
+        IntegrationTestsUtils.debugPrint(document.asXML(),testsProperties);
+    }
+
+    @Test
+    void testAddRelationMultiversioned() {
+        List<RelsExtRelation> relations = akubraRepository.re().getRelations(PID_PAGE_MUTLIVERSIONED, null);
+        Assertions.assertEquals(3, relations.size());
+
+        akubraRepository.re().addRelation(PID_PAGE_MUTLIVERSIONED, "kramerius:hasPage",
+                "http://www.nsdl.org/ontologies/relationships#", "info:fedora/uuid:12993b4a-71b4-4f19-8953-0701243cc25d_2");
+        relations = akubraRepository.re().getRelations(PID_PAGE_MUTLIVERSIONED, null);
+        Assertions.assertEquals(4, relations.size());
+
+        DigitalObject digitalObject = akubraRepository.get(PID_PAGE_MUTLIVERSIONED).asDigitalObject();
         Document document = Dom4jUtils.streamToDocument(akubraRepository.marshall(digitalObject), true);
         IntegrationTestsUtils.debugPrint(document.asXML(),testsProperties);
     }
@@ -126,11 +148,9 @@ public class RelsExtWriteTest {
     void testRelsExtRemoveLiteral() {
         List<RelsExtLiteral> literals = akubraRepository.re().getLiterals(PID_TITLE_PAGE, null);
         Assertions.assertEquals(4, literals.size());
-
         akubraRepository.re().removeLiteral(PID_TITLE_PAGE, "itemID",
                 "http://www.openarchives.org/OAI/2.0/", "uuid:12993b4a-71b4-4f19-8953-0701243cc25d");
         literals = akubraRepository.re().getLiterals(PID_TITLE_PAGE,null);
-        System.out.println(literals);
         Assertions.assertEquals(3, literals.size());
     }
 

@@ -26,9 +26,14 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.util.logging.Logger;
+
 import static org.ceskaexpedice.akubra.impl.utils.InternalSaxUtils.FOUND;
 
 public class GetModelSaxHandler extends DefaultHandler {
+
+    public static final Logger LOGGER = Logger.getLogger(GetModelSaxHandler.class.getName());
+
     private boolean insideRelsExt = false;
     private boolean insideXmlContent = false;
     private boolean insideRdfDescription = false;
@@ -50,6 +55,7 @@ public class GetModelSaxHandler extends DefaultHandler {
             if (versionName.contains(".")) {
                 versionName = versionName.substring(versionName.indexOf(".")+1);
                 this.currentVersion = Integer.parseInt(versionName);
+                LOGGER.fine("Current version: " + this.currentVersion);
             }
         }
 

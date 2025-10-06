@@ -78,6 +78,10 @@ public class ProcessingIndexSolr implements ProcessingIndex {
         this.repositoryConfiguration = configuration;
     }
 
+    ProcessingIndexSolr() {
+        super();
+    }
+
 
     public void lookAt(ProcessingIndexQueryParameters params, Consumer<ProcessingIndexItem> action) {
         try {

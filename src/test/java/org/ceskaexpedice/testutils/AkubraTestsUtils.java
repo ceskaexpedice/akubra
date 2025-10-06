@@ -36,6 +36,10 @@ public final class AkubraTestsUtils {
     public static final String PID_IMPORTED = "uuid:32993b4a-71b4-4f19-8953-0701243cc25d";
     public static final String PID_TILES = "uuid:ab7e5a30-bddb-11e0-bff9-0016e6840575";
 
+    public static final String PID_MONOGRAPH_MUTLIVERSIONED = "uuid:530719f5-ee95-4449-8ce7-12b0f4cadb22";
+    public static final String PID_PAGE_MUTLIVERSIONED = "uuid:e41bdd3d-62d4-4916-9901-a7be90613fcd";
+
+
     public static final int PID_MONOGRAPH_RELATIONS = 37;
     public static final int PID_MONOGRAPH_LTERALS = 5;
 
