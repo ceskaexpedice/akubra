@@ -91,7 +91,9 @@ public class GetModelSaxHandler extends DefaultHandler {
         }
 
         if ("hasModel".equals(localName)) {
-            lastAcceptedVersion = currentVersion;
+            if (currentVersion > lastAcceptedVersion) {
+                lastAcceptedVersion = currentVersion;
+            }
         }
     }
 
