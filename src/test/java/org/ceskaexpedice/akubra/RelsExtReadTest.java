@@ -16,6 +16,7 @@
  */
 package org.ceskaexpedice.akubra;
 
+import org.apache.commons.io.IOUtils;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.relsext.RelsExtLiteral;
 import org.ceskaexpedice.akubra.relsext.RelsExtRelation;
@@ -26,6 +27,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
@@ -63,6 +66,15 @@ public class RelsExtReadTest {
     }
 
     @Test
+    void testGetMultiversion() throws IOException {
+        DatastreamContentWrapper relsExtWrapper = akubraRepository.re().get(PID_MONOGRAPH_MUTLIVERSIONED);
+        assertNotNull(relsExtWrapper);
+        InputStream is = relsExtWrapper.asInputStream();
+        assertNotNull(is);
+        IntegrationTestsUtils.debugPrint(relsExtWrapper.asDom4j(true).asXML(), testsProperties);
+    }
+
+    @Test
     void testRelationExists() {
         boolean exists = akubraRepository.re().relationExists(PID_MONOGRAPH, "hasPage", RepositoryNamespaces.KRAMERIUS_URI);
         assertTrue(exists);
@@ -79,6 +91,16 @@ public class RelsExtReadTest {
     }
 
     @Test
+    void testGetRelations_MoreVersions() {
+        List<RelsExtRelation> relations = akubraRepository.re().getRelations(PID_MONOGRAPH_MUTLIVERSIONED, null);
+        relations.forEach(rel -> IntegrationTestsUtils.debugPrint(rel.toString(), testsProperties));
+        assertEquals(6, relations.size());
+        relations = akubraRepository.re().getRelations(PID_MONOGRAPH_MUTLIVERSIONED, RepositoryNamespaces.KRAMERIUS_URI);
+        IntegrationTestsUtils.debugPrint(relations.toString(), testsProperties);
+        assertEquals(3, relations.size());
+    }
+
+    @Test
     void testGetLiterals() {
         List<RelsExtLiteral> literals = akubraRepository.re().getLiterals(PID_MONOGRAPH, null);
         assertEquals(PID_MONOGRAPH_LTERALS, literals.size());
@@ -87,6 +109,14 @@ public class RelsExtReadTest {
         assertEquals(1, literals.size());
         IntegrationTestsUtils.debugPrint(literals.toString(), testsProperties);
     }
+
+    @Test
+    void testGetLiterals_MoreVersions() {
+        List<RelsExtLiteral> literals = akubraRepository.re().getLiterals(PID_MONOGRAPH_MUTLIVERSIONED, null);
+        assertEquals(4, literals.size());
+        IntegrationTestsUtils.debugPrint(literals.toString(), testsProperties);
+    }
+
 
     @Test
     void testGetTilesUrl() {

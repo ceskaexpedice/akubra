@@ -209,16 +209,11 @@ public class CoreRepositoryImpl implements CoreRepository {
         XmlContentType xmlContentType = new XmlContentType();
         xmlContentType.getAny().add(elementFromInputStream(input));
         datastreamType.getDatastreamVersion().get(0).setXmlContent(xmlContentType);
-
         RepositoryDatastream ds = new RepositoryDatastreamImpl(datastreamType, dsId, RepositoryDatastream.Type.DIRECT);
-
         try {
             manager.write(repositoryObject.getDigitalObject(), dsId);
             if (dsId.equals(KnownDatastreams.RELS_EXT.toString())) {
                 try {
-                    // process rels-ext and create all children and relations
-                    //this.processingIndex.deleteByRelationsForPid(repositoryObject.getPid());
-
                     String query = "source:\"" + repositoryObject.getPid() + "\" AND type:\"relation\"";
                     List<ProcessingIndexItem> pids = new ArrayList<>();
                     ProcessingIndexQueryParameters params = new ProcessingIndexQueryParameters.Builder()
