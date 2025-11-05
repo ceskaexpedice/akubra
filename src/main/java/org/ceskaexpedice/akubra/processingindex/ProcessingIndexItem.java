@@ -17,6 +17,7 @@
 package org.ceskaexpedice.akubra.processingindex;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * One item of Processing index
@@ -41,6 +42,7 @@ public record ProcessingIndexItem(
         Date date,
         String pid,
         String relation,
-        String targetPid
+        String targetPid,
+        List<String> streams
 ) {
 }

@@ -118,7 +118,7 @@ public class ProcessingIndexReadTest_integration {
     void testGetOwnedAndFosteredParents() {
         OwnedAndFosteredParents parents = akubraRepository.pi().getOwnedAndFosteredParents(PID_TITLE_PAGE);
         debugPrint("Own", testsProperties);
-        debugPrint(parents.own().toString(), testsProperties);
+        if (parents.own() != null)  debugPrint(parents.own().toString(), testsProperties);
         debugPrint("Foster", testsProperties);
         for (ProcessingIndexItem item : parents.foster()) {
             debugPrint(item.toString(), testsProperties);
