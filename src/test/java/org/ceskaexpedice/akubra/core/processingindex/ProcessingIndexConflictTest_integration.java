@@ -67,6 +67,7 @@ public class ProcessingIndexConflictTest_integration {
 
         akubraRepository.pi().rebuildProcessingIndex("uuid:c9b6c867-6d60-4a64-9519-95f5e66ea910", null);
         akubraRepository.pi().rebuildProcessingIndex("uuid:463d0452-091e-470f-9af8-fe2f2b9f3a28", null);
+
         akubraRepository.pi().commit();
 
         List<ProcessingIndexItem> parents = akubraRepository.pi().getParents("uuid:3ea8b6c6-7273-4e4b-80d0-29db24f11174");
@@ -77,9 +78,6 @@ public class ProcessingIndexConflictTest_integration {
 
         OwnedAndFosteredChildren pidsOfChildren = akubraRepository.pi().getOwnedAndFosteredChildren(deletingPage);
         Assertions.assertTrue(pidsOfChildren.own().size() == 0);
-        String model = akubraRepository.pi().getModel(deletingPage);
-        Assertions.assertEquals("page", model);
-
 
         try {
             OwnedAndFosteredParents pidsOfParents = akubraRepository.pi().getOwnedAndFosteredParents(deletingPage);

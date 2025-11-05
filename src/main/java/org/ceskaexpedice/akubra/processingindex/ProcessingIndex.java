@@ -102,7 +102,21 @@ public interface ProcessingIndex {
      */
     ConflictingOwnedAndFosteredParents getConflictingOwnerAndFosteredParents(String targetPid);
 
+    /**
+     * Returns all datastream associated with target pid - read from processing index
+     * @param targetPid
+     * @return List of datastreams
+     */
+    List<String> getStreamNames(String targetPid);
 
+    /**
+     * Returns all datastream associated with direct children of given target pid - read from processing index
+     * @param targetPid
+     * @return List of datastreams
+     */
+    List<String> getChildrenStreamNames(String targetPid);
+
+    boolean containsRelation(String sourcePid, String relation);
 
     /**
      * Retrieves a list of child items associated with the given target PID and relation type.
@@ -196,8 +210,6 @@ public interface ProcessingIndex {
      * @param pid The unique identifier of the object whose entries are to be deleted.
      */
     void deleteByPid(String pid);
-
-
 
 
 

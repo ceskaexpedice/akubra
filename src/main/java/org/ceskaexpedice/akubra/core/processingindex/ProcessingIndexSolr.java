@@ -27,6 +27,8 @@ import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CursorMarkParams;
 import org.ceskaexpedice.akubra.KnownDatastreams;
@@ -34,6 +36,7 @@ import org.ceskaexpedice.akubra.RepositoryException;
 import org.ceskaexpedice.akubra.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.config.RepositoryConfiguration;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
+import org.ceskaexpedice.akubra.core.repository.RepositoryDatastream;
 import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
 import org.ceskaexpedice.akubra.impl.utils.StructureInfoDom4jUtils;
 import org.ceskaexpedice.akubra.processingindex.*;
@@ -47,10 +50,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -270,20 +270,74 @@ public class ProcessingIndexSolr implements ProcessingIndex {
         }
     }
 
+    @Override
+    public List<String> getStreamNames(String targetPid) {
+        List<String> streamNames = new ArrayList<>();
+        try {
+            SolrQuery solrQuery = new SolrQuery(String.format("source:\"%s\" AND type:description",targetPid));
+            solrQuery.setRows(1);
+            QueryResponse response = this.solrQueryClient.query(solrQuery);
+            long numFound = response.getResults().getNumFound();
+            if (numFound > 0) {
+                SolrDocument doc = response.getResults().get(0);
+                doc.getFieldValues("streams").forEach(stream -> {
+                    streamNames.add(stream.toString());
+                });
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return streamNames;
+    }
 
+    @Override
+    public List<String> getChildrenStreamNames(String targetPid) {
+        List<String> streamNames = new ArrayList<>();
+        try {
+            SolrQuery solrQuery = new SolrQuery(String.format("source:\"%s\" AND type:relation  AND relation:hasPage",targetPid));
+            solrQuery.setRows(0);
+            solrQuery.setFacet(true);
+            solrQuery.addFacetField("targetPidStreams");
+            QueryResponse response = this.solrQueryClient.query(solrQuery);
+            long numFound = response.getResults().getNumFound();
+            if (numFound > 0) {
+                List<FacetField.Count> targetPidStreams = response.getFacetField("targetPidStreams").getValues();
+                targetPidStreams.forEach(targetPidStream -> {
+                    streamNames.add(targetPidStream.getName());
+                });
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return streamNames;
+    }
+
+    @Override
+    public boolean containsRelation(String sourcePid, String relation) {
+        try {
+            SolrQuery solrQuery = new SolrQuery(String.format("source:\"%s\" AND type:relation  AND relation:%s",sourcePid,relation));
+            solrQuery.setRows(0);
+            QueryResponse response = this.solrQueryClient.query(solrQuery);
+            long numFound = response.getResults().getNumFound();
+            return numFound > 0;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public void rebuildProcessingIndex(String pid, Consumer<UpdateRequest> updateRequestCustomizer) {
 
         List<SolrInputDocument> batch = new ArrayList<>();
         try {
-            InputStream isRelsExt = coreRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT.toString());
+            //List<String> streamNames = coreRepository.getAsRepositoryObject(pid).getStreams().stream().map(RepositoryDatastream::getName).collect(Collectors.toList());
 
+            InputStream isRelsExt = coreRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT.toString());
             String stringRelsExt = IOUtils.toString(isRelsExt, StandardCharsets.UTF_8);
             RelsExtSPARQLBuilder sparqlBuilder = new RelsExtSPARQLBuilderImpl();
 
             sparqlBuilder.sparqlProps(stringRelsExt.trim(), (object, localName) -> {
-                processRelsExtRelationAndFeedProcessingIndex(pid, object, localName, batch);
+                processRelsExtRelationAndFeedProcessingIndex(solrQueryClient, coreRepository, pid, object, localName, batch);
                 return object;
             });
 
@@ -319,58 +373,58 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     /**
      * Process one relation and feed processing index
      */
-    private void processRelsExtRelationAndFeedProcessingIndex(String pid, String object, String localName, List<SolrInputDocument> batch) {
+    private void processRelsExtRelationAndFeedProcessingIndex(SolrClient solrQueryClient, CoreRepository coreRepository, String pid, String object, String localName, List<SolrInputDocument> batch) {
         if (localName.equals("hasModel")) {
             try {
-                boolean dcStreamExists = coreRepository.datastreamExists(pid, KnownDatastreams.BIBLIO_DC.name());
+                List<String> streamNames = coreRepository.getAsRepositoryObject(pid).getStreams().stream().map(RepositoryDatastream::getName).collect(Collectors.toList());
+                boolean dcStreamExists = this.coreRepository.datastreamExists(pid, KnownDatastreams.BIBLIO_DC.name());
                 // TODO: Biblio mods ukladat jinam ??
-                boolean modsStreamExists = coreRepository.datastreamExists(pid, KnownDatastreams.BIBLIO_MODS.name());
+                boolean modsStreamExists = this.coreRepository.datastreamExists(pid, KnownDatastreams.BIBLIO_MODS.name());
                 if (dcStreamExists || modsStreamExists) {
                     try {
-                        //LOGGER.info("DC or BIBLIOMODS exists");
                         if (dcStreamExists) {
                             List<String> dcTList = dcTitle(pid);
                             if (dcTList != null && !dcTList.isEmpty()) {
-                                SolrInputDocument doc = prepareDescriptionDocument(pid, object, dcTList.stream().collect(Collectors.joining(" ")).trim(), RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date());
-                                batch.add(doc);
+                                List<SolrInputDocument> docs = prepareDescriptionDocument(solrQueryClient,pid, object, dcTList.stream().collect(Collectors.joining(" ")).trim(), RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date() ,streamNames);
+                                batch.addAll(docs);
                             } else {
-                                SolrInputDocument doc = prepareDescriptionDocument(pid, object, "", RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date());
-                                batch.add(doc);
+                                List<SolrInputDocument> docs = prepareDescriptionDocument(solrQueryClient, pid, object, "", RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date(),streamNames);
+                                batch.addAll(docs);
                             }
                         } else if (modsStreamExists) {
                             // czech title or default
                             List<String> modsTList = modsTitle(pid, "cze");
                             if (modsTList != null && !modsTList.isEmpty()) {
-                                SolrInputDocument doc = prepareDescriptionDocument(pid, object,  modsTList.stream().collect(Collectors.joining(" ")), RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date(), ProcessingIndexSolr.TitleType.mods);
-                                batch.add(doc);
+                                List<SolrInputDocument> docs = prepareDescriptionDocument(solrQueryClient,pid, object,  modsTList.stream().collect(Collectors.joining(" ")), RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date(), ProcessingIndexSolr.TitleType.mods, streamNames);
+                                batch.addAll(docs);
                             } else {
-                                SolrInputDocument doc = prepareDescriptionDocument(pid, object, "", RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date());
-                                batch.add(doc);
+                                List<SolrInputDocument> docs = prepareDescriptionDocument(solrQueryClient, pid, object, "", RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date(), streamNames);
+                                batch.addAll(docs);
                             }
                         }
                     } catch (ParserConfigurationException e) {
                         LOGGER.log(Level.SEVERE, e.getMessage(), e);
 
-                        SolrInputDocument doc = prepareDescriptionDocument(pid, object, "", RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date());
-                        batch.add(doc);
+                        List<SolrInputDocument> docs = prepareDescriptionDocument(solrQueryClient,pid, object, "", RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date(), streamNames);
+                        batch.addAll(docs);
                    } catch (SAXException e) {
                         LOGGER.log(Level.SEVERE, e.getMessage(), e);
 
-                        SolrInputDocument doc = prepareDescriptionDocument(pid, object, "", RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date());
-                        batch.add(doc);
+                        List<SolrInputDocument> docs = prepareDescriptionDocument(solrQueryClient, pid, object, "", RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date(), streamNames);
+                        batch.addAll(docs);
                     }
                 } else {
                     LOGGER.info("Index description without dc or mods");
 
-                    SolrInputDocument doc = prepareDescriptionDocument(pid, object, "", RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date());
-                    batch.add(doc);
+                    List<SolrInputDocument> docs = prepareDescriptionDocument(solrQueryClient,pid, object, "", RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date(), streamNames);
+                    batch.addAll(docs);
                 }
             } catch (Throwable th) {
                 LOGGER.log(Level.SEVERE, "Cannot update processing index for " + pid + " - reindex manually.", th);
             }
         } else {
             try {
-                SolrInputDocument sdoc = prepareRelationDocument(pid, localName, object);
+                SolrInputDocument sdoc = prepareRelationDocument(pid, localName, object,coreRepository);
                  batch.add(sdoc);
             } catch (Throwable th) {
                 LOGGER.log(Level.SEVERE, "Cannot update processing index for " + pid + " - reindex manually.", th);
@@ -378,13 +432,13 @@ public class ProcessingIndexSolr implements ProcessingIndex {
         }
     }
 
-    private void indexDescription(String pid, String model, String title, ProcessingIndex.TitleType ttype) {
-        this.feedDescriptionDocument(pid, model, title.trim(), RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date(), ttype);
-    }
-
-    private void indexDescription(String pid, String model, String title) {
-        this.feedDescriptionDocument(pid, model, title.trim(), RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date());
-    }
+//    private void indexDescription(String pid, String model, String title, ProcessingIndex.TitleType ttype) {
+//        this.feedDescriptionDocument(pid, model, title.trim(), RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date(), ttype);
+//    }
+//
+//    private void indexDescription(String pid, String model, String title) {
+//        this.feedDescriptionDocument(pid, model, title.trim(), RepositoryUtils.getAkubraInternalId(pid, repositoryConfiguration.getObjectStorePattern()), new Date());
+//    }
 
     private List<String> dcTitle(String pid) {
         InputStream streamContent = coreRepository.getDatastreamContent(pid, KnownDatastreams.BIBLIO_DC.toString());
@@ -439,33 +493,74 @@ public class ProcessingIndexSolr implements ProcessingIndex {
         }
     }
 
-    private UpdateResponse feedDescriptionDocument(String sourcePid, String model, String title, String ref, Date date, TitleType ttype) {
-        SolrInputDocument sdoc = prepareDescriptionDocument(sourcePid, model, title, ref, date, ttype);
-        return feedDescriptionDocument(sdoc);
-    }
+//    private UpdateResponse feedDescriptionDocument( String sourcePid, String model, String title, String ref, Date date, TitleType ttype,List<String> streamNames) {
+//        SolrInputDocument sdoc = prepareDescriptionDocument(sourcePid, model, title, ref, date, ttype, streamNames);
+//        return feedDescriptionDocument(sdoc);
+//    }
+//
+//    private UpdateResponse feedDescriptionDocument(String sourcePid, String model, String title, String ref, Date date,List<String> streamNames) {
+//        SolrInputDocument sdoc = prepareDescriptionDocument(sourcePid, model, title, ref, date, streamNames);
+//        return feedDescriptionDocument(sdoc);
+//    }
 
-    private UpdateResponse feedDescriptionDocument(String sourcePid, String model, String title, String ref, Date date) {
-        SolrInputDocument sdoc = prepareDescriptionDocument(sourcePid, model, title, ref, date);
-        return feedDescriptionDocument(sdoc);
-    }
-
-    private static SolrInputDocument prepareDescriptionDocument(String sourcePid, String model, String title, String ref, Date date, TitleType ttype) {
-        SolrInputDocument sdoc = new SolrInputDocument();
-        sdoc.addField("source", sourcePid);
-        sdoc.addField("type", TYPE_DESC);
-        sdoc.addField("model", model);
-        if (ttype.equals(TitleType.mods)) {
-            sdoc.addField("mods.title", title);
-        } else {
-            sdoc.addField("dc.title", title);
+    private static List<String> findIdentifiers(SolrClient solrQueryClient, String targetPid) {
+        List<String> identifiers = new ArrayList<>();
+        try {
+            QueryResponse response = solrQueryClient.query(
+                new SolrQuery("*")
+                    .addFilterQuery("type:relation")
+                    .addFilterQuery(String.format( "targetPid:\"%s\"",targetPid))
+                    .addFilterQuery("NOT targetPidStreams:*")
+                    .setRows(1000)
+            );
+            SolrDocumentList result = response.getResults();
+            if (result.getNumFound() >0) {
+                result.stream().forEach(item -> {
+                    identifiers.add(item.get("pid").toString());
+                });
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error while trying to find identifiers", e);
         }
-        sdoc.addField("ref", ref);
-        sdoc.addField("date", date);
-        sdoc.addField("pid", TYPE_DESC + "|" + sourcePid);
-        return sdoc;
+        return identifiers;
     }
 
-    private static SolrInputDocument prepareDescriptionDocument(String sourcePid, String model, String title, String ref, Date date) {
+
+    private static List<SolrInputDocument> prepareDescriptionDocument(SolrClient solrQueryClient,String sourcePid, String model, String title, String ref, Date date, TitleType ttype, List<String> streamNames) {
+
+        List<SolrInputDocument> retDocuments = new ArrayList<>();
+
+        SolrInputDocument descriptionDocument = new SolrInputDocument();
+        descriptionDocument.addField("source", sourcePid);
+        descriptionDocument.addField("type", TYPE_DESC);
+        descriptionDocument.addField("model", model);
+        if (ttype.equals(TitleType.mods)) {
+            descriptionDocument.addField("mods.title", title);
+        } else {
+            descriptionDocument.addField("dc.title", title);
+        }
+        descriptionDocument.addField("ref", ref);
+        descriptionDocument.addField("date", date);
+        descriptionDocument.addField("streams", streamNames);
+        descriptionDocument.addField("pid", TYPE_DESC + "|" + sourcePid);
+        retDocuments.add(descriptionDocument);
+
+        // in case of related relation is already indexed without streams
+        List<String> identifiers = findIdentifiers(solrQueryClient, sourcePid);
+        identifiers.forEach(pid-> {
+            SolrInputDocument atomicUpdateDocument = new SolrInputDocument();
+            atomicUpdateDocument.addField("pid", pid);
+            Map<String, List<String>> setField = new HashMap<>();
+            setField.put("set", streamNames);
+            atomicUpdateDocument.addField("targetPidStreams", setField);
+            retDocuments.add(atomicUpdateDocument);
+        });
+        return retDocuments;
+    }
+
+    private static List<SolrInputDocument> prepareDescriptionDocument(SolrClient solrQueryClient,String sourcePid, String model, String title, String ref, Date date, List<String> streamNames) {
+        List<SolrInputDocument> retDocuments = new ArrayList<>();
+
         SolrInputDocument sdoc = new SolrInputDocument();
         sdoc.addField("source", sourcePid);
         sdoc.addField("type", TYPE_DESC);
@@ -473,17 +568,38 @@ public class ProcessingIndexSolr implements ProcessingIndex {
         sdoc.addField("dc.title", title);
         sdoc.addField("ref", ref);
         sdoc.addField("date", date);
+        sdoc.addField("streams", streamNames);
         sdoc.addField("pid", TYPE_DESC + "|" + sourcePid);
-        return sdoc;
+        retDocuments.add(sdoc);
+
+        // in case of related relation is already indexed without streams
+        List<String> identifiers = findIdentifiers(solrQueryClient, sourcePid);
+
+        identifiers.forEach(pid-> {
+            SolrInputDocument atomicUpdateDocument = new SolrInputDocument();
+            atomicUpdateDocument.addField("pid", pid);
+            Map<String, List<String>> setField = new HashMap<>();
+            setField.put("set", streamNames);
+            atomicUpdateDocument.addField("targetPidStreams", setField);
+            retDocuments.add(atomicUpdateDocument);
+        });
+
+        return retDocuments;
     }
 
-    private static SolrInputDocument prepareRelationDocument(String sourcePid, String relation, String targetPid) {
+    private static SolrInputDocument prepareRelationDocument(String sourcePid, String relation, String targetPid, CoreRepository coreRepository) {
         SolrInputDocument sdoc = new SolrInputDocument();
         sdoc.addField("source", sourcePid);
         sdoc.addField("type", TYPE_RELATION);
         sdoc.addField("relation", relation);
         sdoc.addField("targetPid", targetPid);
         sdoc.addField("pid", TYPE_RELATION + "|" + sourcePid + "|" + relation + "|" + targetPid);
+
+        if (coreRepository.exists(targetPid)) {
+            List<RepositoryDatastream> streams = coreRepository.getAsRepositoryObject(targetPid).getStreams();
+            List<String> streamNames =  streams.stream().map(RepositoryDatastream::getName).collect(Collectors.toList());
+            sdoc.addField("targetPidStreams", streamNames);
+        }
         return sdoc;
     }
 
@@ -497,7 +613,7 @@ public class ProcessingIndexSolr implements ProcessingIndex {
     }
 
     private UpdateResponse feedRelationDocument(String sourcePid, String relation, String targetPid) {
-        SolrInputDocument sdoc = prepareRelationDocument(sourcePid, relation, targetPid);
+        SolrInputDocument sdoc = prepareRelationDocument(sourcePid, relation, targetPid, coreRepository);
         return feedRelationDocument(sdoc);
     }
 

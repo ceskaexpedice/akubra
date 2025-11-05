@@ -28,6 +28,7 @@ import org.ceskaexpedice.akubra.utils.StringUtils;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Utils for various Processing Index related tasks
@@ -36,6 +37,7 @@ public final class ProcessingIndexUtils {
     public static final Logger LOGGER = Logger.getLogger(RelsExtInternalDomUtils.class.getName());
 
     public static final int DEFAULT_MAX_LOOKAT_VALUE = 10_000;
+    public static final int DEFAULT_ITERATION_VALUE = 500;
 
     private static List<KnownRelations> OWN_RELATIONS = Arrays.asList(new KnownRelations[]{
             KnownRelations.HAS_PAGE, KnownRelations.HAS_UNIT, KnownRelations.HAS_VOLUME, KnownRelations.HAS_ITEM,
@@ -53,7 +55,7 @@ public final class ProcessingIndexUtils {
     public static List<ProcessingIndexItem>  getParents(String targetPid, CoreRepository coreRepository) {
         final List<ProcessingIndexItem> retvals = new ArrayList<>();
         iterateSectionOfProcessingSortedByFieldWithCursor("targetPid:\"" + targetPid + "\"", "pid", true, ProcessingIndex.CURSOR_MARK_START,
-                Integer.MAX_VALUE, (doc) -> {
+                200, (doc) -> {
                     retvals.add(doc);
                 }, coreRepository);
         return retvals;
@@ -67,7 +69,7 @@ public final class ProcessingIndexUtils {
                 .sortField("date")
                 .ascending(true)
                 .cursorMark(ProcessingIndex.CURSOR_MARK_START)
-                .rows(Integer.MAX_VALUE)
+                .rows(DEFAULT_ITERATION_VALUE)
                 .fieldsToFetch(List.of("source"))
                 .build();
         coreRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
@@ -123,7 +125,7 @@ public final class ProcessingIndexUtils {
                 .sortField("date")
                 .ascending(true)
                 .cursorMark(ProcessingIndex.CURSOR_MARK_START)
-                .rows(Integer.MAX_VALUE)
+                .rows(DEFAULT_ITERATION_VALUE)
                 .fieldsToFetch(List.of("targetPid"))
                 .build();
         coreRepository.getProcessingIndex().iterate(params, processingIndexItem -> {
@@ -305,7 +307,10 @@ public final class ProcessingIndexUtils {
                 (Date) doc.getFieldValue("date"),
                 (String) doc.getFieldValue("pid"),
                 (String) doc.getFieldValue("relation"),
-                (String) doc.getFieldValue("targetPid")
+                (String) doc.getFieldValue("targetPid"),
+                doc.getFieldValues("streams") != null ?
+                    doc.getFieldValues("streams").stream().map(Object::toString).collect(Collectors.toList()) : null
+
         );
     }
 
