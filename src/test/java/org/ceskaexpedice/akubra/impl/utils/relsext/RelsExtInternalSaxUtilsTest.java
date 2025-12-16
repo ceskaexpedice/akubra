@@ -16,14 +16,15 @@
  */
 package org.ceskaexpedice.akubra.impl.utils.relsext;
 
-import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtils;
-import org.ceskaexpedice.akubra.core.repository.impl.RepositoryUtilsTest;
+import org.ceskaexpedice.akubra.relsext.RelsExtUtils;
 import org.ceskaexpedice.akubra.utils.DomUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -32,10 +33,11 @@ public class RelsExtInternalSaxUtilsTest {
 
 
     @Test
-    public void testRelsExtSaxUtils() {
-        InputStream is = RelsExtInternalSaxUtilsTest.class.getResourceAsStream("info%253Afedora%252Fuuid%253A3a288340-a00e-11e8-a81d-5ef3fc9bb22f");
+    public void testFirstPageSaxUtils() {
+        InputStream is = RelsExtInternalSaxUtilsTest.class.getResourceAsStream("info%3Afedora%2Fuuid%3A7e6619ab-e814-4505-a2c1-c94acd8bb3ea");
         assertNotNull(is);
         String pidOfFirstChild = RelsExtInternalSaxUtils.getPidOfFirstChild(is);
-        System.out.println(pidOfFirstChild);
+        Assertions.assertNotNull(pidOfFirstChild);
+        Assertions.assertEquals(pidOfFirstChild, "uuid:4d1d136f-d5a0-11f0-965f-001b63bd97ba");
     }
 }

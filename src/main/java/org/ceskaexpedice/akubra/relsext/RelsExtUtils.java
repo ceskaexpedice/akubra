@@ -23,15 +23,22 @@ import org.ceskaexpedice.akubra.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.pid.LexerException;
 import org.ceskaexpedice.akubra.pid.PIDParser;
 import org.ceskaexpedice.akubra.utils.DomUtils;
+import org.ceskaexpedice.akubra.utils.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -120,6 +127,30 @@ public final class RelsExtUtils {
             containsLicense.setTextContent(license);
             rdfDescriptionElement.appendChild(containsLicense);
         }
+    }
+
+    public static List<String> getSortedRelationsPid(Element relsExt) {
+        Element description = DomUtils.findElement(relsExt, (element -> {
+            return (element.getLocalName().equals("Description"));
+        }));
+        if (description != null) {
+            return DomUtils.getElements(description).stream().filter(elm -> {
+                String resource = elm.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
+                return StringUtils.isAnyString(resource);
+            }).map(elm -> {
+                String resource = elm.getAttributeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
+                try {
+                    PIDParser parser = new PIDParser(resource);
+                    parser.disseminationURI();
+                    String objPid = parser.getObjectPid();
+                    return objPid;
+                } catch (LexerException ex) {
+                    LOGGER.log(Level.SEVERE, null, ex);
+                    return null;
+                }
+            }).filter(objPid -> objPid != null && !objPid.startsWith("model:")).filter(Objects::nonNull).toList();
+        }
+        return new ArrayList<>();
     }
 
 }
