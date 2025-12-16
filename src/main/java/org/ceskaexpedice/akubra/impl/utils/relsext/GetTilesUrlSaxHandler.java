@@ -64,7 +64,7 @@ public class GetTilesUrlSaxHandler extends DefaultHandler {
                 RepositoryNamespaces.ONTOLOGY_RELATIONSHIP_NAMESPACE_URI.equals(uri)) {
             this.insideTilesUrl = true;
             if (versionable.trim().equals("true")) {
-                if (currentVersion > lastAcceptedVersion) {
+                if (currentVersion >= lastAcceptedVersion) {
                     tilesUrl = "";
                 }
             } else {
@@ -83,12 +83,12 @@ public class GetTilesUrlSaxHandler extends DefaultHandler {
 
     private boolean testVersionable() {
         if (versionable.trim().equals("true")) {
-            return currentVersion > lastAcceptedVersion;
+            return currentVersion >= lastAcceptedVersion;
         } else return true;
     }
 
     @Override
-    public void endElement(String uri, String localName, String qName) throws SAXException {
+    public void endElement(String uri, String localName, String qName) {
         if ("datastream".equals(localName)) {
             insideRelsExt = false;
         }
