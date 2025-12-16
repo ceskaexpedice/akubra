@@ -18,15 +18,20 @@ package org.ceskaexpedice.akubra.core.repository.impl;
 
 import org.apache.commons.io.IOUtils;
 import org.ceskaexpedice.akubra.KnownDatastreams;
+import org.ceskaexpedice.akubra.RepositoryNamespaces;
 import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.dom4j.Document;
+import org.dom4j.Node;
+import org.dom4j.QName;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RepositoryUtilsTest {
@@ -99,5 +104,53 @@ public class RepositoryUtilsTest {
         Assertions.assertTrue(attribute != null);
         Assertions.assertEquals("final-version", attribute);
     }
+
+    //https://github.com/ceskaexpedice/kramerius/issues/1229
+    @Test
+    public void testReadRELSEXTAndDOM4JPath() throws IOException {
+        InputStream works = RepositoryUtilsTest.class.getResourceAsStream("works.xml");
+        InputStream doesntWork = RepositoryUtilsTest.class.getResourceAsStream("does-not-work.xml");
+        assertNotNull(works);
+        assertNotNull(doesntWork);
+
+        InputStream worksContent = RepositoryUtils.getDatastreamContent("uuid:308d3b50-a5d3-11f0-95c3-0050568d319f", works, "RELS-EXT", null);
+        Document worksContentRelsExt = Dom4jUtils.streamToDocument(worksContent, true);
+
+        List<Node> worksLicense = Dom4jUtils.buildXpath("/rdf:RDF/rdf:Description/rel:license").selectNodes(worksContentRelsExt);
+        List<Node> worksLicenseNew = Dom4jUtils.buildXpath(
+                "/rdf:RDF/rdf:Description/rel:license" +
+                        "| /rdf:RDF/rdf:Description/rel:licenses" +
+                        "| /rdf:RDF/rdf:Description/rel:licence" +
+                        "| /rdf:RDF/rdf:Description/rel:licences" +
+                        "| /rdf:RDF/rdf:Description/rel:dnnt-label" +
+                        "| /rdf:RDF/rdf:Description/rel:dnnt-labels"
+        ).selectNodes(worksContentRelsExt);
+
+        Assertions.assertTrue(!worksLicense.isEmpty());
+        Assertions.assertTrue(!worksLicenseNew.isEmpty());
+        Assertions.assertTrue(worksLicense.size() == 1);
+        Assertions.assertTrue(worksLicense.size() == worksLicenseNew.size());
+
+
+        InputStream doesntWorkContent = RepositoryUtils.getDatastreamContent("uuid:308d3b50-a5d3-11f0-95c3-0050568d319f", doesntWork, "RELS-EXT", null);
+        Document doesntWorkRelsExt = Dom4jUtils.streamToDocument(doesntWorkContent, true);
+
+        List<Node> doesntWorkLicense = Dom4jUtils.buildXpath("/rdf:RDF/rdf:Description/rel:license").selectNodes(doesntWorkRelsExt);
+        List<Node> doesntWorkLicenseNew = Dom4jUtils.buildXpath(
+                "/rdf:RDF/rdf:Description/rel:license" +
+                        "| /rdf:RDF/rdf:Description/rel:licenses" +
+                        "| /rdf:RDF/rdf:Description/rel:licence" +
+                        "| /rdf:RDF/rdf:Description/rel:licences" +
+                        "| /rdf:RDF/rdf:Description/rel:dnnt-label" +
+                        "| /rdf:RDF/rdf:Description/rel:dnnt-labels"
+        ).selectNodes(doesntWorkRelsExt);
+
+        Assertions.assertTrue(doesntWorkLicense.isEmpty());
+        Assertions.assertTrue(!doesntWorkLicenseNew.isEmpty());
+        Assertions.assertTrue(doesntWorkLicenseNew.size() == 1);
+
+
+    }
+
 
 }

@@ -55,4 +55,5 @@ public class RelsExtUtilsTest {
         Assertions.assertNotNull(sortedRelationsPid);
         Assertions.assertEquals(6, sortedRelationsPid.size());
     }
+
 }
