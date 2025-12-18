@@ -33,10 +33,8 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * Dom4jUtils
@@ -315,5 +313,35 @@ public final class Dom4jUtils {
             propertyLastModified.addAttribute("VALUE", LocalDateTime.now().format(RepositoryUtils.TIMESTAMP_FORMATTER));
         }
     }
+
+    public static Element findElement(Element topElement, Predicate<Element> predicate) {
+        Stack<Element> stack = new Stack<>();
+        stack.push(topElement);
+        while (!stack.isEmpty()) {
+            topElement = stack.pop();
+            if (predicate.test(topElement)) {
+                return topElement;
+            } else {
+                topElement.elements().stream().forEach(stack::push);
+            }
+        }
+        return null;
+    }
+
+    public static List<Element> getElements(Element topElement, Predicate<Element> predicate) {
+        List<Element> returnValue = new ArrayList<>();
+        Stack<Element> stack = new Stack<>();
+        stack.push(topElement);
+        while (!stack.isEmpty()) {
+            topElement = stack.pop();
+            if (predicate.test(topElement)) {
+                returnValue.add(topElement);
+            } else {
+                topElement.elements().stream().forEach(stack::push);
+            }
+        }
+        return returnValue;
+    }
+
 
 }
