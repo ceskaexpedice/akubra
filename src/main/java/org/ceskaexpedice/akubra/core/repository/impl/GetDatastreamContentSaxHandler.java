@@ -38,7 +38,7 @@ class GetDatastreamContentSaxHandler extends DefaultHandler {
     public static final Logger LOGGER = Logger.getLogger(GetDatastreamContentSaxHandler.class.getName());
 
     // Light rendering element; used for rendering raw xml content
-    class LRElement {
+    private class LRElement {
 
         private String qName;
         private String localName;
@@ -152,21 +152,25 @@ class GetDatastreamContentSaxHandler extends DefaultHandler {
                         String prefix = ns.getKey();
                         String uri = ns.getValue();
                         if (prefix == null || prefix.isEmpty()) {
-                            sb.append(" xmlns=\"").append(uri).append("\"");
+                            sb.append(" xmlns=\"")
+                                    .append(StringEscapeUtils.escapeXml10(uri))
+                                    .append("\"");
                         } else {
-                            sb.append(" xmlns:").append(prefix).append("=\"").append(uri).append("\"");
+                            sb.append(" xmlns:")
+                                    .append(prefix)
+                                    .append("=\"")
+                                    .append(StringEscapeUtils.escapeXml10(uri))
+                                    .append("\"");
                         }
                     }
                 }
 
-//                if (parent != null && parent.getNamespaces().containsKey("") && this.getNamespaces().containsKey("") && (!parent.getNamespaces().get("").equals(this.getNamespaces().get("")))) {
-//                    // different -> write it
-//                    sb.append(" xmlns=\"").append(getNamespaces().get("")).append("\"");
-//                }
-
-
                 for (Map.Entry<String, String> attr : attributes.entrySet()) {
-                    sb.append(" ").append(attr.getKey()).append("=\"").append(attr.getValue()).append("\"");
+                    sb.append(" ")
+                            .append(attr.getKey())
+                            .append("=\"")
+                            .append(StringEscapeUtils.escapeXml10(attr.getValue()))
+                            .append("\"");
                 }
 
                 if (children.isEmpty() && text.length() == 0) {
@@ -341,7 +345,7 @@ class GetDatastreamContentSaxHandler extends DefaultHandler {
     }
 
     @Override
-    public InputSource resolveEntity(String publicId, String systemId) throws IOException, SAXException {
+    public InputSource resolveEntity(String publicId, String systemId) {
         return new InputSource(new StringReader(""));
     }
 }

@@ -16,18 +16,17 @@
  */
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import org.apache.commons.io.IOUtils;
-import org.ceskaexpedice.akubra.KnownDatastreams;
-import org.ceskaexpedice.akubra.RepositoryNamespaces;
+import org.ceskaexpedice.akubra.impl.utils.relsext.GetTilesUrlSaxHandlerTest;
 import org.ceskaexpedice.akubra.utils.Dom4jUtils;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.dom4j.Document;
 import org.dom4j.Node;
-import org.dom4j.QName;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -43,6 +42,15 @@ public class RepositoryUtilsTest {
         InputStream bilioMods = RepositoryUtils.getDatastreamContent("", is, "BIBLIO_MODS", null);
         Document parsedDocument = Dom4jUtils.streamToDocument(bilioMods, true);
         assertNotNull(parsedDocument);
+    }
+
+    @Test
+    public void testAttributeValuesWithEntities() {
+        InputStream foxml = GetTilesUrlSaxHandlerTest.class.getClassLoader().getResourceAsStream("foxml/docWithQuoteEntities.xml");
+        InputStream is = RepositoryUtils.getDatastreamContent("", foxml, "BIBLIO_MODS", null);
+        Element docElement = DomUtils.streamToDocument(is, true).getDocumentElement();
+        String biblioSt = DomUtils.toString(docElement, true);
+        assertNotNull(biblioSt.contains("&quot;"));
     }
 
 
