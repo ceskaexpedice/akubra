@@ -63,6 +63,9 @@ import java.util.stream.Collectors;
  */
 public class ProcessingIndexSolr implements ProcessingIndex {
 
+    private static final int MAX_TOTAL_TITLE_CHARS = 5000;
+    private static final int MAX_SINGLE_TITLE_CHARS = 1000;
+
     private static final Logger LOGGER = Logger.getLogger(ProcessingIndexSolr.class.getName());
 
     private SolrClient solrUpdateClient;
@@ -478,9 +481,27 @@ public class ProcessingIndexSolr implements ProcessingIndex {
             });
 
         }
+        return extractTitles(elements);
+    }
 
-        return elements.stream().map(Element::getTextContent).collect(Collectors.toList());
-
+    private static List<String> extractTitles(List<Element> elements) {
+        List<String> result = new ArrayList<>();
+        int totalChars = 0;
+        for (Element e : elements) {
+            String text = e.getTextContent();
+            if (text == null || text.isBlank()) {
+                continue;
+            }
+            if (text.length() > MAX_SINGLE_TITLE_CHARS) {
+                text = text.substring(0, MAX_SINGLE_TITLE_CHARS);
+            }
+            if (totalChars + text.length() > MAX_TOTAL_TITLE_CHARS) {
+                break;
+            }
+            result.add(text);
+            totalChars += text.length();
+        }
+        return result;
     }
 
     @Override
