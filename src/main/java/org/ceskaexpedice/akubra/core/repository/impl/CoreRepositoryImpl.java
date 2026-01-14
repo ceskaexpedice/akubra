@@ -223,7 +223,8 @@ public class CoreRepositoryImpl implements CoreRepository {
                             .build();
                     this.processingIndex.lookAt(params, pids::add);
 
-                    input.reset();
+                    //input.reset();
+
                     processingIndex.rebuildProcessingIndex(repositoryObject.getPid(),updateRequest -> {
 
                         List<Object> updateRequestPids = updateRequest.getDocuments().stream().map(doc -> {
