@@ -29,6 +29,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -112,6 +113,18 @@ public class RepositoryUtilsTest {
         Assertions.assertTrue(attribute != null);
         Assertions.assertEquals("final-version", attribute);
     }
+
+    /*
+    uuid:d41bc414-067f-11e4-9168-90b11c419e63+TEXT_OCR+TEXT_OCR.0
+     */
+    @Test
+    public void testReadStream() throws IOException {
+        String token ="uuid:d41bc414-067f-11e4-9168-90b11c419e63+TEXT_OCR+TEXT_OCR.0";
+        URI blobId = RepositoryUtils.getBlobId(token);
+        String akubraInternalId = RepositoryUtils.getAkubraInternalIdWithPattern(blobId, "##/##");
+        Assertions.assertEquals("file:4c/7d/info%3Afedora%2Fuuid%3Ad41bc414-067f-11e4-9168-90b11c419e63%2FTEXT%5FOCR%2FTEXT%5FOCR.0", akubraInternalId);
+    }
+
 
     //https://github.com/ceskaexpedice/kramerius/issues/1229
     @Test

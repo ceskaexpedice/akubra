@@ -209,11 +209,10 @@ public class RepositoryUtils {
         if (pid == null) {
             return "";
         }
-        return getAkubraInternalIdWitPattern(pid, objectPattern);
+        return getAkubraInternalIdWithPattern(pid, objectPattern);
     }
 
-    static String getAkubraInternalIdWitPattern(String pid, String objectPattern) {
-        IdMapper mapper = new HashPathIdMapper(objectPattern);
+    public static String getAkubraInternalIdWithPattern(String pid, String objectPattern) {
         URI extUri = null;
         try {
             extUri = new URI(new PID(pid).toURI());
@@ -221,9 +220,15 @@ public class RepositoryUtils {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
             throw new RuntimeException(e);
         }
+        return getAkubraInternalIdWithPattern(extUri, objectPattern);
+    }
+
+    public static String getAkubraInternalIdWithPattern(URI extUri, String objectPattern) {
+        IdMapper mapper = new HashPathIdMapper(objectPattern);
         URI internalId = mapper.getInternalId(extUri);
         return internalId.toString();
     }
+
 
     static Date getLastModified(DigitalObject object) {
         for (PropertyType propertyType : object.getObjectProperties().getProperty()) {
@@ -291,7 +296,7 @@ public class RepositoryUtils {
         }
     }
 
-    static URI getBlobId(String token) {
+    public static URI getBlobId(String token) {
         try {
             int i = token.indexOf('+');
             if (i == -1) {
