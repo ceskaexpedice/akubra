@@ -24,14 +24,11 @@ import org.ceskaexpedice.hazelcast.HazelcastConfiguration;
  * @author pavels, petrp
  */
 public class RepositoryConfiguration {
-    private static final int LOCK_TIMEOUT_DEFAULT = 120;
-
     private final String processingIndexHost;
     private final String objectStorePath;
     private final String objectStorePattern;
     private final String datastreamStorePath;
     private final String datastreamStorePattern;
-    private final int lockTimeoutInSec;
     private final HazelcastConfiguration hazelcastConfiguration;
 
     /**
@@ -45,7 +42,6 @@ public class RepositoryConfiguration {
         this.objectStorePattern = builder.objectStorePattern;
         this.datastreamStorePath = builder.datastreamStorePath;
         this.datastreamStorePattern = builder.datastreamStorePattern;
-        this.lockTimeoutInSec = builder.lockTimeoutInSec == 0 ? LOCK_TIMEOUT_DEFAULT : builder.lockTimeoutInSec;
         this.hazelcastConfiguration = builder.hazelcastConfiguration;
     }
 
@@ -69,10 +65,6 @@ public class RepositoryConfiguration {
         return datastreamStorePattern;
     }
 
-    public int getLockTimeoutInSec() {
-        return lockTimeoutInSec;
-    }
-
     public HazelcastConfiguration getHazelcastConfiguration() {
         return hazelcastConfiguration;
     }
@@ -87,7 +79,6 @@ public class RepositoryConfiguration {
         private String objectStorePattern;
         private String datastreamStorePath;
         private String datastreamStorePattern;
-        private int lockTimeoutInSec;
         private HazelcastConfiguration hazelcastConfiguration;
 
         /**
@@ -142,11 +133,6 @@ public class RepositoryConfiguration {
          */
         public RepositoryConfiguration.Builder datastreamStorePattern(String datastreamStorePattern) {
             this.datastreamStorePattern = datastreamStorePattern;
-            return this;
-        }
-
-        public RepositoryConfiguration.Builder lockTimeoutInSec(int lockTimeoutInSec) {
-            this.lockTimeoutInSec = lockTimeoutInSec;
             return this;
         }
 

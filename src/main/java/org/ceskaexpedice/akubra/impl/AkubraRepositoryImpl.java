@@ -132,7 +132,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public void updateXMLDatastream(String pid, String dsId, String mimeType, InputStream binaryContent) {
-        doWithWriteLock(pid, () -> {
+        doWithLock(pid, () -> {
             RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
             if (repositoryObject == null) {
                 return null;
@@ -164,7 +164,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public void updateManagedDatastream(String pid, String dsId, String mimeType, InputStream binaryContent) {
-        doWithWriteLock(pid, () -> {
+        doWithLock(pid, () -> {
             RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
             if (repositoryObject == null) {
                 return null;
@@ -196,7 +196,7 @@ public class AkubraRepositoryImpl implements AkubraRepository {
 
     @Override
     public void updateExternalDatastream(String pid, String dsId, String url, String mimeType) {
-        doWithWriteLock(pid, () -> {
+        doWithLock(pid, () -> {
             RepositoryObject repositoryObject = coreRepository.getAsRepositoryObject(pid);
             if (repositoryObject == null) {
                 return null;
@@ -287,13 +287,9 @@ public class AkubraRepositoryImpl implements AkubraRepository {
     }
 
     @Override
-    public <T> T doWithReadLock(String pid, LockOperation<T> operation) {
-        return coreRepository.doWithReadLock(pid, operation);
-    }
-
-    @Override
-    public <T> T doWithWriteLock(String pid, LockOperation<T> operation) {
-        return coreRepository.doWithWriteLock(pid, operation);
+    public <T> T doWithLock(String pid, LockOperation<T> operation) {
+        // we do not support read/write for now
+        return coreRepository.doWithLock(pid, operation);
     }
 
     @Override

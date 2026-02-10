@@ -339,24 +339,14 @@ public interface AkubraRepository {
     //-------------------- Locks ---------------------------
 
     /**
-     * Executes an operation with a read lock on the specified object.
+     * Executes an operation with a lock on the specified object.
      *
      * @param pid       The persistent identifier of the object.
      * @param operation The operation to execute.
      * @param <T>       The return type of the operation.
      * @return The result of the operation.
      */
-    <T> T doWithReadLock(String pid, LockOperation<T> operation);
-
-    /**
-     * Executes an operation with a write lock on the specified object.
-     *
-     * @param pid       The persistent identifier of the object.
-     * @param operation The operation to execute.
-     * @param <T>       The return type of the operation.
-     * @return The result of the operation.
-     */
-    <T> T doWithWriteLock(String pid, LockOperation<T> operation);
+    <T> T doWithLock(String pid, LockOperation<T> operation);
 
     /**
      * Shuts down the repository, releasing resources.
