@@ -49,6 +49,7 @@ public final class AkubraTestsUtils {
         HazelcastConfiguration hazelcastConfig = new HazelcastConfiguration.Builder()
                 .hazelcastInstance("akubrasync")
                 .hazelcastUser("dev")
+                .waitTimeSecs(10L)
                 .build();
         return hazelcastConfig;
     }
@@ -63,7 +64,6 @@ public final class AkubraTestsUtils {
                 .datastreamStorePath(testRepoPath + "datastreamStore")
                 .datastreamStorePattern("##/##")
 //                .datastreamStorePattern("##/##/##")
-                .lockTimeoutInSec(10)
                 .hazelcastConfiguration(hazelcastConfig)
                 .build();
         return config;

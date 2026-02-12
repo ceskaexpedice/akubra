@@ -297,13 +297,8 @@ public class CoreRepositoryImpl implements CoreRepository {
     }
 
     @Override
-    public <T> T doWithReadLock(String pid, LockOperation<T> operation){
-        return manager.doWithReadLock(pid, operation);
-    }
-
-    @Override
-    public <T> T doWithWriteLock(String pid, LockOperation<T> operation){
-        return manager.doWithWriteLock(pid, operation);
+    public <T> T doWithLock(String pid, LockOperation<T> operation){
+        return manager.doWithLock(pid, operation);
     }
 
     @Override
