@@ -16,7 +16,7 @@
  */
 package org.ceskaexpedice.akubra.core.repository.impl;
 
-import ca.thoughtwire.lock.DistributedLockService;
+import com.hazelcast.core.ILock;
 import org.akubraproject.BlobStore;
 import org.akubraproject.fs.FSBlobStore;
 import org.akubraproject.map.IdMapper;
@@ -51,8 +51,6 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -66,7 +64,6 @@ class AkubraDOManager {
     private RepositoryConfiguration configuration;
     private ILowlevelStorage storage;
 
-    private DistributedLockService lockService;
     private HazelcastClientNode hazelcastClientNode;
 
     private final BlockingQueue<Unmarshaller> unmarshallerPool = new LinkedBlockingQueue<>(UNMARSHALLER_POOL_CAPACITY);
@@ -95,25 +92,24 @@ class AkubraDOManager {
         }
     }
 
-    private DistributedLockService getLockService() {
+    private HazelcastClientNode getLockService() {
         HazelcastConfiguration hazelcastConfiguration = configuration.getHazelcastConfiguration();
         if(hazelcastConfiguration == null){
             return null;
         }
-        if (lockService == null) { // First check (without lock)
+        if (hazelcastClientNode == null) { // First check (without lock)
             synchronized (this) {
-                if (lockService == null) { // Second check (within lock)
+                if (hazelcastClientNode == null) { // Second check (within lock)
                     try {
                         hazelcastClientNode = new HazelcastClientNode();
                         hazelcastClientNode.ensureHazelcastNode(hazelcastConfiguration);
-                        lockService = DistributedLockService.newHazelcastLockService(hazelcastClientNode);
                     } catch (Exception e) {
                         throw new DistributedLocksException(DistributedLocksException.LOCK_SERVER_ERROR, e);
                     }
                 }
             }
         }
-        return lockService;
+        return hazelcastClientNode;
     }
 
     private ILowlevelStorage initLowLevelStorage() throws Exception {
@@ -174,7 +170,7 @@ class AkubraDOManager {
     }
 
     void deleteObject(String pid, boolean includingManagedDatastreams) {
-        doWithWriteLock(pid, () -> {
+        doWithLock(pid, () -> {
             if (includingManagedDatastreams) {
                 DigitalObject object = readObjectFromStorage(pid);
                 for (DatastreamType datastreamType : object.getDatastream()) {
@@ -191,7 +187,7 @@ class AkubraDOManager {
     }
 
     void deleteStream(String pid, String streamId) {
-        doWithWriteLock(pid, () -> {
+        doWithLock(pid, () -> {
             DigitalObject object = readObjectFromStorage(pid);
             List<DatastreamType> datastreamList = object.getDatastream();
             Iterator<DatastreamType> iterator = datastreamList.iterator();
@@ -233,7 +229,7 @@ class AkubraDOManager {
     }
 
     void write(DigitalObject object, String streamId) {
-        doWithWriteLock(object.getPID(), () -> {
+        doWithLock(object.getPID(), () -> {
             List<DatastreamType> datastreamList = object.getDatastream();
             Iterator<DatastreamType> iterator = datastreamList.iterator();
             while (iterator.hasNext()) {
@@ -407,21 +403,12 @@ class AkubraDOManager {
         }
     }
 
-    <T> T doWithReadLock(String pid, LockOperation<T> operation) {
-        return doWithLock(pid, operation, false);
-    }
-
-    <T> T doWithWriteLock(String pid, LockOperation<T> operation) {
-        return doWithLock(pid, operation, true);
-    }
-
-    private <T> T doWithLock(String pid, LockOperation<T> operation, boolean writeLock) {
-        Lock lock = null;
-        DistributedLockService lockService = getLockService();
-        if(lockService != null){
+    public <T> T doWithLock(String pid, LockOperation<T> operation) {
+        ILock lock = null;
+        HazelcastClientNode hazelcastClientNode = getLockService();
+        if(hazelcastClientNode != null){
             try {
-                ReadWriteLock readWriteLock = lockService.getReentrantReadWriteLock(pid);
-                lock = writeLock ? readWriteLock.writeLock() : readWriteLock.readLock();
+                lock = hazelcastClientNode.getHzInstance().getLock(pid);
             } catch (Exception e) {
                 throw new DistributedLocksException(DistributedLocksException.LOCK_SERVER_ERROR, e);
             }
@@ -430,12 +417,14 @@ class AkubraDOManager {
             }
             boolean tryLock;
             try {
-                tryLock = lock.tryLock(configuration.getLockTimeoutInSec(), TimeUnit.SECONDS);
+                tryLock = lock.tryLock(configuration.getHazelcastConfiguration().getWaitTimeSecs(), TimeUnit.SECONDS,
+                        configuration.getHazelcastConfiguration().getLeaseTimeSecs(), TimeUnit.SECONDS);
             } catch (Exception e) {
                 throw new DistributedLocksException(DistributedLocksException.LOCK_SERVER_ERROR, e);
             }
             if (!tryLock) {
-                throw new DistributedLocksException(DistributedLocksException.LOCK_TIMEOUT, "Lock timed out after sec:" + configuration.getLockTimeoutInSec());
+                throw new DistributedLocksException(DistributedLocksException.LOCK_TIMEOUT, "Lock timed out after sec:" +
+                        configuration.getHazelcastConfiguration().getWaitTimeSecs());
             }
         }
         try {
@@ -450,9 +439,6 @@ class AkubraDOManager {
     }
 
     void shutdown() {
-        if (lockService != null) {
-            lockService.shutdown();
-        }
         if (hazelcastClientNode != null) {
             hazelcastClientNode.shutdown();
         }

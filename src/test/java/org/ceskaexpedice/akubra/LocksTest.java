@@ -28,7 +28,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 import java.util.Stack;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
 import static org.ceskaexpedice.testutils.AkubraTestsUtils.*;
@@ -58,9 +61,9 @@ public class LocksTest {
     void testLockSecondInsideFirst() {
         String pid = PID_MONOGRAPH;
         String pid1 = PID_TITLE_PAGE;
-        Boolean result = akubraRepository.doWithWriteLock(pid, () -> {
+        Boolean result = akubraRepository.doWithLock(pid, () -> {
             akubraRepository.get(pid);
-            Boolean result1 = akubraRepository.doWithReadLock(pid1, () -> {
+            Boolean result1 = akubraRepository.doWithLock(pid1, () -> {
                 akubraRepository.get(pid1);
                 return true;
             });
@@ -72,9 +75,9 @@ public class LocksTest {
     @Test
     void testReentrant() {
         String pid = PID_MONOGRAPH;
-        Boolean result = akubraRepository.doWithWriteLock(pid, () -> {
+        Boolean result = akubraRepository.doWithLock(pid, () -> {
             akubraRepository.get(pid);
-            Boolean result1 = akubraRepository.doWithWriteLock(pid, () -> {
+            Boolean result1 = akubraRepository.doWithLock(pid, () -> {
                 akubraRepository.get(pid);
                 return true;
             });
@@ -84,203 +87,47 @@ public class LocksTest {
     }
 
     @Test
-    void testReadLockAndReadLock() {
-        Stack<String> result = new Stack<>();
-        ConcurrencyUtils.runFactoryTasks(2, new Function<>() {
-            @Override
-            public ConcurrencyUtils.TestTask apply(Integer taskNumber) {
-                if (taskNumber == 1) {
-                    return new ConcurrencyUtils.TestTask(taskNumber + "") {
-                        @Override
-                        public void run() {
-                            super.run();
-                            String pid = PID_MONOGRAPH;
-                            akubraRepository.doWithReadLock(pid, () -> {
-                                result.push(Thread.currentThread().getName());
-                                IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": acquiredReadLock for " + pid, testsProperties);
-                                AkubraTestsUtils.sleep(2000);
-                                return null;
-                            });
-                            IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": releasedReadLock for " + pid, testsProperties);
-                            result.push(Thread.currentThread().getName());
-                        }
-                    };
-                } else {
-                    return new ConcurrencyUtils.TestTask(taskNumber + "") {
-                        @Override
-                        public void run() {
-                            super.run();
-                            String pid = PID_MONOGRAPH;
-                            AkubraTestsUtils.sleep(1000); // make sure the first thread has time to acquire lock
-                            akubraRepository.doWithReadLock(pid, () -> {
-                                result.push(Thread.currentThread().getName());
-                                IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": acquiredReadLock for " + pid, testsProperties);
-                                return null;
-                            });
-                            IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": releasedReadLock for " + pid, testsProperties);
-                            result.push(Thread.currentThread().getName());
-                        }
-                    };
-                }
-            }
-        });
-        String last = result.pop();
-        String secondLast = result.pop();
-        assertNotEquals(last, secondLast);
-        // Ensure stack is empty after test
-        String thirdLast = result.pop();
-        String fourthLast = result.pop();
-        assertTrue(result.isEmpty());
-    }
+    void testMutualExclusion() throws Exception {
+        CountDownLatch t1Acquired = new CountDownLatch(1);
+        CountDownLatch t2Entered = new CountDownLatch(1);
+        AtomicLong t2EnterTime = new AtomicLong();
+        AtomicLong t1ReleaseTime = new AtomicLong();
 
-    @Test
-    void testReadLockAndWriteLock() {
-        Stack<String> result = new Stack<>();
-        ConcurrencyUtils.runFactoryTasks(2, new Function<>() {
-            @Override
-            public ConcurrencyUtils.TestTask apply(Integer taskNumber) {
-                if (taskNumber == 1) {
-                    return new ConcurrencyUtils.TestTask(taskNumber + "") {
-                        @Override
-                        public void run() {
-                            super.run();
-                            String pid = PID_MONOGRAPH;
-                            akubraRepository.doWithReadLock(pid, () -> {
-                                result.push(Thread.currentThread().getName());
-                                IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": acquiredReadLock for " + pid, testsProperties);
-                                AkubraTestsUtils.sleep(2000);
-                                return null;
-                            });
-                            IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": releasedReadLock for " + pid, testsProperties);
-                            result.push(Thread.currentThread().getName());
-                        }
-                    };
-                } else {
-                    return new ConcurrencyUtils.TestTask(taskNumber + "") {
-                        @Override
-                        public void run() {
-                            super.run();
-                            String pid = PID_MONOGRAPH;
-                            AkubraTestsUtils.sleep(1000); // make sure the first thread has time to acquire lock
-                            akubraRepository.doWithWriteLock(pid, () -> {
-                                result.push(Thread.currentThread().getName());
-                                IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": acquiredWriteLock for " + pid, testsProperties);
-                                return null;
-                            });
-                            IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": releasedWriteLock for " + pid, testsProperties);
-                            result.push(Thread.currentThread().getName());
-                        }
-                    };
-                }
-            }
+        Thread t1 = new Thread(() -> {
+            akubraRepository.doWithLock("pid1", () -> {
+                System.out.println("T1 acquired lock");
+                t1Acquired.countDown();
+                sleep(5000); // hold lock
+                t1ReleaseTime.set(System.currentTimeMillis());
+                System.out.println("T1 releasing lock");
+                return null;
+            });
         });
-        String last = result.pop();
-        String secondLast = result.pop();
-        assertEquals(last, secondLast);
-        String thirdLast = result.pop();
-        String fourthLast = result.pop();
-        assertEquals(thirdLast, fourthLast);
-        assertTrue(result.isEmpty());
-    }
 
-    @Test
-    void testWriteLockAndReadLock() {
-        Stack<String> result = new Stack<>();
-        ConcurrencyUtils.runFactoryTasks(2, new Function<>() {
-            @Override
-            public ConcurrencyUtils.TestTask apply(Integer taskNumber) {
-                if (taskNumber == 1) {
-                    return new ConcurrencyUtils.TestTask(taskNumber + "") {
-                        @Override
-                        public void run() {
-                            super.run();
-                            String pid = PID_MONOGRAPH;
-                            akubraRepository.doWithWriteLock(pid, () -> {
-                                result.push(Thread.currentThread().getName());
-                                IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": acquiredWriteLock for " + pid, testsProperties);
-                                AkubraTestsUtils.sleep(2000);
-                                return null;
-                            });
-                            IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": releasedWriteLock for " + pid, testsProperties);
-                            result.push(Thread.currentThread().getName());
-                        }
-                    };
-                } else {
-                    return new ConcurrencyUtils.TestTask(taskNumber + "") {
-                        @Override
-                        public void run() {
-                            super.run();
-                            String pid = PID_MONOGRAPH;
-                            AkubraTestsUtils.sleep(1000); // make sure the first thread has time to acquire lock
-                            akubraRepository.doWithReadLock(pid, () -> {
-                                result.push(Thread.currentThread().getName());
-                                IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": acquiredReadLock for " + pid, testsProperties);
-                                return null;
-                            });
-                            IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": releasedReadLock for " + pid, testsProperties);
-                            result.push(Thread.currentThread().getName());
-                        }
-                    };
-                }
+        Thread t2 = new Thread(() -> {
+            try {
+                t1Acquired.await();
+                System.out.println("T2 trying lock");
+                akubraRepository.doWithLock("pid1", () -> {
+                    t2EnterTime.set(System.currentTimeMillis());
+                    System.out.println("T2 acquired lock");
+                    t2Entered.countDown();
+                    return null;
+                });
+            } catch (InterruptedException ignored) {
             }
         });
-        String last = result.pop();
-        String secondLast = result.pop();
-        assertEquals(last, secondLast);
-        String thirdLast = result.pop();
-        String fourthLast = result.pop();
-        assertEquals(thirdLast, fourthLast);
-        assertTrue(result.isEmpty());
-    }
 
-    @Test
-    void testWriteLockAndWriteLock() {
-        Stack<String> result = new Stack<>();
-        ConcurrencyUtils.runFactoryTasks(2, new Function<>() {
-            @Override
-            public ConcurrencyUtils.TestTask apply(Integer taskNumber) {
-                if (taskNumber == 1) {
-                    return new ConcurrencyUtils.TestTask(taskNumber + "") {
-                        @Override
-                        public void run() {
-                            super.run();
-                            String pid = PID_MONOGRAPH;
-                            akubraRepository.doWithWriteLock(pid, () -> {
-                                result.push(Thread.currentThread().getName());
-                                IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": acquiredWriteLock for " + pid, testsProperties);
-                                AkubraTestsUtils.sleep(2000);
-                                return null;
-                            });
-                            IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": releasedWriteLock for " + pid, testsProperties);
-                            result.push(Thread.currentThread().getName());
-                        }
-                    };
-                } else {
-                    return new ConcurrencyUtils.TestTask(taskNumber + "") {
-                        @Override
-                        public void run() {
-                            super.run();
-                            String pid = PID_MONOGRAPH;
-                            AkubraTestsUtils.sleep(1000); // make sure the first thread has time to acquire lock
-                            akubraRepository.doWithWriteLock(pid, () -> {
-                                result.push(Thread.currentThread().getName());
-                                IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": acquiredWriteLock for " + pid, testsProperties);
-                                return null;
-                            });
-                            IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": releasedWriteLock for " + pid, testsProperties);
-                            result.push(Thread.currentThread().getName());
-                        }
-                    };
-                }
-            }
-        });
-        String last = result.pop();
-        String secondLast = result.pop();
-        assertEquals(last, secondLast);
-        String thirdLast = result.pop();
-        String fourthLast = result.pop();
-        assertEquals(thirdLast, fourthLast);
-        assertTrue(result.isEmpty());
+        long start = System.currentTimeMillis();
+        t1.start();
+        t2.start();
+        t2Entered.await(); // wait until T2 actually gets lock
+        t1.join();
+        t2.join();
+
+        long waitedMillis = t2EnterTime.get() - start;
+        assertTrue(waitedMillis >= 4500, "T2 should NOT acquire lock immediately (should wait ~5 sec)");
+        assertTrue(t2EnterTime.get() >= t1ReleaseTime.get(), "T2 must acquire lock only AFTER T1 released it");
     }
 
     @Test
@@ -295,18 +142,18 @@ public class LocksTest {
                         @Override
                         public void run() {
                             super.run();
-                            akubraRepository.doWithWriteLock(PID_MONOGRAPH, () -> {
+                            akubraRepository.doWithLock(PID_MONOGRAPH, () -> {
                                 IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": acquiredWriteLock for " + PID_MONOGRAPH, testsProperties);
                                 AkubraTestsUtils.sleep(2000);
 
                                 IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": attempt to acquire readLock for " + PID_TITLE_PAGE, testsProperties);
                                 try {
-                                    akubraRepository.doWithReadLock(PID_TITLE_PAGE, () -> {
+                                    akubraRepository.doWithLock(PID_TITLE_PAGE, () -> {
                                         // never gets here
                                         return null;
                                     });
                                 } catch (DistributedLocksException e) {
-                                    if(e.getCode().equals(DistributedLocksException.LOCK_TIMEOUT)){
+                                    if (e.getCode().equals(DistributedLocksException.LOCK_TIMEOUT)) {
                                         deadlockReleased.set(true);
                                     }
                                 }
@@ -319,17 +166,17 @@ public class LocksTest {
                         @Override
                         public void run() {
                             super.run();
-                            akubraRepository.doWithWriteLock(PID_TITLE_PAGE, () -> {
+                            akubraRepository.doWithLock(PID_TITLE_PAGE, () -> {
                                 IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": acquiredWriteLock for " + PID_TITLE_PAGE, testsProperties);
 
                                 IntegrationTestsUtils.debugPrint(Thread.currentThread().getName() + ": attempt to acquire readLock for " + PID_MONOGRAPH, testsProperties);
                                 try {
-                                    akubraRepository.doWithReadLock(PID_MONOGRAPH, () -> {
+                                    akubraRepository.doWithLock(PID_MONOGRAPH, () -> {
                                         // never gets here
                                         return null;
                                     });
                                 } catch (DistributedLocksException e) {
-                                    if(e.getCode().equals(DistributedLocksException.LOCK_TIMEOUT)){
+                                    if (e.getCode().equals(DistributedLocksException.LOCK_TIMEOUT)) {
                                         deadlockReleased.set(true);
                                     }
                                 }
