@@ -25,11 +25,13 @@ jobs:
 
     steps:
 
-    - name: Print environment variables (safe)
+    - name: Check Hazelcast package access
+      shell: bash
       run: |
-        echo "USERNAME = $USERNAME"
-        echo "USERNAME = ${USERNAME:0:4}"
-        echo "TOKEN (first 4 chars) = ${TOKEN:0:4}****"
+        curl --fail --silent --show-error \
+          -u "$USERNAME:$TOKEN" \
+          -o /dev/null -w "HTTP %{http_code}\n" \
+          https://maven.pkg.github.com/ceskaexpedice/hazelcast-locks-server/org/ceskaexpedice/hazelcast-locks-server/2.0/hazelcast-locks-server-2.0.pom
       env:
         USERNAME: ${{ secrets.USER }}
         TOKEN: ${{ secrets.PAS }}
@@ -50,5 +52,4 @@ jobs:
       env:
         USERNAME: ${{ secrets.USER }}
         TOKEN: ${{ secrets.PAS }}
-
     

@@ -18,6 +18,7 @@ package org.ceskaexpedice.akubra.core.repository;
 
 import org.ceskaexpedice.akubra.LockOperation;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
+import org.ceskaexpedice.akubra.reference.ReferenceFactory;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 
 import java.io.File;
@@ -32,6 +33,8 @@ import java.io.InputStream;
  */
 public interface CoreRepository {
     String LOCAL_REF_PREFIX = "http://local.fedora.server/fedora/get/";
+
+    ReferenceFactory getReferenceFactory();
 
     /**
      * Checks if a digital object exists in the repository and whether it is a raw object.

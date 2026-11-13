@@ -30,6 +30,9 @@ import org.ceskaexpedice.akubra.impl.utils.ProcessingIndexUtils;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexItem;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndexQueryParameters;
+import org.ceskaexpedice.akubra.reference.CDKReferenceType;
+import org.ceskaexpedice.akubra.reference.ReferenceFactory;
+import org.ceskaexpedice.akubra.reference.FedoraReferenceType;
 import org.ceskaexpedice.fedoramodel.*;
 import org.fcrepo.server.storage.lowlevel.akubra.HashPathIdMapper;
 import org.w3c.dom.Document;
@@ -64,11 +67,23 @@ public class CoreRepositoryImpl implements CoreRepository {
 
     private AkubraDOManager manager;
     private ProcessingIndex processingIndex;
+    private ReferenceFactory referenceFactory;
 
     public CoreRepositoryImpl(RepositoryConfiguration configuration) {
         super();
         this.manager = new AkubraDOManager(configuration);
         idMapper = new HashPathIdMapper(manager.getConfiguration().getDatastreamStorePattern());
+        this.referenceFactory = new ReferenceFactory(
+                Arrays.asList(
+                        new CDKReferenceType(),
+                        new FedoraReferenceType()
+                )
+        );
+    }
+
+    @Override
+    public ReferenceFactory getReferenceFactory() {
+        return referenceFactory;
     }
 
     public void setProcessingIndex(ProcessingIndex processingIndex) {
