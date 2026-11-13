@@ -30,6 +30,7 @@ jobs:
         echo "USERNAME = $USERNAME"
         echo "USERNAME = ${USERNAME:0:4}"
         echo "TOKEN (first 4 chars) = ${TOKEN:0:4}****"
+        curl -v -u "$USERNAME:$TOKEN" https://maven.pkg.github.com/ceskaexpedice/hazelcast-locks-server/
       env:
         USERNAME: ${{ secrets.USER }}
         TOKEN: ${{ secrets.PAS }}
