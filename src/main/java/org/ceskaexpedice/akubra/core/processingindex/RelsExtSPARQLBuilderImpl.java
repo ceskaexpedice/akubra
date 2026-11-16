@@ -20,10 +20,9 @@ import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
-import org.ceskaexpedice.akubra.RepositoryException;
-import org.ceskaexpedice.akubra.RepositoryNamespaceContext;
-import org.ceskaexpedice.akubra.RepositoryNamespaces;
-import org.ceskaexpedice.akubra.pid.PIDParser;
+import org.ceskaexpedice.akubra.*;
+import org.ceskaexpedice.akubra.reference.Reference;
+import org.ceskaexpedice.akubra.reference.ReferenceFactory;
 import org.ceskaexpedice.akubra.utils.DomUtils;
 import org.ceskaexpedice.akubra.utils.StringUtils;
 import org.w3c.dom.*;
@@ -34,10 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by pstastny on 10/11/2017.
@@ -45,6 +41,11 @@ import java.util.Map;
 class RelsExtSPARQLBuilderImpl implements RelsExtSPARQLBuilder {
 
     private RepositoryNamespaceContext namespaceContext = new RepositoryNamespaceContext();
+    private ReferenceFactory referenceFactory;
+
+    public RelsExtSPARQLBuilderImpl(ReferenceFactory referenceFactory) {
+        this.referenceFactory = referenceFactory;
+    }
 
     void prefix(StringBuilder builder) {
         namespaceContext.getPrefixes().stream().filter(s-> !namespaceContext.getNamespaceURI(s).equals(RepositoryNamespaces.FEDORA_ACCESS_NAMESPACE_URI)).forEach(s-> {builder.append("PREFIX ").append(s).append(':').append(" <").append(namespaceContext.getNamespaceURI(s)).append(">").append('\n');});
@@ -75,17 +76,13 @@ class RelsExtSPARQLBuilderImpl implements RelsExtSPARQLBuilder {
                 Attr resource = elm.getAttributeNodeNS(RepositoryNamespaces.RDF_NAMESPACE_URI, "resource");
                 if (resource != null) {
                     String value = resource.getValue();
-                    if (value.startsWith(PIDParser.INFO_FEDORA_PREFIX)) {
-                        value = value.substring(PIDParser.INFO_FEDORA_PREFIX.length());
-                        if (listener != null) {
-                            value = listener.inform(value, localName);
-
-                        }
+                    Reference reference1 = referenceFactory.create(value);
+                    if (listener != null) {
+                        value = listener.inform(reference1.getValueForSPARQLListener(), localName);
                     }
                     if (!counters.containsKey(localName)) {
                         counters.put(localName,0);
                     }
-
                     // increment counters
                     counters.put(localName, counters.get(localName)+1);
 

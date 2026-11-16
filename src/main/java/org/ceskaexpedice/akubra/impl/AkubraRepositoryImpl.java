@@ -24,6 +24,7 @@ import org.ceskaexpedice.akubra.impl.utils.InternalSaxUtils;
 import org.ceskaexpedice.akubra.impl.utils.ObjectPropertiesSaxParser;
 import org.ceskaexpedice.akubra.misc.MiscHelper;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
+import org.ceskaexpedice.akubra.reference.ReferenceFactory;
 import org.ceskaexpedice.akubra.relsext.RelsExtHelper;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 
@@ -47,6 +48,11 @@ public class AkubraRepositoryImpl implements AkubraRepository {
         this.coreRepository = coreRepository;
         this.relsExtHelper = new RelsExtHelperImpl(this);
         this.miscHelper = new MiscHelperImpl(this);
+    }
+
+    @Override
+    public ReferenceFactory getReferenceFactory() {
+        return coreRepository.getReferenceFactory();
     }
 
     @Override

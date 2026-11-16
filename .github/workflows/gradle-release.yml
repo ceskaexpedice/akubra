@@ -24,8 +24,8 @@ jobs:
     - name: Set execute permission for gradlew
       run: chmod +x ./gradlew
       env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USERNAME: ${{ secrets.USER }}
+          TOKEN: ${{ secrets.PAS }}
 
     - name: Show build.gradle contents
       run: cat build.gradle

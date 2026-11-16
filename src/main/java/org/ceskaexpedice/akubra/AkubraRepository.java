@@ -19,6 +19,7 @@ package org.ceskaexpedice.akubra;
 
 import org.ceskaexpedice.akubra.misc.MiscHelper;
 import org.ceskaexpedice.akubra.processingindex.ProcessingIndex;
+import org.ceskaexpedice.akubra.reference.ReferenceFactory;
 import org.ceskaexpedice.akubra.relsext.RelsExtHelper;
 import org.ceskaexpedice.fedoramodel.DigitalObject;
 
@@ -35,6 +36,8 @@ import java.util.List;
  * @author pavels, petrp
  */
 public interface AkubraRepository {
+
+    ReferenceFactory getReferenceFactory();
 
     //---------------- Object Management -------------------------------
 

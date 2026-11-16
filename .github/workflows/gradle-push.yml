@@ -25,11 +25,15 @@ jobs:
 
     steps:
 
-    - name: Print environment variables (safe)
+    - name: Check Hazelcast package access
+      shell: bash
       run: |
-        echo "USERNAME = $USERNAME"
-        echo "USERNAME = ${USERNAME:0:4}"
-        echo "TOKEN (first 4 chars) = ${TOKEN:0:4}****"
+        echo "USERNAME: $USERNAME"
+        echo "TOKEN prefix: ${TOKEN:0:4}****"
+        curl --location --fail --silent --show-error \
+          -u "$USERNAME:$TOKEN" \
+          -o /dev/null -w "HTTP %{http_code}\n" \
+          https://maven.pkg.github.com/ceskaexpedice/hazelcast-locks-server/org/ceskaexpedice/hazelcast-locks-server/2.0/hazelcast-locks-server-2.0.pom
       env:
         USERNAME: ${{ secrets.USER }}
         TOKEN: ${{ secrets.PAS }}
@@ -46,9 +50,16 @@ jobs:
     - name: Set execute permission for gradlew
       run: chmod +x ./gradlew
     - name: Build with Gradle
-      run: ./gradlew build
+      shell: bash
+      run: |
+        echo "Gradle USERNAME: $USERNAME"
+        echo "Gradle TOKEN prefix: ${TOKEN:0:4}****"
+        if [[ -z "$USERNAME" || -z "$TOKEN" ]]; then
+          echo "Gradle credentials are missing"
+          exit 1
+        fi
+        ./gradlew build
       env:
         USERNAME: ${{ secrets.USER }}
         TOKEN: ${{ secrets.PAS }}
-
     

@@ -22,6 +22,7 @@ import org.ceskaexpedice.akubra.core.CoreRepositoryFactory;
 import org.ceskaexpedice.akubra.core.processingindex.ProcessingIndexSolr;
 import org.ceskaexpedice.akubra.core.repository.CoreRepository;
 import org.ceskaexpedice.akubra.core.repository.impl.CoreRepositoryImpl;
+import org.ceskaexpedice.akubra.reference.CDKReference;
 import org.ceskaexpedice.akubra.relsext.RelsExtLiteral;
 import org.ceskaexpedice.akubra.relsext.RelsExtRelation;
 import org.ceskaexpedice.akubra.utils.Dom4jUtils;
@@ -95,6 +96,23 @@ public class RelsExtWriteTest {
 
         akubraRepository.re().addRelation(PID_TITLE_PAGE, "kramerius:hasPage",
                 "http://www.nsdl.org/ontologies/relationships#", "info:fedora/uuid:12993b4a-71b4-4f19-8953-0701243cc25d_1");
+        relations = akubraRepository.re().getRelations(PID_TITLE_PAGE, null);
+        Assertions.assertEquals(2, relations.size());
+
+        DigitalObject digitalObject = akubraRepository.get(PID_TITLE_PAGE).asDigitalObject();
+        Document document = Dom4jUtils.streamToDocument(akubraRepository.marshall(digitalObject), true);
+        IntegrationTestsUtils.debugPrint(document.asXML(),testsProperties);
+    }
+
+    @Test
+    void testAddForeignRelation() {
+        List<RelsExtRelation> relations = akubraRepository.re().getRelations(PID_TITLE_PAGE, null);
+        Assertions.assertEquals(1, relations.size());
+
+        CDKReference cdkReference = new CDKReference("uuid:12993b4a-71b4-4f19-8953-0701243cc25d_1");
+        akubraRepository.re().addRelation(PID_TITLE_PAGE, "kramerius:hasPage",
+                "http://www.nsdl.org/ontologies/relationships#",
+                cdkReference.getPrefixedPid());
         relations = akubraRepository.re().getRelations(PID_TITLE_PAGE, null);
         Assertions.assertEquals(2, relations.size());
 

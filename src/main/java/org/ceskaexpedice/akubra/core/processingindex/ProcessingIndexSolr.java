@@ -337,7 +337,7 @@ public class ProcessingIndexSolr implements ProcessingIndex {
 
             InputStream isRelsExt = coreRepository.getDatastreamContent(pid, KnownDatastreams.RELS_EXT.toString());
             String stringRelsExt = IOUtils.toString(isRelsExt, StandardCharsets.UTF_8);
-            RelsExtSPARQLBuilder sparqlBuilder = new RelsExtSPARQLBuilderImpl();
+            RelsExtSPARQLBuilder sparqlBuilder = new RelsExtSPARQLBuilderImpl(coreRepository.getReferenceFactory());
 
             sparqlBuilder.sparqlProps(stringRelsExt.trim(), (object, localName) -> {
                 processRelsExtRelationAndFeedProcessingIndex(solrQueryClient, coreRepository, pid, object, localName, batch);
