@@ -50,7 +50,15 @@ jobs:
     - name: Set execute permission for gradlew
       run: chmod +x ./gradlew
     - name: Build with Gradle
-      run: ./gradlew build
+      shell: bash
+      run: |
+        echo "Gradle USERNAME: $USERNAME"
+        echo "Gradle TOKEN prefix: ${TOKEN:0:4}****"
+        if [[ -z "$USERNAME" || -z "$TOKEN" ]]; then
+          echo "Gradle credentials are missing"
+          exit 1
+        fi
+        ./gradlew build
       env:
         USERNAME: ${{ secrets.USER }}
         TOKEN: ${{ secrets.PAS }}
