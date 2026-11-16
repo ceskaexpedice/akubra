@@ -28,7 +28,9 @@ jobs:
     - name: Check Hazelcast package access
       shell: bash
       run: |
-        curl --fail --silent --show-error \
+        echo "USERNAME: $USERNAME"
+        echo "TOKEN prefix: ${TOKEN:0:4}****"
+        curl --location --fail --silent --show-error \
           -u "$USERNAME:$TOKEN" \
           -o /dev/null -w "HTTP %{http_code}\n" \
           https://maven.pkg.github.com/ceskaexpedice/hazelcast-locks-server/org/ceskaexpedice/hazelcast-locks-server/2.0/hazelcast-locks-server-2.0.pom
